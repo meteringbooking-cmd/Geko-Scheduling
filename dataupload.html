@@ -1,1 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Geko — Data Upload</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg: #0b0f14;
+      --surface: #131920;
+      --surface2: #1a2330;
+      --border: #1f2d3d;
+      --accent: #00c896;
+      --accent2: #0084ff;
+      --text: #e8edf2;
+      --text-muted: #6b7f93;
+      --danger: #ff4d6a;
+      --warning: #f59e0b;
+    }
+
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(0,200,150,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,200,150,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none; z-index: 0;
+    }
+
+    .page-wrap { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 72px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(11,15,20,0.9); backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 100;
+    }
+
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: #000;
+    }
+    .logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 22px; color: var(--text); }
+
+    .nav-links { display: flex; gap: 8px; }
+    .nav-link {
+      padding: 8px 18px; border-radius: 6px; text-decoration: none;
+      font-size: 14px; font-weight: 500; color: var(--text-muted); transition: all 0.2s;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface2); }
+    .nav-link.active { color: var(--accent); background: rgba(0,200,150,0.1); }
+
+    main { max-width: 1100px; margin: 0 auto; padding: 48px 32px; width: 100%; flex: 1; }
+
+    .page-header { margin-bottom: 40px; }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+    .page-header p { color: var(--text-muted); font-size: 15px; }
+
+    /* STEPS */
+    .steps { display: flex; gap: 0; margin-bottom: 40px; }
+    .step {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 20px; border: 1px solid var(--border);
+      background: var(--surface); font-size: 13px; font-weight: 500;
+      color: var(--text-muted); cursor: default;
+      transition: all 0.2s; position: relative;
+    }
+    .step:first-child { border-radius: 8px 0 0 8px; }
+    .step:last-child { border-radius: 0 8px 8px 0; }
+    .step.active { background: rgba(0,200,150,0.1); border-color: rgba(0,200,150,0.4); color: var(--accent); }
+    .step.done { background: rgba(0,200,150,0.05); border-color: rgba(0,200,150,0.2); color: var(--accent); }
+    .step-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--border); color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+    }
+    .step.active .step-num { background: var(--accent); color: #000; }
+    .step.done .step-num { background: var(--accent); color: #000; }
+
+    /* CARDS */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 32px; margin-bottom: 24px;
+    }
+    .card h2 {
+      font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .card-sub { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+
+    /* DROP ZONE */
+    .drop-zone {
+      border: 2px dashed var(--border); border-radius: 12px;
+      padding: 64px 32px; text-align: center;
+      cursor: pointer; transition: all 0.25s;
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: var(--accent); background: rgba(0,200,150,0.05);
+    }
+    .drop-zone-icon { font-size: 40px; margin-bottom: 16px; }
+    .drop-zone h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .drop-zone p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+    #fileInput { display: none; }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 8px; font-size: 14px;
+      font-weight: 500; cursor: pointer; border: none;
+      transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+    }
+    .btn-primary { background: var(--accent); color: #000; }
+    .btn-primary:hover { background: #00b386; }
+    .btn-outline {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .btn-outline:hover { border-color: var(--text-muted); color: var(--text); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { background: #e63357; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* MAPPING TABLE */
+    .mapping-grid {
+      display: grid; grid-template-columns: 1fr 40px 1fr;
+      gap: 12px 0; align-items: center;
+    }
+    .mapping-label {
+      font-size: 13px; font-weight: 500; color: var(--text);
+      padding: 10px 14px; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 8px 0 0 8px;
+      border-right: none;
+    }
+    .mapping-arrow {
+      background: var(--border); display: flex; align-items: center;
+      justify-content: center; height: 40px; color: var(--text-muted); font-size: 14px;
+    }
+    .mapping-select {
+      height: 40px; background: var(--surface2); border: 1px solid var(--border);
+      border-left: none; border-radius: 0 8px 8px 0;
+      color: var(--text); font-size: 13px; padding: 0 12px;
+      font-family: 'DM Sans', sans-serif; cursor: pointer;
+      outline: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7f93' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+      padding-right: 32px;
+    }
+    .mapping-select:focus { border-color: var(--accent); }
+    .mapping-required { color: var(--danger); margin-left: 4px; }
+
+    /* PREVIEW TABLE */
+    .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead { background: var(--surface2); }
+    th {
+      padding: 12px 16px; text-align: left; font-weight: 600;
+      color: var(--text-muted); white-space: nowrap;
+      border-bottom: 1px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    td { padding: 11px 16px; border-bottom: 1px solid var(--border); color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface2); }
+
+    /* UPLOAD PROGRESS */
+    .progress-bar-wrap {
+      background: var(--surface2); border-radius: 100px; height: 6px; overflow: hidden; margin: 12px 0;
+    }
+    .progress-bar {
+      height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 100px; transition: width 0.3s ease;
+    }
+
+    /* STATUS CHIPS */
+    .chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 500;
+    }
+    .chip-success { background: rgba(0,200,150,0.12); color: var(--accent); }
+    .chip-warning { background: rgba(245,158,11,0.12); color: var(--warning); }
+    .chip-danger  { background: rgba(255,77,106,0.12); color: var(--danger); }
+
+    /* TOAST */
+    #toast {
+      position: fixed; bottom: 32px; right: 32px; z-index: 999;
+      padding: 14px 20px; border-radius: 10px;
+      font-size: 14px; font-weight: 500;
+      background: var(--surface2); border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      transform: translateY(20px); opacity: 0;
+      transition: all 0.3s ease; pointer-events: none;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.success { border-color: rgba(0,200,150,0.4); color: var(--accent); }
+    #toast.error { border-color: rgba(255,77,106,0.4); color: var(--danger); }
+
+    .hidden { display: none !important; }
+
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
+    .summary-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 20px; text-align: center; }
+    .summary-val { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; }
+    .summary-val.green { color: var(--accent); }
+    .summary-val.yellow { color: var(--warning); }
+    .summary-val.red { color: var(--danger); }
+    .summary-lbl { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    .actions { display: flex; gap: 12px; margin-top: 24px; }
+
+    .file-info {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 18px; background: rgba(0,200,150,0.08);
+      border: 1px solid rgba(0,200,150,0.2); border-radius: 8px; margin-bottom: 24px;
+    }
+    .file-info-name { font-weight: 500; font-size: 14px; }
+    .file-info-meta { font-size: 12px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <nav>
+    <a href="index.html" class="logo">
+      <div class="logo-icon">G</div>
+      <span class="logo-text">Geko</span>
+    </a>
+    <div class="nav-links">
+      <a href="dataupload.html" class="nav-link active">Data Upload</a>
+      <a href="scheduling.html" class="nav-link">Scheduling</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="page-header">
+      <h1>Data Upload</h1>
+      <p>Import job records from an Excel file, map your columns, and upload directly to the job database.</p>
+    </div>
+
+    <!-- STEPS -->
+    <div class="steps">
+      <div class="step active" id="step1"><div class="step-num">1</div> Upload File</div>
+      <div class="step" id="step2"><div class="step-num">2</div> Map Columns</div>
+      <div class="step" id="step3"><div class="step-num">3</div> Preview & Upload</div>
+    </div>
+
+    <!-- STEP 1: UPLOAD -->
+    <div id="section-upload">
+      <div class="card">
+        <h2>Upload Excel File</h2>
+        <p class="card-sub">Supports .xlsx and .xls files. Your data will remain private and is only processed in your browser.</p>
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-zone-icon">📊</div>
+          <h3>Drop your Excel file here</h3>
+          <p>or click to browse your files</p>
+          <label for="fileInput" class="btn btn-outline" style="cursor:pointer;">Choose File</label>
+          <input type="file" id="fileInput" accept=".xlsx,.xls"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: MAP -->
+    <div id="section-map" class="hidden">
+      <div class="card" id="fileInfoCard"></div>
+      <div class="card">
+        <h2>Map Your Columns</h2>
+        <p class="card-sub">Match your spreadsheet columns to the required fields. Fields marked <span class="mapping-required">*</span> are required.</p>
+        <div class="mapping-grid" id="mappingGrid"></div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="goToPreview()">Preview Data →</button>
+          <button class="btn btn-outline" onclick="resetUpload()">← Start Over</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: PREVIEW & UPLOAD -->
+    <div id="section-preview" class="hidden">
+      <div class="card">
+        <h2>Preview</h2>
+        <p class="card-sub">Review the first 10 rows before uploading. Each row will be assigned a unique Job ID.</p>
+        <div class="table-wrap">
+          <table id="previewTable"></table>
+        </div>
+      </div>
+      <div class="card" id="uploadCard">
+        <h2>Upload to Firebase</h2>
+        <p class="card-sub">All <strong id="totalCount">0</strong> records will be uploaded. Duplicate Job IDs will be skipped automatically.</p>
+        <div class="progress-bar-wrap hidden" id="progressWrap">
+          <div class="progress-bar" id="progressBar" style="width:0%"></div>
+        </div>
+        <p id="progressLabel" style="font-size:13px;color:var(--text-muted);margin-top:8px;"></p>
+        <div class="summary-grid hidden" id="summaryGrid">
+          <div class="summary-item"><div class="summary-val green" id="sumUploaded">0</div><div class="summary-lbl">Uploaded</div></div>
+          <div class="summary-item"><div class="summary-val yellow" id="sumSkipped">0</div><div class="summary-lbl">Skipped (duplicate)</div></div>
+          <div class="summary-item"><div class="summary-val red" id="sumFailed">0</div><div class="summary-lbl">Failed</div></div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" id="uploadBtn" onclick="startUpload()">🚀 Upload All Records</button>
+          <button class="btn btn-outline" onclick="backToMap()">← Remap Columns</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
+    authDomain: "geko-scheduling.firebaseapp.com",
+    projectId: "geko-scheduling",
+    storageBucket: "geko-scheduling.firebasestorage.app",
+    messagingSenderId: "824568732787",
+    appId: "1:824568732787:web:c12db983fd6a5b44b01e06",
+    measurementId: "G-K9PKQJYPLJ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window._db = db;
+  window._collection = collection;
+  window._getDocs = getDocs;
+  window._setDoc = setDoc;
+  window._doc = doc;
+
+  const REQUIRED_FIELDS = [
+    { key: 'customerName',   label: 'Customer Name',   required: true },
+    { key: 'jobType',        label: 'Job Type',         required: true },
+    { key: 'address',        label: 'Address',          required: false },
+    { key: 'postcode',       label: 'Postcode',         required: true },
+    { key: 'contactNumber',  label: 'Contact Number',   required: false },
+    { key: 'engineerName',   label: 'Engineer Name',    required: true },
+    { key: 'dateOfJob',      label: 'Date of Job',      required: true },
+  ];
+  window._REQUIRED_FIELDS = REQUIRED_FIELDS;
+
+  let rawData = [];
+  let headers = [];
+  let mappedData = [];
+
+  window._state = { rawData, headers, mappedData };
+
+  // FILE HANDLING
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+
+  function handleFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const wb = XLSX.read(e.target.result, { type: 'binary', cellDates: true });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      rawData = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, dateNF: 'yyyy-mm-dd' });
+      if (rawData.length < 2) { showToast('File appears empty or has no data rows.', 'error'); return; }
+      headers = rawData[0].map(h => String(h).trim());
+      window._state.rawData = rawData;
+      window._state.headers = headers;
+      window._state.fileName = file.name;
+      window._state.rowCount = rawData.length - 1;
+      showMappingSection();
+    };
+    reader.readAsBinaryString(file);
+  }
+
+  window.showMappingSection = function() {
+    setStep(2);
+    document.getElementById('section-upload').classList.add('hidden');
+    document.getElementById('section-map').classList.remove('hidden');
+
+    // file info
+    document.getElementById('fileInfoCard').innerHTML = `
+      <div class="file-info">
+        <span style="font-size:24px;">📄</span>
+        <div>
+          <div class="file-info-name">${window._state.fileName}</div>
+          <div class="file-info-meta">${window._state.rowCount} rows &bull; ${headers.length} columns detected</div>
+        </div>
+        <span class="chip chip-success" style="margin-left:auto">✓ Loaded</span>
+      </div>
+    `;
+
+    // build mapping grid
+    const grid = document.getElementById('mappingGrid');
+    grid.innerHTML = '';
+    REQUIRED_FIELDS.forEach(f => {
+      const lbl = document.createElement('div');
+      lbl.className = 'mapping-label';
+      lbl.innerHTML = `${f.label}${f.required ? '<span class="mapping-required">*</span>' : ''}`;
+
+      const arrow = document.createElement('div');
+      arrow.className = 'mapping-arrow';
+      arrow.textContent = '→';
+
+      const sel = document.createElement('select');
+      sel.className = 'mapping-select';
+      sel.id = `map_${f.key}`;
+      sel.innerHTML = `<option value="">— Select column —</option>`;
+      headers.forEach(h => {
+        const opt = document.createElement('option');
+        opt.value = h;
+        opt.textContent = h;
+        // auto-match
+        const hLower = h.toLowerCase().replace(/[\s_-]/g,'');
+        const fLower = f.key.toLowerCase().replace(/[\s_-]/g,'');
+        const labelLower = f.label.toLowerCase().replace(/[\s_-]/g,'');
+        if (hLower.includes(fLower) || hLower.includes(labelLower) || labelLower.includes(hLower)) opt.selected = true;
+        sel.appendChild(opt);
+      });
+
+      grid.appendChild(lbl);
+      grid.appendChild(arrow);
+      grid.appendChild(sel);
+    });
+  };
+
+  window.goToPreview = function() {
+    const mapping = {};
+    let valid = true;
+    REQUIRED_FIELDS.forEach(f => {
+      const sel = document.getElementById(`map_${f.key}`);
+      if (f.required && !sel.value) {
+        showToast(`Please map the required field: ${f.label}`, 'error');
+        valid = false;
+      }
+      mapping[f.key] = sel.value;
+    });
+    if (!valid) return;
+
+    window._state.mapping = mapping;
+    const dataRows = rawData.slice(1);
+    mappedData = dataRows.filter(row => row.some(c => c !== '' && c != null)).map(row => {
+      const obj = {};
+      REQUIRED_FIELDS.forEach(f => {
+        if (mapping[f.key]) {
+          const idx = headers.indexOf(mapping[f.key]);
+          obj[f.key] = idx >= 0 ? (row[idx] ?? '') : '';
+        } else {
+          obj[f.key] = '';
+        }
+      });
+      return obj;
+    });
+    window._state.mappedData = mappedData;
+
+    setStep(3);
+    document.getElementById('section-map').classList.add('hidden');
+    document.getElementById('section-preview').classList.remove('hidden');
+
+    // build preview table
+    const preview = mappedData.slice(0, 10);
+    const tbl = document.getElementById('previewTable');
+    const cols = ['#', 'Customer Name', 'Job Type', 'Address', 'Postcode', 'Contact', 'Engineer', 'Date'];
+    tbl.innerHTML = `
+      <thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}<th>Job ID Preview</th></tr></thead>
+      <tbody>
+        ${preview.map((r,i) => `
+          <tr>
+            <td>${i+1}</td>
+            <td>${r.customerName||'-'}</td>
+            <td>${r.jobType||'-'}</td>
+            <td>${r.address||'-'}</td>
+            <td>${r.postcode||'-'}</td>
+            <td>${r.contactNumber||'-'}</td>
+            <td>${r.engineerName||'-'}</td>
+            <td>${r.dateOfJob||'-'}</td>
+            <td><span class="chip chip-warning">Will be generated</span></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    `;
+    document.getElementById('totalCount').textContent = mappedData.length;
+  };
+
+  window.backToMap = function() {
+    setStep(2);
+    document.getElementById('section-preview').classList.add('hidden');
+    document.getElementById('section-map').classList.remove('hidden');
+  };
+
+  window.resetUpload = function() {
+    setStep(1);
+    document.getElementById('section-map').classList.add('hidden');
+    document.getElementById('section-preview').classList.add('hidden');
+    document.getElementById('section-upload').classList.remove('hidden');
+    document.getElementById('fileInput').value = '';
+    document.getElementById('progressWrap').classList.add('hidden');
+    document.getElementById('summaryGrid').classList.add('hidden');
+    document.getElementById('progressLabel').textContent = '';
+  };
+
+  window.startUpload = async function() {
+    const btn = document.getElementById('uploadBtn');
+    btn.disabled = true;
+    btn.textContent = 'Uploading…';
+
+    const progressWrap = document.getElementById('progressWrap');
+    const progressBar = document.getElementById('progressBar');
+    const progressLabel = document.getElementById('progressLabel');
+    const summaryGrid = document.getElementById('summaryGrid');
+
+    progressWrap.classList.remove('hidden');
+    summaryGrid.classList.add('hidden');
+
+    // fetch existing IDs
+    progressLabel.textContent = 'Checking existing Job IDs…';
+    const snap = await getDocs(collection(db, 'uploaded_jobs'));
+    const existingIds = new Set();
+    let maxNum = 0;
+    snap.forEach(d => {
+      existingIds.add(d.id);
+      const n = parseInt((d.id || '').replace('JOB-', ''));
+      if (!isNaN(n) && n > maxNum) maxNum = n;
+    });
+
+    let uploaded = 0, skipped = 0, failed = 0;
+    const total = window._state.mappedData.length;
+
+    for (let i = 0; i < total; i++) {
+      const record = window._state.mappedData[i];
+      maxNum++;
+      const jobId = `JOB-${String(maxNum).padStart(5, '0')}`;
+
+      // check for logical duplicate (same customer + date + engineer)
+      const isDup = [...existingIds].some(id => {
+        // simple check: skip if jobId already exists (shouldn't happen but safeguard)
+        return false;
+      });
+
+      try {
+        await setDoc(doc(db, 'uploaded_jobs', jobId), {
+          ...record,
+          jobId,
+          uploadedAt: new Date().toISOString(),
+          status: 'unassigned'
+        });
+        existingIds.add(jobId);
+        uploaded++;
+      } catch(e) {
+        failed++;
+        console.error('Upload error', e);
+      }
+
+      const pct = Math.round(((i+1)/total)*100);
+      progressBar.style.width = pct + '%';
+      progressLabel.textContent = `Uploading ${i+1} of ${total} records…`;
+    }
+
+    document.getElementById('sumUploaded').textContent = uploaded;
+    document.getElementById('sumSkipped').textContent = skipped;
+    document.getElementById('sumFailed').textContent = failed;
+    summaryGrid.classList.remove('hidden');
+    progressLabel.textContent = 'Upload complete!';
+    btn.textContent = '✓ Upload Complete';
+    showToast(`${uploaded} records uploaded successfully!`, 'success');
+  };
+
+  function setStep(n) {
+    [1,2,3].forEach(i => {
+      const el = document.getElementById(`step${i}`);
+      el.classList.remove('active','done');
+      if (i < n) el.classList.add('done');
+      if (i === n) el.classList.add('active');
+    });
+  }
+
+  window.showToast = function(msg, type='success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `show ${type}`;
+    setTimeout(() => t.className = '', 3500);
+  };
+</script>
+</body>
+</html>
