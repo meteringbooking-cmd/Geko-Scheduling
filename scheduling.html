@@ -1,1 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Geko — Scheduling</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg: #0b0f14;
+      --surface: #131920;
+      --surface2: #1a2330;
+      --surface3: #202c3a;
+      --border: #1f2d3d;
+      --accent: #00c896;
+      --accent2: #0084ff;
+      --text: #e8edf2;
+      --text-muted: #6b7f93;
+      --danger: #ff4d6a;
+      --warning: #f59e0b;
+      --header-h: 72px;
+      --toolbar-h: 64px;
+    }
+
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow: hidden; }
+
+    /* NAV */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; height: var(--header-h);
+      border-bottom: 1px solid var(--border);
+      background: rgba(11,15,20,0.95); backdrop-filter: blur(12px);
+      position: relative; z-index: 200;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: #000;
+    }
+    .logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; color: var(--text); }
+    .nav-links { display: flex; gap: 8px; }
+    .nav-link { padding: 7px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 0.2s; }
+    .nav-link:hover { color: var(--text); background: var(--surface2); }
+    .nav-link.active { color: var(--accent); background: rgba(0,200,150,0.1); }
+
+    /* TOOLBAR */
+    .toolbar {
+      display: flex; align-items: center; gap: 16px;
+      padding: 0 32px; height: var(--toolbar-h);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface); position: relative; z-index: 100;
+    }
+    .toolbar-group { display: flex; align-items: center; gap: 8px; }
+    .toolbar-sep { width: 1px; height: 28px; background: var(--border); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 7px; font-size: 13px;
+      font-weight: 500; cursor: pointer; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text-muted);
+      transition: all 0.18s; font-family: 'DM Sans', sans-serif;
+    }
+    .btn:hover { border-color: var(--text-muted); color: var(--text); }
+    .btn.active { background: rgba(0,200,150,0.12); border-color: rgba(0,200,150,0.4); color: var(--accent); }
+    .btn-primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+    .btn-primary:hover { background: #00b386; border-color: #00b386; }
+
+    .date-nav { display: flex; align-items: center; gap: 6px; }
+    .date-nav-btn {
+      width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text-muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      transition: all 0.18s;
+    }
+    .date-nav-btn:hover { border-color: var(--text-muted); color: var(--text); }
+    .date-label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; min-width: 200px; text-align: center; }
+    #datePicker { background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; color: var(--text); padding: 6px 12px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; outline: none; }
+    #datePicker::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
+
+    .loading-bar { height: 2px; background: transparent; position: relative; overflow: hidden; }
+    .loading-bar.loading { background: var(--border); }
+    .loading-bar.loading::after { content: ''; position: absolute; top: 0; left: -50%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, var(--accent), transparent); animation: shimmer 1.2s infinite; }
+    @keyframes shimmer { to { left: 150%; } }
+
+    /* SCHEDULE LAYOUT */
+    .schedule-container {
+      display: flex;
+      height: calc(100vh - var(--header-h) - var(--toolbar-h) - 2px);
+      overflow: hidden;
+    }
+
+    /* ENGINEER SIDEBAR */
+    .engineer-sidebar {
+      width: 180px; min-width: 180px;
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+      display: flex; flex-direction: column;
+    }
+    .sidebar-header {
+      height: 48px; padding: 0 16px;
+      display: flex; align-items: center;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--text-muted);
+      background: var(--surface2); flex-shrink: 0;
+    }
+    .engineer-list { overflow-y: auto; flex: 1; }
+    .engineer-row {
+      height: 72px; padding: 0 16px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .engineer-row:hover { background: var(--surface2); }
+    .engineer-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .engineer-name { font-size: 13px; font-weight: 500; line-height: 1.3; }
+
+    /* TIMELINE */
+    .timeline-wrap { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .time-header {
+      height: 48px; flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2); display: flex;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .time-header-inner { display: flex; width: 100%; min-width: 1200px; }
+    .time-slot-header {
+      flex: 1; text-align: center; font-size: 11px; font-weight: 600;
+      color: var(--text-muted); display: flex; align-items: center; justify-content: center;
+      border-right: 1px solid var(--border); letter-spacing: 0.3px;
+    }
+    .time-slot-header.weekend { background: rgba(255,255,255,0.02); }
+    .time-slot-header.today-col { color: var(--accent); background: rgba(0,200,150,0.06); }
+
+    .timeline-body { flex: 1; overflow: auto; }
+    .timeline-rows { min-width: 1200px; }
+
+    .engineer-timeline-row {
+      height: 72px; display: flex;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .time-cell {
+      flex: 1; border-right: 1px solid rgba(31,45,61,0.6);
+      transition: background 0.15s; position: relative;
+    }
+    .time-cell.weekend { background: rgba(255,255,255,0.01); }
+    .time-cell.today-col { background: rgba(0,200,150,0.03); }
+    .time-cell.drag-over { background: rgba(0,200,150,0.08) !important; border: 1px dashed rgba(0,200,150,0.4); }
+
+    /* JOB CARDS */
+    .job-card {
+      position: absolute;
+      top: 8px; height: 56px;
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: grab;
+      transition: box-shadow 0.2s, transform 0.15s, border-color 0.15s;
+      z-index: 5; min-width: 100px;
+      overflow: hidden;
+      user-select: none;
+    }
+    .job-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      border-color: rgba(0,200,150,0.5);
+      z-index: 20;
+    }
+    .job-card.dragging {
+      opacity: 0.7; transform: scale(1.03);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      cursor: grabbing; z-index: 999;
+    }
+    .job-card-type { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+    .job-card-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; display: flex; gap: 8px; }
+    .job-card-id { font-size: 10px; color: var(--accent); font-family: 'Syne', sans-serif; font-weight: 600; margin-top: 2px; }
+
+    /* Day view: jobs stacked vertically in a day */
+    .job-card.day-view {
+      position: relative; left: auto !important;
+      width: calc(100% - 12px) !important;
+      top: auto; margin: 3px 6px;
+      height: auto; min-height: 52px;
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; color: var(--text-muted); text-align: center; padding: 40px;
+    }
+    .empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+    .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .empty-state p { font-size: 14px; line-height: 1.6; }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px); z-index: 500;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; width: 480px; max-width: 92vw;
+      transform: translateY(20px); transition: transform 0.25s;
+      max-height: 85vh; overflow-y: auto;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-header {
+      padding: 24px 28px 0;
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .modal-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
+    .modal-job-id { font-size: 12px; color: var(--accent); font-family: 'Syne', sans-serif; font-weight: 600; margin-top: 4px; }
+    .modal-close {
+      width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+      transition: all 0.15s;
+    }
+    .modal-close:hover { border-color: var(--danger); color: var(--danger); }
+    .modal-body { padding: 20px 28px 28px; }
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .modal-field label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 4px; display: block; }
+    .modal-field span { font-size: 14px; color: var(--text); }
+    .modal-divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+    /* STATUS BADGE */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 100px; font-size: 12px; font-weight: 500;
+    }
+    .status-unassigned { background: rgba(107,127,147,0.15); color: var(--text-muted); }
+    .status-assigned   { background: rgba(0,132,255,0.12); color: var(--accent2); }
+    .status-complete   { background: rgba(0,200,150,0.12); color: var(--accent); }
+
+    /* TOAST */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 999;
+      padding: 12px 18px; border-radius: 8px; font-size: 13px; font-weight: 500;
+      background: var(--surface2); border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      transform: translateY(20px); opacity: 0; transition: all 0.3s; pointer-events: none;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.success { border-color: rgba(0,200,150,0.4); color: var(--accent); }
+    #toast.error   { border-color: rgba(255,77,106,0.4); color: var(--danger); }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">G</div>
+    <span class="logo-text">Geko</span>
+  </a>
+  <div class="nav-links">
+    <a href="dataupload.html" class="nav-link">Data Upload</a>
+    <a href="scheduling.html" class="nav-link active">Scheduling</a>
+  </div>
+</nav>
+
+<div class="toolbar">
+  <div class="toolbar-group">
+    <div class="date-nav">
+      <button class="date-nav-btn" id="prevBtn">‹</button>
+      <span class="date-label" id="dateLabel">Loading…</span>
+      <button class="date-nav-btn" id="nextBtn">›</button>
+    </div>
+    <input type="date" id="datePicker"/>
+    <button class="btn btn-primary" id="todayBtn">Today</button>
+  </div>
+  <div class="toolbar-sep"></div>
+  <div class="toolbar-group">
+    <button class="btn active" id="btnDay" onclick="setView('day')">Day</button>
+    <button class="btn" id="btnWeek" onclick="setView('week')">Week</button>
+  </div>
+  <div class="toolbar-sep"></div>
+  <div class="toolbar-group" style="margin-left:auto;">
+    <span id="jobCountLabel" style="font-size:13px;color:var(--text-muted);"></span>
+    <button class="btn" onclick="loadJobs()" title="Refresh">↻ Refresh</button>
+  </div>
+</div>
+<div class="loading-bar" id="loadingBar"></div>
+
+<div class="schedule-container">
+  <div class="engineer-sidebar">
+    <div class="sidebar-header">Engineers</div>
+    <div class="engineer-list" id="engineerList"></div>
+  </div>
+  <div class="timeline-wrap">
+    <div class="time-header" id="timeHeader">
+      <div class="time-header-inner" id="timeHeaderInner"></div>
+    </div>
+    <div class="timeline-body">
+      <div class="timeline-rows" id="timelineRows"></div>
+    </div>
+  </div>
+</div>
+
+<!-- JOB DETAIL MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle">Job Details</div>
+        <div class="modal-job-id" id="modalJobId"></div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
+  authDomain: "geko-scheduling.firebaseapp.com",
+  projectId: "geko-scheduling",
+  storageBucket: "geko-scheduling.firebasestorage.app",
+  messagingSenderId: "824568732787",
+  appId: "1:824568732787:web:c12db983fd6a5b44b01e06",
+  measurementId: "G-K9PKQJYPLJ"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ─── STATE ───────────────────────────────────────────
+let allJobs = [];
+let currentView = 'day'; // 'day' | 'week'
+let currentDate = new Date();
+currentDate.setHours(0,0,0,0);
+let dragJob = null;
+
+// ─── INIT ─────────────────────────────────────────────
+window.loadJobs = loadJobs;
+window.setView = setView;
+window.closeModal = closeModal;
+window.closeModalDirect = closeModalDirect;
+
+document.getElementById('prevBtn').addEventListener('click', () => navigateDate(-1));
+document.getElementById('nextBtn').addEventListener('click', () => navigateDate(1));
+document.getElementById('todayBtn').addEventListener('click', () => { currentDate = new Date(); currentDate.setHours(0,0,0,0); syncDatePicker(); render(); });
+document.getElementById('datePicker').addEventListener('change', e => {
+  const [y,m,d] = e.target.value.split('-').map(Number);
+  currentDate = new Date(y, m-1, d);
+  render();
+});
+
+function navigateDate(dir) {
+  const days = currentView === 'week' ? 7 : 1;
+  currentDate.setDate(currentDate.getDate() + (dir * days));
+  syncDatePicker();
+  render();
+}
+
+function syncDatePicker() {
+  const y = currentDate.getFullYear();
+  const m = String(currentDate.getMonth()+1).padStart(2,'0');
+  const d = String(currentDate.getDate()).padStart(2,'0');
+  document.getElementById('datePicker').value = `${y}-${m}-${d}`;
+}
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('btnDay').classList.toggle('active', v === 'day');
+  document.getElementById('btnWeek').classList.toggle('active', v === 'week');
+  render();
+}
+
+async function loadJobs() {
+  setLoading(true);
+  try {
+    const snap = await getDocs(collection(db, 'uploaded_jobs'));
+    allJobs = [];
+    snap.forEach(d => allJobs.push({ id: d.id, ...d.data() }));
+    render();
+    showToast(`Loaded ${allJobs.length} jobs`, 'success');
+  } catch(e) {
+    showToast('Failed to load jobs from Firebase', 'error');
+    console.error(e);
+  }
+  setLoading(false);
+}
+
+function setLoading(on) {
+  document.getElementById('loadingBar').classList.toggle('loading', on);
+}
+
+// ─── PARSE DATE ─────────────────────────────────────
+function parseJobDate(d) {
+  if (!d) return null;
+  // Try various formats
+  const attempts = [
+    new Date(d),
+    new Date(d.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$3-$2-$1')),
+    new Date(d.replace(/(\d{2})-(\d{2})-(\d{4})/, '$3-$2-$1')),
+  ];
+  for (const a of attempts) {
+    if (!isNaN(a.getTime())) { a.setHours(0,0,0,0); return a; }
+  }
+  return null;
+}
+
+function isSameDay(a, b) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
+// ─── RENDER ──────────────────────────────────────────
+function render() {
+  const cols = getColumns();
+  renderHeader(cols);
+  renderBody(cols);
+  updateDateLabel(cols);
+}
+
+function getColumns() {
+  if (currentView === 'day') {
+    return [new Date(currentDate)];
+  } else {
+    // Week: Mon–Sun of the week containing currentDate
+    const day = currentDate.getDay(); // 0=Sun
+    const diff = (day === 0 ? -6 : 1 - day);
+    const mon = new Date(currentDate);
+    mon.setDate(currentDate.getDate() + diff);
+    return Array.from({length: 7}, (_, i) => { const d = new Date(mon); d.setDate(mon.getDate()+i); return d; });
+  }
+}
+
+function updateDateLabel(cols) {
+  const opts = { month: 'long', year: 'numeric' };
+  if (currentView === 'day') {
+    const d = cols[0];
+    document.getElementById('dateLabel').textContent = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  } else {
+    const first = cols[0], last = cols[cols.length-1];
+    document.getElementById('dateLabel').textContent =
+      `${first.toLocaleDateString('en-GB', {day:'numeric', month:'short'})} – ${last.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'})}`;
+  }
+}
+
+function renderHeader(cols) {
+  const inner = document.getElementById('timeHeaderInner');
+  const today = new Date(); today.setHours(0,0,0,0);
+  inner.innerHTML = '';
+  inner.style.gridTemplateColumns = `repeat(${cols.length}, 1fr)`;
+  inner.style.display = 'grid';
+
+  cols.forEach(col => {
+    const div = document.createElement('div');
+    div.className = 'time-slot-header';
+    const dow = col.getDay();
+    if (dow === 0 || dow === 6) div.classList.add('weekend');
+    if (isSameDay(col, today)) div.classList.add('today-col');
+
+    if (currentView === 'day') {
+      // Day view: show hours 8-18
+      div.textContent = '';
+      inner.innerHTML = '';
+      inner.style.display = 'flex';
+      for (let h = 8; h <= 17; h++) {
+        const hd = document.createElement('div');
+        hd.className = 'time-slot-header';
+        hd.textContent = `${String(h).padStart(2,'0')}:00`;
+        inner.appendChild(hd);
+      }
+      return;
+    } else {
+      div.innerHTML = `<div style="text-align:center;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;">${col.toLocaleDateString('en-GB',{weekday:'short'})}</div><div style="font-size:15px;font-weight:700;font-family:'Syne',sans-serif;">${col.getDate()}</div></div>`;
+    }
+    inner.appendChild(div);
+  });
+}
+
+function renderBody(cols) {
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Get jobs in view
+  let visibleJobs = allJobs.filter(j => {
+    const jd = parseJobDate(j.dateOfJob);
+    if (!jd) return false;
+    if (currentView === 'day') return isSameDay(jd, cols[0]);
+    return cols.some(c => isSameDay(jd, c));
+  });
+
+  // Get unique engineers from ALL jobs (not just visible)
+  const engineerSet = new Set(allJobs.map(j => j.engineerName).filter(Boolean));
+  const engineers = Array.from(engineerSet).sort((a,b) => a.localeCompare(b));
+
+  document.getElementById('jobCountLabel').textContent = `${visibleJobs.length} job${visibleJobs.length!==1?'s':''} visible`;
+
+  // Render engineer sidebar
+  const sidebar = document.getElementById('engineerList');
+  sidebar.innerHTML = '';
+  if (engineers.length === 0) {
+    sidebar.innerHTML = `<div style="padding:24px 16px;text-align:center;color:var(--text-muted);font-size:13px;">No engineers found.<br/>Upload jobs first.</div>`;
+  }
+
+  engineers.forEach(eng => {
+    const row = document.createElement('div');
+    row.className = 'engineer-row';
+    const initials = eng.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    row.innerHTML = `
+      <div class="engineer-avatar">${initials}</div>
+      <div class="engineer-name">${eng}</div>
+    `;
+    sidebar.appendChild(row);
+  });
+
+  // Render timeline rows
+  const tbody = document.getElementById('timelineRows');
+  tbody.innerHTML = '';
+
+  if (engineers.length === 0) {
+    tbody.innerHTML = `
+      <div class="empty-state" style="height:300px;">
+        <div class="empty-state-icon">📭</div>
+        <h3>No Jobs Found</h3>
+        <p>Upload job data first using the Data Upload page,<br/>or try a different date range.</p>
+      </div>
+    `;
+    return;
+  }
+
+  engineers.forEach(eng => {
+    const engJobs = visibleJobs.filter(j => j.engineerName === eng);
+    const row = document.createElement('div');
+    row.className = 'engineer-timeline-row';
+    row.dataset.engineer = eng;
+
+    if (currentView === 'week') {
+      row.style.display = 'grid';
+      row.style.gridTemplateColumns = `repeat(${cols.length}, 1fr)`;
+      row.style.height = 'auto';
+      row.style.minHeight = '72px';
+
+      cols.forEach((col, ci) => {
+        const cell = document.createElement('div');
+        cell.className = 'time-cell';
+        const dow = col.getDay();
+        if (dow === 0 || dow === 6) cell.classList.add('weekend');
+        if (isSameDay(col, today)) cell.classList.add('today-col');
+        cell.dataset.date = col.toISOString().split('T')[0];
+        cell.dataset.engineer = eng;
+
+        const dayJobs = engJobs.filter(j => isSameDay(parseJobDate(j.dateOfJob), col));
+        dayJobs.forEach(job => {
+          const card = makeJobCard(job, true);
+          cell.appendChild(card);
+        });
+
+        setupDropTarget(cell);
+        row.appendChild(cell);
+      });
+
+    } else {
+      // Day view: 10 columns (hours 8-17)
+      row.style.display = 'grid';
+      row.style.gridTemplateColumns = `repeat(10, 1fr)`;
+
+      for (let h = 0; h < 10; h++) {
+        const cell = document.createElement('div');
+        cell.className = 'time-cell';
+        cell.dataset.date = cols[0].toISOString().split('T')[0];
+        cell.dataset.engineer = eng;
+        cell.dataset.hour = h + 8;
+        setupDropTarget(cell);
+        row.appendChild(cell);
+      }
+
+      // Overlay jobs as cards spanning the row
+      if (engJobs.length > 0) {
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:absolute;left:0;right:0;top:0;bottom:0;display:flex;flex-wrap:wrap;align-items:center;padding:4px;gap:4px;z-index:5;pointer-events:none;';
+        row.style.position = 'relative';
+
+        engJobs.forEach((job, i) => {
+          const card = makeJobCard(job, false);
+          card.style.pointerEvents = 'all';
+          const totalCols = 10;
+          const cardW = Math.floor(totalCols / Math.min(engJobs.length, 5));
+          card.style.position = 'absolute';
+          card.style.top = '8px';
+          card.style.left = `calc(${(i % 5) * (100/5)}% + 4px)`;
+          card.style.width = `calc(${100/Math.min(engJobs.length,5)}% - 8px)`;
+          card.style.height = '56px';
+          overlay.appendChild(card);
+        });
+        row.appendChild(overlay);
+      }
+    }
+
+    tbody.appendChild(row);
+  });
+}
+
+function makeJobCard(job, isWeek) {
+  const card = document.createElement('div');
+  card.className = isWeek ? 'job-card day-view' : 'job-card';
+  card.dataset.jobId = job.id;
+
+  // Color by job type
+  const colors = ['#00c896','#0084ff','#f59e0b','#ff4d6a','#a855f7','#06b6d4','#10b981'];
+  const colorIdx = Math.abs([...job.jobType||''].reduce((a,c) => a + c.charCodeAt(0), 0)) % colors.length;
+  card.style.borderLeftColor = colors[colorIdx];
+
+  card.innerHTML = `
+    <div class="job-card-type">${job.jobType || 'Unknown'}</div>
+    <div class="job-card-meta"><span>${job.postcode || '—'}</span></div>
+    <div class="job-card-id">${job.jobId || job.id}</div>
+  `;
+
+  card.draggable = true;
+  card.addEventListener('dragstart', e => {
+    dragJob = job;
+    card.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  card.addEventListener('dragend', () => card.classList.remove('dragging'));
+  card.addEventListener('click', e => { e.stopPropagation(); openModal(job); });
+
+  return card;
+}
+
+function setupDropTarget(cell) {
+  cell.addEventListener('dragover', e => { e.preventDefault(); cell.classList.add('drag-over'); });
+  cell.addEventListener('dragleave', () => cell.classList.remove('drag-over'));
+  cell.addEventListener('drop', async e => {
+    e.preventDefault();
+    cell.classList.remove('drag-over');
+    if (!dragJob) return;
+
+    const newEngineer = cell.dataset.engineer;
+    const newDate = cell.dataset.date;
+
+    if (newEngineer === dragJob.engineerName && newDate === (parseJobDate(dragJob.dateOfJob)||'').toString().split('T')[0]) return;
+
+    try {
+      await updateDoc(doc(db, 'uploaded_jobs', dragJob.id), {
+        engineerName: newEngineer,
+        dateOfJob: newDate
+      });
+      // Update local
+      const idx = allJobs.findIndex(j => j.id === dragJob.id);
+      if (idx >= 0) {
+        allJobs[idx].engineerName = newEngineer;
+        allJobs[idx].dateOfJob = newDate;
+      }
+      showToast(`Job ${dragJob.jobId || dragJob.id} moved to ${newEngineer}`, 'success');
+      render();
+    } catch(err) {
+      showToast('Failed to update job in Firebase', 'error');
+      console.error(err);
+    }
+    dragJob = null;
+  });
+}
+
+// ─── MODAL ───────────────────────────────────────────
+function openModal(job) {
+  document.getElementById('modalTitle').textContent = job.jobType || 'Job Details';
+  document.getElementById('modalJobId').textContent = job.jobId || job.id;
+
+  const statusClass = job.status === 'complete' ? 'status-complete' : job.status === 'assigned' ? 'status-assigned' : 'status-unassigned';
+  const statusLabel = job.status || 'Unassigned';
+
+  document.getElementById('modalBody').innerHTML = `
+    <div style="margin-bottom:16px;">
+      <span class="status-badge ${statusClass}">${statusLabel}</span>
+    </div>
+    <div class="modal-grid">
+      <div class="modal-field">
+        <label>Customer Name</label>
+        <span>${job.customerName || '—'}</span>
+      </div>
+      <div class="modal-field">
+        <label>Contact Number</label>
+        <span>${job.contactNumber || '—'}</span>
+      </div>
+      <div class="modal-field" style="grid-column:1/-1;">
+        <label>Address</label>
+        <span>${job.address || '—'}</span>
+      </div>
+      <div class="modal-field">
+        <label>Postcode</label>
+        <span>${job.postcode || '—'}</span>
+      </div>
+      <div class="modal-field">
+        <label>Job Type</label>
+        <span>${job.jobType || '—'}</span>
+      </div>
+      <div class="modal-field">
+        <label>Engineer</label>
+        <span>${job.engineerName || '—'}</span>
+      </div>
+      <div class="modal-field">
+        <label>Date of Job</label>
+        <span>${job.dateOfJob || '—'}</span>
+      </div>
+      <div class="modal-field">
+        <label>Job ID</label>
+        <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--accent);">${job.jobId || job.id}</span>
+      </div>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-field">
+      <label>Uploaded</label>
+      <span>${job.uploadedAt ? new Date(job.uploadedAt).toLocaleString('en-GB') : '—'}</span>
+    </div>
+  `;
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+window.closeModal = function(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+};
+window.closeModalDirect = function() {
+  document.getElementById('modalOverlay').classList.remove('open');
+};
+
+// ─── TOAST ───────────────────────────────────────────
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  setTimeout(() => t.className = '', 3500);
+}
+window.showToast = showToast;
+
+// ─── BOOT ────────────────────────────────────────────
+syncDatePicker();
+loadJobs();
+</script>
+</body>
+</html>
