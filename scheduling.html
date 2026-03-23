@@ -12,7 +12,7 @@
       --border: #1f2d3d; --accent: #00c896; --accent2: #0084ff;
       --text: #e8edf2; --text-muted: #6b7f93; --danger: #ff4d6a; --warning: #f59e0b;
       --eng-w: 160px;
-      --hour-w: 140px;   /* px per hour */
+      --hour-w: 160px;   /* px per hour */
       --row-h: 72px;
       --time-h: 44px;
     }
@@ -188,11 +188,49 @@
       background:var(--surface3); border:1px solid var(--border);
       border-top:3px solid var(--accent); border-radius:7px;
       padding:5px 8px; cursor:grab; user-select:none; z-index:10;
-      overflow:hidden; transition:box-shadow .2s, opacity .15s;
+      overflow:hidden; transition:box-shadow .2s, opacity .15s, width .2s, z-index 0s;
       display:flex; flex-direction:column; justify-content:space-between;
     }
-    .job-card-day:hover { box-shadow:0 4px 20px rgba(0,0,0,.6); z-index:20; border-color:rgba(0,200,150,.5); }
+    .job-card-day:hover {
+      box-shadow:0 6px 28px rgba(0,0,0,.7);
+      z-index:100;
+      border-color:rgba(0,200,150,.6);
+      overflow:visible;
+    }
+    .job-card-day:hover .jc-tooltip {
+      opacity:1; pointer-events:none;
+      transform:translateY(0);
+    }
     .job-card-day.dragging { opacity:.45; cursor:grabbing; }
+
+    /* HOVER TOOLTIP */
+    .jc-tooltip {
+      position:absolute; top:calc(100% + 6px); left:0;
+      min-width:200px; max-width:260px;
+      background:#0d1821; border:1px solid rgba(0,200,150,.35);
+      border-radius:8px; padding:10px 13px; z-index:200;
+      box-shadow:0 8px 32px rgba(0,0,0,.7);
+      opacity:0; pointer-events:none;
+      transform:translateY(4px); transition:opacity .18s, transform .18s;
+    }
+    .jc-tooltip-row { display:flex; gap:6px; align-items:baseline; margin-bottom:4px; }
+    .jc-tooltip-row:last-child { margin-bottom:0; }
+    .jc-tooltip-lbl { font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.6px; flex-shrink:0; width:60px; }
+    .jc-tooltip-val { font-size:12px; color:var(--text); font-weight:500; }
+
+    /* Half-hour tick marks */
+    .hg-col { position:relative; }
+    .hg-col::after {
+      content:""; position:absolute; top:0; bottom:0; left:50%;
+      width:1px; background:rgba(31,45,61,.4);
+    }
+
+    /* Half-hour drop zone label */
+    .day-hour-drop { position:relative; }
+    .day-hour-drop .slot-label {
+      position:absolute; bottom:2px; left:2px; font-size:9px;
+      color:rgba(107,127,147,.4); pointer-events:none; letter-spacing:.3px;
+    }
 
     /* JOB CARDS — WEEK VIEW (stacked) */
     .job-card-week {
@@ -352,7 +390,7 @@ const db = getFirestore(initializeApp({
 }));
 
 // ── Constants ──────────────────────────────────────────────────
-const HOUR_W  = 140;   // px per hour — matches --hour-w CSS var
+const HOUR_W  = 160;   // px per hour — matches --hour-w CSS var
 const ROW_H   = 72;
 const DAY_START = 8;  // 08:00
 const DAY_END   = 17; // 17:00
@@ -492,7 +530,19 @@ function renderHeader(cols){
       const c=document.createElement("div");
       c.className="t-hdr-cell";
       c.style.width=HOUR_W+"px";
-      c.textContent=`${String(h).padStart(2,"0")}:00`;
+      c.style.flexShrink="0";
+      c.style.position="relative";
+      c.style.display="flex";
+      c.style.alignItems="stretch";
+      // Full hour label (left half)
+      const full=document.createElement("div");
+      full.style.cssText="flex:1;display:flex;align-items:center;justify-content:center;border-right:1px solid rgba(31,45,61,.5);font-size:11px;font-weight:600;";
+      full.textContent=`${String(h).padStart(2,"0")}:00`;
+      // Half hour label (right half)
+      const half=document.createElement("div");
+      half.style.cssText="flex:1;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-muted);opacity:.7;";
+      half.textContent=`${String(h).padStart(2,"0")}:30`;
+      c.appendChild(full); c.appendChild(half);
       hdr.appendChild(c);
     }
   } else {
@@ -576,17 +626,24 @@ function renderRows(cols){
       dropOverlay.style.width=`${HOUR_W*HOURS}px`;
 
       for(let h=DAY_START;h<DAY_END;h++){
-        // Full hour drop zone
-        const dz=document.createElement("div");
-        dz.className="day-hour-drop";
-        dz.style.width=HOUR_W+"px";
-        dz.dataset.engineer=eng;
-        dz.dataset.hour=h;
-        dz.dataset.date=toUKStr(cols[0]);
-        dz.addEventListener("dragover",e=>{e.preventDefault();dz.classList.add("drag-over");});
-        dz.addEventListener("dragleave",()=>dz.classList.remove("drag-over"));
-        dz.addEventListener("drop",e=>handleDrop(e,dz.dataset.engineer,dz.dataset.date,+dz.dataset.hour));
-        dropOverlay.appendChild(dz);
+        // Two half-hour slots per hour
+        [0, 0.5].forEach(half => {
+          const dz=document.createElement("div");
+          dz.className="day-hour-drop";
+          dz.style.width=(HOUR_W/2)+"px";
+          dz.dataset.engineer=eng;
+          dz.dataset.hour=h+half;
+          dz.dataset.date=toUKStr(cols[0]);
+          // Slot label
+          const lbl=document.createElement("span");
+          lbl.className="slot-label";
+          lbl.textContent=fmtTime(h+half);
+          dz.appendChild(lbl);
+          dz.addEventListener("dragover",e=>{e.preventDefault();dz.classList.add("drag-over");});
+          dz.addEventListener("dragleave",()=>dz.classList.remove("drag-over"));
+          dz.addEventListener("drop",e=>handleDrop(e,dz.dataset.engineer,dz.dataset.date,+dz.dataset.hour));
+          dropOverlay.appendChild(dz);
+        });
       }
       row.appendChild(dropOverlay);
 
@@ -638,16 +695,29 @@ function makeCardDay(job,left,width){
   card.style.width=width+"px";
   card.style.borderTopColor=col;
   card.draggable=true;
+
+  // Determine if card is narrow (comms etc) — show minimal info but always postcode
+  const isNarrow = width < 100;
+
   card.innerHTML=`
-    <div>
-      <div class="jc-customer">${esc(job.customerName)}</div>
-      <div class="jc-type">${esc(job.jobType)}</div>
-      <div class="jc-time">${fmtTime(startH)} – ${fmtTime(startH+dur)}</div>
+    <div style="overflow:hidden;">
+      <div class="jc-customer" style="font-size:${isNarrow?'10px':'12px'}">${esc(job.customerName)}</div>
+      ${isNarrow ? '' : `<div class="jc-type">${esc(job.jobType)}</div>`}
+      <div class="jc-time" style="font-size:${isNarrow?'9px':'10px'}">${fmtTime(startH)}–${fmtTime(startH+dur)}</div>
     </div>
     <div class="jc-bottom">
-      <span class="jc-post">${esc(job.postcode)}</span>
-      <span class="jc-id">${esc(job.jobId||job._id)}</span>
+      <span class="jc-post" style="font-size:${isNarrow?'9px':'10px'}">${esc(job.postcode)}</span>
+      <span class="jc-id" style="font-size:${isNarrow?'9px':'10px'}">${esc(job.jobId||job._id)}</span>
+    </div>
+    <div class="jc-tooltip">
+      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Customer</span><span class="jc-tooltip-val">${esc(job.customerName)}</span></div>
+      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Job Type</span><span class="jc-tooltip-val">${esc(job.jobType)}</span></div>
+      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Postcode</span><span class="jc-tooltip-val">${esc(job.postcode)}</span></div>
+      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Time</span><span class="jc-tooltip-val">${fmtTime(startH)} – ${fmtTime(startH+dur)}</span></div>
+      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Engineer</span><span class="jc-tooltip-val">${esc(job.engineerName)}</span></div>
+      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Job ID</span><span class="jc-tooltip-val" style="color:var(--accent)">${esc(job.jobId||job._id)}</span></div>
     </div>`;
+
   card.addEventListener("dragstart",e=>{dragJob=job;card.classList.add("dragging");e.dataTransfer.effectAllowed="move";});
   card.addEventListener("dragend",()=>card.classList.remove("dragging"));
   card.addEventListener("click",e=>{e.stopPropagation();openModal(job);});
