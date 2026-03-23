@@ -306,6 +306,7 @@
     { key: 'contactNumber', label: 'Contact Number',  required: false },
     { key: 'engineerName',  label: 'Engineer Name',   required: true },
     { key: 'dateOfJob',     label: 'Date of Job',     required: true },
+    { key: 'timeSlot',      label: 'Time Slot (AM/PM)', required: false },
   ];
 
   // ── State ─────────────────────────────────────────────
@@ -426,6 +427,7 @@
           const idx = headers.indexOf(mapping[f.key]);
           let val = idx >= 0 ? String(row[idx] ?? '').trim() : '';
           if (f.key === 'dateOfJob') val = toUKDate(val);
+          if (f.key === 'timeSlot') val = normaliseSlot(val);
           obj[f.key] = val;
         });
         return obj;
@@ -435,7 +437,7 @@
     document.getElementById('section-map').classList.add('hidden');
     document.getElementById('section-preview').classList.remove('hidden');
 
-    const cols = ['#','Customer Name','Job Type','Address','Postcode','Contact','Engineer','Date'];
+    const cols = ['#','Customer Name','Job Type','Address','Postcode','Contact','Engineer','Date','Slot'];
     const tbl = document.getElementById('previewTable');
     tbl.innerHTML = `
       <thead><tr>${cols.map(c => `<th>${c}</th>`).join('')}<th>Job ID</th></tr></thead>
@@ -447,6 +449,7 @@
             <td>${esc(r.address)}</td><td>${esc(r.postcode)}</td>
             <td>${esc(r.contactNumber)}</td><td>${esc(r.engineerName)}</td>
             <td>${esc(r.dateOfJob)}</td>
+            <td>${esc(r.timeSlot)||'—'}</td>
             <td><span class="chip chip-warning">Auto-generated</span></td>
           </tr>`).join('')}
       </tbody>`;
@@ -596,6 +599,14 @@
     }
 
     return s; // return as-is if we can't parse it
+  }
+
+  function normaliseSlot(val) {
+    if (!val) return '';
+    const s = String(val).trim().toUpperCase();
+    if (s === 'AM' || s.includes('AM') || s === 'MORNING') return 'AM';
+    if (s === 'PM' || s.includes('PM') || s === 'AFTERNOON') return 'PM';
+    return val;
   }
 
   function esc(s) {
