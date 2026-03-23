@@ -497,9 +497,11 @@
       for (let i = 0; i < total; i++) {
         maxNum++;
         const jobId = `JOB-${String(maxNum).padStart(5, '0')}`;
+        const mapped = mappedData[i];
         const record = {
-          ...mappedData[i],
+          ...mapped,
           jobId,
+          startHour: mapped.timeSlot === 'PM' ? 13 : 8,
           uploadedAt: new Date().toISOString(),
           status: 'unassigned'
         };
