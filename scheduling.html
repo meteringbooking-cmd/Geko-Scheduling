@@ -11,192 +11,261 @@
       --bg: #0b0f14; --surface: #131920; --surface2: #1a2330; --surface3: #202c3a;
       --border: #1f2d3d; --accent: #00c896; --accent2: #0084ff;
       --text: #e8edf2; --text-muted: #6b7f93; --danger: #ff4d6a; --warning: #f59e0b;
-      --header-h: 72px; --toolbar-h: 64px;
+      --eng-w: 160px;
+      --hour-w: 90px;   /* px per hour */
+      --row-h: 72px;
+      --time-h: 44px;
     }
-    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: "DM Sans", sans-serif; overflow: hidden; }
+    html, body { height:100%; background:var(--bg); color:var(--text); font-family:"DM Sans",sans-serif; overflow:hidden; }
+
+    /* NAV */
     nav {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 32px; height: var(--header-h); border-bottom: 1px solid var(--border);
-      background: rgba(11,15,20,0.95); backdrop-filter: blur(12px);
-      position: relative; z-index: 200;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 28px; height:72px; border-bottom:1px solid var(--border);
+      background:rgba(11,15,20,0.96); backdrop-filter:blur(12px); z-index:200; position:relative;
     }
-    .logo { display: flex; align-items: center; text-decoration: none; }
-    .nav-links { display: flex; gap: 8px; }
-    .nav-link { padding: 7px 16px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: all 0.2s; }
-    .nav-link:hover { color: var(--text); background: var(--surface2); }
-    .nav-link.active { color: var(--accent); background: rgba(0,200,150,0.1); }
+    .logo { display:flex; align-items:center; text-decoration:none; }
+    .nav-links { display:flex; gap:8px; }
+    .nav-link { padding:7px 16px; border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--text-muted); transition:all .2s; }
+    .nav-link:hover { color:var(--text); background:var(--surface2); }
+    .nav-link.active { color:var(--accent); background:rgba(0,200,150,.1); }
+
+    /* TOOLBAR */
     .toolbar {
-      display: flex; align-items: center; gap: 12px; padding: 0 24px;
-      height: var(--toolbar-h); border-bottom: 1px solid var(--border);
-      background: var(--surface); position: relative; z-index: 100; flex-wrap: wrap;
+      display:flex; align-items:center; gap:10px; padding:0 20px;
+      height:56px; border-bottom:1px solid var(--border);
+      background:var(--surface); z-index:100; flex-shrink:0;
     }
-    .toolbar-sep { width: 1px; height: 28px; background: var(--border); flex-shrink: 0; }
     .btn {
-      display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px;
-      border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer;
-      border: 1px solid var(--border); background: var(--surface2); color: var(--text-muted);
-      transition: all 0.18s; font-family: "DM Sans", sans-serif; white-space: nowrap;
+      display:inline-flex; align-items:center; gap:5px; padding:6px 13px;
+      border-radius:6px; font-size:13px; font-weight:500; cursor:pointer;
+      border:1px solid var(--border); background:var(--surface2); color:var(--text-muted);
+      transition:all .18s; font-family:"DM Sans",sans-serif; white-space:nowrap;
     }
-    .btn:hover { border-color: var(--text-muted); color: var(--text); }
-    .btn.active { background: rgba(0,200,150,0.12); border-color: rgba(0,200,150,0.4); color: var(--accent); }
-    .btn-primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
-    .btn-primary:hover { background: #00b386; border-color: #00b386; color: #000; }
-    .date-nav { display: flex; align-items: center; gap: 6px; }
-    .date-nav-btn {
-      width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border);
-      background: var(--surface2); color: var(--text-muted); cursor: pointer;
-      display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.18s;
+    .btn:hover { border-color:var(--text-muted); color:var(--text); }
+    .btn.active { background:rgba(0,200,150,.12); border-color:rgba(0,200,150,.4); color:var(--accent); }
+    .btn-accent { background:var(--accent); color:#000; border-color:var(--accent); font-weight:600; }
+    .btn-accent:hover { background:#00b386; border-color:#00b386; color:#000; }
+    .tsep { width:1px; height:26px; background:var(--border); flex-shrink:0; }
+    .date-nav { display:flex; align-items:center; gap:5px; }
+    .dnb {
+      width:27px; height:27px; border-radius:5px; border:1px solid var(--border);
+      background:var(--surface2); color:var(--text-muted); cursor:pointer;
+      display:flex; align-items:center; justify-content:center; font-size:15px; transition:all .18s;
     }
-    .date-nav-btn:hover { border-color: var(--text-muted); color: var(--text); }
-    .date-label { font-family: "Syne", sans-serif; font-weight: 700; font-size: 14px; min-width: 220px; text-align: center; }
+    .dnb:hover { color:var(--text); border-color:var(--text-muted); }
+    .date-lbl { font-family:"Syne",sans-serif; font-weight:700; font-size:14px; min-width:210px; text-align:center; }
     #datePicker {
-      background: var(--surface2); border: 1px solid var(--border); border-radius: 7px;
-      color: var(--text); padding: 6px 10px; font-size: 13px; font-family: "DM Sans", sans-serif;
-      cursor: pointer; outline: none;
+      background:var(--surface2); border:1px solid var(--border); border-radius:6px;
+      color:var(--text); padding:5px 10px; font-size:13px; font-family:"DM Sans",sans-serif;
+      cursor:pointer; outline:none;
     }
-    #datePicker::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
-    .loading-bar { height: 3px; background: transparent; }
-    .loading-bar.loading { background: var(--border); position: relative; overflow: hidden; }
-    .loading-bar.loading::after {
-      content: ""; position: absolute; top: 0; left: -60%; width: 60%; height: 100%;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      animation: shimmer 1.2s infinite;
-    }
-    @keyframes shimmer { to { left: 160%; } }
+    #datePicker::-webkit-calendar-picker-indicator { filter:invert(.5); cursor:pointer; }
+    #jobCountLbl { font-size:12px; color:var(--text-muted); margin-left:auto; white-space:nowrap; }
 
-    /* STATUS BAR */
+    /* STATUS */
     .status-bar {
-      display: flex; align-items: center; gap: 8px; padding: 6px 24px;
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      font-size: 12px; color: var(--text-muted);
+      display:flex; align-items:center; gap:8px; padding:4px 20px;
+      background:var(--surface); border-bottom:1px solid var(--border); font-size:12px; color:var(--text-muted);
     }
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--warning); flex-shrink: 0; }
-    .status-dot.ok { background: var(--accent); }
-    .status-dot.err { background: var(--danger); }
-    .status-dot.loading { animation: pulse 1.2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .sdot { width:7px; height:7px; border-radius:50%; background:var(--warning); flex-shrink:0; }
+    .sdot.ok  { background:var(--accent); }
+    .sdot.err { background:var(--danger); }
+    .sdot.spin { animation:blink 1s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-    /* LAYOUT */
-    .schedule-wrap {
-      display: flex;
-      height: calc(100vh - var(--header-h) - var(--toolbar-h) - 3px - 29px);
-      overflow: hidden;
+    /* LOADING */
+    .lbar { height:2px; }
+    .lbar.on { background:var(--border); position:relative; overflow:hidden; }
+    .lbar.on::after {
+      content:""; position:absolute; top:0; left:-60%; width:60%; height:100%;
+      background:linear-gradient(90deg,transparent,var(--accent),transparent);
+      animation:sh 1.2s infinite;
     }
-    .engineer-sidebar {
-      width: 190px; min-width: 190px; border-right: 1px solid var(--border);
-      background: var(--surface); display: flex; flex-direction: column; flex-shrink: 0;
+    @keyframes sh { to { left:160%; } }
+
+    /* MAIN LAYOUT */
+    .sched-wrap {
+      display:flex; flex-direction:column;
+      height:calc(100vh - 72px - 56px - 27px - 2px);
+      overflow:hidden;
     }
-    .sidebar-header {
-      height: 44px; padding: 0 16px; display: flex; align-items: center;
-      border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);
-      background: var(--surface2); flex-shrink: 0;
+
+    /* GRID AREA */
+    .grid-area { display:flex; flex:1; overflow:hidden; }
+
+    /* ENGINEER COLUMN (fixed left) */
+    .eng-col {
+      width:var(--eng-w); min-width:var(--eng-w); flex-shrink:0;
+      border-right:1px solid var(--border); background:var(--surface);
+      display:flex; flex-direction:column;
     }
-    .engineer-list { overflow-y: auto; flex: 1; }
+    .eng-col-hdr {
+      height:var(--time-h); flex-shrink:0; display:flex; align-items:center;
+      padding:0 14px; border-bottom:1px solid var(--border);
+      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted);
+      background:var(--surface2);
+    }
+    .eng-list { overflow-y:auto; flex:1; }
+    .eng-list::-webkit-scrollbar { display:none; }
     .eng-row {
-      height: 80px; padding: 0 14px; display: flex; align-items: center; gap: 10px;
-      border-bottom: 1px solid var(--border); flex-shrink: 0;
+      height:var(--row-h); display:flex; align-items:center; gap:10px;
+      padding:0 14px; border-bottom:1px solid var(--border); flex-shrink:0;
     }
     .eng-avatar {
-      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
-      background: linear-gradient(135deg, var(--accent2), var(--accent));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700; color: #fff;
+      width:32px; height:32px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,var(--accent2),var(--accent));
+      display:flex; align-items:center; justify-content:center;
+      font-size:11px; font-weight:700; color:#fff;
     }
-    .eng-name { font-size: 13px; font-weight: 500; line-height: 1.3; }
+    .eng-name { font-size:13px; font-weight:500; line-height:1.3; }
 
-    /* TIMELINE */
-    .timeline-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
-    .col-header {
-      display: flex; border-bottom: 1px solid var(--border);
-      background: var(--surface2); flex-shrink: 0; height: 44px;
-    }
-    .col-header-inner { display: flex; flex: 1; min-width: 0; overflow: hidden; }
-    .col-hdr {
-      flex: 1; display: flex; align-items: center; justify-content: center;
-      border-right: 1px solid var(--border); font-size: 12px; font-weight: 600;
-      color: var(--text-muted); text-align: center; flex-direction: column; gap: 1px;
-    }
-    .col-hdr.today { color: var(--accent); background: rgba(0,200,150,0.06); }
-    .col-hdr.weekend { color: var(--text-muted); opacity: 0.5; }
+    /* SCROLL AREA (time header + rows) */
+    .scroll-area { flex:1; overflow:auto; position:relative; }
 
-    .timeline-scroll { flex: 1; overflow: auto; }
-    .timeline-body { display: flex; flex-direction: column; }
-
-    /* ROWS */
-    .tl-row { display: flex; border-bottom: 1px solid var(--border); min-height: 80px; flex-shrink: 0; }
-    .tl-cell {
-      flex: 1; border-right: 1px solid rgba(31,45,61,0.7); position: relative;
-      min-height: 80px; padding: 4px;
-      transition: background 0.15s;
+    /* TIME HEADER */
+    .time-header {
+      display:flex; height:var(--time-h); position:sticky; top:0; z-index:50;
+      background:var(--surface2); border-bottom:1px solid var(--border);
     }
-    .tl-cell.weekend { background: rgba(255,255,255,0.01); }
-    .tl-cell.today   { background: rgba(0,200,150,0.03); }
-    .tl-cell.drag-over { background: rgba(0,200,150,0.1) !important; outline: 2px dashed rgba(0,200,150,0.5); outline-offset: -2px; }
-
-    /* JOB CARDS */
-    .job-card {
-      background: var(--surface3); border: 1px solid var(--border);
-      border-left: 3px solid var(--accent); border-radius: 7px;
-      padding: 7px 10px; cursor: grab; user-select: none;
-      transition: box-shadow 0.2s, transform 0.15s; margin-bottom: 4px;
+    /* Day view: 9 hours × --hour-w */
+    .time-header.day-mode { width:calc(var(--hour-w) * 9); min-width:calc(var(--hour-w) * 9); }
+    .t-hdr-cell {
+      flex-shrink:0; width:var(--hour-w); display:flex; align-items:center; justify-content:center;
+      border-right:1px solid var(--border); font-size:11px; font-weight:600; color:var(--text-muted);
+      letter-spacing:.3px;
     }
-    .job-card:last-child { margin-bottom: 0; }
-    .job-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.5); border-color: rgba(0,200,150,0.4); z-index: 10; position: relative; }
-    .job-card.dragging { opacity: 0.5; cursor: grabbing; }
-    .jc-type { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .jc-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-    .jc-id   { font-size: 10px; color: var(--accent); font-family: "Syne", sans-serif; font-weight: 700; margin-top: 2px; }
+    /* Week view: 7 cols flexible */
+    .time-header.week-mode { width:100%; }
+    .t-hdr-cell.week-cell { flex:1; width:auto; }
+    .t-hdr-cell.today-col { color:var(--accent); background:rgba(0,200,150,.05); }
+    .t-hdr-cell.weekend   { opacity:.5; }
+
+    /* ROWS CONTAINER */
+    .rows-wrap { position:relative; }
+    /* Day mode: fixed width */
+    .rows-wrap.day-mode { width:calc(var(--hour-w) * 9); }
+
+    /* HOUR GRID LINES (day view) */
+    .hour-grid {
+      position:absolute; top:0; left:0; right:0; bottom:0; pointer-events:none; z-index:0;
+      display:flex;
+    }
+    .hg-col {
+      flex-shrink:0; width:var(--hour-w); border-right:1px solid rgba(31,45,61,.6); height:100%;
+    }
+
+    /* ENGINEER ROWS */
+    .eng-tl-row {
+      height:var(--row-h); display:flex; border-bottom:1px solid var(--border);
+      position:relative;
+    }
+    /* Day mode: one big cell, cards positioned absolutely */
+    .eng-tl-row.day-mode { width:calc(var(--hour-w) * 9); }
+
+    /* WEEK MODE: cells */
+    .week-cell-drop {
+      flex:1; border-right:1px solid rgba(31,45,61,.6); position:relative;
+      transition:background .15s; padding:4px;
+    }
+    .week-cell-drop.today-col { background:rgba(0,200,150,.03); }
+    .week-cell-drop.weekend   { background:rgba(255,255,255,.01); }
+    .week-cell-drop.drag-over { background:rgba(0,200,150,.1)!important; outline:2px dashed rgba(0,200,150,.5); outline-offset:-2px; }
+
+    /* DAY MODE DROP OVERLAY */
+    .day-drop-overlay {
+      position:absolute; top:0; bottom:0; display:flex; z-index:1;
+    }
+    .day-hour-drop {
+      flex-shrink:0; width:var(--hour-w); height:100%;
+      border-right:1px dashed transparent; transition:background .12s;
+    }
+    .day-hour-drop.drag-over { background:rgba(0,200,150,.12); border-color:rgba(0,200,150,.4); }
+
+    /* JOB CARDS — DAY VIEW (absolute positioned) */
+    .job-card-day {
+      position:absolute; top:8px; bottom:8px;
+      background:var(--surface3); border:1px solid var(--border);
+      border-top:3px solid var(--accent); border-radius:7px;
+      padding:5px 8px; cursor:grab; user-select:none; z-index:10;
+      overflow:hidden; transition:box-shadow .2s, opacity .15s;
+      display:flex; flex-direction:column; justify-content:space-between;
+    }
+    .job-card-day:hover { box-shadow:0 4px 20px rgba(0,0,0,.6); z-index:20; border-color:rgba(0,200,150,.5); }
+    .job-card-day.dragging { opacity:.45; cursor:grabbing; }
+
+    /* JOB CARDS — WEEK VIEW (stacked) */
+    .job-card-week {
+      background:var(--surface3); border:1px solid var(--border);
+      border-left:3px solid var(--accent); border-radius:6px;
+      padding:5px 8px; cursor:grab; user-select:none; margin-bottom:3px;
+      transition:box-shadow .2s; overflow:hidden;
+    }
+    .job-card-week:last-child { margin-bottom:0; }
+    .job-card-week:hover { box-shadow:0 3px 12px rgba(0,0,0,.5); }
+    .job-card-week.dragging { opacity:.4; }
+
+    .jc-customer { font-size:12px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .jc-type     { font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .jc-bottom   { display:flex; justify-content:space-between; align-items:center; margin-top:2px; }
+    .jc-post     { font-size:10px; color:var(--text-muted); }
+    .jc-id       { font-size:10px; color:var(--accent); font-family:"Syne",sans-serif; font-weight:700; }
+    .jc-time     { font-size:10px; color:var(--text-muted); margin-top:1px; }
+
+    /* CURRENT TIME LINE */
+    .now-line {
+      position:absolute; top:0; bottom:0; width:2px;
+      background:var(--danger); z-index:30; pointer-events:none;
+    }
+    .now-line::before {
+      content:""; position:absolute; top:50%; left:-4px;
+      width:10px; height:10px; border-radius:50%; background:var(--danger);
+      transform:translateY(-50%);
+    }
 
     /* MODAL */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
-      z-index: 500; display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+      position:fixed; inset:0; background:rgba(0,0,0,.78); backdrop-filter:blur(4px);
+      z-index:500; display:flex; align-items:center; justify-content:center;
+      opacity:0; pointer-events:none; transition:opacity .2s;
     }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-overlay.open { opacity:1; pointer-events:all; }
     .modal {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-      width: 500px; max-width: 94vw; max-height: 88vh; overflow-y: auto;
-      transform: translateY(16px); transition: transform 0.22s;
+      background:var(--surface); border:1px solid var(--border); border-radius:16px;
+      width:500px; max-width:94vw; max-height:88vh; overflow-y:auto;
+      transform:translateY(14px); transition:transform .22s;
     }
-    .modal-overlay.open .modal { transform: translateY(0); }
-    .modal-head { padding: 24px 28px 16px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); }
-    .modal-title { font-family: "Syne", sans-serif; font-size: 20px; font-weight: 700; }
-    .modal-id { font-size: 12px; color: var(--accent); font-family: "Syne", sans-serif; font-weight: 600; margin-top: 4px; }
-    .modal-close {
-      width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border);
-      background: transparent; color: var(--text-muted); cursor: pointer;
-      display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.15s;
-    }
-    .modal-close:hover { border-color: var(--danger); color: var(--danger); }
-    .modal-body { padding: 20px 28px 28px; }
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .detail-field label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 4px; }
-    .detail-field span { font-size: 14px; color: var(--text); }
-    .detail-field.full { grid-column: 1 / -1; }
-    .detail-divider { height: 1px; background: var(--border); margin: 18px 0; grid-column: 1/-1; }
+    .modal-overlay.open .modal { transform:translateY(0); }
+    .modal-head { padding:22px 26px 16px; display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--border); }
+    .modal-title { font-family:"Syne",sans-serif; font-size:19px; font-weight:700; }
+    .modal-id { font-size:12px; color:var(--accent); font-family:"Syne",sans-serif; font-weight:600; margin-top:3px; }
+    .modal-close { width:30px; height:30px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:15px; transition:all .15s; }
+    .modal-close:hover { border-color:var(--danger); color:var(--danger); }
+    .modal-body { padding:18px 26px 26px; }
+    .dg { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .df label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.8px; color:var(--text-muted); display:block; margin-bottom:3px; }
+    .df span { font-size:14px; color:var(--text); }
+    .df.full { grid-column:1/-1; }
+    .ddiv { height:1px; background:var(--border); grid-column:1/-1; }
 
     /* EMPTY */
-    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); text-align: center; padding: 40px; }
-    .empty-icon { font-size: 44px; margin-bottom: 16px; }
-    .empty-state h3 { font-family: "Syne", sans-serif; font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-    .empty-state p { font-size: 13px; line-height: 1.7; }
+    .empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; height:200px; color:var(--text-muted); text-align:center; padding:32px; }
+    .empty-state h3 { font-family:"Syne",sans-serif; font-size:17px; font-weight:700; color:var(--text); margin-bottom:6px; }
 
     /* TOAST */
     #toast {
-      position: fixed; bottom: 20px; right: 20px; z-index: 999; padding: 12px 18px;
-      border-radius: 8px; font-size: 13px; font-weight: 500; background: var(--surface2);
-      border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-      transform: translateY(16px); opacity: 0; transition: all 0.3s; pointer-events: none;
+      position:fixed; bottom:18px; right:18px; z-index:999; padding:11px 16px;
+      border-radius:8px; font-size:13px; font-weight:500; background:var(--surface2);
+      border:1px solid var(--border); box-shadow:0 8px 28px rgba(0,0,0,.4);
+      transform:translateY(14px); opacity:0; transition:all .28s; pointer-events:none;
     }
-    #toast.show { transform: translateY(0); opacity: 1; }
-    #toast.ok  { border-color: rgba(0,200,150,0.4); color: var(--accent); }
-    #toast.err { border-color: rgba(255,77,106,0.4); color: var(--danger); }
+    #toast.show { transform:translateY(0); opacity:1; }
+    #toast.ok  { border-color:rgba(0,200,150,.4); color:var(--accent); }
+    #toast.err { border-color:rgba(255,77,106,.4); color:var(--danger); }
 
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar { width:5px; height:5px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
   </style>
 </head>
 <body>
@@ -211,44 +280,55 @@
 
 <div class="toolbar">
   <div class="date-nav">
-    <button class="date-nav-btn" id="prevBtn">&#8249;</button>
-    <span class="date-label" id="dateLabel">Loading…</span>
-    <button class="date-nav-btn" id="nextBtn">&#8250;</button>
+    <button class="dnb" id="prevBtn">&#8249;</button>
+    <span class="date-lbl" id="dateLbl">Loading…</span>
+    <button class="dnb" id="nextBtn">&#8250;</button>
   </div>
   <input type="date" id="datePicker"/>
-  <button class="btn btn-primary" id="todayBtn">Today</button>
-  <div class="toolbar-sep"></div>
+  <button class="btn btn-accent" id="todayBtn">Today</button>
+  <div class="tsep"></div>
   <button class="btn active" id="btnDay">Day</button>
   <button class="btn" id="btnWeek">Week</button>
-  <div class="toolbar-sep"></div>
-  <span id="jobCountLabel" style="font-size:13px;color:var(--text-muted);"></span>
+  <div class="tsep"></div>
+  <span id="jobCountLbl"></span>
   <button class="btn" id="refreshBtn" style="margin-left:auto;">&#8635; Refresh</button>
 </div>
 
-<div class="loading-bar" id="loadingBar"></div>
-
+<div class="lbar" id="lbar"></div>
 <div class="status-bar">
-  <div class="status-dot loading" id="statusDot"></div>
-  <span id="statusText">Connecting to Firebase…</span>
+  <div class="sdot spin" id="sdot"></div>
+  <span id="stxt">Connecting to Firebase…</span>
 </div>
 
-<div class="schedule-wrap">
-  <div class="engineer-sidebar">
-    <div class="sidebar-header">Engineers</div>
-    <div class="engineer-list" id="engList"></div>
-  </div>
-  <div class="timeline-area">
-    <div class="col-header"><div class="col-header-inner" id="colHeader"></div></div>
-    <div class="timeline-scroll" id="timelineScroll">
-      <div class="timeline-body" id="timelineBody"></div>
+<div class="sched-wrap">
+  <div class="grid-area">
+
+    <!-- Engineer sidebar -->
+    <div class="eng-col">
+      <div class="eng-col-hdr">Engineers</div>
+      <div class="eng-list" id="engList"></div>
     </div>
+
+    <!-- Scrollable timeline -->
+    <div class="scroll-area" id="scrollArea">
+      <div class="time-header day-mode" id="timeHeader"></div>
+      <div class="rows-wrap day-mode" id="rowsWrap">
+        <div class="hour-grid" id="hourGrid"></div>
+        <div id="rowsContainer"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
+<!-- Modal -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-head">
-      <div><div class="modal-title" id="modalTitle"></div><div class="modal-id" id="modalId"></div></div>
+      <div>
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-id"    id="modalId"></div>
+      </div>
       <button class="modal-close" id="modalClose">&#x2715;</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
@@ -258,20 +338,55 @@
 <div id="toast"></div>
 
 <script type="module">
-import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc }
+                           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const cfg = {
-  apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
-  authDomain: "geko-scheduling.firebaseapp.com",
-  projectId: "geko-scheduling",
-  storageBucket: "geko-scheduling.firebasestorage.app",
-  messagingSenderId: "824568732787",
-  appId: "1:824568732787:web:c12db983fd6a5b44b01e06"
+const db = getFirestore(initializeApp({
+  apiKey:"AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
+  authDomain:"geko-scheduling.firebaseapp.com",
+  projectId:"geko-scheduling",
+  storageBucket:"geko-scheduling.firebasestorage.app",
+  messagingSenderId:"824568732787",
+  appId:"1:824568732787:web:c12db983fd6a5b44b01e06"
+}));
+
+// ── Constants ──────────────────────────────────────────────────
+const HOUR_W  = 90;   // px per hour
+const ROW_H   = 72;
+const DAY_START = 8;  // 08:00
+const DAY_END   = 17; // 17:00
+const HOURS   = DAY_END - DAY_START; // 9
+
+// Job type → duration in hours
+const JOB_DURATIONS = {
+  "dual fuel":    2,
+  "single gas":   1.5,
+  "single elec":  1.5,
+  "comms":        0.5,
 };
+function getDuration(jobType) {
+  const k = (jobType||"").toLowerCase().trim();
+  for (const [key, val] of Object.entries(JOB_DURATIONS)) {
+    if (k.includes(key)) return val;
+  }
+  return 1; // default 1 hour
+}
 
-const app = initializeApp(cfg);
-const db  = getFirestore(app);
+// Default start hour based on AM/PM slot
+function defaultStartHour(slot) {
+  if (!slot) return 8;
+  const s = slot.toString().toUpperCase().trim();
+  if (s === "PM") return 13;
+  return 8; // AM or unset
+}
+
+// Card colours by job type
+const COLOURS = ["#00c896","#0084ff","#f59e0b","#ff4d6a","#a855f7","#06b6d4","#f97316","#10b981"];
+function cardColour(jobType) {
+  const h = [...(jobType||"x")].reduce((a,c)=>a+c.charCodeAt(0),0);
+  return COLOURS[h % COLOURS.length];
+}
 
 // ── State ──────────────────────────────────────────────────────
 let allJobs     = [];
@@ -279,353 +394,355 @@ let currentView = "day";
 let currentDate = today0();
 let dragJob     = null;
 
-function today0() { const d = new Date(); d.setHours(0,0,0,0); return d; }
+function today0() { const d=new Date(); d.setHours(0,0,0,0); return d; }
 
 // ── Date helpers ───────────────────────────────────────────────
-// Parse DD/MM/YYYY (UK), YYYY-MM-DD (ISO), M/D/YY (US/Excel) → Date or null
 function parseDate(s) {
   if (!s) return null;
   s = String(s).trim();
-
-  // DD/MM/YYYY  (UK — primary format stored by upload page)
-  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (m) {
-    const d = new Date(+m[3], +m[2]-1, +m[1]);
-    d.setHours(0,0,0,0);
-    return isNaN(d) ? null : d;
-  }
-
-  // YYYY-MM-DD  (ISO)
+  let m;
+  // DD/MM/YYYY
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) { const d=new Date(+m[3],+m[2]-1,+m[1]); d.setHours(0,0,0,0); return isNaN(d)?null:d; }
+  // YYYY-MM-DD
   m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (m) {
-    const d = new Date(+m[1], +m[2]-1, +m[3]);
-    d.setHours(0,0,0,0);
-    return isNaN(d) ? null : d;
-  }
-
-  // M/D/YY or M/D/YYYY  (US Excel fallback)
+  if (m) { const d=new Date(+m[1],+m[2]-1,+m[3]); d.setHours(0,0,0,0); return isNaN(d)?null:d; }
+  // M/D/YY
   m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
-  if (m) {
-    let y = +m[3]; if (y < 100) y += 2000;
-    const d = new Date(y, +m[1]-1, +m[2]);
-    d.setHours(0,0,0,0);
-    return isNaN(d) ? null : d;
-  }
-
-  const d = new Date(s);
-  if (!isNaN(d)) { d.setHours(0,0,0,0); return d; }
+  if (m) { let y=+m[3]; if(y<100)y+=2000; const d=new Date(y,+m[1]-1,+m[2]); d.setHours(0,0,0,0); return isNaN(d)?null:d; }
+  const d=new Date(s); if(!isNaN(d)){d.setHours(0,0,0,0);return d;}
   return null;
 }
-
-function sameDay(a, b) {
-  return a && b &&
-    a.getFullYear()===b.getFullYear() &&
-    a.getMonth()===b.getMonth() &&
-    a.getDate()===b.getDate();
-}
-
-// Store dates in Firebase as DD/MM/YYYY
-function toUKStr(date) {
-  const dd = String(date.getDate()).padStart(2,"0");
-  const mm = String(date.getMonth()+1).padStart(2,"0");
-  return `${dd}/${mm}/${date.getFullYear()}`;
-}
+function sameDay(a,b){ return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+function toUKStr(d){ return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; }
+function fmtTime(h){ const hh=Math.floor(h); const mm=Math.round((h-hh)*60); return `${String(hh).padStart(2,"0")}:${String(mm).padStart(2,"0")}`; }
 
 // ── Column helpers ─────────────────────────────────────────────
 function getCols() {
-  if (currentView === "day") return [new Date(currentDate)];
-  // Week: Mon–Sun
-  const dow  = currentDate.getDay();
-  const diff = dow === 0 ? -6 : 1 - dow;
-  const mon  = new Date(currentDate);
-  mon.setDate(currentDate.getDate() + diff);
-  return Array.from({length:7}, (_,i) => { const d=new Date(mon); d.setDate(mon.getDate()+i); return d; });
+  if (currentView==="day") return [new Date(currentDate)];
+  const dow=currentDate.getDay(), diff=dow===0?-6:1-dow;
+  const mon=new Date(currentDate); mon.setDate(currentDate.getDate()+diff);
+  return Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
 }
 
-// ── Toolbar wiring ─────────────────────────────────────────────
-document.getElementById("prevBtn").addEventListener("click",    () => navigate(-1));
-document.getElementById("nextBtn").addEventListener("click",    () => navigate(1));
-document.getElementById("todayBtn").addEventListener("click",   () => { currentDate = today0(); syncPicker(); render(); });
-document.getElementById("refreshBtn").addEventListener("click", () => loadJobs());
-document.getElementById("btnDay").addEventListener("click",     () => setView("day"));
-document.getElementById("btnWeek").addEventListener("click",    () => setView("week"));
-document.getElementById("datePicker").addEventListener("change", e => {
-  const [y,mo,d] = e.target.value.split("-").map(Number);
-  currentDate = new Date(y, mo-1, d);
-  currentDate.setHours(0,0,0,0);
-  render();
+// ── Wiring ─────────────────────────────────────────────────────
+document.getElementById("prevBtn").addEventListener("click",    ()=>navigate(-1));
+document.getElementById("nextBtn").addEventListener("click",    ()=>navigate(1));
+document.getElementById("todayBtn").addEventListener("click",   ()=>{currentDate=today0();syncPicker();render();});
+document.getElementById("refreshBtn").addEventListener("click", ()=>loadJobs());
+document.getElementById("btnDay").addEventListener("click",     ()=>setView("day"));
+document.getElementById("btnWeek").addEventListener("click",    ()=>setView("week"));
+document.getElementById("datePicker").addEventListener("change",e=>{
+  const [y,mo,d]=e.target.value.split("-").map(Number);
+  currentDate=new Date(y,mo-1,d); currentDate.setHours(0,0,0,0); render();
 });
 document.getElementById("modalClose").addEventListener("click",  closeModal);
-document.getElementById("modalOverlay").addEventListener("click", e => { if (e.target===document.getElementById("modalOverlay")) closeModal(); });
+document.getElementById("modalOverlay").addEventListener("click",e=>{if(e.target===document.getElementById("modalOverlay"))closeModal();});
 
-function navigate(dir) {
-  currentDate.setDate(currentDate.getDate() + dir * (currentView==="week" ? 7 : 1));
-  syncPicker();
-  render();
-}
-
-function setView(v) {
-  currentView = v;
-  document.getElementById("btnDay").classList.toggle("active",  v==="day");
-  document.getElementById("btnWeek").classList.toggle("active", v==="week");
-  render();
-}
-
-function syncPicker() {
-  const y  = currentDate.getFullYear();
-  const mo = String(currentDate.getMonth()+1).padStart(2,"0");
-  const d  = String(currentDate.getDate()).padStart(2,"0");
-  document.getElementById("datePicker").value = `${y}-${mo}-${d}`;
-}
+function navigate(dir){ currentDate.setDate(currentDate.getDate()+dir*(currentView==="week"?7:1)); syncPicker(); render(); }
+function setView(v){ currentView=v; document.getElementById("btnDay").classList.toggle("active",v==="day"); document.getElementById("btnWeek").classList.toggle("active",v==="week"); render(); }
+function syncPicker(){ const y=currentDate.getFullYear(),mo=String(currentDate.getMonth()+1).padStart(2,"0"),d=String(currentDate.getDate()).padStart(2,"0"); document.getElementById("datePicker").value=`${y}-${mo}-${d}`; }
+function setStatus(st,msg){ const dot=document.getElementById("sdot"),txt=document.getElementById("stxt"); dot.className="sdot"+(st==="spin"?" spin":st==="ok"?" ok":" err"); txt.textContent=msg; }
+function setLoading(on){ document.getElementById("lbar").classList.toggle("on",on); }
+function toast(msg,t="ok"){ const el=document.getElementById("toast"); el.textContent=msg; el.className=`show ${t}`; setTimeout(()=>el.className="",3800); }
+function esc(s){ return String(s||"—").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
 // ── Firebase ───────────────────────────────────────────────────
-function setStatus(state, msg) {
-  const dot  = document.getElementById("statusDot");
-  const txt  = document.getElementById("statusText");
-  dot.className = "status-dot" + (state==="loading" ? " loading" : state==="ok" ? " ok" : " err");
-  txt.textContent = msg;
-}
-
-async function loadJobs() {
-  setLoading(true);
-  setStatus("loading", "Loading jobs from Firebase…");
+async function loadJobs(){
+  setLoading(true); setStatus("spin","Loading jobs…");
   try {
-    const snap = await getDocs(collection(db, "uploaded_jobs"));
-    allJobs = [];
-    snap.forEach(d => allJobs.push({ _id: d.id, ...d.data() }));
-
-    // Debug: log what we got
-    console.log(`Loaded ${allJobs.length} jobs from Firebase`);
-    if (allJobs.length > 0) {
-      console.log("Sample job:", JSON.stringify(allJobs[0]));
-      const dates = allJobs.map(j => j.dateOfJob).filter(Boolean);
-      console.log("Sample dates:", dates.slice(0,5));
-    }
-
-    setStatus("ok", `${allJobs.length} jobs loaded`);
-    toast(`${allJobs.length} job${allJobs.length!==1?"s":""} loaded`, "ok");
+    const snap=await getDocs(collection(db,"uploaded_jobs"));
+    allJobs=[];
+    snap.forEach(d=>allJobs.push({_id:d.id,...d.data()}));
+    setStatus("ok",`${allJobs.length} jobs loaded`);
+    toast(`${allJobs.length} job${allJobs.length!==1?"s":""} loaded`,"ok");
     render();
-  } catch(err) {
-    console.error("loadJobs error:", err);
-    setStatus("err", "Firebase error: " + (err.code||err.message));
-    toast("Failed to load jobs — check console (F12)", "err");
+  } catch(e){
+    console.error(e);
+    setStatus("err","Firebase error: "+(e.code||e.message));
+    toast("Failed to load — check Firestore rules","err");
   }
   setLoading(false);
 }
 
-function setLoading(on) {
-  document.getElementById("loadingBar").classList.toggle("loading", on);
-}
-
 // ── Render ─────────────────────────────────────────────────────
-function render() {
-  const cols = getCols();
-  renderColHeader(cols);
+function render(){
+  const cols=getCols();
+  renderHeader(cols);
   renderRows(cols);
-  renderDateLabel(cols);
+  updateLabel(cols);
+  if(currentView==="day") updateNowLine();
 }
 
-function renderDateLabel(cols) {
-  let label;
-  if (currentView === "day") {
-    label = cols[0].toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
-  } else {
-    const a = cols[0].toLocaleDateString("en-GB", { day:"numeric", month:"short" });
-    const b = cols[6].toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
-    label = `${a} – ${b}`;
-  }
-  document.getElementById("dateLabel").textContent = label;
+function updateLabel(cols){
+  document.getElementById("dateLbl").textContent = currentView==="day"
+    ? cols[0].toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"})
+    : `${cols[0].toLocaleDateString("en-GB",{day:"numeric",month:"short"})} – ${cols[6].toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}`;
 }
 
-function renderColHeader(cols) {
-  const hdr = document.getElementById("colHeader");
-  hdr.innerHTML = "";
-  const todayD = today0();
-  cols.forEach(col => {
-    const div = document.createElement("div");
-    div.className = "col-hdr";
-    const dow = col.getDay();
-    if (dow===0||dow===6) div.classList.add("weekend");
-    if (sameDay(col, todayD)) div.classList.add("today");
-    if (currentView==="week") {
-      div.innerHTML = `<span style="font-size:10px;text-transform:uppercase;letter-spacing:1px">${col.toLocaleDateString("en-GB",{weekday:"short"})}</span><span style="font-size:16px;font-weight:700;font-family:Syne,sans-serif">${col.getDate()}</span>`;
-    } else {
-      div.textContent = col.toLocaleDateString("en-GB", { weekday:"long", day:"numeric", month:"long" });
+function renderHeader(cols){
+  const hdr=document.getElementById("timeHeader");
+  hdr.innerHTML="";
+  const todayD=today0();
+
+  if(currentView==="day"){
+    hdr.className="time-header day-mode";
+    hdr.style.width=`${HOUR_W*HOURS}px`;
+    for(let h=DAY_START;h<DAY_END;h++){
+      const c=document.createElement("div");
+      c.className="t-hdr-cell";
+      c.style.width=HOUR_W+"px";
+      c.textContent=`${String(h).padStart(2,"0")}:00`;
+      hdr.appendChild(c);
     }
-    hdr.appendChild(div);
-  });
+  } else {
+    hdr.className="time-header week-mode";
+    hdr.style.width="";
+    cols.forEach(col=>{
+      const c=document.createElement("div");
+      c.className="t-hdr-cell week-cell";
+      const dow=col.getDay();
+      if(dow===0||dow===6) c.classList.add("weekend");
+      if(sameDay(col,todayD)) c.classList.add("today-col");
+      c.innerHTML=`<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px">${col.toLocaleDateString("en-GB",{weekday:"short"})}</div><div style="font-size:16px;font-weight:700;font-family:Syne,sans-serif">${col.getDate()}</div>`;
+      hdr.appendChild(c);
+    });
+  }
 }
 
-function renderRows(cols) {
-  const todayD = today0();
+function renderRows(cols){
+  const todayD=today0();
+  const engSet=new Set(allJobs.map(j=>j.engineerName).filter(Boolean));
+  const engineers=[...engSet].sort((a,b)=>a.localeCompare(b));
 
-  // Unique engineers sorted A→Z from ALL jobs
-  const engSet = new Set(allJobs.map(j => j.engineerName).filter(Boolean));
-  const engineers = [...engSet].sort((a,b) => a.localeCompare(b));
-
-  // Jobs visible in current date range
-  const visibleJobs = allJobs.filter(j => {
-    const jd = parseDate(j.dateOfJob);
-    if (!jd) return false;
-    return cols.some(c => sameDay(c, jd));
+  const visibleJobs=allJobs.filter(j=>{
+    const jd=parseDate(j.dateOfJob); if(!jd) return false;
+    return cols.some(c=>sameDay(c,jd));
   });
 
-  document.getElementById("jobCountLabel").textContent =
-    `${visibleJobs.length} job${visibleJobs.length!==1?"s":""} in view  •  ${allJobs.length} total`;
+  document.getElementById("jobCountLbl").textContent=`${visibleJobs.length} job${visibleJobs.length!==1?"s":""} in view • ${allJobs.length} total`;
 
   // Sidebar
-  const engList = document.getElementById("engList");
-  engList.innerHTML = "";
+  const engList=document.getElementById("engList");
+  engList.innerHTML="";
 
-  if (engineers.length === 0) {
-    engList.innerHTML = `<div style="padding:20px 14px;color:var(--text-muted);font-size:13px;text-align:center;line-height:1.6">No engineers found.<br/>Upload job data first.</div>`;
-    document.getElementById("timelineBody").innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">📭</div>
-        <h3>No Jobs Found</h3>
-        <p>Upload jobs using the Data Upload page,<br/>or try a different date.</p>
-      </div>`;
+  const rowsWrap=document.getElementById("rowsWrap");
+  const rowsCont=document.getElementById("rowsContainer");
+  const hourGrid=document.getElementById("hourGrid");
+  rowsCont.innerHTML="";
+
+  if(engineers.length===0){
+    engList.innerHTML=`<div style="padding:20px 14px;color:var(--text-muted);font-size:13px;text-align:center;line-height:1.7">No engineers found.<br/>Upload jobs first.</div>`;
+    rowsCont.innerHTML=`<div class="empty-state"><h3>No Jobs Found</h3><p style="font-size:13px;color:var(--text-muted)">Upload job data first or try a different date.</p></div>`;
     return;
   }
 
-  engineers.forEach(eng => {
-    const row = document.createElement("div");
-    row.className = "eng-row";
-    const initials = eng.split(" ").map(w=>w[0]||"").join("").toUpperCase().slice(0,2);
-    row.innerHTML = `<div class="eng-avatar">${initials}</div><div class="eng-name">${eng}</div>`;
-    engList.appendChild(row);
+  // Hour grid lines (day view only)
+  hourGrid.innerHTML="";
+  if(currentView==="day"){
+    rowsWrap.className="rows-wrap day-mode";
+    rowsWrap.style.width=`${HOUR_W*HOURS}px`;
+    for(let i=0;i<HOURS;i++){
+      const c=document.createElement("div"); c.className="hg-col"; hourGrid.appendChild(c);
+    }
+  } else {
+    rowsWrap.className="rows-wrap";
+    rowsWrap.style.width="";
+  }
+
+  // Sync sidebar scroll with scroll area
+  const scrollArea=document.getElementById("scrollArea");
+  scrollArea.onscroll=()=>{ engList.scrollTop=scrollArea.scrollTop; };
+
+  engineers.forEach(eng=>{
+    // Sidebar row
+    const sr=document.createElement("div"); sr.className="eng-row";
+    const init=eng.split(" ").map(w=>w[0]||"").join("").toUpperCase().slice(0,2);
+    sr.innerHTML=`<div class="eng-avatar">${init}</div><div class="eng-name">${eng}</div>`;
+    engList.appendChild(sr);
+
+    const engJobs=visibleJobs.filter(j=>j.engineerName===eng);
+
+    // Timeline row
+    const row=document.createElement("div");
+    row.className="eng-tl-row"+(currentView==="day"?" day-mode":"");
+    row.style.height=ROW_H+"px";
+
+    if(currentView==="day"){
+      row.style.width=`${HOUR_W*HOURS}px`;
+      // Drop zones per half-hour slot
+      const dropOverlay=document.createElement("div");
+      dropOverlay.className="day-drop-overlay";
+      dropOverlay.style.width=`${HOUR_W*HOURS}px`;
+
+      for(let h=DAY_START;h<DAY_END;h++){
+        // Full hour drop zone
+        const dz=document.createElement("div");
+        dz.className="day-hour-drop";
+        dz.style.width=HOUR_W+"px";
+        dz.dataset.engineer=eng;
+        dz.dataset.hour=h;
+        dz.dataset.date=toUKStr(cols[0]);
+        dz.addEventListener("dragover",e=>{e.preventDefault();dz.classList.add("drag-over");});
+        dz.addEventListener("dragleave",()=>dz.classList.remove("drag-over"));
+        dz.addEventListener("drop",e=>handleDrop(e,dz.dataset.engineer,dz.dataset.date,+dz.dataset.hour));
+        dropOverlay.appendChild(dz);
+      }
+      row.appendChild(dropOverlay);
+
+      // Job cards positioned by start time
+      const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),cols[0]));
+      dayJobs.forEach(job=>{
+        const startH=job.startHour!=null ? +job.startHour : defaultStartHour(job.timeSlot);
+        const dur=getDuration(job.jobType);
+        const left=(startH-DAY_START)*HOUR_W;
+        const width=dur*HOUR_W-4;
+        const card=makeCardDay(job,left,width);
+        row.appendChild(card);
+      });
+
+    } else {
+      // Week view — one drop cell per day
+      cols.forEach(col=>{
+        const cell=document.createElement("div");
+        cell.className="week-cell-drop";
+        const dow=col.getDay();
+        if(dow===0||dow===6) cell.classList.add("weekend");
+        if(sameDay(col,todayD)) cell.classList.add("today-col");
+        cell.dataset.engineer=eng;
+        cell.dataset.date=toUKStr(col);
+        cell.addEventListener("dragover",e=>{e.preventDefault();cell.classList.add("drag-over");});
+        cell.addEventListener("dragleave",()=>cell.classList.remove("drag-over"));
+        cell.addEventListener("drop",e=>handleDrop(e,cell.dataset.engineer,cell.dataset.date,null));
+
+        const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),col));
+        dayJobs.forEach(job=>cell.appendChild(makeCardWeek(job)));
+        row.appendChild(cell);
+      });
+    }
+
+    rowsCont.appendChild(row);
   });
 
-  // Timeline body — sync scroll with sidebar
-  const body = document.getElementById("timelineBody");
-  body.innerHTML = "";
-
-  const scroll = document.getElementById("timelineScroll");
-  scroll.onscroll = () => { engList.scrollTop = scroll.scrollTop; };
-
-  engineers.forEach(eng => {
-    const engJobs = visibleJobs.filter(j => j.engineerName === eng);
-    const row = document.createElement("div");
-    row.className = "tl-row";
-
-    cols.forEach(col => {
-      const cell = document.createElement("div");
-      cell.className = "tl-cell";
-      const dow = col.getDay();
-      if (dow===0||dow===6) cell.classList.add("weekend");
-      if (sameDay(col, todayD)) cell.classList.add("today");
-
-      // Store date as DD/MM/YYYY so it matches Firebase format
-      cell.dataset.date = toUKStr(col);
-      cell.dataset.engineer = eng;
-
-      // Add job cards for this cell
-      const dayJobs = engJobs.filter(j => sameDay(parseDate(j.dateOfJob), col));
-      dayJobs.forEach(job => cell.appendChild(makeCard(job)));
-
-      // Drop target
-      cell.addEventListener("dragover",  e => { e.preventDefault(); cell.classList.add("drag-over"); });
-      cell.addEventListener("dragleave", () => cell.classList.remove("drag-over"));
-      cell.addEventListener("drop",      e => handleDrop(e, cell));
-
-      row.appendChild(cell);
-    });
-
-    body.appendChild(row);
-  });
+  if(currentView==="day") updateNowLine();
 }
 
 // ── Job cards ──────────────────────────────────────────────────
-const CARD_COLOURS = ["#00c896","#0084ff","#f59e0b","#ff4d6a","#a855f7","#06b6d4","#10b981","#f97316"];
-
-function makeCard(job) {
-  const card = document.createElement("div");
-  card.className = "job-card";
-  card.draggable = true;
-
-  // Colour by job type
-  const hash = [...(job.jobType||"a")].reduce((a,c) => a+c.charCodeAt(0), 0);
-  card.style.borderLeftColor = CARD_COLOURS[hash % CARD_COLOURS.length];
-
-  card.innerHTML = `
-    <div class="jc-type">${esc(job.jobType)}</div>
-    <div class="jc-meta">${esc(job.postcode)}</div>
-    <div class="jc-id">${esc(job.jobId || job._id)}</div>
-  `;
-
-  card.addEventListener("dragstart", e => {
-    dragJob = job;
-    card.classList.add("dragging");
-    e.dataTransfer.effectAllowed = "move";
-  });
-  card.addEventListener("dragend", () => card.classList.remove("dragging"));
-  card.addEventListener("click",   e => { e.stopPropagation(); openModal(job); });
-
+function makeCardDay(job,left,width){
+  const col=cardColour(job.jobType);
+  const startH=job.startHour!=null?+job.startHour:defaultStartHour(job.timeSlot);
+  const dur=getDuration(job.jobType);
+  const card=document.createElement("div");
+  card.className="job-card-day";
+  card.style.left=left+"px";
+  card.style.width=width+"px";
+  card.style.borderTopColor=col;
+  card.draggable=true;
+  card.innerHTML=`
+    <div>
+      <div class="jc-customer">${esc(job.customerName)}</div>
+      <div class="jc-type">${esc(job.jobType)}</div>
+      <div class="jc-time">${fmtTime(startH)} – ${fmtTime(startH+dur)}</div>
+    </div>
+    <div class="jc-bottom">
+      <span class="jc-post">${esc(job.postcode)}</span>
+      <span class="jc-id">${esc(job.jobId||job._id)}</span>
+    </div>`;
+  card.addEventListener("dragstart",e=>{dragJob=job;card.classList.add("dragging");e.dataTransfer.effectAllowed="move";});
+  card.addEventListener("dragend",()=>card.classList.remove("dragging"));
+  card.addEventListener("click",e=>{e.stopPropagation();openModal(job);});
   return card;
 }
 
+function makeCardWeek(job){
+  const col=cardColour(job.jobType);
+  const card=document.createElement("div");
+  card.className="job-card-week";
+  card.style.borderLeftColor=col;
+  card.draggable=true;
+  card.innerHTML=`
+    <div class="jc-customer">${esc(job.customerName)}</div>
+    <div class="jc-type">${esc(job.jobType)}</div>
+    <div class="jc-bottom">
+      <span class="jc-post">${esc(job.postcode)}</span>
+      <span class="jc-id">${esc(job.jobId||job._id)}</span>
+    </div>`;
+  card.addEventListener("dragstart",e=>{dragJob=job;card.classList.add("dragging");e.dataTransfer.effectAllowed="move";});
+  card.addEventListener("dragend",()=>card.classList.remove("dragging"));
+  card.addEventListener("click",e=>{e.stopPropagation();openModal(job);});
+  return card;
+}
+
+// ── Now line ───────────────────────────────────────────────────
+function updateNowLine(){
+  const existing=document.getElementById("nowLine");
+  if(existing) existing.remove();
+  if(!sameDay(currentDate,today0())) return;
+  const now=new Date();
+  const h=now.getHours()+(now.getMinutes()/60);
+  if(h<DAY_START||h>DAY_END) return;
+  const left=(h-DAY_START)*HOUR_W;
+  const line=document.createElement("div");
+  line.id="nowLine"; line.className="now-line";
+  line.style.left=left+"px";
+  line.style.top="0"; line.style.height="100%";
+  document.getElementById("rowsWrap").appendChild(line);
+}
+setInterval(()=>{ if(currentView==="day") updateNowLine(); },60000);
+
 // ── Drag & Drop ────────────────────────────────────────────────
-async function handleDrop(e, cell) {
+async function handleDrop(e,newEngineer,newDate,newHour){
   e.preventDefault();
-  cell.classList.remove("drag-over");
-  if (!dragJob) return;
+  // Clear all drag-over highlights
+  document.querySelectorAll(".drag-over").forEach(el=>el.classList.remove("drag-over"));
+  if(!dragJob){ return; }
 
-  const newEngineer = cell.dataset.engineer;
-  const newDate     = cell.dataset.date; // DD/MM/YYYY
+  const updates={};
+  if(newEngineer!==dragJob.engineerName) updates.engineerName=newEngineer;
+  if(newDate!==dragJob.dateOfJob)        updates.dateOfJob=newDate;
+  if(newHour!=null)                      updates.startHour=newHour;
 
-  if (newEngineer === dragJob.engineerName && newDate === dragJob.dateOfJob) {
-    dragJob = null; return;
-  }
+  if(Object.keys(updates).length===0){ dragJob=null; return; }
 
   try {
-    await updateDoc(doc(db, "uploaded_jobs", dragJob._id), {
-      engineerName: newEngineer,
-      dateOfJob: newDate
-    });
-    const idx = allJobs.findIndex(j => j._id === dragJob._id);
-    if (idx >= 0) { allJobs[idx].engineerName = newEngineer; allJobs[idx].dateOfJob = newDate; }
-    toast(`Moved to ${newEngineer} on ${newDate}`, "ok");
+    await updateDoc(doc(db,"uploaded_jobs",dragJob._id),updates);
+    const idx=allJobs.findIndex(j=>j._id===dragJob._id);
+    if(idx>=0) Object.assign(allJobs[idx],updates);
+    const timeStr=newHour!=null?` at ${fmtTime(newHour)}`:"";
+    toast(`Moved to ${newEngineer} on ${newDate}${timeStr}`,"ok");
     render();
-  } catch(err) {
-    console.error("Drop update error:", err);
-    toast("Failed to save change: " + (err.code||err.message), "err");
+  } catch(err){
+    console.error(err);
+    toast("Save failed: "+(err.code||err.message),"err");
   }
-  dragJob = null;
+  dragJob=null;
 }
 
 // ── Modal ──────────────────────────────────────────────────────
-function openModal(job) {
-  document.getElementById("modalTitle").textContent = job.jobType || "Job Details";
-  document.getElementById("modalId").textContent    = job.jobId || job._id;
-  document.getElementById("modalBody").innerHTML = `
-    <div class="detail-grid">
-      <div class="detail-field"><label>Customer Name</label><span>${esc(job.customerName)}</span></div>
-      <div class="detail-field"><label>Contact Number</label><span>${esc(job.contactNumber)}</span></div>
-      <div class="detail-field full"><label>Address</label><span>${esc(job.address)}</span></div>
-      <div class="detail-field"><label>Postcode</label><span>${esc(job.postcode)}</span></div>
-      <div class="detail-field"><label>Job Type</label><span>${esc(job.jobType)}</span></div>
-      <div class="detail-field"><label>Engineer</label><span>${esc(job.engineerName)}</span></div>
-      <div class="detail-field"><label>Date of Job</label><span>${esc(job.dateOfJob)}</span></div>
-      <div class="detail-field"><label>Job ID</label><span style="color:var(--accent);font-weight:700;font-family:Syne,sans-serif">${esc(job.jobId||job._id)}</span></div>
-      <div class="detail-divider"></div>
-      <div class="detail-field"><label>Status</label><span>${esc(job.status||"unassigned")}</span></div>
-      <div class="detail-field"><label>Uploaded</label><span>${job.uploadedAt ? new Date(job.uploadedAt).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}) : "—"}</span></div>
-    </div>
-  `;
+function openModal(job){
+  const startH=job.startHour!=null?+job.startHour:defaultStartHour(job.timeSlot);
+  const dur=getDuration(job.jobType);
+  document.getElementById("modalTitle").textContent=job.jobType||"Job Details";
+  document.getElementById("modalId").textContent=job.jobId||job._id;
+  document.getElementById("modalBody").innerHTML=`
+    <div class="dg">
+      <div class="df"><label>Customer Name</label><span>${esc(job.customerName)}</span></div>
+      <div class="df"><label>Contact Number</label><span>${esc(job.contactNumber)}</span></div>
+      <div class="df full"><label>Address</label><span>${esc(job.address)}</span></div>
+      <div class="df"><label>Postcode</label><span>${esc(job.postcode)}</span></div>
+      <div class="df"><label>Job Type</label><span>${esc(job.jobType)}</span></div>
+      <div class="df"><label>Engineer</label><span>${esc(job.engineerName)}</span></div>
+      <div class="df"><label>Date</label><span>${esc(job.dateOfJob)}</span></div>
+      <div class="df"><label>Time Slot</label><span>${esc(job.timeSlot||"—")}</span></div>
+      <div class="df"><label>Scheduled Time</label><span>${fmtTime(startH)} – ${fmtTime(startH+dur)} (${dur}h)</span></div>
+      <div class="df"><label>Job ID</label><span style="color:var(--accent);font-weight:700;font-family:Syne,sans-serif">${esc(job.jobId||job._id)}</span></div>
+      <div class="ddiv"></div>
+      <div class="df"><label>Status</label><span>${esc(job.status||"unassigned")}</span></div>
+      <div class="df"><label>Uploaded</label><span>${job.uploadedAt?new Date(job.uploadedAt).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}):"—"}</span></div>
+    </div>`;
   document.getElementById("modalOverlay").classList.add("open");
 }
-
-function closeModal() { document.getElementById("modalOverlay").classList.remove("open"); }
-
-// ── Utilities ──────────────────────────────────────────────────
-function esc(s) { return String(s||"—").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-
-function toast(msg, type="ok") {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.className = `show ${type}`;
-  setTimeout(() => { t.className = ""; }, 3800);
-}
+function closeModal(){ document.getElementById("modalOverlay").classList.remove("open"); }
 
 // ── Boot ───────────────────────────────────────────────────────
 syncPicker();
