@@ -128,8 +128,8 @@
       display:flex; height:var(--time-h); position:sticky; top:0; z-index:50;
       background:var(--surface2); border-bottom:1px solid var(--border);
     }
-    /* Day view: 9 hours × --hour-w */
-    .time-header.day-mode { width:calc(var(--hour-w) * 9); min-width:calc(var(--hour-w) * 9); }
+    /* Day view: width set dynamically by JS */
+    .time-header.day-mode { min-width: 0; }
     .t-hdr-cell {
       flex-shrink:0; width:var(--hour-w); display:flex; align-items:center; justify-content:center;
       border-right:1px solid var(--border); font-size:11px; font-weight:600; color:var(--text-muted);
@@ -143,8 +143,8 @@
 
     /* ROWS CONTAINER */
     .rows-wrap { position:relative; }
-    /* Day mode: fixed width */
-    .rows-wrap.day-mode { width:calc(var(--hour-w) * 9); }
+    /* Day mode: width set dynamically by JS */
+    .rows-wrap.day-mode { min-width: 0; }
 
     /* HOUR GRID LINES (day view) */
     .hour-grid {
@@ -160,8 +160,8 @@
       height:var(--row-h); display:flex; border-bottom:1px solid var(--border);
       position:relative;
     }
-    /* Day mode: one big cell, cards positioned absolutely */
-    .eng-tl-row.day-mode { width:calc(var(--hour-w) * 9); }
+    /* Day mode row: width set by JS */
+    .eng-tl-row.day-mode { min-width: 0; }
 
     /* WEEK MODE: cells */
     .week-cell-drop {
@@ -243,8 +243,8 @@
     .job-card-week:hover { box-shadow:0 3px 12px rgba(0,0,0,.5); }
     .job-card-week.dragging { opacity:.4; }
 
-    .jc-customer { font-size:12px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .jc-type     { font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .jc-customer { font-size:10px; font-weight:500; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .jc-type     { font-size:12px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; }
     .jc-bottom   { display:flex; justify-content:space-between; align-items:center; margin-top:2px; }
     .jc-post     { font-size:10px; color:var(--text-muted); }
     .jc-id       { font-size:10px; color:var(--accent); font-family:"Syne",sans-serif; font-weight:700; }
@@ -390,11 +390,21 @@ const db = getFirestore(initializeApp({
 }));
 
 // ── Constants ──────────────────────────────────────────────────
-const HOUR_W  = 160;   // px per hour — matches --hour-w CSS var
-const ROW_H   = 72;
-const DAY_START = 8;  // 08:00
-const DAY_END   = 17; // 17:00
-const HOURS   = DAY_END - DAY_START; // 9
+const HOUR_W    = 160;
+const ROW_H     = 72;
+const DAY_START = 8;
+const DAY_END_MIN = 17; // minimum — expands when jobs run later
+
+// Dynamic end hour: scan visible jobs and extend if any finish after DAY_END_MIN
+function calcDayEnd(visibleJobs) {
+  let end = DAY_END_MIN;
+  visibleJobs.forEach(j => {
+    const s = j.startHour != null ? +j.startHour : defaultStartHour(j.timeSlot);
+    const finish = s + getDuration(j.jobType);
+    if (finish > end) end = Math.ceil(finish) + 0.5; // add half-hour breathing room
+  });
+  return end;
+}
 
 // Job type → duration in hours
 const JOB_DURATIONS = {
@@ -506,10 +516,16 @@ async function loadJobs(){
 // ── Render ─────────────────────────────────────────────────────
 function render(){
   const cols=getCols();
-  renderHeader(cols);
-  renderRows(cols);
+  // For day view, compute dynamic end based on visible jobs
+  const visibleForEnd = allJobs.filter(j => {
+    const jd=parseDate(j.dateOfJob); if(!jd) return false;
+    return cols.some(c=>sameDay(c,jd));
+  });
+  const dayEnd = currentView==="day" ? calcDayEnd(visibleForEnd) : DAY_END_MIN;
+  renderHeader(cols, dayEnd);
+  renderRows(cols, dayEnd);
   updateLabel(cols);
-  if(currentView==="day") updateNowLine();
+  if(currentView==="day") updateNowLine(dayEnd);
 }
 
 function updateLabel(cols){
@@ -518,15 +534,16 @@ function updateLabel(cols){
     : `${cols[0].toLocaleDateString("en-GB",{day:"numeric",month:"short"})} – ${cols[6].toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}`;
 }
 
-function renderHeader(cols){
+function renderHeader(cols, dayEnd=DAY_END_MIN){
   const hdr=document.getElementById("timeHeader");
   hdr.innerHTML="";
   const todayD=today0();
+  const hours = dayEnd - DAY_START;
 
   if(currentView==="day"){
     hdr.className="time-header day-mode";
-    hdr.style.width=`${HOUR_W*HOURS}px`;
-    for(let h=DAY_START;h<DAY_END;h++){
+    hdr.style.width=`${HOUR_W*hours}px`;
+    for(let h=DAY_START;h<dayEnd;h++){
       const c=document.createElement("div");
       c.className="t-hdr-cell";
       c.style.width=HOUR_W+"px";
@@ -534,11 +551,9 @@ function renderHeader(cols){
       c.style.position="relative";
       c.style.display="flex";
       c.style.alignItems="stretch";
-      // Full hour label (left half)
       const full=document.createElement("div");
       full.style.cssText="flex:1;display:flex;align-items:center;justify-content:center;border-right:1px solid rgba(31,45,61,.5);font-size:11px;font-weight:600;";
       full.textContent=`${String(h).padStart(2,"0")}:00`;
-      // Half hour label (right half)
       const half=document.createElement("div");
       half.style.cssText="flex:1;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-muted);opacity:.7;";
       half.textContent=`${String(h).padStart(2,"0")}:30`;
@@ -560,7 +575,8 @@ function renderHeader(cols){
   }
 }
 
-function renderRows(cols){
+function renderRows(cols, dayEnd=DAY_END_MIN){
+  const hours = dayEnd - DAY_START;
   const todayD=today0();
   const engSet=new Set(allJobs.map(j=>j.engineerName).filter(Boolean));
   const engineers=[...engSet].sort((a,b)=>a.localeCompare(b));
@@ -591,8 +607,8 @@ function renderRows(cols){
   hourGrid.innerHTML="";
   if(currentView==="day"){
     rowsWrap.className="rows-wrap day-mode";
-    rowsWrap.style.width=`${HOUR_W*HOURS}px`;
-    for(let i=0;i<HOURS;i++){
+    rowsWrap.style.width=`${HOUR_W*hours}px`;
+    for(let i=0;i<hours;i++){
       const c=document.createElement("div"); c.className="hg-col"; hourGrid.appendChild(c);
     }
   } else {
@@ -619,13 +635,13 @@ function renderRows(cols){
     row.style.height=ROW_H+"px";
 
     if(currentView==="day"){
-      row.style.width=`${HOUR_W*HOURS}px`;
+      row.style.width=`${HOUR_W*hours}px`;
       // Drop zones per half-hour slot
       const dropOverlay=document.createElement("div");
       dropOverlay.className="day-drop-overlay";
-      dropOverlay.style.width=`${HOUR_W*HOURS}px`;
+      dropOverlay.style.width=`${HOUR_W*hours}px`;
 
-      for(let h=DAY_START;h<DAY_END;h++){
+      for(let h=DAY_START;h<dayEnd;h++){
         // Two half-hour slots per hour
         [0, 0.5].forEach(half => {
           const dz=document.createElement("div");
@@ -701,8 +717,8 @@ function makeCardDay(job,left,width){
 
   card.innerHTML=`
     <div style="overflow:hidden;">
-      <div class="jc-customer" style="font-size:${isNarrow?'10px':'12px'}">${esc(job.customerName)}</div>
-      ${isNarrow ? '' : `<div class="jc-type">${esc(job.jobType)}</div>`}
+      <div class="jc-customer">${esc(job.customerName)}</div>
+      <div class="jc-type" style="font-size:${isNarrow?'10px':'12px'}">${esc(job.jobType)}</div>
       <div class="jc-time" style="font-size:${isNarrow?'9px':'10px'}">${fmtTime(startH)}–${fmtTime(startH+dur)}</div>
     </div>
     <div class="jc-bottom">
@@ -744,13 +760,13 @@ function makeCardWeek(job){
 }
 
 // ── Now line ───────────────────────────────────────────────────
-function updateNowLine(){
+function updateNowLine(dayEnd=DAY_END_MIN){
   const existing=document.getElementById("nowLine");
   if(existing) existing.remove();
   if(!sameDay(currentDate,today0())) return;
   const now=new Date();
   const h=now.getHours()+(now.getMinutes()/60);
-  if(h<DAY_START||h>DAY_END) return;
+  if(h<DAY_START||h>dayEnd) return;
   const left=(h-DAY_START)*HOUR_W;
   const line=document.createElement("div");
   line.id="nowLine"; line.className="now-line";
@@ -758,7 +774,7 @@ function updateNowLine(){
   line.style.top="0"; line.style.height="100%";
   document.getElementById("rowsWrap").appendChild(line);
 }
-setInterval(()=>{ if(currentView==="day") updateNowLine(); },60000);
+setInterval(()=>{ if(currentView==="day") render(); },60000);
 
 // ── Drag & Drop ────────────────────────────────────────────────
 async function handleDrop(e,newEngineer,newDate,newHour){
