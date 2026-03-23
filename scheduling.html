@@ -12,7 +12,7 @@
       --border: #1f2d3d; --accent: #00c896; --accent2: #0084ff;
       --text: #e8edf2; --text-muted: #6b7f93; --danger: #ff4d6a; --warning: #f59e0b;
       --eng-w: 160px;
-      --hour-w: 90px;   /* px per hour */
+      --hour-w: 140px;   /* px per hour */
       --row-h: 72px;
       --time-h: 44px;
     }
@@ -352,7 +352,7 @@ const db = getFirestore(initializeApp({
 }));
 
 // ── Constants ──────────────────────────────────────────────────
-const HOUR_W  = 90;   // px per hour
+const HOUR_W  = 140;   // px per hour — matches --hour-w CSS var
 const ROW_H   = 72;
 const DAY_START = 8;  // 08:00
 const DAY_END   = 17; // 17:00
@@ -693,14 +693,14 @@ setInterval(()=>{ if(currentView==="day") updateNowLine(); },60000);
 // ── Drag & Drop ────────────────────────────────────────────────
 async function handleDrop(e,newEngineer,newDate,newHour){
   e.preventDefault();
-  // Clear all drag-over highlights
   document.querySelectorAll(".drag-over").forEach(el=>el.classList.remove("drag-over"));
   if(!dragJob){ return; }
 
   const updates={};
   if(newEngineer!==dragJob.engineerName) updates.engineerName=newEngineer;
   if(newDate!==dragJob.dateOfJob)        updates.dateOfJob=newDate;
-  if(newHour!=null)                      updates.startHour=newHour;
+  // Always update startHour if dropping onto a time slot in day view
+  if(newHour!=null) updates.startHour=newHour;
 
   if(Object.keys(updates).length===0){ dragJob=null; return; }
 
@@ -709,7 +709,7 @@ async function handleDrop(e,newEngineer,newDate,newHour){
     const idx=allJobs.findIndex(j=>j._id===dragJob._id);
     if(idx>=0) Object.assign(allJobs[idx],updates);
     const timeStr=newHour!=null?` at ${fmtTime(newHour)}`:"";
-    toast(`Moved to ${newEngineer} on ${newDate}${timeStr}`,"ok");
+    toast(`Updated: ${newEngineer} · ${newDate}${timeStr}`,"ok");
     render();
   } catch(err){
     console.error(err);
