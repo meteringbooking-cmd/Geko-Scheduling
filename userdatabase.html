@@ -29,7 +29,7 @@
         background: radial-gradient(circle at top left, #101525 0, #05070b 45%, #020308 100%);
         color: var(--text-main);
         min-height: 100vh;
-        overflow: hidden;
+        overflow-x: hidden;
     }
 
     body::before {
@@ -121,14 +121,6 @@
         margin-bottom: 22px;
     }
 
-    .field-label {
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--text-muted);
-        margin-bottom: 4px;
-    }
-
     .input-shell {
         position: relative;
         margin-bottom: 14px;
@@ -143,7 +135,7 @@
         color: var(--text-main);
         font-size: 14px;
         outline: none;
-        transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+        transition: var(--transition-fast);
     }
 
     .input-shell input:focus {
@@ -176,19 +168,12 @@
         letter-spacing: 0.08em;
         text-transform: uppercase;
         cursor: pointer;
-        box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 14px 30px rgba(0,0,0,0.8);
-        transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+        transition: var(--transition-fast);
     }
 
     #login-button:hover {
         transform: translateY(-1px);
         filter: brightness(1.05);
-        box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 18px 40px rgba(0,0,0,0.9);
-    }
-
-    #login-button:active {
-        transform: translateY(1px) scale(0.99);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.8);
     }
 
     #login-error {
@@ -199,241 +184,92 @@
         display: none;
     }
 
-    /* DASHBOARD GRID */
-    #dashboard {
-        display: none;
-        height: 100vh;
-        display: grid;
-        grid-template-columns: 240px minmax(0, 1fr);
-        grid-template-rows: 64px minmax(0, 1fr);
-        grid-template-areas:
-            "sidebar topbar"
-            "sidebar main";
-    }
-
-    /* SIDEBAR */
-    #sidebar {
-        grid-area: sidebar;
-        background: linear-gradient(180deg, rgba(5,10,18,0.98), rgba(3,5,10,0.98));
-        border-right: 1px solid rgba(255,255,255,0.04);
-        box-shadow: 12px 0 40px rgba(0,0,0,0.7);
-        display: flex;
-        flex-direction: column;
-        padding: 16px 14px;
-        position: relative;
-        z-index: 2;
-    }
-
-    #sidebar-logo-row {
-        display: flex;
-        align-items: center;
-        margin-bottom: 22px;
-        padding: 6px 6px 10px;
-        border-bottom: 1px solid rgba(255,255,255,0.04);
-    }
-
-    #sidebar-logo {
-        height: 40px;
-        border-radius: 10px;
-        margin-right: 10px;
-        filter: drop-shadow(0 0 10px rgba(0,255,157,0.7));
-    }
-
-    #sidebar-title {
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.12em;
-        color: var(--text-muted);
-    }
-
-    #sidebar-nav {
-        margin-top: 10px;
-        flex: 1;
-    }
-
-    .nav-item {
-        display: flex;
-        align-items: center;
-        padding: 9px 10px;
-        margin-bottom: 4px;
-        border-radius: 10px;
-        color: var(--text-muted);
-        font-size: 13px;
-        cursor: pointer;
-        transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .nav-item span.icon {
-        font-size: 14px;
-        margin-right: 8px;
-        color: var(--accent-blue);
-    }
-
-    .nav-item.active,
-    .nav-item:hover {
-        background: radial-gradient(circle at left, rgba(0,255,157,0.18), transparent 60%);
-        color: var(--text-main);
-        transform: translateX(2px);
-        box-shadow: 0 0 0 1px rgba(0,255,157,0.25);
-    }
-
-    #sidebar-footer {
-        font-size: 11px;
-        color: var(--text-muted);
-        opacity: 0.7;
-        padding-top: 10px;
-        border-top: 1px solid rgba(255,255,255,0.04);
-    }
-
-    #logout-btn {
-        margin-top: 8px;
-        width: 100%;
-        padding: 8px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.08);
-        background: transparent;
-        color: var(--text-muted);
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.12em;
-        cursor: pointer;
-        transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
-    }
-
-    #logout-btn:hover {
-        border-color: var(--danger);
-        color: #ff9aa5;
-        background: rgba(255,75,92,0.08);
-        box-shadow: 0 0 16px rgba(255,75,92,0.4);
-    }
-
     /* TOPBAR */
     #topbar {
-        grid-area: topbar;
+        width: 100%;
+        padding: 14px 26px;
+        background: rgba(5,10,18,0.9);
+        border-bottom: 1px solid rgba(255,255,255,0.06);
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        padding: 10px 22px;
-        background: linear-gradient(90deg, rgba(5,10,18,0.96), rgba(5,10,18,0.85));
-        border-bottom: 1px solid rgba(255,255,255,0.04);
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 5;
         box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-        z-index: 1;
     }
 
     #topbar-title {
-        font-size: 16px;
-        font-weight: 500;
-        letter-spacing: 0.08em;
+        font-size: 18px;
         text-transform: uppercase;
+        letter-spacing: 0.12em;
     }
 
     #topbar-subtitle {
-        font-size: 11px;
-        color: var(--text-muted);
-        margin-top: 2px;
-    }
-
-    #topbar-right {
         font-size: 12px;
         color: var(--text-muted);
     }
 
     #status-dot {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
+        width: 10px;
+        height: 10px;
         background: var(--accent-green);
+        border-radius: 50%;
         box-shadow: 0 0 10px rgba(0,255,157,0.8);
+        display: inline-block;
         margin-right: 6px;
     }
 
-    /* MAIN */
+    /* MAIN LAYOUT */
     #main {
-        grid-area: main;
-        padding: 18px 22px 22px;
-        overflow: auto;
-        position: relative;
+        padding: 26px;
     }
 
     #main-inner {
-        max-width: 1100px;
-        margin: 0 auto;
         display: grid;
-        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
-        gap: 18px;
-        align-items: flex-start;
+        grid-template-columns: 1fr 1fr;
+        gap: 26px;
+        max-width: 1600px;
+        margin: 0 auto;
     }
 
     .panel {
         border-radius: 18px;
-        background: linear-gradient(135deg, rgba(18,24,38,0.9), rgba(10,14,24,0.9));
+        background: rgba(10,14,24,0.9);
         border: 1px solid rgba(255,255,255,0.06);
-        box-shadow:
-            0 0 0 1px rgba(0,0,0,0.7),
-            0 24px 60px rgba(0,0,0,0.9);
+        padding: 20px;
         backdrop-filter: blur(18px);
-        padding: 18px 18px 16px;
-        position: relative;
-        overflow: hidden;
-        opacity: 1;
-        transform: translateX(0);
-        transition: opacity var(--transition-med), transform var(--transition-med);
-    }
-
-    .panel.hidden-panel {
-        opacity: 0;
-        transform: translateX(20px);
-        pointer-events: none;
-    }
-
-    .panel::before {
-        content: "";
-        position: absolute;
-        inset: -40%;
-        background: radial-gradient(circle at top left, rgba(0,255,157,0.16), transparent 55%),
-                    radial-gradient(circle at bottom right, rgba(0,200,255,0.16), transparent 55%);
-        opacity: 0.5;
-        z-index: -1;
-    }
-
-    .panel-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 10px;
-        gap: 10px;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.7), 0 24px 60px rgba(0,0,0,0.9);
     }
 
     .panel-title {
-        font-size: 14px;
+        font-size: 16px;
         text-transform: uppercase;
         letter-spacing: 0.12em;
-        color: var(--text-main);
+        margin-bottom: 4px;
     }
 
     .panel-subtitle {
-        font-size: 11px;
+        font-size: 12px;
         color: var(--text-muted);
+        margin-bottom: 16px;
     }
 
     /* FORM */
     .form-row {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-        margin-bottom: 10px;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 12px;
     }
 
     .form-field {
         display: flex;
         flex-direction: column;
-        font-size: 12px;
     }
 
     .form-label {
+        font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 0.08em;
         color: var(--text-muted);
@@ -442,174 +278,119 @@
 
     .form-input,
     .form-select {
-        padding: 9px 10px;
+        padding: 10px;
         border-radius: 10px;
         border: 1px solid rgba(255,255,255,0.08);
         background: rgba(5, 8, 16, 0.9);
         color: var(--text-main);
-        font-size: 13px;
+        font-size: 14px;
         outline: none;
-        transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+        transition: var(--transition-fast);
     }
 
     .form-input:focus,
     .form-select:focus {
         border-color: var(--accent-blue);
         box-shadow: 0 0 16px rgba(0,200,255,0.45);
-        background: rgba(8, 12, 22, 0.95);
         transform: translateY(-1px);
     }
 
-    .helper-text {
-        font-size: 11px;
-        color: var(--text-muted);
-        margin-top: 2px;
-    }
-
     #add-user-btn {
-        margin-top: 8px;
-        padding: 9px 16px;
+        margin-top: 10px;
+        padding: 10px 18px;
         border-radius: 999px;
         border: none;
-        background: radial-gradient(circle at left, var(--accent-green), var(--accent-blue));
+        background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
         color: #020308;
-        font-size: 12px;
         font-weight: 600;
         letter-spacing: 0.12em;
         text-transform: uppercase;
         cursor: pointer;
-        align-self: flex-start;
-        box-shadow: 0 0 0 1px rgba(0,0,0,0.7), 0 16px 32px rgba(0,0,0,0.9);
-        transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+        transition: var(--transition-fast);
     }
 
     #add-user-btn:hover {
         transform: translateY(-1px);
         filter: brightness(1.05);
-        box-shadow: 0 0 0 1px rgba(0,0,0,0.7), 0 20px 40px rgba(0,0,0,1);
     }
 
-    #add-user-btn:active {
-        transform: translateY(1px) scale(0.99);
-        box-shadow: 0 10px 24px rgba(0,0,0,0.9);
-    }
-
-    /* USER LIST CONTROLS */
+    /* USER DIRECTORY */
     #user-controls {
         display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: flex-end;
-        align-items: center;
-        font-size: 11px;
-    }
-
-    #search-input {
-        min-width: 160px;
+        gap: 10px;
+        margin-bottom: 12px;
     }
 
     .control-input,
     .control-select {
-        padding: 6px 8px;
+        padding: 8px 10px;
         border-radius: 999px;
         border: 1px solid rgba(255,255,255,0.08);
         background: rgba(5, 8, 16, 0.9);
         color: var(--text-main);
-        font-size: 11px;
+        font-size: 12px;
         outline: none;
-        transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
-    }
-
-    .control-input:focus,
-    .control-select:focus {
-        border-color: var(--accent-blue);
-        box-shadow: 0 0 12px rgba(0,200,255,0.45);
-        background: rgba(8, 12, 22, 0.95);
     }
 
     #export-btn {
-        padding: 6px 10px;
+        padding: 8px 12px;
         border-radius: 999px;
         border: 1px solid rgba(0,255,157,0.7);
         background: rgba(0,255,157,0.08);
         color: var(--accent-green);
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
+        font-size: 12px;
         cursor: pointer;
-        transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), color var(--transition-fast);
+        transition: var(--transition-fast);
     }
 
     #export-btn:hover {
         background: rgba(0,255,157,0.18);
         box-shadow: 0 0 16px rgba(0,255,157,0.6);
-        transform: translateY(-1px);
-        color: #eafff7;
     }
 
-    /* TABLE */
-    #user-table {
+    table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 6px;
-        font-size: 12px;
+        font-size: 13px;
     }
 
-    #user-table thead {
-        background: linear-gradient(90deg, rgba(0,255,157,0.16), rgba(0,200,255,0.16));
+    th, td {
+        padding: 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
-    #user-table th,
-    #user-table td {
-        padding: 9px 8px;
-        text-align: left;
-        border-bottom: 1px solid rgba(255,255,255,0.04);
-        white-space: nowrap;
-    }
-
-    #user-table th {
+    th {
         text-transform: uppercase;
         letter-spacing: 0.08em;
         font-size: 11px;
-        color: var(--text-main);
+        background: rgba(0,255,157,0.12);
     }
 
-    #user-table tbody tr {
-        transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
-    }
-
-    #user-table tbody tr:hover {
+    tr:hover {
         background: rgba(0,255,157,0.06);
-        transform: translateY(-1px);
-        box-shadow: 0 6px 18px rgba(0,0,0,0.7);
     }
 
     .role-pill {
-        padding: 3px 8px;
+        padding: 4px 8px;
         border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.12);
         font-size: 11px;
         text-transform: uppercase;
-        letter-spacing: 0.08em;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(5, 8, 16, 0.9);
     }
 
-    .delete-btn,
-    .edit-btn {
-        padding: 5px 10px;
+    .edit-btn,
+    .delete-btn {
+        padding: 6px 10px;
         border-radius: 999px;
+        font-size: 11px;
+        cursor: pointer;
         border: 1px solid rgba(255,255,255,0.18);
         background: rgba(5, 8, 16, 0.9);
         color: var(--text-muted);
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        cursor: pointer;
-        transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+        transition: var(--transition-fast);
     }
 
     .edit-btn {
-        margin-right: 4px;
         border-color: rgba(0,200,255,0.7);
         color: #aee9ff;
     }
@@ -617,168 +398,45 @@
     .edit-btn:hover {
         background: rgba(0,200,255,0.18);
         box-shadow: 0 0 16px rgba(0,200,255,0.6);
-        transform: translateY(-1px);
-        color: #e6f7ff;
     }
 
     .delete-btn {
         border-color: rgba(255,75,92,0.7);
-        background: rgba(255,75,92,0.08);
         color: #ffb3bd;
     }
 
     .delete-btn:hover {
         background: rgba(255,75,92,0.18);
         box-shadow: 0 0 16px rgba(255,75,92,0.6);
-        transform: translateY(-1px);
-        color: #ffe5e8;
     }
 
     /* PAGINATION */
     #pagination {
-        margin-top: 8px;
+        margin-top: 10px;
         display: flex;
         justify-content: flex-end;
-        align-items: center;
-        gap: 6px;
-        font-size: 11px;
-        color: var(--text-muted);
+        gap: 10px;
+        font-size: 12px;
     }
 
     .page-btn {
-        padding: 4px 8px;
+        padding: 6px 10px;
         border-radius: 999px;
         border: 1px solid rgba(255,255,255,0.12);
         background: rgba(5, 8, 16, 0.9);
         color: var(--text-main);
         cursor: pointer;
-        font-size: 11px;
-        transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+        transition: var(--transition-fast);
     }
 
     .page-btn:hover {
         background: rgba(0,200,255,0.18);
         box-shadow: 0 0 12px rgba(0,200,255,0.5);
-        transform: translateY(-1px);
     }
 
     .page-btn:disabled {
         opacity: 0.4;
         cursor: default;
-        box-shadow: none;
-        transform: none;
-    }
-
-    /* SETTINGS MODAL */
-    #settings-modal-backdrop {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.7);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 20;
-        backdrop-filter: blur(10px);
-    }
-
-    #settings-modal {
-        width: 380px;
-        max-width: 90%;
-        padding: 20px 18px 16px;
-        border-radius: 18px;
-        background: radial-gradient(circle at top left, rgba(0,255,157,0.12), transparent 55%),
-                    radial-gradient(circle at bottom right, rgba(0,200,255,0.12), transparent 55%),
-                    rgba(10, 14, 24, 0.96);
-        box-shadow:
-            0 0 0 1px rgba(255,255,255,0.06),
-            0 24px 60px rgba(0,0,0,0.9);
-        position: relative;
-        color: var(--text-main);
-    }
-
-    #settings-modal-title {
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.12em;
-        margin-bottom: 4px;
-    }
-
-    #settings-modal-subtitle {
-        font-size: 11px;
-        color: var(--text-muted);
-        margin-bottom: 14px;
-    }
-
-    .settings-row {
-        margin-bottom: 10px;
-        font-size: 12px;
-    }
-
-    .settings-label {
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--text-muted);
-        margin-bottom: 4px;
-    }
-
-    .toggle-shell {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .toggle {
-        width: 38px;
-        height: 20px;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(255,255,255,0.18);
-        position: relative;
-        cursor: pointer;
-        transition: background var(--transition-fast), border-color var(--transition-fast);
-    }
-
-    .toggle-circle {
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: #fff;
-        transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-        box-shadow: 0 0 8px rgba(0,0,0,0.6);
-    }
-
-    .toggle.active {
-        background: rgba(0,255,157,0.2);
-        border-color: rgba(0,255,157,0.7);
-    }
-
-    .toggle.active .toggle-circle {
-        transform: translateX(16px);
-        box-shadow: 0 0 10px rgba(0,255,157,0.8);
-    }
-
-    #settings-close {
-        margin-top: 10px;
-        padding: 7px 12px;
-        border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.18);
-        background: rgba(5, 8, 16, 0.9);
-        color: var(--text-main);
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        cursor: pointer;
-        float: right;
-        transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
-    }
-
-    #settings-close:hover {
-        background: rgba(0,200,255,0.18);
-        box-shadow: 0 0 14px rgba(0,200,255,0.6);
-        transform: translateY(-1px);
     }
 
     /* EDIT MODAL */
@@ -789,120 +447,54 @@
         display: none;
         align-items: center;
         justify-content: center;
-        z-index: 25;
+        z-index: 20;
         backdrop-filter: blur(10px);
     }
 
     #edit-modal {
         width: 420px;
         max-width: 95%;
-        padding: 20px 18px 16px;
+        padding: 20px;
         border-radius: 18px;
-        background: radial-gradient(circle at top left, rgba(0,255,157,0.12), transparent 55%),
-                    radial-gradient(circle at bottom right, rgba(0,200,255,0.12), transparent 55%),
-                    rgba(10, 14, 24, 0.96);
-        box-shadow:
-            0 0 0 1px rgba(255,255,255,0.06),
-            0 24px 60px rgba(0,0,0,0.9);
-        position: relative;
-        color: var(--text-main);
-    }
-
-    #edit-modal-title {
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.12em;
-        margin-bottom: 4px;
-    }
-
-    #edit-modal-subtitle {
-        font-size: 11px;
-        color: var(--text-muted);
-        margin-bottom: 14px;
+        background: rgba(10,14,24,0.96);
+        border: 1px solid rgba(255,255,255,0.06);
+        box-shadow: 0 24px 60px rgba(0,0,0,0.9);
     }
 
     #edit-actions {
         margin-top: 10px;
         display: flex;
         justify-content: flex-end;
-        gap: 8px;
+        gap: 10px;
     }
 
-    #edit-cancel,
-    #edit-save {
-        padding: 7px 12px;
+    #edit-save,
+    #edit-cancel {
+        padding: 8px 12px;
         border-radius: 999px;
         border: 1px solid rgba(255,255,255,0.18);
         background: rgba(5, 8, 16, 0.9);
         color: var(--text-main);
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
+        font-size: 12px;
         cursor: pointer;
-        transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+        transition: var(--transition-fast);
     }
 
     #edit-save {
         border-color: rgba(0,255,157,0.7);
         background: rgba(0,255,157,0.12);
-        color: #eafff7;
-    }
-
-    #edit-cancel:hover {
-        background: rgba(0,200,255,0.18);
-        box-shadow: 0 0 14px rgba(0,200,255,0.6);
-        transform: translateY(-1px);
     }
 
     #edit-save:hover {
         background: rgba(0,255,157,0.2);
         box-shadow: 0 0 14px rgba(0,255,157,0.7);
-        transform: translateY(-1px);
     }
 
-    @media (max-width: 960px) {
-        #dashboard {
-            grid-template-columns: 1fr;
-            grid-template-rows: 64px auto minmax(0, 1fr);
-            grid-template-areas:
-                "topbar"
-                "sidebar"
-                "main";
-        }
-        #sidebar {
-            flex-direction: row;
-            align-items: center;
-            overflow-x: auto;
-            padding: 10px 14px;
-        }
-        #sidebar-logo-row {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-            margin-right: 16px;
-        }
-        #sidebar-nav {
-            display: flex;
-            flex-direction: row;
-            margin-top: 0;
-        }
-        .nav-item {
-            margin-right: 6px;
-        }
-        #sidebar-footer {
-            display: none;
-        }
-        #main-inner {
-            grid-template-columns: 1fr;
-        }
+    #edit-cancel:hover {
+        background: rgba(0,200,255,0.18);
+        box-shadow: 0 0 14px rgba(0,200,255,0.6);
     }
 
-    @media (max-width: 520px) {
-        #login-box {
-            width: 90%;
-            padding: 26px 20px 22px;
-        }
-    }
 </style>
 </head>
 <body>
@@ -910,541 +502,25 @@
 <!-- LOGIN -->
 <div id="login-container">
     <div id="login-box">
-        <img id="login-logo" src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=llvwvpwg&dl=1" alt="Geko Logo">
+        <img id="login-logo" src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=llvwvpwg&dl=1">
         <div id="login-title">Geko Access Portal</div>
         <div id="login-subtitle">Administrator authentication required</div>
 
         <div class="input-shell">
-            <div class="field-label">Username</div>
             <span class="input-icon">👤</span>
-            <input type="text" id="login-username" placeholder="Enter admin username">
+            <input type="text" id="login-username" placeholder="Username">
         </div>
 
         <div class="input-shell">
-            <div class="field-label">Password</div>
             <span class="input-icon">🔒</span>
-            <input type="password" id="login-password" placeholder="Enter admin password">
+            <input type="password" id="login-password" placeholder="Password">
         </div>
 
         <button id="login-button" onclick="login()">Authenticate</button>
-        <div id="login-error">Invalid credentials. Use username <strong>admin</strong> and password <strong>admin</strong>.</div>
-    </div>
-</div>
-
-<!-- SETTINGS MODAL -->
-<div id="settings-modal-backdrop">
-    <div id="settings-modal">
-        <div id="settings-modal-title">Settings</div>
-        <div id="settings-modal-subtitle">Console preferences and environment options</div>
-
-        <div class="settings-row">
-            <div class="settings-label">Dark mode</div>
-            <div class="toggle-shell">
-                <div id="toggle-dark" class="toggle active">
-                    <div class="toggle-circle"></div>
-                </div>
-                <span class="helper-text">Dark mode is currently enforced for this console.</span>
-            </div>
-        </div>
-
-        <div class="settings-row">
-            <div class="settings-label">Export behaviour</div>
-            <div class="helper-text">User export is currently enabled as CSV download.</div>
-        </div>
-
-        <button id="settings-close">Close</button>
+        <div id="login-error">Invalid login</div>
     </div>
 </div>
 
 <!-- EDIT MODAL -->
 <div id="edit-modal-backdrop">
-    <div id="edit-modal">
-        <div id="edit-modal-title">Edit User</div>
-        <div id="edit-modal-subtitle">Update user details and role</div>
-
-        <div class="form-row">
-            <div class="form-field">
-                <label class="form-label" for="edit-name">Full Name</label>
-                <input class="form-input" type="text" id="edit-name">
-            </div>
-            <div class="form-field">
-                <label class="form-label" for="edit-email">Email Address</label>
-                <input class="form-input" type="email" id="edit-email">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-field">
-                <label class="form-label" for="edit-password">Password</label>
-                <input class="form-input" type="text" id="edit-password">
-                <div class="helper-text">6 letters followed by 2 digits (e.g. abcdef12)</div>
-            </div>
-            <div class="form-field">
-                <label class="form-label" for="edit-role">Role</label>
-                <select class="form-select" id="edit-role">
-                    <option value="scheduler">Scheduler</option>
-                    <option value="engineer">Engineer</option>
-                    <option value="team leader">Team Leader</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
-        </div>
-
-        <div id="edit-actions">
-            <button id="edit-cancel">Cancel</button>
-            <button id="edit-save">Save</button>
-        </div>
-    </div>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboard">
-    <!-- SIDEBAR -->
-    <aside id="sidebar">
-        <div id="sidebar-logo-row">
-            <img id="sidebar-logo" src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=llvwvpwg&dl=1" alt="Geko Logo">
-            <div>
-                <div id="sidebar-title">Geko Console</div>
-            </div>
-        </div>
-
-        <nav id="sidebar-nav">
-            <div class="nav-item active" data-target="dashboard">
-                <span class="icon">📊</span> Dashboard
-            </div>
-            <div class="nav-item" data-target="add">
-                <span class="icon">➕</span> Add User
-            </div>
-            <div class="nav-item" data-target="list">
-                <span class="icon">👥</span> User List
-            </div>
-            <div class="nav-item" data-target="settings">
-                <span class="icon">⚙️</span> Settings
-            </div>
-        </nav>
-
-        <div id="sidebar-footer">
-            <div>Environment: Production</div>
-            <button id="logout-btn" onclick="logout()">Logout</button>
-        </div>
-    </aside>
-
-    <!-- TOPBAR -->
-    <header id="topbar">
-        <div>
-            <div id="topbar-title">User Management Console</div>
-            <div id="topbar-subtitle">Manage schedulers, engineers, team leaders and admins</div>
-        </div>
-        <div id="topbar-right">
-            <span id="status-dot"></span> Logged in as <strong>Admin</strong>
-        </div>
-    </header>
-
-    <!-- MAIN -->
-    <main id="main">
-        <div id="main-inner">
-            <!-- ADD USER PANEL -->
-            <section class="panel" id="panel-add">
-                <div class="panel-header">
-                    <div>
-                        <div class="panel-title">Add User</div>
-                        <div class="panel-subtitle">Create a new account with role-based access</div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-field">
-                        <label class="form-label" for="name">Full Name</label>
-                        <input class="form-input" type="text" id="name" placeholder="e.g. Alex Johnson">
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label" for="email">Email Address</label>
-                        <input class="form-input" type="email" id="email" placeholder="e.g. alex.johnson@company.com">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-field">
-                        <label class="form-label" for="password">Password</label>
-                        <input class="form-input" type="text" id="password" placeholder="6 letters + 2 digits">
-                        <div class="helper-text">Format: <strong>abcdef12</strong> (6 letters followed by 2 digits)</div>
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label" for="role">Role</label>
-                        <select class="form-select" id="role">
-                            <option value="">Select role</option>
-                            <option value="scheduler">Scheduler</option>
-                            <option value="engineer">Engineer</option>
-                            <option value="team leader">Team Leader</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                        <div class="helper-text">Determines access level within the Geko ecosystem</div>
-                    </div>
-                </div>
-
-                <button id="add-user-btn" onclick="addUser()">Add User</button>
-            </section>
-
-            <!-- USER LIST PANEL -->
-            <section class="panel" id="panel-list">
-                <div class="panel-header">
-                    <div>
-                        <div class="panel-title">User Directory</div>
-                        <div class="panel-subtitle">Live view of all registered users</div>
-                    </div>
-                    <div id="user-controls">
-                        <input id="search-input" class="control-input" type="text" placeholder="Search name or email">
-                        <select id="filter-role" class="control-select">
-                            <option value="">All roles</option>
-                            <option value="scheduler">Scheduler</option>
-                            <option value="engineer">Engineer</option>
-                            <option value="team leader">Team Leader</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                        <button id="export-btn">Export CSV</button>
-                    </div>
-                </div>
-
-                <table id="user-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Password</th>
-                            <th>Role</th>
-                            <th style="text-align:right;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-
-                <div id="pagination">
-                    <button class="page-btn" id="prev-page">Prev</button>
-                    <span id="page-info">Page 1 of 1</span>
-                    <button class="page-btn" id="next-page">Next</button>
-                </div>
-            </section>
-        </div>
-    </main>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, setDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
-        authDomain: "geko-scheduling.firebaseapp.com",
-        projectId: "geko-scheduling",
-        storageBucket: "geko-scheduling.firebasestorage.app",
-        messagingSenderId: "824568732787",
-        appId: "1:824568732787:web:c12db983fd6a5b44b01e06",
-        measurementId: "G-K9PKQJYPLJ"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const userCollection = collection(db, "userdatabase");
-
-    // STATE
-    let usersCache = [];
-    let currentPage = 1;
-    const pageSize = 10;
-    let currentEditId = null;
-
-    const tableBody = document.querySelector("#user-table tbody");
-    const searchInput = document.getElementById("search-input");
-    const filterRole = document.getElementById("filter-role");
-    const pageInfo = document.getElementById("page-info");
-    const prevPageBtn = document.getElementById("prev-page");
-    const nextPageBtn = document.getElementById("next-page");
-
-    // LOGIN
-    window.login = function () {
-        const u = document.getElementById("login-username").value.trim();
-        const p = document.getElementById("login-password").value.trim();
-        const errorEl = document.getElementById("login-error");
-
-        if (u === "admin" && p === "admin") {
-            document.getElementById("login-container").style.display = "none";
-            document.getElementById("dashboard").style.display = "grid";
-            loadUsers();
-        } else {
-            errorEl.style.display = "block";
-        }
-    };
-
-    window.logout = function () {
-        document.getElementById("dashboard").style.display = "none";
-        document.getElementById("login-container").style.display = "flex";
-        document.getElementById("login-username").value = "";
-        document.getElementById("login-password").value = "";
-        document.getElementById("login-error").style.display = "none";
-    };
-
-    // LOAD USERS FROM FIRESTORE
-    async function loadUsers() {
-        usersCache = [];
-        const snapshot = await getDocs(userCollection);
-        snapshot.forEach(docSnap => {
-            usersCache.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        currentPage = 1;
-        renderUsers();
-    }
-
-    // FILTER + PAGINATE + RENDER
-    function getFilteredUsers() {
-        const term = searchInput.value.trim().toLowerCase();
-        const role = filterRole.value;
-        return usersCache.filter(u => {
-            const matchesRole = !role || (u.role === role);
-            const matchesSearch =
-                !term ||
-                (u.name && u.name.toLowerCase().includes(term)) ||
-                (u.email && u.email.toLowerCase().includes(term));
-            return matchesRole && matchesSearch;
-        });
-    }
-
-    function renderUsers() {
-        const filtered = getFilteredUsers();
-        const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-        if (currentPage > totalPages) currentPage = totalPages;
-
-        const start = (currentPage - 1) * pageSize;
-        const pageItems = filtered.slice(start, start + pageSize);
-
-        tableBody.innerHTML = "";
-        pageItems.forEach(u => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${u.name || ""}</td>
-                <td>${u.email || ""}</td>
-                <td>${u.password || ""}</td>
-                <td><span class="role-pill">${(u.role || "").toUpperCase()}</span></td>
-                <td style="text-align:right;">
-                    <button class="edit-btn" onclick="openEditUser('${u.id}')">Edit</button>
-                    <button class="delete-btn" onclick="deleteUser('${u.id}')">Delete</button>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
-
-        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-        prevPageBtn.disabled = currentPage === 1;
-        nextPageBtn.disabled = currentPage === totalPages;
-    }
-
-    // ADD USER
-    window.addUser = async function () {
-        const name = document.getElementById("name").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-        const role = document.getElementById("role").value;
-
-        const passRegex = /^[A-Za-z]{6}[0-9]{2}$/;
-
-        if (!name || !email || !password || !role) {
-            alert("Please fill in all fields before adding a user.");
-            return;
-        }
-
-        if (!passRegex.test(password)) {
-            alert("Password must be exactly 6 letters followed by 2 digits (e.g. abcdef12).");
-            return;
-        }
-
-        try {
-            await setDoc(doc(userCollection), { name, email, password, role });
-            document.getElementById("name").value = "";
-            document.getElementById("email").value = "";
-            document.getElementById("password").value = "";
-            document.getElementById("role").value = "";
-            await loadUsers();
-            alert("User added successfully.");
-        } catch (err) {
-            console.error(err);
-            alert("There was an error adding the user. Check console for details.");
-        }
-    };
-
-    // DELETE USER
-    window.deleteUser = async function (id) {
-        if (!confirm("Are you sure you want to delete this user?")) return;
-
-        try {
-            await deleteDoc(doc(db, "userdatabase", id));
-            await loadUsers();
-        } catch (err) {
-            console.error(err);
-            alert("There was an error deleting the user. Check console for details.");
-        }
-    };
-
-    // EDIT USER
-    window.openEditUser = function (id) {
-        const user = usersCache.find(u => u.id === id);
-        if (!user) return;
-
-        currentEditId = id;
-        document.getElementById("edit-name").value = user.name || "";
-        document.getElementById("edit-email").value = user.email || "";
-        document.getElementById("edit-password").value = user.password || "";
-        document.getElementById("edit-role").value = user.role || "scheduler";
-
-        document.getElementById("edit-modal-backdrop").style.display = "flex";
-    };
-
-    document.getElementById("edit-cancel").onclick = () => {
-        document.getElementById("edit-modal-backdrop").style.display = "none";
-        currentEditId = null;
-    };
-
-    document.getElementById("edit-save").onclick = async () => {
-        if (!currentEditId) return;
-
-        const name = document.getElementById("edit-name").value.trim();
-        const email = document.getElementById("edit-email").value.trim();
-        const password = document.getElementById("edit-password").value.trim();
-        const role = document.getElementById("edit-role").value;
-
-        const passRegex = /^[A-Za-z]{6}[0-9]{2}$/;
-
-        if (!name || !email || !password || !role) {
-            alert("Please fill in all fields.");
-            return;
-        }
-
-        if (!passRegex.test(password)) {
-            alert("Password must be exactly 6 letters followed by 2 digits (e.g. abcdef12).");
-            return;
-        }
-
-        try {
-            await updateDoc(doc(db, "userdatabase", currentEditId), { name, email, password, role });
-            document.getElementById("edit-modal-backdrop").style.display = "none";
-            currentEditId = null;
-            await loadUsers();
-        } catch (err) {
-            console.error(err);
-            alert("There was an error updating the user. Check console for details.");
-        }
-    };
-
-    // SEARCH + FILTER EVENTS
-    searchInput.addEventListener("input", () => {
-        currentPage = 1;
-        renderUsers();
-    });
-
-    filterRole.addEventListener("change", () => {
-        currentPage = 1;
-        renderUsers();
-    });
-
-    // PAGINATION EVENTS
-    prevPageBtn.addEventListener("click", () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderUsers();
-        }
-    });
-
-    nextPageBtn.addEventListener("click", () => {
-        const filtered = getFilteredUsers();
-        const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderUsers();
-        }
-    });
-
-    // EXPORT CSV
-    document.getElementById("export-btn").addEventListener("click", () => {
-        const filtered = getFilteredUsers();
-        if (!filtered.length) {
-            alert("No users to export with current filters.");
-            return;
-        }
-
-        const header = ["Name", "Email", "Password", "Role"];
-        const rows = filtered.map(u => [
-            u.name || "",
-            u.email || "",
-            u.password || "",
-            u.role || ""
-        ]);
-
-        const csvContent = [header, ...rows]
-            .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","))
-            .join("\r\n");
-
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "userdatabase_export.csv";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    });
-
-    // SIDEBAR NAVIGATION
-    const navItems = document.querySelectorAll(".nav-item");
-    const addUserPanel = document.getElementById("panel-add");
-    const userListPanel = document.getElementById("panel-list");
-
-    function clearActiveNav() {
-        navItems.forEach(item => item.classList.remove("active"));
-    }
-
-    function showDashboardView() {
-        addUserPanel.classList.remove("hidden-panel");
-        userListPanel.classList.remove("hidden-panel");
-    }
-
-    function showAddView() {
-        addUserPanel.classList.remove("hidden-panel");
-        userListPanel.classList.add("hidden-panel");
-        addUserPanel.scrollIntoView({ behavior: "smooth" });
-    }
-
-    function showListView() {
-        addUserPanel.classList.add("hidden-panel");
-        userListPanel.classList.remove("hidden-panel");
-        userListPanel.scrollIntoView({ behavior: "smooth" });
-    }
-
-    function openSettingsModal() {
-        document.getElementById("settings-modal-backdrop").style.display = "flex";
-    }
-
-    navItems.forEach(item => {
-        item.addEventListener("click", () => {
-            const target = item.getAttribute("data-target");
-            clearActiveNav();
-            item.classList.add("active");
-
-            if (target === "dashboard") showDashboardView();
-            else if (target === "add") showAddView();
-            else if (target === "list") showListView();
-            else if (target === "settings") openSettingsModal();
-        });
-    });
-
-    // SETTINGS MODAL CLOSE
-    document.getElementById("settings-close").onclick = () => {
-        document.getElementById("settings-modal-backdrop").style.display = "none";
-    };
-
-    // Dark toggle (visual only)
-    document.getElementById("toggle-dark").onclick = () => {
-        const t = document.getElementById("toggle-dark");
-        t.classList.add("active"); // locked to dark mode for now
-    };
-</script>
-
-</body>
-</html>
+    <div id="edit
