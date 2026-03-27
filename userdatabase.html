@@ -5,7 +5,6 @@
 <title>Geko User Management Console</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
@@ -22,9 +21,7 @@
         --transition-med: 0.28s ease-out;
     }
 
-    * {
-        box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
         margin: 0;
@@ -35,7 +32,6 @@
         overflow: hidden;
     }
 
-    /* Subtle animated background grid */
     body::before {
         content: "";
         position: fixed;
@@ -54,7 +50,7 @@
         to { transform: translate3d(-40px,-40px,0); }
     }
 
-    /* LOGIN SCREEN */
+    /* LOGIN */
     #login-container {
         position: fixed;
         inset: 0;
@@ -203,7 +199,7 @@
         display: none;
     }
 
-    /* DASHBOARD LAYOUT */
+    /* DASHBOARD GRID */
     #dashboard {
         display: none;
         height: 100vh;
@@ -213,7 +209,6 @@
         grid-template-areas:
             "sidebar topbar"
             "sidebar main";
-        gap: 0;
     }
 
     /* SIDEBAR */
@@ -355,7 +350,7 @@
         margin-right: 6px;
     }
 
-    /* MAIN AREA */
+    /* MAIN */
     #main {
         grid-area: main;
         padding: 18px 22px 22px;
@@ -383,6 +378,15 @@
         padding: 18px 18px 16px;
         position: relative;
         overflow: hidden;
+        opacity: 1;
+        transform: translateX(0);
+        transition: opacity var(--transition-med), transform var(--transition-med);
+    }
+
+    .panel.hidden-panel {
+        opacity: 0;
+        transform: translateX(20px);
+        pointer-events: none;
     }
 
     .panel::before {
@@ -397,9 +401,10 @@
 
     .panel-header {
         display: flex;
-        align-items: baseline;
+        align-items: center;
         justify-content: space-between;
         margin-bottom: 10px;
+        gap: 10px;
     }
 
     .panel-title {
@@ -414,7 +419,7 @@
         color: var(--text-muted);
     }
 
-    /* FORM STYLING */
+    /* FORM */
     .form-row {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -489,6 +494,59 @@
         box-shadow: 0 10px 24px rgba(0,0,0,0.9);
     }
 
+    /* USER LIST CONTROLS */
+    #user-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+        align-items: center;
+        font-size: 11px;
+    }
+
+    #search-input {
+        min-width: 160px;
+    }
+
+    .control-input,
+    .control-select {
+        padding: 6px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(5, 8, 16, 0.9);
+        color: var(--text-main);
+        font-size: 11px;
+        outline: none;
+        transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+    }
+
+    .control-input:focus,
+    .control-select:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 12px rgba(0,200,255,0.45);
+        background: rgba(8, 12, 22, 0.95);
+    }
+
+    #export-btn {
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(0,255,157,0.7);
+        background: rgba(0,255,157,0.08);
+        color: var(--accent-green);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+        transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), color var(--transition-fast);
+    }
+
+    #export-btn:hover {
+        background: rgba(0,255,157,0.18);
+        box-shadow: 0 0 16px rgba(0,255,157,0.6);
+        transform: translateY(-1px);
+        color: #eafff7;
+    }
+
     /* TABLE */
     #user-table {
         width: 100%;
@@ -536,17 +594,37 @@
         background: rgba(5, 8, 16, 0.9);
     }
 
-    .delete-btn {
+    .delete-btn,
+    .edit-btn {
         padding: 5px 10px;
         border-radius: 999px;
-        border: 1px solid rgba(255,75,92,0.7);
-        background: rgba(255,75,92,0.08);
-        color: #ffb3bd;
+        border: 1px solid rgba(255,255,255,0.18);
+        background: rgba(5, 8, 16, 0.9);
+        color: var(--text-muted);
         font-size: 11px;
         text-transform: uppercase;
         letter-spacing: 0.08em;
         cursor: pointer;
-        transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), color var(--transition-fast);
+        transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .edit-btn {
+        margin-right: 4px;
+        border-color: rgba(0,200,255,0.7);
+        color: #aee9ff;
+    }
+
+    .edit-btn:hover {
+        background: rgba(0,200,255,0.18);
+        box-shadow: 0 0 16px rgba(0,200,255,0.6);
+        transform: translateY(-1px);
+        color: #e6f7ff;
+    }
+
+    .delete-btn {
+        border-color: rgba(255,75,92,0.7);
+        background: rgba(255,75,92,0.08);
+        color: #ffb3bd;
     }
 
     .delete-btn:hover {
@@ -556,12 +634,232 @@
         color: #ffe5e8;
     }
 
-    .delete-btn:active {
-        transform: translateY(1px) scale(0.98);
-        box-shadow: 0 6px 16px rgba(0,0,0,0.9);
+    /* PAGINATION */
+    #pagination {
+        margin-top: 8px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: var(--text-muted);
     }
 
-    /* RESPONSIVE */
+    .page-btn {
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(5, 8, 16, 0.9);
+        color: var(--text-main);
+        cursor: pointer;
+        font-size: 11px;
+        transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .page-btn:hover {
+        background: rgba(0,200,255,0.18);
+        box-shadow: 0 0 12px rgba(0,200,255,0.5);
+        transform: translateY(-1px);
+    }
+
+    .page-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+        box-shadow: none;
+        transform: none;
+    }
+
+    /* SETTINGS MODAL */
+    #settings-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+        backdrop-filter: blur(10px);
+    }
+
+    #settings-modal {
+        width: 380px;
+        max-width: 90%;
+        padding: 20px 18px 16px;
+        border-radius: 18px;
+        background: radial-gradient(circle at top left, rgba(0,255,157,0.12), transparent 55%),
+                    radial-gradient(circle at bottom right, rgba(0,200,255,0.12), transparent 55%),
+                    rgba(10, 14, 24, 0.96);
+        box-shadow:
+            0 0 0 1px rgba(255,255,255,0.06),
+            0 24px 60px rgba(0,0,0,0.9);
+        position: relative;
+        color: var(--text-main);
+    }
+
+    #settings-modal-title {
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: 4px;
+    }
+
+    #settings-modal-subtitle {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-bottom: 14px;
+    }
+
+    .settings-row {
+        margin-bottom: 10px;
+        font-size: 12px;
+    }
+
+    .settings-label {
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+    }
+
+    .toggle-shell {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .toggle {
+        width: 38px;
+        height: 20px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.18);
+        position: relative;
+        cursor: pointer;
+        transition: background var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .toggle-circle {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #fff;
+        transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        box-shadow: 0 0 8px rgba(0,0,0,0.6);
+    }
+
+    .toggle.active {
+        background: rgba(0,255,157,0.2);
+        border-color: rgba(0,255,157,0.7);
+    }
+
+    .toggle.active .toggle-circle {
+        transform: translateX(16px);
+        box-shadow: 0 0 10px rgba(0,255,157,0.8);
+    }
+
+    #settings-close {
+        margin-top: 10px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.18);
+        background: rgba(5, 8, 16, 0.9);
+        color: var(--text-main);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+        float: right;
+        transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+    }
+
+    #settings-close:hover {
+        background: rgba(0,200,255,0.18);
+        box-shadow: 0 0 14px rgba(0,200,255,0.6);
+        transform: translateY(-1px);
+    }
+
+    /* EDIT MODAL */
+    #edit-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 25;
+        backdrop-filter: blur(10px);
+    }
+
+    #edit-modal {
+        width: 420px;
+        max-width: 95%;
+        padding: 20px 18px 16px;
+        border-radius: 18px;
+        background: radial-gradient(circle at top left, rgba(0,255,157,0.12), transparent 55%),
+                    radial-gradient(circle at bottom right, rgba(0,200,255,0.12), transparent 55%),
+                    rgba(10, 14, 24, 0.96);
+        box-shadow:
+            0 0 0 1px rgba(255,255,255,0.06),
+            0 24px 60px rgba(0,0,0,0.9);
+        position: relative;
+        color: var(--text-main);
+    }
+
+    #edit-modal-title {
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: 4px;
+    }
+
+    #edit-modal-subtitle {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-bottom: 14px;
+    }
+
+    #edit-actions {
+        margin-top: 10px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    #edit-cancel,
+    #edit-save {
+        padding: 7px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.18);
+        background: rgba(5, 8, 16, 0.9);
+        color: var(--text-main);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+        transition: background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    #edit-save {
+        border-color: rgba(0,255,157,0.7);
+        background: rgba(0,255,157,0.12);
+        color: #eafff7;
+    }
+
+    #edit-cancel:hover {
+        background: rgba(0,200,255,0.18);
+        box-shadow: 0 0 14px rgba(0,200,255,0.6);
+        transform: translateY(-1px);
+    }
+
+    #edit-save:hover {
+        background: rgba(0,255,157,0.2);
+        box-shadow: 0 0 14px rgba(0,255,157,0.7);
+        transform: translateY(-1px);
+    }
+
     @media (max-width: 960px) {
         #dashboard {
             grid-template-columns: 1fr;
@@ -609,7 +907,7 @@
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
+<!-- LOGIN -->
 <div id="login-container">
     <div id="login-box">
         <img id="login-logo" src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=llvwvpwg&dl=1" alt="Geko Logo">
@@ -633,6 +931,72 @@
     </div>
 </div>
 
+<!-- SETTINGS MODAL -->
+<div id="settings-modal-backdrop">
+    <div id="settings-modal">
+        <div id="settings-modal-title">Settings</div>
+        <div id="settings-modal-subtitle">Console preferences and environment options</div>
+
+        <div class="settings-row">
+            <div class="settings-label">Dark mode</div>
+            <div class="toggle-shell">
+                <div id="toggle-dark" class="toggle active">
+                    <div class="toggle-circle"></div>
+                </div>
+                <span class="helper-text">Dark mode is currently enforced for this console.</span>
+            </div>
+        </div>
+
+        <div class="settings-row">
+            <div class="settings-label">Export behaviour</div>
+            <div class="helper-text">User export is currently enabled as CSV download.</div>
+        </div>
+
+        <button id="settings-close">Close</button>
+    </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div id="edit-modal-backdrop">
+    <div id="edit-modal">
+        <div id="edit-modal-title">Edit User</div>
+        <div id="edit-modal-subtitle">Update user details and role</div>
+
+        <div class="form-row">
+            <div class="form-field">
+                <label class="form-label" for="edit-name">Full Name</label>
+                <input class="form-input" type="text" id="edit-name">
+            </div>
+            <div class="form-field">
+                <label class="form-label" for="edit-email">Email Address</label>
+                <input class="form-input" type="email" id="edit-email">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-field">
+                <label class="form-label" for="edit-password">Password</label>
+                <input class="form-input" type="text" id="edit-password">
+                <div class="helper-text">6 letters followed by 2 digits (e.g. abcdef12)</div>
+            </div>
+            <div class="form-field">
+                <label class="form-label" for="edit-role">Role</label>
+                <select class="form-select" id="edit-role">
+                    <option value="scheduler">Scheduler</option>
+                    <option value="engineer">Engineer</option>
+                    <option value="team leader">Team Leader</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="edit-actions">
+            <button id="edit-cancel">Cancel</button>
+            <button id="edit-save">Save</button>
+        </div>
+    </div>
+</div>
+
 <!-- DASHBOARD -->
 <div id="dashboard">
     <!-- SIDEBAR -->
@@ -645,16 +1009,16 @@
         </div>
 
         <nav id="sidebar-nav">
-            <div class="nav-item active">
+            <div class="nav-item active" data-target="dashboard">
                 <span class="icon">📊</span> Dashboard
             </div>
-            <div class="nav-item">
+            <div class="nav-item" data-target="add">
                 <span class="icon">➕</span> Add User
             </div>
-            <div class="nav-item">
+            <div class="nav-item" data-target="list">
                 <span class="icon">👥</span> User List
             </div>
-            <div class="nav-item">
+            <div class="nav-item" data-target="settings">
                 <span class="icon">⚙️</span> Settings
             </div>
         </nav>
@@ -680,10 +1044,12 @@
     <main id="main">
         <div id="main-inner">
             <!-- ADD USER PANEL -->
-            <section class="panel">
+            <section class="panel" id="panel-add">
                 <div class="panel-header">
-                    <div class="panel-title">Add User</div>
-                    <div class="panel-subtitle">Create a new account with role-based access</div>
+                    <div>
+                        <div class="panel-title">Add User</div>
+                        <div class="panel-subtitle">Create a new account with role-based access</div>
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -720,10 +1086,23 @@
             </section>
 
             <!-- USER LIST PANEL -->
-            <section class="panel">
+            <section class="panel" id="panel-list">
                 <div class="panel-header">
-                    <div class="panel-title">User Directory</div>
-                    <div class="panel-subtitle">Live view of all registered users</div>
+                    <div>
+                        <div class="panel-title">User Directory</div>
+                        <div class="panel-subtitle">Live view of all registered users</div>
+                    </div>
+                    <div id="user-controls">
+                        <input id="search-input" class="control-input" type="text" placeholder="Search name or email">
+                        <select id="filter-role" class="control-select">
+                            <option value="">All roles</option>
+                            <option value="scheduler">Scheduler</option>
+                            <option value="engineer">Engineer</option>
+                            <option value="team leader">Team Leader</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        <button id="export-btn">Export CSV</button>
+                    </div>
                 </div>
 
                 <table id="user-table">
@@ -736,10 +1115,14 @@
                             <th style="text-align:right;">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Populated dynamically -->
-                    </tbody>
+                    <tbody></tbody>
                 </table>
+
+                <div id="pagination">
+                    <button class="page-btn" id="prev-page">Prev</button>
+                    <span id="page-info">Page 1 of 1</span>
+                    <button class="page-btn" id="next-page">Next</button>
+                </div>
             </section>
         </div>
     </main>
@@ -747,7 +1130,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, setDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, setDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
@@ -762,6 +1145,19 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const userCollection = collection(db, "userdatabase");
+
+    // STATE
+    let usersCache = [];
+    let currentPage = 1;
+    const pageSize = 10;
+    let currentEditId = null;
+
+    const tableBody = document.querySelector("#user-table tbody");
+    const searchInput = document.getElementById("search-input");
+    const filterRole = document.getElementById("filter-role");
+    const pageInfo = document.getElementById("page-info");
+    const prevPageBtn = document.getElementById("prev-page");
+    const nextPageBtn = document.getElementById("next-page");
 
     // LOGIN
     window.login = function () {
@@ -786,28 +1182,58 @@
         document.getElementById("login-error").style.display = "none";
     };
 
-    // LOAD USERS
+    // LOAD USERS FROM FIRESTORE
     async function loadUsers() {
-        const tableBody = document.querySelector("#user-table tbody");
-        tableBody.innerHTML = "";
-
+        usersCache = [];
         const snapshot = await getDocs(userCollection);
         snapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            const row = document.createElement("tr");
+            usersCache.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        currentPage = 1;
+        renderUsers();
+    }
 
+    // FILTER + PAGINATE + RENDER
+    function getFilteredUsers() {
+        const term = searchInput.value.trim().toLowerCase();
+        const role = filterRole.value;
+        return usersCache.filter(u => {
+            const matchesRole = !role || (u.role === role);
+            const matchesSearch =
+                !term ||
+                (u.name && u.name.toLowerCase().includes(term)) ||
+                (u.email && u.email.toLowerCase().includes(term));
+            return matchesRole && matchesSearch;
+        });
+    }
+
+    function renderUsers() {
+        const filtered = getFilteredUsers();
+        const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const start = (currentPage - 1) * pageSize;
+        const pageItems = filtered.slice(start, start + pageSize);
+
+        tableBody.innerHTML = "";
+        pageItems.forEach(u => {
+            const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${data.name || ""}</td>
-                <td>${data.email || ""}</td>
-                <td>${data.password || ""}</td>
-                <td><span class="role-pill">${(data.role || "").toUpperCase()}</span></td>
+                <td>${u.name || ""}</td>
+                <td>${u.email || ""}</td>
+                <td>${u.password || ""}</td>
+                <td><span class="role-pill">${(u.role || "").toUpperCase()}</span></td>
                 <td style="text-align:right;">
-                    <button class="delete-btn" onclick="deleteUser('${docSnap.id}')">Delete</button>
+                    <button class="edit-btn" onclick="openEditUser('${u.id}')">Edit</button>
+                    <button class="delete-btn" onclick="deleteUser('${u.id}')">Delete</button>
                 </td>
             `;
-
             tableBody.appendChild(row);
         });
+
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        prevPageBtn.disabled = currentPage === 1;
+        nextPageBtn.disabled = currentPage === totalPages;
     }
 
     // ADD USER
@@ -854,6 +1280,169 @@
             console.error(err);
             alert("There was an error deleting the user. Check console for details.");
         }
+    };
+
+    // EDIT USER
+    window.openEditUser = function (id) {
+        const user = usersCache.find(u => u.id === id);
+        if (!user) return;
+
+        currentEditId = id;
+        document.getElementById("edit-name").value = user.name || "";
+        document.getElementById("edit-email").value = user.email || "";
+        document.getElementById("edit-password").value = user.password || "";
+        document.getElementById("edit-role").value = user.role || "scheduler";
+
+        document.getElementById("edit-modal-backdrop").style.display = "flex";
+    };
+
+    document.getElementById("edit-cancel").onclick = () => {
+        document.getElementById("edit-modal-backdrop").style.display = "none";
+        currentEditId = null;
+    };
+
+    document.getElementById("edit-save").onclick = async () => {
+        if (!currentEditId) return;
+
+        const name = document.getElementById("edit-name").value.trim();
+        const email = document.getElementById("edit-email").value.trim();
+        const password = document.getElementById("edit-password").value.trim();
+        const role = document.getElementById("edit-role").value;
+
+        const passRegex = /^[A-Za-z]{6}[0-9]{2}$/;
+
+        if (!name || !email || !password || !role) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        if (!passRegex.test(password)) {
+            alert("Password must be exactly 6 letters followed by 2 digits (e.g. abcdef12).");
+            return;
+        }
+
+        try {
+            await updateDoc(doc(db, "userdatabase", currentEditId), { name, email, password, role });
+            document.getElementById("edit-modal-backdrop").style.display = "none";
+            currentEditId = null;
+            await loadUsers();
+        } catch (err) {
+            console.error(err);
+            alert("There was an error updating the user. Check console for details.");
+        }
+    };
+
+    // SEARCH + FILTER EVENTS
+    searchInput.addEventListener("input", () => {
+        currentPage = 1;
+        renderUsers();
+    });
+
+    filterRole.addEventListener("change", () => {
+        currentPage = 1;
+        renderUsers();
+    });
+
+    // PAGINATION EVENTS
+    prevPageBtn.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderUsers();
+        }
+    });
+
+    nextPageBtn.addEventListener("click", () => {
+        const filtered = getFilteredUsers();
+        const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderUsers();
+        }
+    });
+
+    // EXPORT CSV
+    document.getElementById("export-btn").addEventListener("click", () => {
+        const filtered = getFilteredUsers();
+        if (!filtered.length) {
+            alert("No users to export with current filters.");
+            return;
+        }
+
+        const header = ["Name", "Email", "Password", "Role"];
+        const rows = filtered.map(u => [
+            u.name || "",
+            u.email || "",
+            u.password || "",
+            u.role || ""
+        ]);
+
+        const csvContent = [header, ...rows]
+            .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(","))
+            .join("\r\n");
+
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "userdatabase_export.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    // SIDEBAR NAVIGATION
+    const navItems = document.querySelectorAll(".nav-item");
+    const addUserPanel = document.getElementById("panel-add");
+    const userListPanel = document.getElementById("panel-list");
+
+    function clearActiveNav() {
+        navItems.forEach(item => item.classList.remove("active"));
+    }
+
+    function showDashboardView() {
+        addUserPanel.classList.remove("hidden-panel");
+        userListPanel.classList.remove("hidden-panel");
+    }
+
+    function showAddView() {
+        addUserPanel.classList.remove("hidden-panel");
+        userListPanel.classList.add("hidden-panel");
+        addUserPanel.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function showListView() {
+        addUserPanel.classList.add("hidden-panel");
+        userListPanel.classList.remove("hidden-panel");
+        userListPanel.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function openSettingsModal() {
+        document.getElementById("settings-modal-backdrop").style.display = "flex";
+    }
+
+    navItems.forEach(item => {
+        item.addEventListener("click", () => {
+            const target = item.getAttribute("data-target");
+            clearActiveNav();
+            item.classList.add("active");
+
+            if (target === "dashboard") showDashboardView();
+            else if (target === "add") showAddView();
+            else if (target === "list") showListView();
+            else if (target === "settings") openSettingsModal();
+        });
+    });
+
+    // SETTINGS MODAL CLOSE
+    document.getElementById("settings-close").onclick = () => {
+        document.getElementById("settings-modal-backdrop").style.display = "none";
+    };
+
+    // Dark toggle (visual only)
+    document.getElementById("toggle-dark").onclick = () => {
+        const t = document.getElementById("toggle-dark");
+        t.classList.add("active"); // locked to dark mode for now
     };
 </script>
 
