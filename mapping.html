@@ -27,7 +27,7 @@
         color: var(--text-main);
         min-height: 100vh;
         display: flex;
-        overflow: hidden;
+        overflow: hidden; /* sidebar fixed, main scrolls */
     }
 
     body::before {
@@ -224,6 +224,7 @@
         flex: 1; display: flex; flex-direction: column;
         min-width: 0; overflow-y: auto;
         position: relative; z-index: 1;
+        height: 100vh;
     }
 
     /* TOPBAR */
