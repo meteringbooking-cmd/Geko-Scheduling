@@ -19,9 +19,7 @@
     --row-h:    72px;
     --time-h:   44px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
     font-family: 'Inter', sans-serif;
     background: radial-gradient(circle at top left, #101525 0, #05070b 45%, #020308 100%);
@@ -29,8 +27,8 @@
     min-height: 100vh;
     display: flex;
     overflow: hidden;
+    user-select: none;
   }
-
   body::before {
     content: "";
     position: fixed; inset: 0;
@@ -43,7 +41,7 @@
   }
   @keyframes gridMove { from{transform:translate3d(0,0,0)} to{transform:translate3d(-40px,-40px,0)} }
 
-  /* ── SIDEBAR ── */
+  /* SIDEBAR */
   #sidebar {
     width: var(--sidebar-w-collapsed); min-height: 100vh;
     background: rgba(5,10,18,0.95); border-right: 1px solid rgba(255,255,255,0.06);
@@ -53,7 +51,6 @@
     box-shadow: 4px 0 30px rgba(0,0,0,0.6);
   }
   #sidebar.expanded { width: var(--sidebar-w-expanded); }
-
   .sidebar-header {
     height: 70px; display: flex; align-items: center; justify-content: center;
     border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -76,7 +73,6 @@
   #sidebar.expanded .sidebar-logo-collapsed { display: none; }
   #sidebar.expanded .sidebar-header { padding: 0 12px; justify-content: space-between; }
   #sidebar.expanded .sidebar-logo-expanded { opacity: 1; max-width: 150px; }
-
   .sidebar-toggle {
     width: 30px; height: 30px; border-radius: 7px;
     border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
@@ -86,7 +82,6 @@
   }
   #sidebar.expanded .sidebar-toggle { display: flex; }
   .sidebar-toggle:hover { background: rgba(255,255,255,0.08); color: var(--text-main); }
-
   .sidebar-nav { flex: 1; padding: 14px 0; display: flex; flex-direction: column; gap: 2px; }
   .sidebar-link {
     display: flex; align-items: center; gap: 12px;
@@ -113,9 +108,8 @@
   .sidebar-version { font-size: 10px; color: rgba(143,160,184,0.35); text-align: center; letter-spacing: 0.5px; opacity: 0; transition: opacity var(--transition-med); }
   #sidebar.expanded .sidebar-version { opacity: 1; }
 
-  /* ── MAIN ── */
+  /* MAIN */
   #main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; position: relative; z-index: 1; height: 100vh; }
-
   #topbar {
     width: 100%; padding: 14px 26px; background: rgba(5,10,18,0.9);
     border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -126,7 +120,6 @@
   #topbar-subtitle { font-size: 12px; color: var(--text-muted); }
   #topbar-right { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-muted); }
   #status-dot { width: 10px; height: 10px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 10px rgba(0,255,157,0.8); display: inline-block; }
-
   #toolbar {
     display: flex; align-items: center; gap: 10px; padding: 10px 20px;
     background: rgba(5,10,18,0.9); border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -166,16 +159,15 @@
     border-radius: 8px; color: var(--text-main); font-size: 12px; font-family: 'Inter', sans-serif;
     padding: 0 12px 0 32px; outline: none; width: 155px;
     transition: border-color var(--transition-fast), box-shadow var(--transition-fast), width var(--transition-fast);
+    user-select: text;
   }
   .search-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 12px rgba(0,200,255,0.2); width: 190px; }
   .search-input::placeholder { color: var(--text-muted); }
   #jobCountLbl { font-size: 12px; color: var(--text-muted); margin-left: auto; white-space: nowrap; }
-
   .lbar { height: 2px; flex-shrink: 0; }
   .lbar.on { background: rgba(255,255,255,0.04); position: relative; overflow: hidden; }
   .lbar.on::after { content:""; position:absolute; top:0; left:-60%; width:60%; height:100%; background:linear-gradient(90deg,transparent,var(--accent-green),transparent); animation:loadsh 1.2s infinite; }
   @keyframes loadsh { to { left: 160%; } }
-
   .status-bar {
     display: flex; align-items: center; gap: 8px; padding: 5px 20px;
     background: rgba(5,10,18,0.9); border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -187,10 +179,9 @@
   .sdot.spin { animation: blink 1s infinite; background: var(--accent-blue); }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-  /* ── SCHEDULE LAYOUT ── */
+  /* SCHEDULE */
   .sched-wrap { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
   .grid-area  { display: flex; flex: 1; overflow: hidden; }
-
   .eng-col {
     width: 160px; min-width: 160px; flex-shrink: 0;
     border-right: 1px solid rgba(255,255,255,0.06);
@@ -204,13 +195,11 @@
   }
   .eng-list { overflow-y: auto; flex: 1; }
   .eng-list::-webkit-scrollbar { display: none; }
-
   .eng-row {
     height: var(--row-h); display: flex; align-items: center; gap: 10px;
     padding: 0 14px; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0;
   }
   .eng-row.auto { height: auto; min-height: var(--row-h); padding: 8px 14px; align-items: flex-start; }
-
   .eng-avatar {
     width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
     background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
@@ -218,19 +207,12 @@
     font-size: 11px; font-weight: 700; color: #020308;
   }
   .eng-name { font-size: 12px; font-weight: 500; line-height: 1.3; color: var(--text-main); }
-
-  /* ── FIX: scroll-area must NOT clip overflow so week popups can escape ── */
-  .scroll-area {
-    flex: 1;
-    overflow-x: auto;
-    overflow-y: auto;
-    position: relative;
-  }
+  .scroll-area { flex: 1; overflow: auto; position: relative; }
   .scroll-area::-webkit-scrollbar { width: 5px; height: 5px; }
   .scroll-area::-webkit-scrollbar-track { background: transparent; }
   .scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
 
-  /* ── TIME HEADER ── */
+  /* TIME HEADER */
   .time-header {
     display: flex; height: var(--time-h); position: sticky; top: 0; z-index: 50;
     background: rgba(10,14,24,0.97); border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -243,88 +225,58 @@
   .t-hdr-cell.today-col { color: var(--accent-green); background: rgba(0,255,157,0.04); }
   .t-hdr-cell.weekend   { opacity: 0.45; }
 
-  /* ── ROWS WRAP ── */
+  /* ROWS */
   .rows-wrap { position: relative; min-height: 100%; }
-
   .hour-grid { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 0; display: flex; }
   .hg-col { flex-shrink: 0; height: 100%; border-right: 1px solid rgba(255,255,255,0.03); position: relative; }
   .hg-col::after { content:""; position:absolute; top:0; bottom:0; left:50%; width:1px; background:rgba(255,255,255,0.015); }
-
-  /* ── ENGINEER ROW ── */
-  .eng-tl-row {
-    display: flex; border-bottom: 1px solid rgba(255,255,255,0.04); position: relative;
-  }
+  .eng-tl-row { display: flex; border-bottom: 1px solid rgba(255,255,255,0.04); position: relative; }
   .eng-tl-row.day-mode  { height: var(--row-h); }
-  /* Week mode: height is driven by the tallest cell content.
-     overflow:visible is essential so stacked pop-ups escape the row. */
-  .eng-tl-row.week-mode {
-    height: auto;
-    min-height: var(--row-h);
-    align-items: stretch;
-    overflow: visible;   /* FIX: allow stacked popups to overflow row bounds */
-  }
+  .eng-tl-row.week-mode { height: auto; min-height: var(--row-h); align-items: stretch; }
 
-  /* ── DAY VIEW: DROP SLOTS ── */
-  .day-drop-overlay {
-    position: absolute; top: 0; bottom: 0; left: 0;
-    display: flex; z-index: 1; pointer-events: none;
+  /* DAY: time slot drop zones */
+  .day-slots { position: absolute; top: 0; bottom: 0; left: 0; display: flex; z-index: 1; }
+  .day-slot {
+    flex-shrink: 0; height: 100%; position: relative;
+    border-right: 1px dashed rgba(255,255,255,0.03);
+    transition: background 0.1s;
   }
-  .day-hour-drop {
-    flex-shrink: 0; height: 100%; pointer-events: all;
-    border-right: 1px dashed transparent;
-    transition: background var(--transition-fast); position: relative;
-  }
-  .day-hour-drop.drag-over { background: rgba(0,255,157,0.10) !important; border-color: rgba(0,255,157,0.35); }
-  .slot-label {
-    position: absolute; bottom: 3px; left: 3px; font-size: 9px;
-    color: rgba(143,160,184,0.25); pointer-events: none; letter-spacing: 0.3px;
-  }
+  .day-slot.drop-active { background: rgba(0,255,157,0.13) !important; border-right-color: rgba(0,255,157,0.3); }
+  .slot-label { position: absolute; bottom: 3px; left: 4px; font-size: 9px; color: rgba(143,160,184,0.18); pointer-events: none; }
 
-  /* ── DAY CARDS ── */
+  /* DAY CARDS */
   .job-card-day {
     position: absolute; top: 7px; bottom: 7px;
     background: rgba(10,18,30,0.96); border: 1px solid rgba(255,255,255,0.08);
     border-top-width: 3px; border-radius: 8px;
-    padding: 5px 8px; cursor: grab; user-select: none;
-    /* FIX: z-index 2 so cards sit above drop overlay (z-index 1) but
-       .dragging drops to z-index 0 + pointer-events:none so slots fire */
-    z-index: 2; overflow: hidden;
-    transition: box-shadow 0.2s, opacity 0.15s;
+    padding: 5px 8px; cursor: grab;
+    z-index: 10;
     display: flex; flex-direction: column; justify-content: space-between;
+    transition: box-shadow 0.18s, border-color 0.18s;
+    overflow: visible;
   }
-  .job-card-day:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.8); overflow: visible; z-index: 100; border-color: rgba(0,255,157,0.3); }
-  .job-card-day:hover .jc-tooltip { opacity: 1; transform: translateY(0); }
-  /* KEY FIX: dragging card must be pointer-events:none so drag events
-     reach the drop slots underneath. Also lower z-index below overlay. */
-  .job-card-day.dragging {
-    opacity: 0.3;
-    cursor: grabbing;
-    pointer-events: none !important;
-    z-index: 0 !important;
-  }
-
+  .job-card-day:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.8); border-color: rgba(0,255,157,0.3); z-index: 20; }
+  .job-card-day.is-dragging { opacity: 0.2; cursor: grabbing; }
   .job-card-day.staging-card {
-    position: relative; top: auto; bottom: auto; left: auto !important;
-    width: auto !important; margin-bottom: 3px;
-    border-color: rgba(255,200,0,0.35); border-top-color: #ffc800;
-    background: rgba(15,12,0,0.95);
-    animation: pendingPulse 2.5s ease-in-out infinite;
+    position: relative; top:auto; bottom:auto; left:auto !important; width:auto !important;
+    margin-bottom: 4px; border-color: rgba(255,200,0,0.35); border-top-color: #ffc800;
+    background: rgba(15,12,0,0.95); animation: pendingPulse 2.5s ease-in-out infinite;
   }
   @keyframes pendingPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,200,0,0)} 50%{box-shadow:0 0 10px 2px rgba(255,200,0,0.15)} }
 
-  /* ── TOOLTIP ── */
+  /* TOOLTIP */
   .jc-tooltip {
     position: absolute; top: calc(100% + 6px); left: 0; min-width: 210px; max-width: 260px;
     background: rgba(5,10,18,0.99); border: 1px solid rgba(0,255,157,0.22); border-radius: 10px;
-    padding: 11px 14px; z-index: 400; box-shadow: 0 10px 40px rgba(0,0,0,0.85);
+    padding: 11px 14px; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.85);
     opacity: 0; pointer-events: none; transform: translateY(6px);
     transition: opacity 0.18s, transform 0.18s;
   }
+  .job-card-day:hover .jc-tooltip { opacity: 1; transform: translateY(0); }
   .jc-tooltip-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 5px; }
   .jc-tooltip-row:last-child { margin-bottom: 0; }
   .jc-tooltip-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; flex-shrink: 0; width: 62px; }
   .jc-tooltip-val { font-size: 12px; color: var(--text-main); font-weight: 500; }
-
   .jc-customer { font-size: 10px; font-weight: 500; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .jc-type     { font-size: 12px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
   .jc-bottom   { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
@@ -332,94 +284,78 @@
   .jc-id       { font-size: 10px; color: var(--accent-green); font-weight: 700; }
   .jc-time     { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
 
-  /* ── STAGING ZONE ── */
+  /* STAGING */
   .staging-zone {
     position: absolute; top: 0; bottom: 0; right: 0; width: 140px;
     border-left: 2px dashed rgba(255,200,0,0.2); background: rgba(15,12,0,0.5);
     display: flex; flex-direction: column; gap: 3px; padding: 5px;
-    overflow-y: auto; z-index: 3;
+    overflow-y: auto; z-index: 3; transition: background 0.1s;
   }
-  .staging-zone.drag-over-s { background: rgba(255,200,0,0.08) !important; }
+  .staging-zone.drop-active { background: rgba(255,200,0,0.10) !important; border-left-color: rgba(255,200,0,0.5); }
   .staging-hint { display: flex; align-items: center; justify-content: center; flex: 1; pointer-events: none; }
   .staging-hint span { font-size: 9px; color: rgba(255,200,0,0.25); text-transform: uppercase; letter-spacing: 0.4px; text-align: center; }
 
-  /* ── WEEK VIEW CELLS ── */
+  /* WEEK CELLS */
   .week-cell-drop {
-    flex: 1;
-    border-right: 1px solid rgba(255,255,255,0.03);
-    padding: 4px;
-    transition: background var(--transition-fast);
-    /* FIX: position relative + overflow visible so popup escapes row */
-    position: relative;
-    overflow: visible;
-    min-height: var(--row-h);
+    flex: 1; border-right: 1px solid rgba(255,255,255,0.03);
+    padding: 4px; transition: background 0.1s;
+    position: relative; min-height: var(--row-h);
   }
   .week-cell-drop.today-col { background: rgba(0,255,157,0.02); }
   .week-cell-drop.weekend   { background: rgba(255,255,255,0.005); }
-  .week-cell-drop.drag-over { background: rgba(0,255,157,0.08) !important; outline: 2px dashed rgba(0,255,157,0.4); outline-offset: -2px; }
+  .week-cell-drop.drop-active { background: rgba(0,255,157,0.10) !important; outline: 2px dashed rgba(0,255,157,0.4); outline-offset: -2px; }
 
-  /* ── WEEK CARDS ── */
+  /* WEEK CARDS */
   .job-card-week {
     background: rgba(10,18,30,0.96); border: 1px solid rgba(255,255,255,0.08); border-left-width: 3px;
-    border-radius: 7px; padding: 5px 7px; cursor: grab; user-select: none;
-    margin-bottom: 3px; transition: box-shadow 0.2s; overflow: hidden; font-size: 11px;
-    width: 100%; display: block;
+    border-radius: 7px; padding: 5px 7px; cursor: grab;
+    margin-bottom: 3px; font-size: 11px; width: 100%; display: block;
+    transition: box-shadow 0.18s, border-color 0.18s; position: relative;
   }
   .job-card-week:last-child { margin-bottom: 0; }
   .job-card-week:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.6); border-color: rgba(0,200,255,0.3); }
-  .job-card-week.dragging { opacity: 0.35; pointer-events: none; }
+  .job-card-week.is-dragging { opacity: 0.2; cursor: grabbing; }
 
-  /* ── WEEK STACKED POPUP ──
-     The popup is a fixed-position floating panel anchored via JS.
-     This avoids ALL overflow-clip issues from parent rows/scroll containers. */
-  .week-stack-popup {
-    position: fixed;           /* escape ALL containing blocks */
-    z-index: 9000;
-    background: rgba(8,12,22,0.99);
-    border: 1px solid rgba(0,200,255,0.25);
-    border-radius: 10px;
-    padding: 8px;
-    box-shadow: 0 12px 48px rgba(0,0,0,0.9), 0 0 0 1px rgba(0,200,255,0.1);
-    min-width: 160px;
-    max-width: 220px;
-    /* Hidden by default */
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(4px);
-    transition: opacity 0.15s, transform 0.15s;
+  .stack-more-btn {
+    display: block; width: 100%; margin-top: 3px;
+    background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.2);
+    border-radius: 6px; padding: 3px 6px; font-size: 10px; font-weight: 600;
+    color: var(--accent-blue); cursor: pointer; text-align: center;
+    transition: background 0.12s;
   }
-  .week-stack-popup.visible {
-    opacity: 1;
-    pointer-events: all;
-    transform: translateY(0);
-  }
-  .week-stack-popup .job-card-week {
-    width: 100%;
-    margin-bottom: 4px;
-  }
-  .week-stack-popup .job-card-week:last-child { margin-bottom: 0; }
+  .stack-more-btn:hover { background: rgba(0,200,255,0.16); }
 
-  /* The visible "first card + badge" in collapsed state */
-  .week-cell-drop.stacked .job-card-week { display: none; }
-  .week-cell-drop.stacked .job-card-week:first-of-type { display: block; }
-
-  .stack-badge {
-    display: inline-flex; align-items: center; justify-content: center;
-    position: absolute; bottom: 4px; right: 4px;
-    background: var(--accent-blue); color: #020308;
-    font-size: 9px; font-weight: 700; border-radius: 10px; padding: 2px 6px;
-    pointer-events: none; z-index: 5; cursor: default;
+  /* FLOATING DRAG GHOST */
+  #drag-ghost {
+    position: fixed; z-index: 99999; pointer-events: none;
+    background: rgba(10,18,30,0.97); border: 1px solid rgba(0,255,157,0.5);
+    border-top-width: 3px; border-radius: 8px;
+    padding: 7px 11px; min-width: 120px; max-width: 200px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.9);
+    font-size: 11px; display: none; transform: rotate(1.5deg);
   }
 
-  /* Search */
+  /* WEEK STACK POPUP */
+  #stack-popup {
+    position: fixed; z-index: 9000;
+    background: rgba(8,12,22,0.99); border: 1px solid rgba(0,200,255,0.25);
+    border-radius: 10px; padding: 8px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.9);
+    display: none;
+  }
+  #stack-popup.visible { display: block; }
+  #stack-popup .job-card-week { margin-bottom: 4px; }
+  #stack-popup .job-card-week:last-child { margin-bottom: 0; }
+
+  /* SEARCH */
   .job-card-day.search-match, .job-card-week.search-match { box-shadow: 0 0 0 2px var(--accent-blue) !important; }
   .job-card-day.search-dim,   .job-card-week.search-dim   { opacity: 0.15 !important; }
 
-  /* Now line */
+  /* NOW LINE */
   .now-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--danger); z-index: 30; pointer-events: none; }
   .now-line::before { content:""; position:absolute; top:50%; left:-4px; width:10px; height:10px; border-radius:50%; background:var(--danger); transform:translateY(-50%); }
 
-  /* ── MODAL ── */
+  /* MODAL */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(4px); z-index: 500; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
   .modal-overlay.open { opacity: 1; pointer-events: all; }
   .modal { background: rgba(10,14,24,0.98); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; width: 500px; max-width: 94vw; max-height: 88vh; overflow-y: auto; transform: translateY(16px); transition: transform 0.22s; box-shadow: 0 24px 60px rgba(0,0,0,0.9); }
@@ -436,11 +372,11 @@
   .df.full  { grid-column: 1/-1; }
   .ddiv     { height: 1px; background: rgba(255,255,255,0.06); grid-column: 1/-1; }
 
-  /* ── TOAST ── */
-  #toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; transform: translateY(20px); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; pointer-events: none; }
+  /* TOAST */
+  #toast { position: fixed; bottom: 24px; right: 24px; z-index: 99999; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; transform: translateY(20px); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; pointer-events: none; }
   #toast.show { transform: translateY(0); opacity: 1; }
   #toast.success { background: rgba(10,20,15,0.97); border: 1px solid rgba(0,255,157,0.4); color: var(--accent-green); box-shadow: 0 0 30px rgba(0,255,157,0.15),0 16px 40px rgba(0,0,0,0.8); }
-  #toast.error   { background: rgba(20,10,12,0.97); border: 1px solid rgba(255,75,92,0.4);  color: var(--danger);       box-shadow: 0 0 30px rgba(255,75,92,0.15), 0 16px 40px rgba(0,0,0,0.8); }
+  #toast.error   { background: rgba(20,10,12,0.97); border: 1px solid rgba(255,75,92,0.4); color: var(--danger); box-shadow: 0 0 30px rgba(255,75,92,0.15),0 16px 40px rgba(0,0,0,0.8); }
 
   #loading-overlay { position: fixed; inset: 0; background: rgba(2,3,8,0.75); display: flex; align-items: center; justify-content: center; z-index: 9998; backdrop-filter: blur(6px); }
   #loading-overlay.hidden { display: none; }
@@ -452,24 +388,19 @@
 </head>
 <body>
 
-<div id="loading-overlay">
-  <div class="loading-box">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">Loading schedule…</div>
-  </div>
-</div>
+<div id="loading-overlay"><div class="loading-box"><div class="loading-spinner"></div><div class="loading-text">Loading schedule…</div></div></div>
 <div id="toast"></div>
+<div id="drag-ghost"></div>
+<div id="stack-popup"></div>
 
 <!-- SIDEBAR -->
 <div id="sidebar">
   <div class="sidebar-header">
     <img class="sidebar-logo-collapsed" id="logoCollapsed"
-         src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1"
-         alt="Geko" title="Expand sidebar">
+         src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1" alt="Geko">
     <img class="sidebar-logo-expanded"
-         src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=xh5pubjr&dl=1"
-         alt="Geko">
-    <button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">
+         src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=xh5pubjr&dl=1" alt="Geko">
+    <button class="sidebar-toggle" id="sidebarToggle">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
     </button>
   </div>
@@ -502,19 +433,15 @@
   <div class="sidebar-footer"><div class="sidebar-version">v1.0.0</div></div>
 </div>
 
-<!-- MAIN CONTENT -->
+<!-- MAIN -->
 <div id="main-content">
   <header id="topbar">
     <div>
       <div id="topbar-title">Scheduling</div>
-      <div id="topbar-subtitle">Drag jobs to reassign engineers or change times — all changes sync to Firebase</div>
+      <div id="topbar-subtitle">Click a job to view details · Drag to reschedule or reassign</div>
     </div>
-    <div id="topbar-right">
-      <span id="status-dot"></span>
-      <span id="status-text">Admin</span>
-    </div>
+    <div id="topbar-right"><span id="status-dot"></span><span id="status-text">Admin</span></div>
   </header>
-
   <div id="toolbar">
     <div class="date-nav">
       <button class="dnb" id="prevBtn">&#8249;</button>
@@ -542,13 +469,8 @@
       Refresh
     </button>
   </div>
-
   <div class="lbar" id="lbar"></div>
-  <div class="status-bar">
-    <div class="sdot spin" id="sdot"></div>
-    <span id="stxt">Connecting to Firebase…</span>
-  </div>
-
+  <div class="status-bar"><div class="sdot spin" id="sdot"></div><span id="stxt">Connecting…</span></div>
   <div class="sched-wrap">
     <div class="grid-area">
       <div class="eng-col">
@@ -569,18 +491,12 @@
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-head">
-      <div>
-        <div class="modal-title" id="modalTitle"></div>
-        <div class="modal-id" id="modalId"></div>
-      </div>
+      <div><div class="modal-title" id="modalTitle"></div><div class="modal-id" id="modalId"></div></div>
       <button class="modal-close" id="modalClose">✕</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
   </div>
 </div>
-
-<!-- Fixed-position popup for week stacked cards — lives outside all scroll/clip contexts -->
-<div class="week-stack-popup" id="weekStackPopup"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -596,51 +512,33 @@ const db = getFirestore(initializeApp({
   appId:"1:824568732787:web:c12db983fd6a5b44b01e06"
 }));
 
-/* ─── Constants ──────────────────────────────────────────────── */
-const HOUR_W    = 160;
-const ROW_H     = 72;
-const DAY_START = 7;
-const DAY_END_MIN = 18;
-const STAGING_W = 140;
+/* ─── Constants ─────────────────────────────────────────────── */
+const HOUR_W = 160, ROW_H = 72, DAY_START = 7, DAY_END_MIN = 18, STAGING_W = 140;
+const DRAG_THRESHOLD = 5; // px to move before drag activates
 
-const JOB_DURATIONS = { "dual fuel":2, "single gas":1.5, "single elec":1.5, "comms":0.5 };
-
-function getDuration(t){ const k=(t||"").toLowerCase(); for(const[key,v]of Object.entries(JOB_DURATIONS))if(k.includes(key))return v; return 1; }
-
-function getStartHour(job){
-  const v = job.startHour;
-  if(v===null||v===undefined||v==="") return null;
-  const n=+v; return isNaN(n)?null:n;
-}
-
-function calcDayEnd(jobs){
-  let end=DAY_END_MIN;
-  jobs.forEach(j=>{
-    const sh=getStartHour(j); if(sh===null)return;
-    const fin=sh+getDuration(j.jobType); if(fin>end)end=Math.ceil(fin)+0.5;
-  });
-  return end;
-}
-
+const JOB_DURATIONS = {"dual fuel":2,"single gas":1.5,"single elec":1.5,"comms":0.5};
+function getDuration(t){const k=(t||"").toLowerCase();for(const[key,v]of Object.entries(JOB_DURATIONS))if(k.includes(key))return v;return 1;}
+function getStartHour(job){const v=job.startHour;if(v===null||v===undefined||v==="")return null;const n=+v;return isNaN(n)?null:n;}
+function calcDayEnd(jobs){let end=DAY_END_MIN;jobs.forEach(j=>{const sh=getStartHour(j);if(sh===null)return;const fin=sh+getDuration(j.jobType);if(fin>end)end=Math.ceil(fin)+0.5;});return end;}
 const COLOURS=["#00c896","#0084ff","#f59e0b","#ff4d6a","#a855f7","#06b6d4","#f97316","#10b981"];
-function cardColour(t){ const h=[...(t||"x")].reduce((a,c)=>a+c.charCodeAt(0),0); return COLOURS[h%COLOURS.length]; }
+function cardColour(t){const h=[...(t||"x")].reduce((a,c)=>a+c.charCodeAt(0),0);return COLOURS[h%COLOURS.length];}
 
-/* ─── State ──────────────────────────────────────────────────── */
-let allJobs=[], currentView="day", currentDate=today0(), dragJob=null;
-let jobSearch="", engSearch="";
-function today0(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
+/* ─── App state ─────────────────────────────────────────────── */
+let allJobs=[], currentView="day", currentDate=today0(), jobSearch="", engSearch="";
+function today0(){const d=new Date();d.setHours(0,0,0,0);return d;}
 
-/* ─── Date helpers ───────────────────────────────────────────── */
+/* ─── Date helpers ──────────────────────────────────────────── */
 function parseDate(s){
-  if(!s)return null; s=String(s).trim(); let m;
-  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); if(m){const d=new Date(+m[3],+m[2]-1,+m[1]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
-  m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);        if(m){const d=new Date(+m[1],+m[2]-1,+m[3]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
+  if(!s)return null;s=String(s).trim();let m;
+  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);if(m){const d=new Date(+m[3],+m[2]-1,+m[1]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);if(m){const d=new Date(+m[1],+m[2]-1,+m[3]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
   m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);if(m){let y=+m[3];if(y<100)y+=2000;const d=new Date(y,+m[1]-1,+m[2]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
   const d=new Date(s);if(!isNaN(d)){d.setHours(0,0,0,0);return d;}return null;
 }
 function sameDay(a,b){return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
 function toUKStr(d){return`${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;}
 function fmtTime(h){const hh=Math.floor(h),mm=Math.round((h-hh)*60);return`${String(hh).padStart(2,"0")}:${String(mm).padStart(2,"0")}`;}
+function esc(s){return String(s||"—").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function getCols(){
   if(currentView==="day")return[new Date(currentDate)];
   const dow=currentDate.getDay(),diff=dow===0?-6:1-dow;
@@ -648,37 +546,142 @@ function getCols(){
   return Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
 }
 
-/* ─── Event wiring ───────────────────────────────────────────── */
-document.getElementById("prevBtn").onclick   =()=>navigate(-1);
-document.getElementById("nextBtn").onclick   =()=>navigate(1);
-document.getElementById("todayBtn").onclick  =()=>{currentDate=today0();syncPicker();render();};
-document.getElementById("refreshBtn").onclick=()=>loadJobs();
-document.getElementById("btnDay").onclick    =()=>setView("day");
-document.getElementById("btnWeek").onclick   =()=>setView("week");
-document.getElementById("datePicker").onchange=e=>{
-  const[y,mo,d]=e.target.value.split("-").map(Number);
-  currentDate=new Date(y,mo-1,d);currentDate.setHours(0,0,0,0);render();
-};
-document.getElementById("modalClose").onclick   =closeModal;
-document.getElementById("modalOverlay").onclick =e=>{if(e.target===document.getElementById("modalOverlay"))closeModal();};
-document.getElementById("jobSearch").oninput=e=>{jobSearch=e.target.value.trim().toLowerCase();applySearch();};
-document.getElementById("engSearch").oninput=e=>{engSearch=e.target.value.trim().toLowerCase();applySearch();};
+/* ═══════════════════════════════════════════════════════════════
+   CUSTOM DRAG ENGINE
+   Uses mousedown/mousemove/mouseup on document.
+   Cards never use HTML5 draggable — this avoids all browser
+   drag-API quirks with overflow:hidden parents and z-index.
 
-function navigate(dir){currentDate.setDate(currentDate.getDate()+dir*(currentView==="week"?7:1));syncPicker();render();}
-function setView(v){currentView=v;document.getElementById("btnDay").classList.toggle("active",v==="day");document.getElementById("btnWeek").classList.toggle("active",v==="week");render();}
-function syncPicker(){const y=currentDate.getFullYear(),mo=String(currentDate.getMonth()+1).padStart(2,"0"),d=String(currentDate.getDate()).padStart(2,"0");document.getElementById("datePicker").value=`${y}-${mo}-${d}`;}
-function setStatus(st,msg){const dot=document.getElementById("sdot"),txt=document.getElementById("stxt");dot.className="sdot"+(st==="spin"?" spin":st==="ok"?" ok":" err");txt.textContent=msg;}
-function setLoading(on){document.getElementById("lbar").classList.toggle("on",on);}
-let toastTimer;
-function toast(msg,type="success"){
-  const t=document.getElementById("toast");
-  const ico=type==="success"?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-  t.className=`${type} show`;t.innerHTML=ico+" "+msg;
-  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),3200);
+   Flow:
+     1. mousedown on card  → start watching
+     2. mousemove > threshold → activate; show ghost; disable pointer
+        events on ghost via visibility:hidden during hit-test
+     3. mouseup → if never activated = click → open modal
+                  if activated = find drop zone → commit
+═══════════════════════════════════════════════════════════════ */
+const ghost = document.getElementById("drag-ghost");
+let activeDrag = null; // { job, cardEl, startX, startY, started, currentZone }
+
+function attachDrag(cardEl, job) {
+  cardEl.addEventListener("mousedown", e => {
+    // Only primary button; ignore if clicking inside modal or toolbar
+    if(e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    activeDrag = {
+      job,
+      cardEl,
+      startX: e.clientX,
+      startY: e.clientY,
+      started: false,
+      currentZone: null
+    };
+
+    document.addEventListener("mousemove", onMove, {capture:true});
+    document.addEventListener("mouseup",   onUp,   {capture:true});
+  });
 }
-function esc(s){return String(s||"—").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 
-/* ─── Firebase load ──────────────────────────────────────────── */
+function onMove(e) {
+  if(!activeDrag) return;
+
+  const dx = e.clientX - activeDrag.startX;
+  const dy = e.clientY - activeDrag.startY;
+
+  if(!activeDrag.started) {
+    if(Math.hypot(dx,dy) < DRAG_THRESHOLD) return;
+    // Activate drag
+    activeDrag.started = true;
+    activeDrag.cardEl.classList.add("is-dragging");
+    const col = cardColour(activeDrag.job.jobType);
+    ghost.style.borderTopColor = col;
+    ghost.innerHTML = `
+      <div class="jc-customer">${esc(activeDrag.job.customerName)}</div>
+      <div class="jc-type">${esc(activeDrag.job.jobType)}</div>
+      <div style="margin-top:2px;font-size:9px;color:var(--text-muted)">${esc(activeDrag.job.postcode)} · ${esc(activeDrag.job.jobId||activeDrag.job._id)}</div>`;
+    ghost.style.display = "block";
+    document.body.style.cursor = "grabbing";
+    closeStackPopup();
+  }
+
+  // Position ghost near cursor
+  ghost.style.left = (e.clientX + 16) + "px";
+  ghost.style.top  = (e.clientY - 16) + "px";
+
+  // Hit-test for drop zones:
+  // Temporarily make ghost invisible (not display:none — that shifts layout)
+  // so elementFromPoint looks through it
+  ghost.style.visibility = "hidden";
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  ghost.style.visibility = "";
+
+  // Clear previous zone highlight
+  if(activeDrag.currentZone) {
+    activeDrag.currentZone.classList.remove("drop-active");
+    activeDrag.currentZone = null;
+  }
+
+  if(el) {
+    // Walk up the DOM looking for a drop zone marker
+    const zone = el.closest("[data-drop]");
+    if(zone) {
+      zone.classList.add("drop-active");
+      activeDrag.currentZone = zone;
+    }
+  }
+}
+
+function onUp(e) {
+  document.removeEventListener("mousemove", onMove, {capture:true});
+  document.removeEventListener("mouseup",   onUp,   {capture:true});
+  document.body.style.cursor = "";
+  ghost.style.display = "none";
+
+  if(!activeDrag) return;
+  const {job, cardEl, started, currentZone} = activeDrag;
+  activeDrag = null;
+
+  cardEl.classList.remove("is-dragging");
+
+  if(currentZone) currentZone.classList.remove("drop-active");
+
+  if(!started) {
+    // Was a click — open modal
+    openModal(job);
+    return;
+  }
+
+  if(currentZone) {
+    commitDrop(job, currentZone);
+  }
+}
+
+function commitDrop(job, zoneEl) {
+  const type = zoneEl.dataset.drop;   // "slot" | "staging" | "week"
+  const eng  = zoneEl.dataset.eng  || job.engineerName;
+  const date = zoneEl.dataset.date || job.dateOfJob;
+  const hour = zoneEl.dataset.hour !== undefined ? parseFloat(zoneEl.dataset.hour) : null;
+
+  const updates = {};
+  if(eng  !== job.engineerName) updates.engineerName = eng;
+  if(date !== job.dateOfJob)    updates.dateOfJob    = date;
+
+  if(type === "slot") {
+    updates.startHour = hour;  // always set even if unchanged, to confirm placement
+    if(hour === getStartHour(job) && eng === job.engineerName && date === job.dateOfJob) return; // no-op
+  } else if(type === "staging") {
+    updates.startHour = null;
+  } else if(type === "week") {
+    if(date !== job.dateOfJob) updates.startHour = null;
+    // If same day & same eng — no change needed
+    if(Object.keys(updates).length === 0) return;
+  }
+
+  persistUpdate(job._id, updates, job);
+}
+
+/* ─── Firebase ──────────────────────────────────────────────── */
 async function loadJobs(){
   setLoading(true);setStatus("spin","Loading…");
   try{
@@ -693,16 +696,29 @@ async function loadJobs(){
   setLoading(false);document.getElementById("loading-overlay").classList.add("hidden");
 }
 
-/* ─── Render ─────────────────────────────────────────────────── */
+async function persistUpdate(jobId, updates, job){
+  // Optimistic update
+  const j=allJobs.find(x=>x._id===jobId);
+  if(j){for(const[k,v]of Object.entries(updates)){if(v===null)delete j[k];else j[k]=v;}}
+  render();
+  try{
+    const fs={};
+    for(const[k,v]of Object.entries(updates)) fs[k]=v===null?deleteField():v;
+    await updateDoc(doc(db,"uploaded_jobs",jobId),fs);
+    toast("Saved ✓");
+  }catch(err){
+    console.error(err);toast("Save failed: "+(err.code||err.message),"error");
+    loadJobs();
+  }
+}
+
+/* ─── Render ────────────────────────────────────────────────── */
 function render(){
-  hideStackPopup();
-  syncPicker();
+  closeStackPopup();syncPicker();
   const cols=getCols();
   const colJobs=allJobs.filter(j=>{const jd=parseDate(j.dateOfJob);return jd&&cols.some(c=>sameDay(c,jd));});
   const dayEnd=currentView==="day"?calcDayEnd(colJobs):DAY_END_MIN;
-  renderHeader(cols,dayEnd);
-  renderRows(cols,dayEnd);
-  updateLabel(cols);
+  renderHeader(cols,dayEnd);renderRows(cols,dayEnd);updateLabel(cols);
   if(currentView==="day")updateNowLine(dayEnd);
   applySearch();
 }
@@ -714,8 +730,7 @@ function updateLabel(cols){
 }
 
 function renderHeader(cols,dayEnd){
-  const hdr=document.getElementById("timeHeader");
-  hdr.innerHTML="";hdr.removeAttribute("style");
+  const hdr=document.getElementById("timeHeader");hdr.innerHTML="";hdr.removeAttribute("style");
   const hours=dayEnd-DAY_START,todayD=today0();
   if(currentView==="day"){
     hdr.style.width=`${HOUR_W*hours+STAGING_W}px`;hdr.style.flexShrink="0";
@@ -727,7 +742,7 @@ function renderHeader(cols,dayEnd){
     }
     const stg=document.createElement("div");
     stg.style.cssText=`flex-shrink:0;width:${STAGING_W}px;display:flex;align-items:center;justify-content:center;border-left:2px dashed rgba(255,200,0,0.2);`;
-    stg.innerHTML=`<span style="font-size:9px;color:rgba(255,200,0,0.35);text-transform:uppercase;letter-spacing:.5px;">Unscheduled</span>`;
+    stg.innerHTML=`<span style="font-size:9px;color:rgba(255,200,0,0.35);text-transform:uppercase;letter-spacing:.5px">Unscheduled</span>`;
     hdr.appendChild(stg);
   }else{
     cols.forEach(col=>{
@@ -749,12 +764,12 @@ function renderRows(cols,dayEnd){
   document.getElementById("jobCountLbl").textContent=`${visibleJobs.length} job${visibleJobs.length!==1?"s":""} in view`;
 
   const engList=document.getElementById("engList");engList.innerHTML="";
-  const rowsWrap=document.getElementById("rowsWrap");
   const rowsCont=document.getElementById("rowsContainer");rowsCont.innerHTML="";
   const hourGrid=document.getElementById("hourGrid");hourGrid.innerHTML="";
+  const rowsWrap=document.getElementById("rowsWrap");
 
   if(!engineers.length){
-    engList.innerHTML=`<div style="padding:20px 14px;color:var(--text-muted);font-size:13px;text-align:center;line-height:1.7">No engineers found.<br/>Upload jobs first.</div>`;
+    engList.innerHTML=`<div style="padding:20px 14px;color:var(--text-muted);font-size:13px;text-align:center;line-height:1.7">No engineers found.<br>Upload jobs first.</div>`;
     return;
   }
 
@@ -768,11 +783,11 @@ function renderRows(cols,dayEnd){
 
   document.getElementById("scrollArea").onscroll=()=>{
     engList.scrollTop=document.getElementById("scrollArea").scrollTop;
-    hideStackPopup(); // hide popup on scroll to avoid stale position
+    closeStackPopup();
   };
 
   engineers.forEach(eng=>{
-    /* sidebar row */
+    // Sidebar label
     const sr=document.createElement("div");
     sr.className="eng-row"+(currentView==="week"?" auto":"");
     sr.dataset.eng=eng;
@@ -791,67 +806,49 @@ function renderRows(cols,dayEnd){
       row.style.width=`${HOUR_W*hours+STAGING_W}px`;
       const col=cols[0];
       const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),col));
-
       const scheduled=dayJobs.filter(j=>getStartHour(j)!==null);
       const staged   =dayJobs.filter(j=>getStartHour(j)===null);
 
-      /* ── FIX: Drop overlay uses dragover on the ROW itself.
-         Cards have pointer-events:none while .dragging so events pass through.
-         We track position manually to find the nearest 30-min slot. ── */
-      const dropOverlay=document.createElement("div");
-      dropOverlay.className="day-drop-overlay";
-      dropOverlay.style.width=`${HOUR_W*hours}px`;
-      dropOverlay.style.pointerEvents="none"; // overlay itself is transparent
+      // Slot drop zones — these sit in the row at z-index 1
+      // Cards sit at z-index 10 normally, but .is-dragging removes them visually
+      // We use the ghost + elementFromPoint for hit-testing, so z-index is irrelevant
+      const slotWrap=document.createElement("div");
+      slotWrap.className="day-slots";
+      slotWrap.style.width=`${HOUR_W*hours}px`;
 
       for(let h=DAY_START;h<dayEnd;h++){
-        [0,0.5].forEach(half=>{
-          const dz=document.createElement("div");
-          dz.className="day-hour-drop";dz.style.width=(HOUR_W/2)+"px";
-          const slot={eng,date:toUKStr(col),hour:h+half};
+        for(const half of [0,0.5]){
+          const s=document.createElement("div");
+          s.className="day-slot";
+          s.style.width=(HOUR_W/2)+"px";
+          s.dataset.drop="slot";
+          s.dataset.eng=eng;
+          s.dataset.date=toUKStr(col);
+          s.dataset.hour=String(h+half);
           const lbl=document.createElement("span");lbl.className="slot-label";lbl.textContent=fmtTime(h+half);
-          dz.appendChild(lbl);
-
-          /* Re-enable pointer events on individual slots */
-          dz.style.pointerEvents="all";
-
-          dz.addEventListener("dragover",e=>{
-            e.preventDefault();
-            e.dataTransfer.dropEffect="move";
-            dz.classList.add("drag-over");
-          });
-          dz.addEventListener("dragleave",()=>dz.classList.remove("drag-over"));
-          dz.addEventListener("drop",e=>{
-            e.preventDefault();
-            dz.classList.remove("drag-over");
-            handleDrop(eng,toUKStr(col),h+half);
-          });
-          dropOverlay.appendChild(dz);
-        });
+          s.appendChild(lbl);
+          slotWrap.appendChild(s);
+        }
       }
-      row.appendChild(dropOverlay);
+      row.appendChild(slotWrap);
 
-      /* Scheduled cards — absolutely positioned, z-index 2 normally, 0 when dragging */
+      // Job cards
       scheduled.forEach(job=>{
         const sh=getStartHour(job),dur=getDuration(job.jobType);
-        const left=(sh-DAY_START)*HOUR_W,width=dur*HOUR_W-4;
-        row.appendChild(makeCardDay(job,left,width,false));
+        row.appendChild(makeCardDay(job,(sh-DAY_START)*HOUR_W,dur*HOUR_W-4,false));
       });
 
-      /* Staging zone */
-      const sz=document.createElement("div");sz.className="staging-zone";
-      sz.addEventListener("dragover",e=>{e.preventDefault();e.dataTransfer.dropEffect="move";sz.classList.add("drag-over-s");});
-      sz.addEventListener("dragleave",()=>sz.classList.remove("drag-over-s"));
-      sz.addEventListener("drop",e=>{e.preventDefault();sz.classList.remove("drag-over-s");handleDropStaged(eng,toUKStr(col));});
+      // Staging zone
+      const sz=document.createElement("div");
+      sz.className="staging-zone";
+      sz.dataset.drop="staging";
+      sz.dataset.eng=eng;
+      sz.dataset.date=toUKStr(col);
       if(staged.length===0){
         const hint=document.createElement("div");hint.className="staging-hint";
-        hint.innerHTML=`<span>Drop here<br/>to unschedule</span>`;sz.appendChild(hint);
+        hint.innerHTML=`<span>Drop here<br>to unschedule</span>`;sz.appendChild(hint);
       }else{
-        staged.forEach(job=>{
-          const c=makeCardDay(job,0,STAGING_W-18,true);
-          c.classList.add("staging-card");
-          c.style.position="relative";c.style.top="";c.style.bottom="";c.style.left="";c.style.width=(STAGING_W-18)+"px";
-          sz.appendChild(c);
-        });
+        staged.forEach(job=>sz.appendChild(makeCardDay(job,0,STAGING_W-18,true)));
       }
       row.appendChild(sz);
 
@@ -860,54 +857,26 @@ function renderRows(cols,dayEnd){
       cols.forEach(col=>{
         const cell=document.createElement("div");
         cell.className="week-cell-drop";
+        cell.dataset.drop="week";
+        cell.dataset.eng=eng;
+        cell.dataset.date=toUKStr(col);
         const dow=col.getDay();
         if(dow===0||dow===6)cell.classList.add("weekend");
         if(sameDay(col,todayD))cell.classList.add("today-col");
 
-        cell.addEventListener("dragover",e=>{e.preventDefault();e.dataTransfer.dropEffect="move";cell.classList.add("drag-over");});
-        cell.addEventListener("dragleave",()=>cell.classList.remove("drag-over"));
-        cell.addEventListener("drop",e=>{
-          e.preventDefault();
-          cell.classList.remove("drag-over");
-          hideStackPopup();
-          handleDrop(eng,toUKStr(col),null);
-        });
-
         const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),col));
 
-        if(dayJobs.length>1){
-          /* ── STACKED: show first card + badge.
-             Hover triggers a fixed-position floating popup with ALL cards. ── */
-          cell.classList.add("stacked");
-
-          // First card visible
-          const firstCard=makeCardWeek(dayJobs[0]);
-          cell.appendChild(firstCard);
-
-          // Badge
-          const badge=document.createElement("div");
-          badge.className="stack-badge";
-          badge.textContent=`+${dayJobs.length-1}`;
-          cell.appendChild(badge);
-
-          /* Build popup cards list (all jobs for this cell) */
-          const popupCards=dayJobs.map(job=>makeCardWeek(job));
-
-          /* Mouseenter: position and show the fixed popup */
-          cell.addEventListener("mouseenter",()=>{
-            if(dragJob)return; // don't show popup during drag
-            showStackPopup(cell, popupCards, eng, col);
-          });
-          cell.addEventListener("mouseleave",(e)=>{
-            // Only hide if mouse isn't moving into the popup itself
-            const popup=document.getElementById("weekStackPopup");
-            if(!popup.contains(e.relatedTarget)){
-              scheduleHidePopup();
-            }
-          });
-
-        }else{
+        if(dayJobs.length<=1){
           dayJobs.forEach(job=>cell.appendChild(makeCardWeek(job)));
+        }else{
+          // Show first card + "X more" button that opens fixed popup
+          cell.appendChild(makeCardWeek(dayJobs[0]));
+          const btn=document.createElement("div");
+          btn.className="stack-more-btn";
+          btn.textContent=`+${dayJobs.length-1} more`;
+          btn.addEventListener("mousedown",e=>{e.stopPropagation();e.preventDefault();});
+          btn.addEventListener("click",e=>{e.stopPropagation();showStackPopup(cell,dayJobs);});
+          cell.appendChild(btn);
         }
         row.appendChild(cell);
       });
@@ -919,106 +888,31 @@ function renderRows(cols,dayEnd){
   if(currentView==="day")updateNowLine(dayEnd);
 }
 
-/* ─── Week stack popup (fixed-position, escapes all clip contexts) ─── */
-let popupHideTimer=null;
-const popup=document.getElementById("weekStackPopup");
-
-popup.addEventListener("mouseenter",()=>{
-  clearTimeout(popupHideTimer);
-});
-popup.addEventListener("mouseleave",()=>{
-  scheduleHidePopup();
-});
-
-function showStackPopup(cell, cards, eng, col){
-  clearTimeout(popupHideTimer);
-
-  // Position popup below the cell using getBoundingClientRect
-  const rect=cell.getBoundingClientRect();
-  popup.innerHTML="";
-
-  // Add drag support: week cells in popup should accept drops
-  popup.addEventListener("dragover",e=>{e.preventDefault();e.dataTransfer.dropEffect="move";popup.style.outline="2px dashed rgba(0,255,157,0.4)";});
-  popup.addEventListener("dragleave",()=>{popup.style.outline="";});
-  popup.addEventListener("drop",e=>{
-    e.preventDefault();
-    popup.style.outline="";
-    hideStackPopup();
-    handleDrop(eng,toUKStr(col),null);
-  });
-
-  cards.forEach(card=>{
-    // Reassign drag listeners for popup copies
-    const c=card.cloneNode(true);
-    const origJob=allJobs.find(j=>(j.jobId||j._id)===card.dataset.jobId);
-    if(origJob){
-      c.draggable=true;
-      c.addEventListener("dragstart",e=>{
-        dragJob=origJob;
-        c.classList.add("dragging");
-        e.dataTransfer.effectAllowed="move";
-        scheduleHidePopup();
-      });
-      c.addEventListener("dragend",()=>c.classList.remove("dragging"));
-      c.addEventListener("click",e=>{e.stopPropagation();hideStackPopup();openModal(origJob);});
-    }
-    popup.appendChild(c);
-  });
-
-  // Calculate position — show below cell, flip up if near bottom
-  let top=rect.bottom+6;
-  let left=rect.left;
-  const popW=220, popH=cards.length*72+24;
-  if(top+popH>window.innerHeight-16) top=rect.top-popH-6;
-  if(left+popW>window.innerWidth-16)  left=window.innerWidth-popW-16;
-
-  popup.style.top=top+"px";
-  popup.style.left=left+"px";
-  popup.style.width=Math.max(rect.width,160)+"px";
-  popup.classList.add("visible");
-}
-
-function scheduleHidePopup(){
-  clearTimeout(popupHideTimer);
-  popupHideTimer=setTimeout(hideStackPopup, 120);
-}
-
-function hideStackPopup(){
-  clearTimeout(popupHideTimer);
-  popup.classList.remove("visible");
-  popup.innerHTML="";
-}
-
-// Hide popup on scroll or click outside
-document.addEventListener("click",e=>{
-  if(!popup.contains(e.target))hideStackPopup();
-});
-
-/* ─── Card builders ──────────────────────────────────────────── */
+/* ─── Card builders ─────────────────────────────────────────── */
 function makeCardDay(job,left,width,isStaged){
   const col=cardColour(job.jobType);
-  const sh=getStartHour(job);
-  const dur=getDuration(job.jobType);
+  const sh=getStartHour(job),dur=getDuration(job.jobType);
   const card=document.createElement("div");
   card.className="job-card-day";
-  if(!isStaged){card.style.position="absolute";card.style.left=left+"px";card.style.width=width+"px";}
-  card.style.borderTopColor=col;
-  card.draggable=true;
   card.dataset.jobId=job.jobId||job._id;
   card.dataset.jobType=job.jobType||"";
-
+  if(!isStaged){
+    card.style.cssText=`position:absolute;left:${left}px;width:${width}px;border-top-color:${col}`;
+  }else{
+    card.classList.add("staging-card");
+    card.style.cssText=`position:relative;width:${STAGING_W-18}px;border-top-color:${col}`;
+  }
   const narrow=width<100;
   const timeStr=sh!==null?`${fmtTime(sh)}–${fmtTime(sh+dur)}`:"Unscheduled";
-
   card.innerHTML=`
-    <div style="overflow:hidden;flex:1;min-height:0;">
-      <div class="jc-customer" style="font-size:${narrow?"9px":"10px"}">${esc(job.customerName)}</div>
-      <div class="jc-type" style="font-size:${narrow?"10px":"12px"}">${esc(job.jobType)}</div>
-      ${!isStaged?`<div class="jc-time" style="font-size:${narrow?"9px":"10px"}">${timeStr}</div>`:""}
+    <div style="overflow:hidden;flex:1;min-height:0">
+      <div class="jc-customer" style="font-size:${narrow?"9":"10"}px">${esc(job.customerName)}</div>
+      <div class="jc-type" style="font-size:${narrow?"10":"12"}px">${esc(job.jobType)}</div>
+      ${!isStaged?`<div class="jc-time" style="font-size:${narrow?"9":"10"}px">${timeStr}</div>`:""}
     </div>
     <div class="jc-bottom">
-      <span class="jc-post" style="font-size:${narrow?"9px":"10px"}">${esc(job.postcode)}</span>
-      <span class="jc-id" style="font-size:${narrow?"9px":"10px"}">${esc(job.jobId||job._id)}</span>
+      <span class="jc-post" style="font-size:${narrow?"9":"10"}px">${esc(job.postcode)}</span>
+      <span class="jc-id"   style="font-size:${narrow?"9":"10"}px">${esc(job.jobId||job._id)}</span>
     </div>
     <div class="jc-tooltip">
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Customer</span><span class="jc-tooltip-val">${esc(job.customerName)}</span></div>
@@ -1028,35 +922,18 @@ function makeCardDay(job,left,width,isStaged){
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Engineer</span><span class="jc-tooltip-val">${esc(job.engineerName)}</span></div>
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Job ID</span><span class="jc-tooltip-val" style="color:var(--accent-green)">${esc(job.jobId||job._id)}</span></div>
     </div>`;
-
-  card.addEventListener("dragstart",e=>{
-    dragJob=job;
-    card.classList.add("dragging");
-    e.dataTransfer.effectAllowed="move";
-    /* Use a transparent drag image so the ghost doesn't block drop zones */
-    const ghost=document.createElement("div");
-    ghost.style.cssText="position:fixed;top:-1000px;left:-1000px;width:1px;height:1px;opacity:0;";
-    document.body.appendChild(ghost);
-    e.dataTransfer.setDragImage(ghost,0,0);
-    setTimeout(()=>ghost.remove(),0);
-  });
-  card.addEventListener("dragend",()=>{
-    card.classList.remove("dragging");
-    dragJob=null;
-  });
-  card.addEventListener("click",e=>{e.stopPropagation();openModal(job);});
+  attachDrag(card, job);
   return card;
 }
 
 function makeCardWeek(job){
   const col=cardColour(job.jobType);
+  const sh=getStartHour(job);
   const card=document.createElement("div");
   card.className="job-card-week";
   card.style.borderLeftColor=col;
-  card.draggable=true;
   card.dataset.jobId=job.jobId||job._id;
   card.dataset.jobType=job.jobType||"";
-  const sh=getStartHour(job);
   card.innerHTML=`
     <div class="jc-customer">${esc(job.customerName)}</div>
     <div class="jc-type" style="font-size:11px">${esc(job.jobType)}</div>
@@ -1065,18 +942,33 @@ function makeCardWeek(job){
       <span class="jc-id">${esc(job.jobId||job._id)}</span>
     </div>
     ${sh!==null?`<div style="font-size:9px;color:var(--text-muted);margin-top:2px">${fmtTime(sh)}</div>`:""}`;
-  card.addEventListener("dragstart",e=>{
-    dragJob=job;
-    card.classList.add("dragging");
-    e.dataTransfer.effectAllowed="move";
-    scheduleHidePopup();
-  });
-  card.addEventListener("dragend",()=>{card.classList.remove("dragging");dragJob=null;});
-  card.addEventListener("click",e=>{e.stopPropagation();openModal(job);});
+  attachDrag(card, job);
   return card;
 }
 
-/* ─── Now line ───────────────────────────────────────────────── */
+/* ─── Stack popup ───────────────────────────────────────────── */
+const stackPopup=document.getElementById("stack-popup");
+
+function showStackPopup(anchor, jobs){
+  stackPopup.innerHTML="";
+  jobs.forEach(job=>stackPopup.appendChild(makeCardWeek(job)));
+  const r=anchor.getBoundingClientRect();
+  const pw=210,ph=jobs.length*68+24;
+  let top=r.bottom+6,left=r.left;
+  if(top+ph>window.innerHeight-16)top=r.top-ph-6;
+  if(left+pw>window.innerWidth-16) left=window.innerWidth-pw-16;
+  if(left<8)left=8;
+  stackPopup.style.cssText=`top:${top}px;left:${left}px;width:${Math.max(r.width,180)}px`;
+  stackPopup.classList.add("visible");
+}
+
+function closeStackPopup(){stackPopup.classList.remove("visible");stackPopup.innerHTML="";}
+
+document.addEventListener("mousedown",e=>{
+  if(!stackPopup.contains(e.target)&&!e.target.closest(".stack-more-btn"))closeStackPopup();
+});
+
+/* ─── Now line ──────────────────────────────────────────────── */
 function updateNowLine(dayEnd){
   document.getElementById("nowLine")?.remove();
   if(!sameDay(currentDate,today0()))return;
@@ -1088,45 +980,7 @@ function updateNowLine(dayEnd){
 }
 setInterval(()=>{if(currentView==="day"){const dj=allJobs.filter(j=>{const d=parseDate(j.dateOfJob);return d&&sameDay(d,currentDate);});updateNowLine(calcDayEnd(dj));}},60000);
 
-/* ─── Drop handlers ──────────────────────────────────────────── */
-function handleDrop(newEng,newDate,newHour){
-  if(!dragJob)return;
-  const updates={};
-  if(newEng!==dragJob.engineerName)updates.engineerName=newEng;
-  if(newDate!==dragJob.dateOfJob)updates.dateOfJob=newDate;
-  if(currentView==="day"&&newHour!==null){
-    updates.startHour=newHour;
-  }else if(currentView==="week"&&newDate!==dragJob.dateOfJob){
-    updates.startHour=null;
-  }
-  if(Object.keys(updates).length===0){dragJob=null;return;}
-  persistUpdate(dragJob._id,updates);
-}
-
-function handleDropStaged(newEng,newDate){
-  if(!dragJob)return;
-  const updates={startHour:null};
-  if(newEng!==dragJob.engineerName)updates.engineerName=newEng;
-  if(newDate!==dragJob.dateOfJob)updates.dateOfJob=newDate;
-  persistUpdate(dragJob._id,updates);
-}
-
-async function persistUpdate(jobId,updates){
-  const job=allJobs.find(j=>j._id===jobId);
-  if(job){for(const[k,v]of Object.entries(updates)){if(v===null)delete job[k];else job[k]=v;}}
-  dragJob=null; render();
-  try{
-    const fs={};
-    for(const[k,v]of Object.entries(updates)) fs[k]=v===null?deleteField():v;
-    await updateDoc(doc(db,"uploaded_jobs",jobId),fs);
-    toast("Saved ✓");
-  }catch(err){
-    console.error(err); toast("Save failed: "+(err.code||err.message),"error");
-    loadJobs();
-  }
-}
-
-/* ─── Search ─────────────────────────────────────────────────── */
+/* ─── Search ────────────────────────────────────────────────── */
 function applySearch(){
   const hasJ=jobSearch.length>0,hasE=engSearch.length>0;
   document.querySelectorAll(".eng-tl-row[data-eng]").forEach(r=>{r.style.display=hasE&&!r.dataset.eng.toLowerCase().includes(engSearch)?"none":"";});
@@ -1141,7 +995,7 @@ function applySearch(){
   }
 }
 
-/* ─── Modal ──────────────────────────────────────────────────── */
+/* ─── Modal ─────────────────────────────────────────────────── */
 function openModal(job){
   const sh=getStartHour(job),dur=getDuration(job.jobType);
   document.getElementById("modalTitle").textContent=job.jobType||"Job Details";
@@ -1166,14 +1020,40 @@ function openModal(job){
 }
 function closeModal(){document.getElementById("modalOverlay").classList.remove("open");}
 
-/* ─── Sidebar ────────────────────────────────────────────────── */
+/* ─── UI wiring ─────────────────────────────────────────────── */
+document.getElementById("prevBtn").onclick   =()=>navigate(-1);
+document.getElementById("nextBtn").onclick   =()=>navigate(1);
+document.getElementById("todayBtn").onclick  =()=>{currentDate=today0();syncPicker();render();};
+document.getElementById("refreshBtn").onclick=()=>loadJobs();
+document.getElementById("btnDay").onclick    =()=>setView("day");
+document.getElementById("btnWeek").onclick   =()=>setView("week");
+document.getElementById("datePicker").onchange=e=>{const[y,mo,d]=e.target.value.split("-").map(Number);currentDate=new Date(y,mo-1,d);currentDate.setHours(0,0,0,0);render();};
+document.getElementById("modalClose").onclick   =closeModal;
+document.getElementById("modalOverlay").onclick =e=>{if(e.target===document.getElementById("modalOverlay"))closeModal();};
+document.getElementById("jobSearch").oninput=e=>{jobSearch=e.target.value.trim().toLowerCase();applySearch();};
+document.getElementById("engSearch").oninput=e=>{engSearch=e.target.value.trim().toLowerCase();applySearch();};
+
+function navigate(dir){currentDate.setDate(currentDate.getDate()+dir*(currentView==="week"?7:1));syncPicker();render();}
+function setView(v){currentView=v;document.getElementById("btnDay").classList.toggle("active",v==="day");document.getElementById("btnWeek").classList.toggle("active",v==="week");render();}
+function syncPicker(){const y=currentDate.getFullYear(),mo=String(currentDate.getMonth()+1).padStart(2,"0"),d=String(currentDate.getDate()).padStart(2,"0");document.getElementById("datePicker").value=`${y}-${mo}-${d}`;}
+function setStatus(st,msg){const dot=document.getElementById("sdot"),txt=document.getElementById("stxt");dot.className="sdot"+(st==="spin"?" spin":st==="ok"?" ok":" err");txt.textContent=msg;}
+function setLoading(on){document.getElementById("lbar").classList.toggle("on",on);}
+let toastTimer;
+function toast(msg,type="success"){
+  const t=document.getElementById("toast");
+  const ico=type==="success"?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+  t.className=`${type} show`;t.innerHTML=ico+" "+msg;
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),3200);
+}
+
+/* ─── Sidebar ───────────────────────────────────────────────── */
 const sidebar=document.getElementById("sidebar");
 document.getElementById("sidebarToggle").onclick=toggleSidebar;
 document.getElementById("logoCollapsed").onclick=toggleSidebar;
 function toggleSidebar(){sidebar.classList.toggle("expanded");localStorage.setItem("geko-sidebar",sidebar.classList.contains("expanded")?"expanded":"collapsed");}
 if(localStorage.getItem("geko-sidebar")==="expanded")sidebar.classList.add("expanded");
 
-/* ─── Boot ───────────────────────────────────────────────────── */
+/* ─── Boot ──────────────────────────────────────────────────── */
 syncPicker();
 loadJobs();
 </script>
