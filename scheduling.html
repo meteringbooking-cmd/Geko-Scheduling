@@ -12,6 +12,7 @@
     --text-main:    #e6f7ff;
     --text-muted:   #8fa0b8;
     --danger:       #ff4b5c;
+    --warning:      #f59e0b;
     --transition-fast: 0.18s ease-out;
     --transition-med:  0.28s ease-out;
     --sidebar-w-collapsed: 64px;
@@ -120,6 +121,28 @@
   #topbar-subtitle { font-size: 12px; color: var(--text-muted); }
   #topbar-right { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-muted); }
   #status-dot { width: 10px; height: 10px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 10px rgba(0,255,157,0.8); display: inline-block; }
+
+  /* LIVE INDICATOR */
+  #live-indicator {
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 12px; border-radius: 20px;
+    border: 1px solid rgba(0,255,157,0.2);
+    background: rgba(0,255,157,0.05);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+    color: var(--accent-green); transition: all 0.3s;
+  }
+  #live-indicator.connecting { border-color: rgba(0,200,255,0.2); background: rgba(0,200,255,0.05); color: var(--accent-blue); }
+  #live-indicator.error { border-color: rgba(255,75,92,0.2); background: rgba(255,75,92,0.05); color: var(--danger); }
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent-green);
+    box-shadow: 0 0 6px rgba(0,255,157,0.8);
+    animation: livePulse 2s ease-in-out infinite;
+  }
+  #live-indicator.connecting .live-dot { background: var(--accent-blue); box-shadow: 0 0 6px rgba(0,200,255,0.8); }
+  #live-indicator.error .live-dot { background: var(--danger); animation: none; }
+  @keyframes livePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(0.85)} }
+
   #toolbar {
     display: flex; align-items: center; gap: 10px; padding: 10px 20px;
     background: rgba(5,10,18,0.9); border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -264,6 +287,31 @@
   }
   @keyframes pendingPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,200,0,0)} 50%{box-shadow:0 0 10px 2px rgba(255,200,0,0.15)} }
 
+  /* ── STATUS BADGE ON CARD ── */
+  .card-status-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 2px 6px; border-radius: 4px;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; border: 1px solid;
+    line-height: 1.4; flex-shrink: 0;
+  }
+  .card-status-badge.s-complete    { background: rgba(0,255,157,0.12); border-color: rgba(0,255,157,0.35); color: #00ff9d; }
+  .card-status-badge.s-en-route    { background: rgba(0,200,255,0.12); border-color: rgba(0,200,255,0.35); color: #00c8ff; }
+  .card-status-badge.s-in-progress { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.35); color: #f59e0b; }
+  .card-status-badge.s-abort       { background: rgba(255,75,92,0.12); border-color: rgba(255,75,92,0.35); color: #ff4b5c; }
+  .card-status-badge.s-unassigned  { background: rgba(143,160,184,0.08); border-color: rgba(143,160,184,0.2); color: #8fa0b8; }
+
+  /* Flash animation when status updates live */
+  @keyframes statusFlash {
+    0%   { box-shadow: 0 0 0 0 rgba(0,255,157,0.7); }
+    40%  { box-shadow: 0 0 0 8px rgba(0,255,157,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,255,157,0); }
+  }
+  .job-card-day.status-updated,
+  .job-card-week.status-updated {
+    animation: statusFlash 0.8s ease-out forwards;
+  }
+
   /* TOOLTIP */
   .jc-tooltip {
     position: absolute; top: calc(100% + 6px); left: 0; min-width: 210px; max-width: 260px;
@@ -355,15 +403,33 @@
   .now-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--danger); z-index: 30; pointer-events: none; }
   .now-line::before { content:""; position:absolute; top:50%; left:-4px; width:10px; height:10px; border-radius:50%; background:var(--danger); transform:translateY(-50%); }
 
-  /* MODAL */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(4px); z-index: 500; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  /* ══════════════════════════════════
+     MODAL
+  ══════════════════════════════════ */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(4px);
+    z-index: 500; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
   .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal { background: rgba(10,14,24,0.98); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; width: 500px; max-width: 94vw; max-height: 88vh; overflow-y: auto; transform: translateY(16px); transition: transform 0.22s; box-shadow: 0 24px 60px rgba(0,0,0,0.9); }
+  .modal {
+    background: rgba(10,14,24,0.98); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;
+    width: 560px; max-width: 94vw; max-height: 88vh; overflow-y: auto;
+    transform: translateY(16px); transition: transform 0.22s;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.9);
+  }
   .modal-overlay.open .modal { transform: translateY(0); }
-  .modal-head { padding: 22px 26px 16px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .modal-head {
+    padding: 22px 26px 16px; display: flex; justify-content: space-between; align-items: flex-start;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
   .modal-title { font-size: 18px; font-weight: 600; letter-spacing: 0.05em; }
   .modal-id    { font-size: 12px; color: var(--accent-green); font-weight: 700; margin-top: 3px; }
-  .modal-close { width: 30px; height: 30px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.08); background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s; }
+  .modal-close {
+    width: 30px; height: 30px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.08);
+    background: transparent; color: var(--text-muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s;
+  }
   .modal-close:hover { border-color: var(--danger); color: var(--danger); }
   .modal-body { padding: 18px 26px 26px; }
   .dg { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -372,11 +438,86 @@
   .df.full  { grid-column: 1/-1; }
   .ddiv     { height: 1px; background: rgba(255,255,255,0.06); grid-column: 1/-1; }
 
+  /* ── STATUS HISTORY SECTION ── */
+  .modal-section-title {
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-muted); margin: 22px 0 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .modal-section-title::after {
+    content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06);
+  }
+
+  .history-timeline { display: flex; flex-direction: column; gap: 0; position: relative; }
+  .history-timeline::before {
+    content: ''; position: absolute; left: 14px; top: 8px; bottom: 8px;
+    width: 1px; background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  }
+
+  .history-item {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 8px 0; position: relative;
+    animation: historyFadeIn 0.3s ease-out both;
+  }
+  @keyframes historyFadeIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+
+  .history-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    flex-shrink: 0; margin-top: 3px; z-index: 1;
+    border: 2px solid rgba(255,255,255,0.12);
+    position: relative; left: 10px;
+  }
+  .history-dot.s-complete    { background: #00ff9d; border-color: rgba(0,255,157,0.4); box-shadow: 0 0 8px rgba(0,255,157,0.5); }
+  .history-dot.s-en-route    { background: #00c8ff; border-color: rgba(0,200,255,0.4); box-shadow: 0 0 8px rgba(0,200,255,0.5); }
+  .history-dot.s-in-progress { background: #f59e0b; border-color: rgba(245,158,11,0.4); box-shadow: 0 0 8px rgba(245,158,11,0.5); }
+  .history-dot.s-abort       { background: #ff4b5c; border-color: rgba(255,75,92,0.4); box-shadow: 0 0 8px rgba(255,75,92,0.5); }
+  .history-dot.s-created     { background: rgba(143,160,184,0.4); border-color: rgba(143,160,184,0.2); }
+
+  .history-content { flex: 1; padding-left: 12px; }
+  .history-status {
+    font-size: 12px; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .history-status-label { }
+  .history-status-label.s-complete    { color: #00ff9d; }
+  .history-status-label.s-en-route    { color: #00c8ff; }
+  .history-status-label.s-in-progress { color: #f59e0b; }
+  .history-status-label.s-abort       { color: #ff4b5c; }
+  .history-status-label.s-created     { color: var(--text-muted); }
+
+  .history-meta {
+    font-size: 11px; color: var(--text-muted); margin-top: 2px;
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  }
+  .history-by {
+    font-size: 11px; color: var(--text-main); font-weight: 500;
+  }
+  .history-time { color: var(--text-muted); }
+  .history-ago  { color: rgba(143,160,184,0.5); font-size: 10px; }
+
+  .history-empty {
+    text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;
+    border: 1px dashed rgba(255,255,255,0.06); border-radius: 8px;
+  }
+
+  /* ── CURRENT STATUS PILL in modal header ── */
+  .modal-status-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    border: 1px solid; margin-top: 6px;
+  }
+  .modal-status-pill.s-complete    { background: rgba(0,255,157,0.1); border-color: rgba(0,255,157,0.3); color: #00ff9d; }
+  .modal-status-pill.s-en-route    { background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.3); color: #00c8ff; }
+  .modal-status-pill.s-in-progress { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: #f59e0b; }
+  .modal-status-pill.s-abort       { background: rgba(255,75,92,0.1); border-color: rgba(255,75,92,0.3); color: #ff4b5c; }
+  .modal-status-pill.s-unassigned  { background: rgba(143,160,184,0.08); border-color: rgba(143,160,184,0.2); color: var(--text-muted); }
+
   /* TOAST */
   #toast { position: fixed; bottom: 24px; right: 24px; z-index: 99999; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; transform: translateY(20px); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; pointer-events: none; }
   #toast.show { transform: translateY(0); opacity: 1; }
   #toast.success { background: rgba(10,20,15,0.97); border: 1px solid rgba(0,255,157,0.4); color: var(--accent-green); box-shadow: 0 0 30px rgba(0,255,157,0.15),0 16px 40px rgba(0,0,0,0.8); }
   #toast.error   { background: rgba(20,10,12,0.97); border: 1px solid rgba(255,75,92,0.4); color: var(--danger); box-shadow: 0 0 30px rgba(255,75,92,0.15),0 16px 40px rgba(0,0,0,0.8); }
+  #toast.info    { background: rgba(5,14,20,0.97); border: 1px solid rgba(0,200,255,0.4); color: var(--accent-blue); box-shadow: 0 0 30px rgba(0,200,255,0.1),0 16px 40px rgba(0,0,0,0.8); }
 
   #loading-overlay { position: fixed; inset: 0; background: rgba(2,3,8,0.75); display: flex; align-items: center; justify-content: center; z-index: 9998; backdrop-filter: blur(6px); }
   #loading-overlay.hidden { display: none; }
@@ -440,7 +581,14 @@
       <div id="topbar-title">Scheduling</div>
       <div id="topbar-subtitle">Click a job to view details · Drag to reschedule or reassign</div>
     </div>
-    <div id="topbar-right"><span id="status-dot"></span><span id="status-text">Admin</span></div>
+    <div id="topbar-right">
+      <div id="live-indicator" class="connecting">
+        <div class="live-dot"></div>
+        <span id="live-text">Connecting…</span>
+      </div>
+      <span id="status-dot"></span>
+      <span id="status-text">Admin</span>
+    </div>
   </header>
   <div id="toolbar">
     <div class="date-nav">
@@ -464,10 +612,6 @@
     </div>
     <div class="tsep"></div>
     <span id="jobCountLbl"></span>
-    <button class="btn" id="refreshBtn" style="margin-left:8px;">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-      Refresh
-    </button>
   </div>
   <div class="lbar" id="lbar"></div>
   <div class="status-bar"><div class="sdot spin" id="sdot"></div><span id="stxt">Connecting…</span></div>
@@ -491,7 +635,11 @@
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-head">
-      <div><div class="modal-title" id="modalTitle"></div><div class="modal-id" id="modalId"></div></div>
+      <div>
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-id" id="modalId"></div>
+        <div id="modalStatusPill"></div>
+      </div>
       <button class="modal-close" id="modalClose">✕</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
@@ -500,8 +648,9 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, updateDoc, deleteField }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  getFirestore, collection, onSnapshot, doc, updateDoc, deleteField
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const db = getFirestore(initializeApp({
   apiKey:"AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
@@ -514,17 +663,42 @@ const db = getFirestore(initializeApp({
 
 /* ─── Constants ─────────────────────────────────────────────── */
 const HOUR_W = 160, ROW_H = 72, DAY_START = 7, DAY_END_MIN = 18, STAGING_W = 140;
-const DRAG_THRESHOLD = 5; // px to move before drag activates
+const DRAG_THRESHOLD = 5;
 
 const JOB_DURATIONS = {"dual fuel":2,"single gas":1.5,"single elec":1.5,"comms":0.5};
 function getDuration(t){const k=(t||"").toLowerCase();for(const[key,v]of Object.entries(JOB_DURATIONS))if(k.includes(key))return v;return 1;}
 function getStartHour(job){const v=job.startHour;if(v===null||v===undefined||v==="")return null;const n=+v;return isNaN(n)?null:n;}
 function calcDayEnd(jobs){let end=DAY_END_MIN;jobs.forEach(j=>{const sh=getStartHour(j);if(sh===null)return;const fin=sh+getDuration(j.jobType);if(fin>end)end=Math.ceil(fin)+0.5;});return end;}
+
 const COLOURS=["#00c896","#0084ff","#f59e0b","#ff4d6a","#a855f7","#06b6d4","#f97316","#10b981"];
 function cardColour(t){const h=[...(t||"x")].reduce((a,c)=>a+c.charCodeAt(0),0);return COLOURS[h%COLOURS.length];}
 
+/* ─── Status helpers ────────────────────────────────────────── */
+const STATUS_META = {
+  'complete':    { label: 'Complete',    icon: '✓', cls: 's-complete' },
+  'en-route':    { label: 'En Route',    icon: '→', cls: 's-en-route' },
+  'in-progress': { label: 'In Progress', icon: '⚙', cls: 's-in-progress' },
+  'abort':       { label: 'Aborted',     icon: '✕', cls: 's-abort' },
+  'unassigned':  { label: 'Unassigned',  icon: '○', cls: 's-unassigned' },
+};
+
+function normaliseStatus(raw){
+  if(!raw) return 'unassigned';
+  const s = String(raw).toLowerCase().trim().replace(/\s+/g,'-');
+  if(s==='enroute') return 'en-route';
+  if(s==='inprogress') return 'in-progress';
+  return ['complete','en-route','in-progress','abort'].includes(s) ? s : 'unassigned';
+}
+
+function getStatusMeta(raw){
+  return STATUS_META[normaliseStatus(raw)] || STATUS_META['unassigned'];
+}
+
 /* ─── App state ─────────────────────────────────────────────── */
-let allJobs=[], currentView="day", currentDate=today0(), jobSearch="", engSearch="";
+let allJobs = [], currentView = "day", currentDate = today0(), jobSearch = "", engSearch = "";
+let openModalJobId = null; // track which job is open in modal
+let unsubscribe = null;    // Firestore listener cleanup
+
 function today0(){const d=new Date();d.setHours(0,0,0,0);return d;}
 
 /* ─── Date helpers ──────────────────────────────────────────── */
@@ -532,7 +706,6 @@ function parseDate(s){
   if(!s)return null;s=String(s).trim();let m;
   m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);if(m){const d=new Date(+m[3],+m[2]-1,+m[1]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
   m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);if(m){const d=new Date(+m[1],+m[2]-1,+m[3]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
-  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);if(m){let y=+m[3];if(y<100)y+=2000;const d=new Date(y,+m[1]-1,+m[2]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
   const d=new Date(s);if(!isNaN(d)){d.setHours(0,0,0,0);return d;}return null;
 }
 function sameDay(a,b){return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
@@ -546,38 +719,137 @@ function getCols(){
   return Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   CUSTOM DRAG ENGINE
-   Uses mousedown/mousemove/mouseup on document.
-   Cards never use HTML5 draggable — this avoids all browser
-   drag-API quirks with overflow:hidden parents and z-index.
+function timeAgo(isoStr){
+  if(!isoStr) return '';
+  const diff = Date.now() - new Date(isoStr).getTime();
+  if(diff < 60000)  return 'just now';
+  if(diff < 3600000) return `${Math.floor(diff/60000)}m ago`;
+  if(diff < 86400000) return `${Math.floor(diff/3600000)}h ago`;
+  return `${Math.floor(diff/86400000)}d ago`;
+}
 
-   Flow:
-     1. mousedown on card  → start watching
-     2. mousemove > threshold → activate; show ghost; disable pointer
-        events on ghost via visibility:hidden during hit-test
-     3. mouseup → if never activated = click → open modal
-                  if activated = find drop zone → commit
-═══════════════════════════════════════════════════════════════ */
+function fmtTimestamp(isoStr){
+  if(!isoStr) return '—';
+  try {
+    const d = new Date(isoStr);
+    return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})
+      + ' at '
+      + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  } catch { return isoStr; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   REAL-TIME FIRESTORE LISTENER
+   Uses onSnapshot instead of getDocs so we get pushed updates
+   the instant an engineer changes a status on their portal.
+══════════════════════════════════════════════════════════════ */
+function startRealTimeListener(){
+  setLive('connecting', 'Connecting…');
+
+  // Clean up any existing listener
+  if(unsubscribe) { unsubscribe(); unsubscribe = null; }
+
+  try {
+    unsubscribe = onSnapshot(
+      collection(db, 'uploaded_jobs'),
+      { includeMetadataChanges: false },
+      (snapshot) => {
+        // First load
+        if(allJobs.length === 0) {
+          allJobs = [];
+          snapshot.forEach(d => allJobs.push({ _id: d.id, ...d.data() }));
+          setStatus('ok', `${allJobs.length} jobs loaded`);
+          setLive('live', `Live · ${allJobs.length} jobs`);
+          toast(`${allJobs.length} job${allJobs.length!==1?'s':''} loaded`);
+          render();
+          document.getElementById('loading-overlay').classList.add('hidden');
+          return;
+        }
+
+        // Incremental changes — process each change individually
+        let changedCount = 0;
+        const updatedIds = [];
+
+        snapshot.docChanges().forEach(change => {
+          const newData = { _id: change.doc.id, ...change.doc.data() };
+
+          if(change.type === 'added') {
+            if(!allJobs.find(j => j._id === newData._id)) {
+              allJobs.push(newData);
+              changedCount++;
+            }
+          } else if(change.type === 'modified') {
+            const idx = allJobs.findIndex(j => j._id === newData._id);
+            if(idx !== -1) {
+              const old = allJobs[idx];
+              const oldStatus = normaliseStatus(old.jobStatus || old.status);
+              const newStatus = normaliseStatus(newData.jobStatus || newData.status);
+              allJobs[idx] = newData;
+              changedCount++;
+              // If status changed, track for flash effect and toast
+              if(oldStatus !== newStatus) {
+                updatedIds.push({ id: newData._id, status: newStatus, eng: newData.engineerName });
+              }
+            }
+          } else if(change.type === 'removed') {
+            allJobs = allJobs.filter(j => j._id !== change.doc.id);
+            changedCount++;
+          }
+        });
+
+        if(changedCount > 0) {
+          setLive('live', `Live · ${allJobs.length} jobs`);
+          setStatus('ok', `Updated ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
+          render();
+
+          // Flash updated cards and show toasts for status changes
+          updatedIds.forEach(({ id, status, eng }) => {
+            const meta = getStatusMeta(status);
+            toast(`${esc(eng||'Engineer')}: ${meta.label}`, 'info');
+
+            // Flash matching cards (they're freshly rendered so use setTimeout)
+            setTimeout(() => {
+              document.querySelectorAll(`[data-job-doc-id="${id}"]`).forEach(el => {
+                el.classList.remove('status-updated');
+                void el.offsetWidth; // reflow to restart animation
+                el.classList.add('status-updated');
+              });
+            }, 50);
+
+            // If modal is open for this job, refresh it
+            if(openModalJobId === id) {
+              const job = allJobs.find(j => j._id === id);
+              if(job) openModal(job, false);
+            }
+          });
+        }
+      },
+      (error) => {
+        console.error('Firestore listener error:', error);
+        setLive('error', 'Disconnected');
+        setStatus('err', 'Connection lost: ' + (error.code || error.message));
+        toast('Real-time connection lost. Retrying…', 'error');
+        // Retry after 5s
+        setTimeout(startRealTimeListener, 5000);
+      }
+    );
+  } catch(e) {
+    console.error(e);
+    setLive('error', 'Error');
+    setStatus('err', e.message);
+    document.getElementById('loading-overlay').classList.add('hidden');
+  }
+}
+
+/* ─── Drag engine ───────────────────────────────────────────── */
 const ghost = document.getElementById("drag-ghost");
-let activeDrag = null; // { job, cardEl, startX, startY, started, currentZone }
+let activeDrag = null;
 
 function attachDrag(cardEl, job) {
   cardEl.addEventListener("mousedown", e => {
-    // Only primary button; ignore if clicking inside modal or toolbar
     if(e.button !== 0) return;
-    e.preventDefault();
-    e.stopPropagation();
-
-    activeDrag = {
-      job,
-      cardEl,
-      startX: e.clientX,
-      startY: e.clientY,
-      started: false,
-      currentZone: null
-    };
-
+    e.preventDefault(); e.stopPropagation();
+    activeDrag = { job, cardEl, startX: e.clientX, startY: e.clientY, started: false, currentZone: null };
     document.addEventListener("mousemove", onMove, {capture:true});
     document.addEventListener("mouseup",   onUp,   {capture:true});
   });
@@ -585,13 +857,9 @@ function attachDrag(cardEl, job) {
 
 function onMove(e) {
   if(!activeDrag) return;
-
-  const dx = e.clientX - activeDrag.startX;
-  const dy = e.clientY - activeDrag.startY;
-
+  const dx = e.clientX - activeDrag.startX, dy = e.clientY - activeDrag.startY;
   if(!activeDrag.started) {
     if(Math.hypot(dx,dy) < DRAG_THRESHOLD) return;
-    // Activate drag
     activeDrag.started = true;
     activeDrag.cardEl.classList.add("is-dragging");
     const col = cardColour(activeDrag.job.jobType);
@@ -604,32 +872,13 @@ function onMove(e) {
     document.body.style.cursor = "grabbing";
     closeStackPopup();
   }
-
-  // Position ghost near cursor
   ghost.style.left = (e.clientX + 16) + "px";
   ghost.style.top  = (e.clientY - 16) + "px";
-
-  // Hit-test for drop zones:
-  // Temporarily make ghost invisible (not display:none — that shifts layout)
-  // so elementFromPoint looks through it
   ghost.style.visibility = "hidden";
   const el = document.elementFromPoint(e.clientX, e.clientY);
   ghost.style.visibility = "";
-
-  // Clear previous zone highlight
-  if(activeDrag.currentZone) {
-    activeDrag.currentZone.classList.remove("drop-active");
-    activeDrag.currentZone = null;
-  }
-
-  if(el) {
-    // Walk up the DOM looking for a drop zone marker
-    const zone = el.closest("[data-drop]");
-    if(zone) {
-      zone.classList.add("drop-active");
-      activeDrag.currentZone = zone;
-    }
-  }
+  if(activeDrag.currentZone) { activeDrag.currentZone.classList.remove("drop-active"); activeDrag.currentZone = null; }
+  if(el) { const zone = el.closest("[data-drop]"); if(zone) { zone.classList.add("drop-active"); activeDrag.currentZone = zone; } }
 }
 
 function onUp(e) {
@@ -637,119 +886,91 @@ function onUp(e) {
   document.removeEventListener("mouseup",   onUp,   {capture:true});
   document.body.style.cursor = "";
   ghost.style.display = "none";
-
   if(!activeDrag) return;
   const {job, cardEl, started, currentZone} = activeDrag;
   activeDrag = null;
-
   cardEl.classList.remove("is-dragging");
-
   if(currentZone) currentZone.classList.remove("drop-active");
-
-  if(!started) {
-    // Was a click — open modal
-    openModal(job);
-    return;
-  }
-
-  if(currentZone) {
-    commitDrop(job, currentZone);
-  }
+  if(!started) { openModal(job); return; }
+  if(currentZone) commitDrop(job, currentZone);
 }
 
 function commitDrop(job, zoneEl) {
-  const type = zoneEl.dataset.drop;   // "slot" | "staging" | "week"
+  const type = zoneEl.dataset.drop;
   const eng  = zoneEl.dataset.eng  || job.engineerName;
   const date = zoneEl.dataset.date || job.dateOfJob;
   const hour = zoneEl.dataset.hour !== undefined ? parseFloat(zoneEl.dataset.hour) : null;
-
   const updates = {};
   if(eng  !== job.engineerName) updates.engineerName = eng;
   if(date !== job.dateOfJob)    updates.dateOfJob    = date;
-
   if(type === "slot") {
-    updates.startHour = hour;  // always set even if unchanged, to confirm placement
-    if(hour === getStartHour(job) && eng === job.engineerName && date === job.dateOfJob) return; // no-op
+    updates.startHour = hour;
+    if(hour === getStartHour(job) && eng === job.engineerName && date === job.dateOfJob) return;
   } else if(type === "staging") {
     updates.startHour = null;
   } else if(type === "week") {
     if(date !== job.dateOfJob) updates.startHour = null;
-    // If same day & same eng — no change needed
     if(Object.keys(updates).length === 0) return;
   }
-
   persistUpdate(job._id, updates, job);
 }
 
-/* ─── Firebase ──────────────────────────────────────────────── */
-async function loadJobs(){
-  setLoading(true);setStatus("spin","Loading…");
-  try{
-    const snap=await getDocs(collection(db,"uploaded_jobs"));
-    allJobs=[];snap.forEach(d=>allJobs.push({_id:d.id,...d.data()}));
-    setStatus("ok",`${allJobs.length} jobs loaded`);
-    toast(`${allJobs.length} job${allJobs.length!==1?"s":""} loaded`);
-    render();
-  }catch(e){
-    console.error(e);setStatus("err","Error: "+(e.code||e.message));toast("Failed to load","error");
-  }
-  setLoading(false);document.getElementById("loading-overlay").classList.add("hidden");
-}
-
+/* ─── Firebase write ────────────────────────────────────────── */
 async function persistUpdate(jobId, updates, job){
   // Optimistic update
-  const j=allJobs.find(x=>x._id===jobId);
-  if(j){for(const[k,v]of Object.entries(updates)){if(v===null)delete j[k];else j[k]=v;}}
+  const j = allJobs.find(x => x._id === jobId);
+  if(j){ for(const[k,v] of Object.entries(updates)){ if(v===null) delete j[k]; else j[k]=v; } }
   render();
-  try{
-    const fs={};
-    for(const[k,v]of Object.entries(updates)) fs[k]=v===null?deleteField():v;
-    await updateDoc(doc(db,"uploaded_jobs",jobId),fs);
+  try {
+    const fs = {};
+    for(const[k,v] of Object.entries(updates)) fs[k] = v===null ? deleteField() : v;
+    await updateDoc(doc(db,'uploaded_jobs',jobId), fs);
     toast("Saved ✓");
-  }catch(err){
-    console.error(err);toast("Save failed: "+(err.code||err.message),"error");
-    loadJobs();
+  } catch(err) {
+    console.error(err);
+    toast("Save failed: "+(err.code||err.message),"error");
+    // onSnapshot will auto-correct the local state
   }
 }
 
 /* ─── Render ────────────────────────────────────────────────── */
 function render(){
-  closeStackPopup();syncPicker();
-  const cols=getCols();
-  const colJobs=allJobs.filter(j=>{const jd=parseDate(j.dateOfJob);return jd&&cols.some(c=>sameDay(c,jd));});
-  const dayEnd=currentView==="day"?calcDayEnd(colJobs):DAY_END_MIN;
-  renderHeader(cols,dayEnd);renderRows(cols,dayEnd);updateLabel(cols);
-  if(currentView==="day")updateNowLine(dayEnd);
+  closeStackPopup(); syncPicker();
+  const cols = getCols();
+  const colJobs = allJobs.filter(j=>{ const jd=parseDate(j.dateOfJob); return jd&&cols.some(c=>sameDay(c,jd)); });
+  const dayEnd = currentView==="day" ? calcDayEnd(colJobs) : DAY_END_MIN;
+  renderHeader(cols,dayEnd); renderRows(cols,dayEnd); updateLabel(cols);
+  if(currentView==="day") updateNowLine(dayEnd);
   applySearch();
 }
 
 function updateLabel(cols){
-  document.getElementById("dateLbl").textContent=currentView==="day"
-    ?cols[0].toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"})
-    :`${cols[0].toLocaleDateString("en-GB",{day:"numeric",month:"short"})} – ${cols[6].toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}`;
+  document.getElementById("dateLbl").textContent = currentView==="day"
+    ? cols[0].toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"})
+    : `${cols[0].toLocaleDateString("en-GB",{day:"numeric",month:"short"})} – ${cols[6].toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}`;
 }
 
 function renderHeader(cols,dayEnd){
-  const hdr=document.getElementById("timeHeader");hdr.innerHTML="";hdr.removeAttribute("style");
-  const hours=dayEnd-DAY_START,todayD=today0();
+  const hdr=document.getElementById("timeHeader"); hdr.innerHTML=""; hdr.removeAttribute("style");
+  const hours=dayEnd-DAY_START, todayD=today0();
   if(currentView==="day"){
-    hdr.style.width=`${HOUR_W*hours+STAGING_W}px`;hdr.style.flexShrink="0";
+    hdr.style.width=`${HOUR_W*hours+STAGING_W}px`; hdr.style.flexShrink="0";
     for(let h=DAY_START;h<dayEnd;h++){
-      const c=document.createElement("div");c.className="t-hdr-cell";c.style.width=HOUR_W+"px";
-      const h1=document.createElement("div");h1.className="t-hdr-half";h1.textContent=`${String(h).padStart(2,"0")}:00`;
-      const h2=document.createElement("div");h2.className="t-hdr-half";h2.textContent=`${String(h).padStart(2,"0")}:30`;
-      c.appendChild(h1);c.appendChild(h2);hdr.appendChild(c);
+      const c=document.createElement("div"); c.className="t-hdr-cell"; c.style.width=HOUR_W+"px";
+      const h1=document.createElement("div"); h1.className="t-hdr-half"; h1.textContent=`${String(h).padStart(2,"0")}:00`;
+      const h2=document.createElement("div"); h2.className="t-hdr-half"; h2.textContent=`${String(h).padStart(2,"0")}:30`;
+      c.appendChild(h1); c.appendChild(h2); hdr.appendChild(c);
     }
     const stg=document.createElement("div");
     stg.style.cssText=`flex-shrink:0;width:${STAGING_W}px;display:flex;align-items:center;justify-content:center;border-left:2px dashed rgba(255,200,0,0.2);`;
     stg.innerHTML=`<span style="font-size:9px;color:rgba(255,200,0,0.35);text-transform:uppercase;letter-spacing:.5px">Unscheduled</span>`;
     hdr.appendChild(stg);
-  }else{
+  } else {
     cols.forEach(col=>{
-      const c=document.createElement("div");c.className="t-hdr-cell week-cell";
+      const c=document.createElement("div"); c.className="t-hdr-cell week-cell";
       const dow=col.getDay();
-      if(dow===0||dow===6)c.classList.add("weekend");
-      if(sameDay(col,todayD))c.classList.add("today-col");
+      if(dow===0||dow===6) c.classList.add("weekend");
+      if(sameDay(col,todayD)) c.classList.add("today-col");
       c.innerHTML=`<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted)">${col.toLocaleDateString("en-GB",{weekday:"short"})}</div><div style="font-size:15px;font-weight:700">${col.getDate()}</div>`;
       hdr.appendChild(c);
     });
@@ -757,15 +978,15 @@ function renderHeader(cols,dayEnd){
 }
 
 function renderRows(cols,dayEnd){
-  const hours=dayEnd-DAY_START,todayD=today0();
+  const hours=dayEnd-DAY_START, todayD=today0();
   const engSet=new Set(allJobs.map(j=>j.engineerName).filter(Boolean));
   const engineers=[...engSet].sort((a,b)=>a.localeCompare(b));
   const visibleJobs=allJobs.filter(j=>{const jd=parseDate(j.dateOfJob);return jd&&cols.some(c=>sameDay(c,jd));});
   document.getElementById("jobCountLbl").textContent=`${visibleJobs.length} job${visibleJobs.length!==1?"s":""} in view`;
 
-  const engList=document.getElementById("engList");engList.innerHTML="";
-  const rowsCont=document.getElementById("rowsContainer");rowsCont.innerHTML="";
-  const hourGrid=document.getElementById("hourGrid");hourGrid.innerHTML="";
+  const engList=document.getElementById("engList"); engList.innerHTML="";
+  const rowsCont=document.getElementById("rowsContainer"); rowsCont.innerHTML="";
+  const hourGrid=document.getElementById("hourGrid"); hourGrid.innerHTML="";
   const rowsWrap=document.getElementById("rowsWrap");
 
   if(!engineers.length){
@@ -775,19 +996,15 @@ function renderRows(cols,dayEnd){
 
   if(currentView==="day"){
     const tw=HOUR_W*hours+STAGING_W;
-    rowsWrap.style.width=tw+"px";rowsWrap.style.minWidth=tw+"px";
+    rowsWrap.style.width=tw+"px"; rowsWrap.style.minWidth=tw+"px";
     for(let i=0;i<hours;i++){const c=document.createElement("div");c.className="hg-col";c.style.width=HOUR_W+"px";hourGrid.appendChild(c);}
-  }else{
-    rowsWrap.style.width="";rowsWrap.style.minWidth="";
+  } else {
+    rowsWrap.style.width=""; rowsWrap.style.minWidth="";
   }
 
-  document.getElementById("scrollArea").onscroll=()=>{
-    engList.scrollTop=document.getElementById("scrollArea").scrollTop;
-    closeStackPopup();
-  };
+  document.getElementById("scrollArea").onscroll=()=>{ engList.scrollTop=document.getElementById("scrollArea").scrollTop; closeStackPopup(); };
 
   engineers.forEach(eng=>{
-    // Sidebar label
     const sr=document.createElement("div");
     sr.className="eng-row"+(currentView==="week"?" auto":"");
     sr.dataset.eng=eng;
@@ -800,7 +1017,6 @@ function renderRows(cols,dayEnd){
     row.className="eng-tl-row "+(currentView==="day"?"day-mode":"week-mode");
     row.dataset.eng=eng;
 
-    /* ── DAY VIEW ── */
     if(currentView==="day"){
       row.style.height=ROW_H+"px";
       row.style.width=`${HOUR_W*hours+STAGING_W}px`;
@@ -809,71 +1025,37 @@ function renderRows(cols,dayEnd){
       const scheduled=dayJobs.filter(j=>getStartHour(j)!==null);
       const staged   =dayJobs.filter(j=>getStartHour(j)===null);
 
-      // Slot drop zones — these sit in the row at z-index 1
-      // Cards sit at z-index 10 normally, but .is-dragging removes them visually
-      // We use the ghost + elementFromPoint for hit-testing, so z-index is irrelevant
       const slotWrap=document.createElement("div");
-      slotWrap.className="day-slots";
-      slotWrap.style.width=`${HOUR_W*hours}px`;
-
+      slotWrap.className="day-slots"; slotWrap.style.width=`${HOUR_W*hours}px`;
       for(let h=DAY_START;h<dayEnd;h++){
         for(const half of [0,0.5]){
-          const s=document.createElement("div");
-          s.className="day-slot";
-          s.style.width=(HOUR_W/2)+"px";
-          s.dataset.drop="slot";
-          s.dataset.eng=eng;
-          s.dataset.date=toUKStr(col);
-          s.dataset.hour=String(h+half);
-          const lbl=document.createElement("span");lbl.className="slot-label";lbl.textContent=fmtTime(h+half);
-          s.appendChild(lbl);
-          slotWrap.appendChild(s);
+          const s=document.createElement("div"); s.className="day-slot"; s.style.width=(HOUR_W/2)+"px";
+          s.dataset.drop="slot"; s.dataset.eng=eng; s.dataset.date=toUKStr(col); s.dataset.hour=String(h+half);
+          const lbl=document.createElement("span"); lbl.className="slot-label"; lbl.textContent=fmtTime(h+half);
+          s.appendChild(lbl); slotWrap.appendChild(s);
         }
       }
       row.appendChild(slotWrap);
+      scheduled.forEach(job=>{ row.appendChild(makeCardDay(job,(getStartHour(job)-DAY_START)*HOUR_W,getDuration(job.jobType)*HOUR_W-4,false)); });
 
-      // Job cards
-      scheduled.forEach(job=>{
-        const sh=getStartHour(job),dur=getDuration(job.jobType);
-        row.appendChild(makeCardDay(job,(sh-DAY_START)*HOUR_W,dur*HOUR_W-4,false));
-      });
-
-      // Staging zone
-      const sz=document.createElement("div");
-      sz.className="staging-zone";
-      sz.dataset.drop="staging";
-      sz.dataset.eng=eng;
-      sz.dataset.date=toUKStr(col);
-      if(staged.length===0){
-        const hint=document.createElement("div");hint.className="staging-hint";
-        hint.innerHTML=`<span>Drop here<br>to unschedule</span>`;sz.appendChild(hint);
-      }else{
-        staged.forEach(job=>sz.appendChild(makeCardDay(job,0,STAGING_W-18,true)));
-      }
+      const sz=document.createElement("div"); sz.className="staging-zone";
+      sz.dataset.drop="staging"; sz.dataset.eng=eng; sz.dataset.date=toUKStr(col);
+      if(staged.length===0){ const hint=document.createElement("div"); hint.className="staging-hint"; hint.innerHTML=`<span>Drop here<br>to unschedule</span>`; sz.appendChild(hint); }
+      else { staged.forEach(job=>sz.appendChild(makeCardDay(job,0,STAGING_W-18,true))); }
       row.appendChild(sz);
 
-    /* ── WEEK VIEW ── */
-    }else{
+    } else {
       cols.forEach(col=>{
-        const cell=document.createElement("div");
-        cell.className="week-cell-drop";
-        cell.dataset.drop="week";
-        cell.dataset.eng=eng;
-        cell.dataset.date=toUKStr(col);
+        const cell=document.createElement("div"); cell.className="week-cell-drop";
+        cell.dataset.drop="week"; cell.dataset.eng=eng; cell.dataset.date=toUKStr(col);
         const dow=col.getDay();
-        if(dow===0||dow===6)cell.classList.add("weekend");
-        if(sameDay(col,todayD))cell.classList.add("today-col");
-
+        if(dow===0||dow===6) cell.classList.add("weekend");
+        if(sameDay(col,todayD)) cell.classList.add("today-col");
         const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),col));
-
-        if(dayJobs.length<=1){
-          dayJobs.forEach(job=>cell.appendChild(makeCardWeek(job)));
-        }else{
-          // Show first card + "X more" button that opens fixed popup
+        if(dayJobs.length<=1){ dayJobs.forEach(job=>cell.appendChild(makeCardWeek(job))); }
+        else {
           cell.appendChild(makeCardWeek(dayJobs[0]));
-          const btn=document.createElement("div");
-          btn.className="stack-more-btn";
-          btn.textContent=`+${dayJobs.length-1} more`;
+          const btn=document.createElement("div"); btn.className="stack-more-btn"; btn.textContent=`+${dayJobs.length-1} more`;
           btn.addEventListener("mousedown",e=>{e.stopPropagation();e.preventDefault();});
           btn.addEventListener("click",e=>{e.stopPropagation();showStackPopup(cell,dayJobs);});
           cell.appendChild(btn);
@@ -881,38 +1063,45 @@ function renderRows(cols,dayEnd){
         row.appendChild(cell);
       });
     }
-
     rowsCont.appendChild(row);
   });
-
-  if(currentView==="day")updateNowLine(dayEnd);
+  if(currentView==="day") updateNowLine(dayEnd);
 }
 
 /* ─── Card builders ─────────────────────────────────────────── */
-function makeCardDay(job,left,width,isStaged){
+function makeStatusBadge(job) {
+  const raw = job.jobStatus || job.status;
+  const meta = getStatusMeta(raw);
+  if(normaliseStatus(raw) === 'unassigned') return ''; // don't show badge for unassigned
+  return `<span class="card-status-badge ${meta.cls}">${meta.icon} ${meta.label}</span>`;
+}
+
+function makeCardDay(job, left, width, isStaged){
   const col=cardColour(job.jobType);
-  const sh=getStartHour(job),dur=getDuration(job.jobType);
+  const sh=getStartHour(job), dur=getDuration(job.jobType);
   const card=document.createElement("div");
   card.className="job-card-day";
   card.dataset.jobId=job.jobId||job._id;
+  card.dataset.jobDocId=job._id;   // for live flash targeting
   card.dataset.jobType=job.jobType||"";
   if(!isStaged){
     card.style.cssText=`position:absolute;left:${left}px;width:${width}px;border-top-color:${col}`;
-  }else{
+  } else {
     card.classList.add("staging-card");
     card.style.cssText=`position:relative;width:${STAGING_W-18}px;border-top-color:${col}`;
   }
   const narrow=width<100;
   const timeStr=sh!==null?`${fmtTime(sh)}–${fmtTime(sh+dur)}`:"Unscheduled";
+  const badge=makeStatusBadge(job);
   card.innerHTML=`
     <div style="overflow:hidden;flex:1;min-height:0">
       <div class="jc-customer" style="font-size:${narrow?"9":"10"}px">${esc(job.customerName)}</div>
       <div class="jc-type" style="font-size:${narrow?"10":"12"}px">${esc(job.jobType)}</div>
       ${!isStaged?`<div class="jc-time" style="font-size:${narrow?"9":"10"}px">${timeStr}</div>`:""}
     </div>
-    <div class="jc-bottom">
+    <div class="jc-bottom" style="flex-wrap:wrap;gap:4px">
       <span class="jc-post" style="font-size:${narrow?"9":"10"}px">${esc(job.postcode)}</span>
-      <span class="jc-id"   style="font-size:${narrow?"9":"10"}px">${esc(job.jobId||job._id)}</span>
+      ${badge ? badge : `<span class="jc-id" style="font-size:${narrow?"9":"10"}px">${esc(job.jobId||job._id)}</span>`}
     </div>
     <div class="jc-tooltip">
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Customer</span><span class="jc-tooltip-val">${esc(job.customerName)}</span></div>
@@ -920,26 +1109,38 @@ function makeCardDay(job,left,width,isStaged){
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Postcode</span><span class="jc-tooltip-val">${esc(job.postcode)}</span></div>
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Time</span><span class="jc-tooltip-val">${timeStr}</span></div>
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Engineer</span><span class="jc-tooltip-val">${esc(job.engineerName)}</span></div>
+      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Status</span><span class="jc-tooltip-val" style="color:${getStatusColour(job)}">${getStatusMeta(job.jobStatus||job.status).label}</span></div>
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Job ID</span><span class="jc-tooltip-val" style="color:var(--accent-green)">${esc(job.jobId||job._id)}</span></div>
     </div>`;
   attachDrag(card, job);
   return card;
 }
 
+function getStatusColour(job){
+  const s=normaliseStatus(job.jobStatus||job.status);
+  if(s==='complete') return 'var(--accent-green)';
+  if(s==='en-route') return 'var(--accent-blue)';
+  if(s==='in-progress') return 'var(--warning)';
+  if(s==='abort') return 'var(--danger)';
+  return 'var(--text-muted)';
+}
+
 function makeCardWeek(job){
   const col=cardColour(job.jobType);
   const sh=getStartHour(job);
+  const badge=makeStatusBadge(job);
   const card=document.createElement("div");
   card.className="job-card-week";
   card.style.borderLeftColor=col;
   card.dataset.jobId=job.jobId||job._id;
+  card.dataset.jobDocId=job._id;
   card.dataset.jobType=job.jobType||"";
   card.innerHTML=`
     <div class="jc-customer">${esc(job.customerName)}</div>
     <div class="jc-type" style="font-size:11px">${esc(job.jobType)}</div>
-    <div class="jc-bottom">
+    <div class="jc-bottom" style="flex-wrap:wrap;gap:3px;margin-top:3px">
       <span class="jc-post">${esc(job.postcode)}</span>
-      <span class="jc-id">${esc(job.jobId||job._id)}</span>
+      ${badge || `<span class="jc-id">${esc(job.jobId||job._id)}</span>`}
     </div>
     ${sh!==null?`<div style="font-size:9px;color:var(--text-muted);margin-top:2px">${fmtTime(sh)}</div>`:""}`;
   attachDrag(card, job);
@@ -948,25 +1149,20 @@ function makeCardWeek(job){
 
 /* ─── Stack popup ───────────────────────────────────────────── */
 const stackPopup=document.getElementById("stack-popup");
-
-function showStackPopup(anchor, jobs){
+function showStackPopup(anchor,jobs){
   stackPopup.innerHTML="";
   jobs.forEach(job=>stackPopup.appendChild(makeCardWeek(job)));
   const r=anchor.getBoundingClientRect();
   const pw=210,ph=jobs.length*68+24;
   let top=r.bottom+6,left=r.left;
   if(top+ph>window.innerHeight-16)top=r.top-ph-6;
-  if(left+pw>window.innerWidth-16) left=window.innerWidth-pw-16;
+  if(left+pw>window.innerWidth-16)left=window.innerWidth-pw-16;
   if(left<8)left=8;
   stackPopup.style.cssText=`top:${top}px;left:${left}px;width:${Math.max(r.width,180)}px`;
   stackPopup.classList.add("visible");
 }
-
 function closeStackPopup(){stackPopup.classList.remove("visible");stackPopup.innerHTML="";}
-
-document.addEventListener("mousedown",e=>{
-  if(!stackPopup.contains(e.target)&&!e.target.closest(".stack-more-btn"))closeStackPopup();
-});
+document.addEventListener("mousedown",e=>{if(!stackPopup.contains(e.target)&&!e.target.closest(".stack-more-btn"))closeStackPopup();});
 
 /* ─── Now line ──────────────────────────────────────────────── */
 function updateNowLine(dayEnd){
@@ -990,16 +1186,105 @@ function applySearch(){
       const m=(c.dataset.jobId||"").toLowerCase().includes(jobSearch)||(c.dataset.jobType||"").toLowerCase().includes(jobSearch);
       c.classList.toggle("search-match",m);c.classList.toggle("search-dim",!m);
     });
-  }else{
+  } else {
     document.querySelectorAll(".job-card-day,.job-card-week").forEach(c=>{c.classList.remove("search-match","search-dim");});
   }
 }
 
-/* ─── Modal ─────────────────────────────────────────────────── */
-function openModal(job){
-  const sh=getStartHour(job),dur=getDuration(job.jobType);
-  document.getElementById("modalTitle").textContent=job.jobType||"Job Details";
-  document.getElementById("modalId").textContent=`# ${job.jobId||job._id}`;
+/* ══════════════════════════════════════════════════════════════
+   MODAL with STATUS HISTORY TIMELINE
+══════════════════════════════════════════════════════════════ */
+function buildStatusHistory(job){
+  // Collect all history entries from the job document
+  // Supports both: statusHistory array field, and individual statusUpdatedAt fields
+  const entries = [];
+
+  // 1. Structured history array (preferred, if present)
+  if(Array.isArray(job.statusHistory)) {
+    job.statusHistory.forEach(h => {
+      entries.push({
+        status: h.status || h.jobStatus,
+        by:     h.updatedBy || h.statusUpdatedBy || h.by,
+        at:     h.updatedAt || h.statusUpdatedAt || h.at,
+        note:   h.note || h.abortCode || '',
+      });
+    });
+  }
+
+  // 2. Flat fields written by the engineer portal (statusUpdatedAt, statusUpdatedBy)
+  //    Treat this as the "current" entry if no history array or if not already covered
+  if(job.statusUpdatedAt) {
+    const alreadyIn = entries.some(e => e.at === job.statusUpdatedAt);
+    if(!alreadyIn) {
+      entries.push({
+        status: job.jobStatus || job.status,
+        by:     job.statusUpdatedBy || 'Engineer',
+        at:     job.statusUpdatedAt,
+        note:   job.abortCode || '',
+      });
+    }
+  }
+
+  // 3. Created/uploaded entry
+  if(job.uploadedAt) {
+    entries.push({
+      status: 'created',
+      by:     job.uploadedBy || 'System',
+      at:     job.uploadedAt,
+      note:   '',
+    });
+  }
+
+  // Sort newest first
+  entries.sort((a,b) => {
+    try { return new Date(b.at) - new Date(a.at); } catch { return 0; }
+  });
+
+  if(entries.length === 0) {
+    return `<div class="history-empty">No status updates recorded yet.<br>Updates will appear here when engineers change their job status.</div>`;
+  }
+
+  return entries.map((entry, i) => {
+    const meta = entry.status === 'created'
+      ? { label: 'Job Created', icon: '●', cls: 's-created' }
+      : getStatusMeta(entry.status);
+    const timeStr = fmtTimestamp(entry.at);
+    const ago = timeAgo(entry.at);
+    const noteHtml = entry.note ? `<span style="font-size:10px;color:rgba(255,75,92,0.7);margin-left:6px">Code: ${esc(entry.note)}</span>` : '';
+    return `
+      <div class="history-item" style="animation-delay:${i*0.05}s">
+        <div class="history-dot ${meta.cls}"></div>
+        <div class="history-content">
+          <div class="history-status">
+            <span class="history-status-label ${meta.cls}">${meta.label}</span>
+            ${noteHtml}
+          </div>
+          <div class="history-meta">
+            <span class="history-by">${esc(entry.by || '—')}</span>
+            <span>·</span>
+            <span class="history-time">${timeStr}</span>
+            <span class="history-ago">${ago}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openModal(job, updateTracker = true){
+  if(updateTracker) openModalJobId = job._id;
+
+  const sh=getStartHour(job), dur=getDuration(job.jobType);
+  const curStatus = normaliseStatus(job.jobStatus || job.status);
+  const meta = getStatusMeta(curStatus);
+
+  document.getElementById("modalTitle").textContent = job.jobType||"Job Details";
+  document.getElementById("modalId").textContent    = `# ${job.jobId||job._id}`;
+
+  // Status pill in header
+  document.getElementById("modalStatusPill").innerHTML = curStatus !== 'unassigned'
+    ? `<span class="modal-status-pill ${meta.cls}">${meta.icon} ${meta.label}</span>`
+    : '';
+
   document.getElementById("modalBody").innerHTML=`
     <div class="dg">
       <div class="df"><label>Customer</label><span>${esc(job.customerName)}</span></div>
@@ -1013,37 +1298,66 @@ function openModal(job){
       <div class="df"><label>Scheduled</label><span>${sh!==null?fmtTime(sh)+" – "+fmtTime(sh+dur)+" ("+dur+"h)":"Unscheduled"}</span></div>
       <div class="df"><label>Job ID</label><span style="color:var(--accent-green);font-weight:700">${esc(job.jobId||job._id)}</span></div>
       <div class="ddiv"></div>
-      <div class="df"><label>Status</label><span>${esc(job.status||"unassigned")}</span></div>
+      <div class="df"><label>Status</label><span style="color:${getStatusColour(job)};font-weight:600">${meta.label}</span></div>
+      <div class="df"><label>Last Updated</label><span>${job.statusUpdatedAt ? fmtTimestamp(job.statusUpdatedAt) : '—'}</span></div>
+      <div class="df"><label>Updated By</label><span>${esc(job.statusUpdatedBy||'—')}</span></div>
       <div class="df"><label>Uploaded</label><span>${job.uploadedAt?new Date(job.uploadedAt).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}):"—"}</span></div>
+    </div>
+
+    <div class="modal-section-title">Status History</div>
+    <div class="history-timeline">
+      ${buildStatusHistory(job)}
     </div>`;
+
   document.getElementById("modalOverlay").classList.add("open");
 }
-function closeModal(){document.getElementById("modalOverlay").classList.remove("open");}
+
+function closeModal(){
+  document.getElementById("modalOverlay").classList.remove("open");
+  openModalJobId = null;
+}
 
 /* ─── UI wiring ─────────────────────────────────────────────── */
-document.getElementById("prevBtn").onclick   =()=>navigate(-1);
-document.getElementById("nextBtn").onclick   =()=>navigate(1);
-document.getElementById("todayBtn").onclick  =()=>{currentDate=today0();syncPicker();render();};
-document.getElementById("refreshBtn").onclick=()=>loadJobs();
-document.getElementById("btnDay").onclick    =()=>setView("day");
-document.getElementById("btnWeek").onclick   =()=>setView("week");
-document.getElementById("datePicker").onchange=e=>{const[y,mo,d]=e.target.value.split("-").map(Number);currentDate=new Date(y,mo-1,d);currentDate.setHours(0,0,0,0);render();};
-document.getElementById("modalClose").onclick   =closeModal;
-document.getElementById("modalOverlay").onclick =e=>{if(e.target===document.getElementById("modalOverlay"))closeModal();};
-document.getElementById("jobSearch").oninput=e=>{jobSearch=e.target.value.trim().toLowerCase();applySearch();};
-document.getElementById("engSearch").oninput=e=>{engSearch=e.target.value.trim().toLowerCase();applySearch();};
+document.getElementById("prevBtn").onclick    = ()=>navigate(-1);
+document.getElementById("nextBtn").onclick    = ()=>navigate(1);
+document.getElementById("todayBtn").onclick   = ()=>{currentDate=today0();syncPicker();render();};
+document.getElementById("btnDay").onclick     = ()=>setView("day");
+document.getElementById("btnWeek").onclick    = ()=>setView("week");
+document.getElementById("datePicker").onchange= e=>{const[y,mo,d]=e.target.value.split("-").map(Number);currentDate=new Date(y,mo-1,d);currentDate.setHours(0,0,0,0);render();};
+document.getElementById("modalClose").onclick    = closeModal;
+document.getElementById("modalOverlay").onclick  = e=>{if(e.target===document.getElementById("modalOverlay"))closeModal();};
+document.getElementById("jobSearch").oninput = e=>{jobSearch=e.target.value.trim().toLowerCase();applySearch();};
+document.getElementById("engSearch").oninput = e=>{engSearch=e.target.value.trim().toLowerCase();applySearch();};
 
 function navigate(dir){currentDate.setDate(currentDate.getDate()+dir*(currentView==="week"?7:1));syncPicker();render();}
 function setView(v){currentView=v;document.getElementById("btnDay").classList.toggle("active",v==="day");document.getElementById("btnWeek").classList.toggle("active",v==="week");render();}
 function syncPicker(){const y=currentDate.getFullYear(),mo=String(currentDate.getMonth()+1).padStart(2,"0"),d=String(currentDate.getDate()).padStart(2,"0");document.getElementById("datePicker").value=`${y}-${mo}-${d}`;}
-function setStatus(st,msg){const dot=document.getElementById("sdot"),txt=document.getElementById("stxt");dot.className="sdot"+(st==="spin"?" spin":st==="ok"?" ok":" err");txt.textContent=msg;}
+
+function setStatus(st,msg){
+  const dot=document.getElementById("sdot"),txt=document.getElementById("stxt");
+  dot.className="sdot"+(st==="spin"?" spin":st==="ok"?" ok":" err");
+  txt.textContent=msg;
+}
+
+function setLive(state, text){
+  const el = document.getElementById("live-indicator");
+  const txt = document.getElementById("live-text");
+  el.className = state === 'live' ? '' : state === 'connecting' ? 'connecting' : 'error';
+  txt.textContent = text;
+}
+
 function setLoading(on){document.getElementById("lbar").classList.toggle("on",on);}
+
 let toastTimer;
-function toast(msg,type="success"){
+function toast(msg, type="success"){
   const t=document.getElementById("toast");
-  const ico=type==="success"?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-  t.className=`${type} show`;t.innerHTML=ico+" "+msg;
-  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),3200);
+  const ico = type==="success"
+    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
+    : type==="info"
+    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>`
+    : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+  t.className=`${type} show`; t.innerHTML=ico+" "+msg;
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove("show"),3800);
 }
 
 /* ─── Sidebar ───────────────────────────────────────────────── */
@@ -1055,7 +1369,7 @@ if(localStorage.getItem("geko-sidebar")==="expanded")sidebar.classList.add("expa
 
 /* ─── Boot ──────────────────────────────────────────────────── */
 syncPicker();
-loadJobs();
+startRealTimeListener();
 </script>
 </body>
 </html>
