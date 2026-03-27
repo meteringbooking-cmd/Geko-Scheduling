@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Geko — My Schedule</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #070a10;
+  --surface: #0d1520;
+  --surface2: #121d2b;
+  --surface3: #172436;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --accent: #00ff9d;
+  --accent2: #00c8ff;
+  --danger: #ff4b5c;
+  --warning: #f59e0b;
+  --purple: #a855f7;
+  --text: #e8f4ff;
+  --text-muted: #6b8aaa;
+  --text-dim: #3a5570;
+  --radius: 14px;
+  --card-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(0,255,157,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,200,255,0.04) 0%, transparent 60%);
+}
+
+/* ── LOGIN SCREEN ───────────────────────────────────── */
+#loginScreen {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg);
+  padding: 24px;
+}
+
+.login-box {
+  width: 100%; max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 40px 36px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+  position: relative; overflow: hidden;
+}
+
+.login-box::before {
+  content: "";
+  position: absolute; top: -60px; right: -60px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,255,157,0.07), transparent 70%);
+  pointer-events: none;
+}
+
+.login-logo {
+  height: 48px; object-fit: contain; margin-bottom: 28px; display: block;
+  filter: drop-shadow(0 0 12px rgba(0,255,157,0.4));
+}
+
+.login-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 22px; font-weight: 700;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.login-sub {
+  font-size: 13px; color: var(--text-muted); margin-bottom: 30px;
+}
+
+.login-field { margin-bottom: 16px; }
+.login-field label {
+  display: block; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text-muted); margin-bottom: 6px;
+}
+.login-field input {
+  width: 100%; height: 46px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text); font-size: 14px;
+  padding: 0 14px;
+  font-family: 'DM Sans', sans-serif;
+  outline: none; transition: border-color 0.18s;
+}
+.login-field input:focus { border-color: var(--accent); }
+.login-field input::placeholder { color: var(--text-dim); }
+
+.login-btn {
+  width: 100%; height: 48px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border: none; border-radius: 10px;
+  color: #050a10; font-size: 14px; font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer; margin-top: 8px;
+  letter-spacing: 0.5px;
+  transition: filter 0.18s, transform 0.18s;
+}
+.login-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.login-btn:active { transform: translateY(0); }
+
+.login-error {
+  margin-top: 14px; padding: 10px 14px; border-radius: 8px;
+  background: rgba(255,75,92,0.1); border: 1px solid rgba(255,75,92,0.3);
+  color: var(--danger); font-size: 13px; display: none;
+}
+.login-error.show { display: block; }
+
+/* ── APP SHELL ───────────────────────────────────────── */
+#app { display: none; flex-direction: column; min-height: 100vh; position: relative; z-index: 1; }
+#app.visible { display: flex; }
+
+/* TOPBAR */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(7,10,16,0.95);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  padding: 0 24px;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+}
+
+.topbar-logo {
+  height: 36px; object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(0,255,157,0.35));
+}
+
+.topbar-center {
+  display: flex; align-items: center; gap: 8px;
+  flex: 1; justify-content: center;
+}
+
+.view-toggle {
+  display: flex; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden; padding: 3px; gap: 2px;
+}
+
+.view-btn {
+  height: 34px; padding: 0 18px; border: none; border-radius: 8px;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  background: transparent; color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif; transition: all 0.18s;
+}
+.view-btn.active {
+  background: rgba(0,255,157,0.12); color: var(--accent);
+}
+
+.date-nav { display: flex; align-items: center; gap: 6px; }
+.dnb {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface2);
+  color: var(--text-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; transition: all 0.15s;
+}
+.dnb:hover { border-color: var(--border2); color: var(--text); }
+
+.date-lbl {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px; font-weight: 700; min-width: 200px; text-align: center;
+  color: var(--text);
+}
+
+.today-btn {
+  height: 32px; padding: 0 14px; border-radius: 8px;
+  border: 1px solid rgba(0,255,157,0.3);
+  background: rgba(0,255,157,0.07); color: var(--accent);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+}
+.today-btn:hover { background: rgba(0,255,157,0.13); }
+
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+.user-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px 6px 6px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 100px;
+}
+.user-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #070a10; flex-shrink: 0;
+}
+.user-name { font-size: 13px; font-weight: 500; }
+
+.logout-btn {
+  height: 32px; padding: 0 12px; border-radius: 8px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-muted); font-size: 12px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+}
+.logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+/* CONTENT */
+.content { flex: 1; padding: 28px 24px; max-width: 900px; margin: 0 auto; width: 100%; }
+
+/* DAY STATS BAR */
+.stats-bar {
+  display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;
+}
+.stat-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  font-size: 13px;
+}
+.stat-dot { width: 8px; height: 8px; border-radius: 50%; }
+.stat-num { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 16px; }
+.stat-lbl { color: var(--text-muted); font-size: 12px; }
+
+/* EMPTY / LOADING */
+.center-msg {
+  text-align: center; padding: 80px 20px; color: var(--text-muted);
+}
+.center-msg .big { font-size: 48px; margin-bottom: 14px; }
+.center-msg p { font-size: 15px; line-height: 1.6; }
+
+/* ── DAY VIEW TIMELINE ───────────────────────────────── */
+.timeline-wrap { position: relative; padding-left: 90px; }
+
+.timeline-line {
+  position: absolute; left: 70px; top: 0; bottom: 0;
+  width: 2px; background: linear-gradient(180deg, transparent, rgba(0,255,157,0.15) 5%, rgba(0,255,157,0.15) 95%, transparent);
+}
+
+.timeline-hour {
+  position: relative; min-height: 100px; margin-bottom: 0;
+}
+
+.timeline-hour-label {
+  position: absolute; left: -90px; top: 0;
+  width: 80px; text-align: right;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; color: var(--text-dim); padding-top: 2px;
+}
+
+.timeline-hour-tick {
+  position: absolute; left: -14px; top: 8px;
+  width: 12px; height: 1px; background: var(--border2);
+}
+
+.timeline-job-slot {
+  padding: 6px 0 6px 20px; min-height: 100px;
+  border-top: 1px solid var(--border);
+  position: relative;
+}
+
+/* ── JOB CARD ───────────────────────────────────────── */
+.job-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative; overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+
+.job-card::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(0,255,157,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.job-card:hover {
+  border-color: rgba(0,255,157,0.3);
+  transform: translateX(4px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+
+.job-card.status-complete    { border-left-color: var(--accent); }
+.job-card.status-en-route    { border-left-color: var(--accent2); }
+.job-card.status-in-progress { border-left-color: var(--warning); }
+.job-card.status-abort       { border-left-color: var(--danger); }
+.job-card.status-unassigned  { border-left-color: var(--text-dim); }
+
+.job-card-top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px; margin-bottom: 10px;
+}
+
+.job-type {
+  font-size: 18px; font-weight: 600; color: var(--text); line-height: 1.2;
+}
+
+.job-id {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; color: var(--accent); font-weight: 700;
+  background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.2);
+  padding: 3px 8px; border-radius: 6px; flex-shrink: 0;
+}
+
+.job-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px;
+  margin-bottom: 14px;
+}
+
+.job-meta-item { display: flex; flex-direction: column; gap: 2px; }
+.job-meta-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); }
+.job-meta-val { font-size: 14px; color: var(--text); font-weight: 500; }
+
+.job-time-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 14px; font-weight: 700; color: var(--text);
+  background: var(--surface2); border: 1px solid var(--border2);
+  padding: 6px 12px; border-radius: 8px; margin-bottom: 14px;
+}
+
+.job-bottom {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+}
+
+.status-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 100px;
+  font-size: 12px; font-weight: 600; border: 1px solid;
+  text-transform: capitalize;
+}
+
+.status-badge.complete    { background: rgba(0,255,157,0.1); border-color: rgba(0,255,157,0.3); color: var(--accent); }
+.status-badge.en-route    { background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.3); color: var(--accent2); }
+.status-badge.in-progress { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: var(--warning); }
+.status-badge.abort       { background: rgba(255,75,92,0.1); border-color: rgba(255,75,92,0.3); color: var(--danger); }
+.status-badge.unassigned  { background: rgba(107,137,170,0.1); border-color: rgba(107,137,170,0.2); color: var(--text-muted); }
+
+.tap-hint {
+  font-size: 11px; color: var(--text-dim);
+  display: flex; align-items: center; gap: 4px;
+}
+
+/* ── WEEK VIEW ───────────────────────────────────────── */
+.week-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.week-day-col {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+
+.week-day-header {
+  padding: 12px 14px; border-bottom: 1px solid var(--border);
+  text-align: center;
+  background: var(--surface2);
+}
+
+.week-day-name {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text-muted); margin-bottom: 4px;
+}
+
+.week-day-num {
+  font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700;
+}
+
+.week-day-col.is-today .week-day-num { color: var(--accent); }
+.week-day-col.is-today { border-color: rgba(0,255,157,0.25); }
+
+.week-day-col.weekend { opacity: 0.55; }
+
+.week-day-jobs { padding: 10px; display: flex; flex-direction: column; gap: 8px; min-height: 80px; }
+
+.week-job-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-left: 3px solid; border-radius: 10px;
+  padding: 10px 12px; cursor: pointer; transition: all 0.18s;
+}
+
+.week-job-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
+.week-job-card.complete    { border-left-color: var(--accent); }
+.week-job-card.en-route    { border-left-color: var(--accent2); }
+.week-job-card.in-progress { border-left-color: var(--warning); }
+.week-job-card.abort       { border-left-color: var(--danger); }
+.week-job-card.unassigned  { border-left-color: var(--text-dim); }
+
+.week-job-type { font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+.week-job-post { font-size: 11px; color: var(--text-muted); }
+.week-job-id   { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent); margin-top: 4px; }
+.week-job-time { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+.week-empty { padding: 20px; text-align: center; color: var(--text-dim); font-size: 12px; }
+
+/* ── STATUS MODAL ───────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 0 0 0 0;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal-sheet {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-bottom: none;
+  border-radius: 20px 20px 0 0;
+  width: 100%; max-width: 680px;
+  padding: 28px 28px 40px;
+  transform: translateY(60px); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  max-height: 85vh; overflow-y: auto;
+}
+
+.modal-overlay.open .modal-sheet { transform: translateY(0); }
+
+.modal-drag-handle {
+  width: 40px; height: 4px; border-radius: 2px;
+  background: var(--border2); margin: 0 auto 22px;
+}
+
+.modal-job-id {
+  font-family: 'Space Mono', monospace; font-size: 12px; color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.modal-job-title { font-size: 22px; font-weight: 700; margin-bottom: 16px; }
+
+.modal-section-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text-dim); margin-bottom: 12px; margin-top: 20px;
+}
+
+.status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.status-option {
+  padding: 16px 18px; border-radius: 12px;
+  border: 2px solid var(--border); background: var(--surface2);
+  cursor: pointer; transition: all 0.18s;
+  display: flex; flex-direction: column; gap: 4px;
+}
+
+.status-option:hover { transform: translateY(-2px); }
+.status-option.selected { transform: translateY(-2px); }
+
+.status-option.opt-enroute    { --opt-c: var(--accent2); }
+.status-option.opt-inprogress { --opt-c: var(--warning); }
+.status-option.opt-complete   { --opt-c: var(--accent); }
+.status-option.opt-abort      { --opt-c: var(--danger); }
+
+.status-option:hover,
+.status-option.selected { border-color: var(--opt-c); background: rgba(var(--opt-rgb), 0.07); }
+
+.status-option.opt-enroute:hover,
+.status-option.opt-enroute.selected    { background: rgba(0,200,255,0.07); }
+.status-option.opt-inprogress:hover,
+.status-option.opt-inprogress.selected { background: rgba(245,158,11,0.07); }
+.status-option.opt-complete:hover,
+.status-option.opt-complete.selected   { background: rgba(0,255,157,0.07); }
+.status-option.opt-abort:hover,
+.status-option.opt-abort.selected      { background: rgba(255,75,92,0.07); }
+
+.status-option-icon { font-size: 22px; }
+.status-option-name { font-size: 15px; font-weight: 600; color: var(--opt-c); }
+.status-option-desc { font-size: 12px; color: var(--text-muted); }
+
+/* Abort code */
+.abort-section {
+  display: none; margin-top: 16px;
+}
+
+.abort-section.show { display: block; }
+
+.abort-section label {
+  display: block; font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--danger); margin-bottom: 8px;
+}
+
+.abort-input {
+  width: 100%; height: 46px;
+  background: var(--surface2);
+  border: 2px solid rgba(255,75,92,0.3);
+  border-radius: 10px;
+  color: var(--text); font-size: 15px; letter-spacing: 2px;
+  padding: 0 14px;
+  font-family: 'Space Mono', monospace;
+  outline: none; transition: border-color 0.18s;
+}
+
+.abort-input:focus { border-color: var(--danger); }
+.abort-input::placeholder { color: var(--text-dim); letter-spacing: 1px; font-size: 13px; }
+
+.modal-actions { display: flex; gap: 10px; margin-top: 24px; }
+
+.modal-submit-btn {
+  flex: 1; height: 50px; border-radius: 12px;
+  border: none; font-size: 15px; font-weight: 700;
+  font-family: 'DM Sans', sans-serif; cursor: pointer;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color: #050a10; transition: all 0.18s;
+}
+.modal-submit-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.modal-submit-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+.modal-cancel-btn {
+  height: 50px; padding: 0 24px; border-radius: 12px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-muted); font-size: 14px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+}
+.modal-cancel-btn:hover { border-color: var(--border2); color: var(--text); }
+
+.modal-info-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+}
+
+.modal-info-item { display: flex; flex-direction: column; gap: 3px; }
+.modal-info-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); }
+.modal-info-val { font-size: 14px; font-weight: 500; }
+
+/* TOAST */
+#toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+  z-index: 99999; padding: 12px 22px; border-radius: 12px;
+  font-size: 14px; font-weight: 600; opacity: 0;
+  transition: all 0.3s; pointer-events: none; white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.ok  { background: rgba(0,20,12,0.97); border: 1px solid rgba(0,255,157,0.4); color: var(--accent); box-shadow: 0 0 24px rgba(0,255,157,0.15), 0 8px 32px rgba(0,0,0,0.6); }
+#toast.err { background: rgba(20,5,8,0.97); border: 1px solid rgba(255,75,92,0.4); color: var(--danger); box-shadow: 0 0 24px rgba(255,75,92,0.15), 0 8px 32px rgba(0,0,0,0.6); }
+
+/* Loading overlay */
+#loadingOverlay {
+  position: fixed; inset: 0; z-index: 8000;
+  background: var(--bg); display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 16px;
+}
+#loadingOverlay.hidden { display: none; }
+.spinner { width: 36px; height: 36px; border: 3px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 14px; color: var(--text-muted); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* NOW line */
+.now-line {
+  position: relative; margin: 0 0 0 20px;
+  height: 2px; background: var(--danger);
+  border-radius: 1px; pointer-events: none;
+}
+.now-line::before {
+  content: "";
+  position: absolute; left: -5px; top: -4px;
+  width: 10px; height: 10px; border-radius: 50%; background: var(--danger);
+}
+.now-line-label {
+  position: absolute; right: 0; top: -10px;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  color: var(--danger); background: var(--bg);
+  padding: 1px 4px; border-radius: 4px;
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading schedule…</div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- LOGIN -->
+<div id="loginScreen" style="display:none;">
+  <div class="login-box">
+    <img class="login-logo"
+      src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=xh5pubjr&dl=1"
+      alt="Geko"/>
+    <div class="login-title">Engineer Portal</div>
+    <div class="login-sub">Sign in to view your schedule for today.</div>
+    <div class="login-field">
+      <label>Email Address</label>
+      <input type="email" id="loginEmail" placeholder="your.email@company.com" autocomplete="email"/>
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+    <button class="login-btn" id="loginBtn">Sign In →</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header class="topbar">
+    <img class="topbar-logo"
+      src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=xh5pubjr&dl=1"
+      alt="Geko"/>
+
+    <div class="topbar-center">
+      <div class="date-nav">
+        <button class="dnb" id="prevBtn">&#8249;</button>
+        <span class="date-lbl" id="dateLbl">Loading…</span>
+        <button class="dnb" id="nextBtn">&#8250;</button>
+      </div>
+      <button class="today-btn" id="todayBtn">Today</button>
+      <div class="view-toggle">
+        <button class="view-btn active" id="btnDay">Day</button>
+        <button class="view-btn" id="btnWeek">Week</button>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <div class="user-pill">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <span class="user-name" id="userNameDisplay">Loading…</span>
+      </div>
+      <button class="logout-btn" id="logoutBtn">Sign Out</button>
+    </div>
+  </header>
+
+  <div class="content" id="mainContent">
+    <!-- rendered here -->
+  </div>
+</div>
+
+<!-- STATUS MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-drag-handle"></div>
+    <div class="modal-job-id" id="mJobId"></div>
+    <div class="modal-job-title" id="mJobTitle"></div>
+
+    <div class="modal-info-grid" id="mInfoGrid"></div>
+
+    <div class="modal-section-label">Update Status</div>
+
+    <div class="status-grid">
+      <div class="status-option opt-enroute" data-status="en-route" onclick="selectStatus(this)">
+        <div class="status-option-icon">🚗</div>
+        <div class="status-option-name">En Route</div>
+        <div class="status-option-desc">Travelling to job</div>
+      </div>
+      <div class="status-option opt-inprogress" data-status="in-progress" onclick="selectStatus(this)">
+        <div class="status-option-icon">🔧</div>
+        <div class="status-option-name">In Progress</div>
+        <div class="status-option-desc">Currently on site</div>
+      </div>
+      <div class="status-option opt-complete" data-status="complete" onclick="selectStatus(this)">
+        <div class="status-option-icon">✅</div>
+        <div class="status-option-name">Complete</div>
+        <div class="status-option-desc">Job finished</div>
+      </div>
+      <div class="status-option opt-abort" data-status="abort" onclick="selectStatus(this)">
+        <div class="status-option-icon">🚫</div>
+        <div class="status-option-name">Abort</div>
+        <div class="status-option-desc">Job cannot proceed</div>
+      </div>
+    </div>
+
+    <div class="abort-section" id="abortSection">
+      <label>Abort Authorisation Code <span style="color:var(--danger)">*</span></label>
+      <input class="abort-input" type="text" id="abortCode" placeholder="Enter authorisation code"/>
+    </div>
+
+    <div class="modal-actions">
+      <button class="modal-submit-btn" id="submitStatusBtn" disabled onclick="submitStatus()">Save Status</button>
+      <button class="modal-cancel-btn" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, query, where }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const db = getFirestore(initializeApp({
+  apiKey:"AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
+  authDomain:"geko-scheduling.firebaseapp.com",
+  projectId:"geko-scheduling",
+  storageBucket:"geko-scheduling.firebasestorage.app",
+  messagingSenderId:"824568732787",
+  appId:"1:824568732787:web:c12db983fd6a5b44b01e06"
+}));
+
+// ── State ──────────────────────────────────────────────
+const SESSION_KEY = 'geko_engineer_session';
+const DAY_START = 7, DAY_END_DEFAULT = 18;
+let currentUser = null;
+let allJobs = [];
+let currentView = 'day';
+let currentDate = today0();
+let activeJobId = null;
+let selectedStatus = null;
+
+// ── Helpers ────────────────────────────────────────────
+function today0() { const d = new Date(); d.setHours(0,0,0,0); return d; }
+function sameDay(a,b) { return a && b && a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+function esc(s) { return String(s||'—').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtTime(h) { const hh=Math.floor(h),mm=Math.round((h-hh)*60); return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`; }
+
+function parseDate(s) {
+  if(!s) return null; s=String(s).trim(); let m;
+  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m){const d=new Date(+m[3],+m[2]-1,+m[1]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(m){const d=new Date(+m[1],+m[2]-1,+m[3]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
+  const d=new Date(s); if(!isNaN(d)){d.setHours(0,0,0,0);return d;} return null;
+}
+
+function getJobField(job, ...keys) {
+  for(const k of keys) { if(job[k]!==undefined && job[k]!=='') return job[k]; }
+  return '';
+}
+
+function getEngineerName(job) {
+  return getJobField(job,'engineerName','Engineer','Assigned_To') || '';
+}
+function getCustomerName(job) {
+  return getJobField(job,'customerName','Full_Name','First_Name') || '';
+}
+function getPostcode(job) {
+  return getJobField(job,'postcode','Postcode') || '';
+}
+function getJobType(job) {
+  return getJobField(job,'jobType','Job_Type','Service_Type') || '';
+}
+function getJobDate(job) {
+  return getJobField(job,'dateOfJob','Date','Appointment_Date') || '';
+}
+function getJobStatus(job) {
+  return (getJobField(job,'jobStatus','status','Status') || 'unassigned').toLowerCase().replace(/\s+/g,'-');
+}
+function getStartHour(job) {
+  const v = job.startHour;
+  if(v===null||v===undefined||v==='') return null;
+  const n=+v; return isNaN(n)?null:n;
+}
+function getAddress(job) {
+  return getJobField(job,'address','Address_Line1') || '';
+}
+function getPhone(job) {
+  return getJobField(job,'contactNumber','Phone','Mobile') || '';
+}
+
+const JOB_DURATIONS = {"dual fuel":2,"single gas":1.5,"single elec":1.5,"comms":0.5};
+function getDuration(t) {
+  const k=(t||'').toLowerCase();
+  for(const[key,v] of Object.entries(JOB_DURATIONS)) if(k.includes(key)) return v;
+  return 1;
+}
+
+function statusClass(s) {
+  s = (s||'').toLowerCase();
+  if(s==='complete') return 'complete';
+  if(s==='en-route'||s==='enroute') return 'en-route';
+  if(s==='in-progress'||s==='inprogress') return 'in-progress';
+  if(s==='abort') return 'abort';
+  return 'unassigned';
+}
+
+function statusLabel(s) {
+  s = (s||'').toLowerCase();
+  if(s==='en-route'||s==='enroute') return 'En Route';
+  if(s==='in-progress'||s==='inprogress') return 'In Progress';
+  if(s==='complete') return 'Complete';
+  if(s==='abort') return 'Abort';
+  return 'Unassigned';
+}
+
+let toastTimer;
+function toast(msg, type='ok') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className='',3500);
+}
+
+// ── Session ────────────────────────────────────────────
+function saveSession(user) {
+  const today = new Date().toDateString();
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ user, date: today }));
+}
+
+function loadSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if(!raw) return null;
+    const sess = JSON.parse(raw);
+    if(sess.date !== new Date().toDateString()) { localStorage.removeItem(SESSION_KEY); return null; }
+    return sess.user;
+  } catch { return null; }
+}
+
+function clearSession() { localStorage.removeItem(SESSION_KEY); }
+
+// ── Login ──────────────────────────────────────────────
+async function attemptLogin(email, password) {
+  const errEl = document.getElementById('loginError');
+  errEl.classList.remove('show');
+  document.getElementById('loginBtn').textContent = 'Signing in…';
+  document.getElementById('loginBtn').disabled = true;
+
+  try {
+    const snap = await getDocs(collection(db,'geko_users'));
+    let matched = null;
+    snap.forEach(d => {
+      const u = { _id: d.id, ...d.data() };
+      if((u.email||'').toLowerCase() === email.toLowerCase()) matched = u;
+    });
+
+    if(!matched) throw new Error('No account found with that email address.');
+    // For now: any password accepted (no auth system yet — matches users.html which stores no passwords)
+    // If the user record has a password field, check it
+    if(matched.password && matched.password !== password) throw new Error('Incorrect password.');
+
+    const engineerName = `${matched.firstName||''} ${matched.lastName||''}`.trim() || matched.email;
+    currentUser = { ...matched, displayName: engineerName };
+    saveSession(currentUser);
+    startApp();
+  } catch(e) {
+    errEl.textContent = e.message;
+    errEl.classList.add('show');
+    document.getElementById('loginBtn').textContent = 'Sign In →';
+    document.getElementById('loginBtn').disabled = false;
+  }
+}
+
+document.getElementById('loginBtn').addEventListener('click', () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  if(!email) { document.getElementById('loginError').textContent='Please enter your email.'; document.getElementById('loginError').classList.add('show'); return; }
+  attemptLogin(email, pass);
+});
+
+document.getElementById('loginEmail').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('loginPass').focus(); });
+document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('loginBtn').click(); });
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  clearSession();
+  currentUser = null; allJobs = [];
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginEmail').value='';
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginError').classList.remove('show');
+});
+
+// ── App start ──────────────────────────────────────────
+function startApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+
+  const initials = ((currentUser.firstName||'?')[0]+(currentUser.lastName||'?')[0]).toUpperCase();
+  document.getElementById('userAvatar').textContent = initials;
+  document.getElementById('userNameDisplay').textContent = currentUser.displayName;
+
+  syncDatePicker();
+  loadAndRender();
+}
+
+// ── Data load ──────────────────────────────────────────
+async function loadAndRender() {
+  try {
+    const snap = await getDocs(collection(db,'uploaded_jobs'));
+    allJobs = [];
+    snap.forEach(d => allJobs.push({ _id: d.id, ...d.data() }));
+    render();
+  } catch(e) {
+    console.error(e);
+    toast('Failed to load jobs: '+(e.code||e.message), 'err');
+    render();
+  }
+}
+
+// ── Filter jobs for this engineer ─────────────────────
+function getMyJobs() {
+  const name = currentUser.displayName.toLowerCase();
+  const email = (currentUser.email||'').toLowerCase();
+  return allJobs.filter(j => {
+    const eng = getEngineerName(j).toLowerCase();
+    return eng === name || eng.includes(name.split(' ')[0]) || eng === email;
+  });
+}
+
+// ── Render ─────────────────────────────────────────────
+function render() {
+  document.getElementById('loadingOverlay').classList.add('hidden');
+  if(currentView==='day') renderDay();
+  else renderWeek();
+  updateDateLabel();
+}
+
+function updateDateLabel() {
+  const d = currentDate;
+  if(currentView==='day') {
+    document.getElementById('dateLbl').textContent =
+      d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  } else {
+    const dow=d.getDay(), diff=dow===0?-6:1-dow;
+    const mon=new Date(d); mon.setDate(d.getDate()+diff);
+    const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+    document.getElementById('dateLbl').textContent =
+      `${mon.toLocaleDateString('en-GB',{day:'numeric',month:'short'})} – ${sun.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
+  }
+}
+
+function renderDay() {
+  const myJobs = getMyJobs().filter(j => { const d=parseDate(getJobDate(j)); return d&&sameDay(d,currentDate); });
+  myJobs.sort((a,b) => { const sa=getStartHour(a),sb=getStartHour(b); if(sa===null&&sb===null)return 0; if(sa===null)return 1; if(sb===null)return -1; return sa-sb; });
+
+  // Stats
+  const total = myJobs.length;
+  const done  = myJobs.filter(j=>getJobStatus(j)==='complete').length;
+  const enroute = myJobs.filter(j=>statusClass(getJobStatus(j))==='en-route').length;
+  const inprog  = myJobs.filter(j=>statusClass(getJobStatus(j))==='in-progress').length;
+
+  let html = `<div class="stats-bar">
+    <div class="stat-pill"><div class="stat-dot" style="background:#6b8aaa"></div><div><div class="stat-num">${total}</div><div class="stat-lbl">Today's Jobs</div></div></div>
+    <div class="stat-pill"><div class="stat-dot" style="background:var(--accent)"></div><div><div class="stat-num">${done}</div><div class="stat-lbl">Complete</div></div></div>
+    <div class="stat-pill"><div class="stat-dot" style="background:var(--warning)"></div><div><div class="stat-num">${inprog}</div><div class="stat-lbl">In Progress</div></div></div>
+    <div class="stat-pill"><div class="stat-dot" style="background:var(--accent2)"></div><div><div class="stat-num">${enroute}</div><div class="stat-lbl">En Route</div></div></div>
+  </div>`;
+
+  if(total===0) {
+    html += `<div class="center-msg"><div class="big">📅</div><p>No jobs scheduled for today.<br><span style="font-size:13px;color:var(--text-dim)">Check another day using the navigation above.</span></p></div>`;
+    document.getElementById('mainContent').innerHTML = html;
+    return;
+  }
+
+  // Calculate day range
+  let dayEnd = DAY_END_DEFAULT;
+  myJobs.forEach(j => { const sh=getStartHour(j); if(sh!==null){ const fin=sh+getDuration(getJobType(j)); if(fin>dayEnd)dayEnd=Math.ceil(fin)+1; }});
+
+  const now = new Date();
+  const isToday = sameDay(currentDate, today0());
+  const nowHour = now.getHours() + now.getMinutes()/60;
+
+  html += `<div class="timeline-wrap"><div class="timeline-line">`;
+
+  // Build hour slots
+  for(let h = DAY_START; h <= dayEnd; h++) {
+    const jobsAtHour = myJobs.filter(j => {
+      const sh=getStartHour(j);
+      if(sh===null) return h===Math.floor(h) && h===DAY_START; // unscheduled at top
+      return Math.floor(sh)===h;
+    });
+
+    // Now line
+    let nowLineHtml = '';
+    if(isToday && nowHour >= h && nowHour < h+1) {
+      const pct = (nowHour-h)*100;
+      nowLineHtml = `<div style="position:relative;height:2px;margin:${pct*0.9}px 0 4px 0">
+        <div class="now-line"><span class="now-line-label">${fmtTime(nowHour)}</span></div>
+      </div>`;
+    }
+
+    html += `<div class="timeline-hour">
+      <div class="timeline-hour-label">${String(h).padStart(2,'0')}:00</div>
+      <div class="timeline-hour-tick"></div>
+      <div class="timeline-job-slot">
+        ${nowLineHtml}`;
+
+    if(jobsAtHour.length > 0) {
+      jobsAtHour.forEach(job => {
+        const sh=getStartHour(job);
+        const dur=getDuration(getJobType(job));
+        const timeStr = sh!==null ? `${fmtTime(sh)} – ${fmtTime(sh+dur)}` : 'Time TBC';
+        const status = getJobStatus(job);
+        const sc = statusClass(status);
+        const jid = job.jobId || job._id;
+
+        html += `<div class="job-card status-${sc}" onclick="openJobModal('${job._id}')">
+          <div class="job-card-top">
+            <div class="job-type">${esc(getJobType(job)||'Job')}</div>
+            <div class="job-id">${esc(jid)}</div>
+          </div>
+          <div class="job-time-badge">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ${timeStr}
+          </div>
+          <div class="job-meta">
+            <div class="job-meta-item"><div class="job-meta-lbl">Customer</div><div class="job-meta-val">${esc(getCustomerName(job))}</div></div>
+            <div class="job-meta-item"><div class="job-meta-lbl">Postcode</div><div class="job-meta-val">${esc(getPostcode(job))}</div></div>
+            ${getAddress(job)?`<div class="job-meta-item" style="grid-column:1/-1"><div class="job-meta-lbl">Address</div><div class="job-meta-val">${esc(getAddress(job))}</div></div>`:''}
+          </div>
+          <div class="job-bottom">
+            <span class="status-badge ${sc}">${statusLabel(status)}</span>
+            <span class="tap-hint">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              Tap to update
+            </span>
+          </div>
+        </div>`;
+      });
+    }
+
+    html += `</div></div>`;
+  }
+
+  // Unscheduled section
+  const unscheduled = myJobs.filter(j => getStartHour(j)===null);
+  if(unscheduled.length > 0) {
+    html += `<div class="timeline-hour">
+      <div class="timeline-hour-label" style="color:var(--warning);font-size:10px">TBC</div>
+      <div class="timeline-job-slot">`;
+    unscheduled.forEach(job => {
+      const status=getJobStatus(job), sc=statusClass(status), jid=job.jobId||job._id;
+      html += `<div class="job-card status-${sc}" onclick="openJobModal('${job._id}')">
+        <div class="job-card-top"><div class="job-type">${esc(getJobType(job)||'Job')}</div><div class="job-id">${esc(jid)}</div></div>
+        <div class="job-time-badge" style="border-color:rgba(245,158,11,0.3);color:var(--warning)">⏳ Time not yet scheduled</div>
+        <div class="job-meta">
+          <div class="job-meta-item"><div class="job-meta-lbl">Customer</div><div class="job-meta-val">${esc(getCustomerName(job))}</div></div>
+          <div class="job-meta-item"><div class="job-meta-lbl">Postcode</div><div class="job-meta-val">${esc(getPostcode(job))}</div></div>
+        </div>
+        <div class="job-bottom"><span class="status-badge ${sc}">${statusLabel(status)}</span><span class="tap-hint"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Tap to update</span></div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  html += `</div></div>`;
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+function renderWeek() {
+  const dow = currentDate.getDay(), diff = dow===0?-6:1-dow;
+  const mon = new Date(currentDate); mon.setDate(currentDate.getDate()+diff);
+  const cols = Array.from({length:7},(_,i) => { const d=new Date(mon); d.setDate(mon.getDate()+i); return d; });
+  const myJobs = getMyJobs();
+  const todayD = today0();
+
+  let html = `<div class="week-grid">`;
+  cols.forEach(col => {
+    const isToday = sameDay(col, todayD);
+    const isWeekend = col.getDay()===0||col.getDay()===6;
+    const dayJobs = myJobs.filter(j => { const d=parseDate(getJobDate(j)); return d&&sameDay(d,col); });
+    dayJobs.sort((a,b)=>{ const sa=getStartHour(a),sb=getStartHour(b); if(sa===null&&sb===null)return 0; if(sa===null)return 1; if(sb===null)return -1; return sa-sb; });
+
+    html += `<div class="week-day-col${isToday?' is-today':''}${isWeekend?' weekend':''}">
+      <div class="week-day-header">
+        <div class="week-day-name">${col.toLocaleDateString('en-GB',{weekday:'short'})}</div>
+        <div class="week-day-num">${col.getDate()}</div>
+      </div>
+      <div class="week-day-jobs">`;
+
+    if(dayJobs.length===0) {
+      html += `<div class="week-empty">—</div>`;
+    } else {
+      dayJobs.forEach(job => {
+        const status=getJobStatus(job), sc=statusClass(status);
+        const sh=getStartHour(job), jid=job.jobId||job._id;
+        html += `<div class="week-job-card ${sc}" onclick="openJobModal('${job._id}')">
+          <div class="week-job-type">${esc(getJobType(job)||'Job')}</div>
+          <div class="week-job-post">${esc(getPostcode(job))}</div>
+          ${sh!==null?`<div class="week-job-time">${fmtTime(sh)}</div>`:''}
+          <div class="week-job-id">${esc(jid)}</div>
+        </div>`;
+      });
+    }
+
+    html += `</div></div>`;
+  });
+
+  html += `</div>`;
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+// ── Job Modal ──────────────────────────────────────────
+window.openJobModal = function(jobDocId) {
+  const job = allJobs.find(j=>j._id===jobDocId);
+  if(!job) return;
+  activeJobId = jobDocId;
+  selectedStatus = null;
+
+  const sh=getStartHour(job), dur=getDuration(getJobType(job));
+  const timeStr = sh!==null ? `${fmtTime(sh)} – ${fmtTime(sh+dur)}` : 'Time TBC';
+  const jid = job.jobId || job._id;
+
+  document.getElementById('mJobId').textContent = `# ${jid}`;
+  document.getElementById('mJobTitle').textContent = getJobType(job) || 'Job Details';
+  document.getElementById('mInfoGrid').innerHTML = `
+    <div class="modal-info-item"><div class="modal-info-lbl">Customer</div><div class="modal-info-val">${esc(getCustomerName(job))}</div></div>
+    <div class="modal-info-item"><div class="modal-info-lbl">Time</div><div class="modal-info-val">${timeStr}</div></div>
+    <div class="modal-info-item"><div class="modal-info-lbl">Postcode</div><div class="modal-info-val">${esc(getPostcode(job))}</div></div>
+    <div class="modal-info-item"><div class="modal-info-lbl">Contact</div><div class="modal-info-val">${esc(getPhone(job)||'—')}</div></div>
+    ${getAddress(job)?`<div class="modal-info-item" style="grid-column:1/-1"><div class="modal-info-lbl">Address</div><div class="modal-info-val">${esc(getAddress(job))}</div></div>`:''}
+  `;
+
+  // Pre-select current status
+  const cur = getJobStatus(job);
+  document.querySelectorAll('.status-option').forEach(el => {
+    el.classList.remove('selected');
+    const s = el.dataset.status;
+    if(statusClass(cur)===statusClass(s)) { el.classList.add('selected'); selectedStatus=s; }
+  });
+
+  document.getElementById('abortSection').classList.remove('show');
+  document.getElementById('abortCode').value = '';
+  document.getElementById('submitStatusBtn').disabled = false;
+
+  document.getElementById('modalOverlay').classList.add('open');
+};
+
+window.selectStatus = function(el) {
+  document.querySelectorAll('.status-option').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedStatus = el.dataset.status;
+  document.getElementById('submitStatusBtn').disabled = false;
+
+  if(selectedStatus === 'abort') {
+    document.getElementById('abortSection').classList.add('show');
+  } else {
+    document.getElementById('abortSection').classList.remove('show');
+    document.getElementById('abortCode').value = '';
+  }
+};
+
+window.closeModal = function() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  activeJobId = null; selectedStatus = null;
+};
+
+window.submitStatus = async function() {
+  if(!selectedStatus || !activeJobId) return;
+
+  if(selectedStatus === 'abort') {
+    const code = document.getElementById('abortCode').value.trim();
+    if(!code) { toast('Please enter an authorisation code to abort.', 'err'); return; }
+  }
+
+  const btn = document.getElementById('submitStatusBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  try {
+    const statusMap = {
+      'en-route':'en-route','in-progress':'in-progress','complete':'complete','abort':'abort'
+    };
+    const updates = {
+      jobStatus: statusMap[selectedStatus],
+      status: statusMap[selectedStatus],
+      statusUpdatedAt: new Date().toISOString(),
+      statusUpdatedBy: currentUser.displayName
+    };
+
+    if(selectedStatus==='abort') {
+      updates.abortCode = document.getElementById('abortCode').value.trim();
+      updates.abortedAt = new Date().toISOString();
+    }
+
+    await updateDoc(doc(db,'uploaded_jobs',activeJobId), updates);
+
+    // Update local state
+    const j = allJobs.find(x=>x._id===activeJobId);
+    if(j) Object.assign(j, updates);
+
+    toast(`Status updated to ${statusLabel(selectedStatus)} ✓`,'ok');
+    closeModal();
+    render();
+  } catch(e) {
+    toast('Failed to save: '+(e.code||e.message),'err');
+    btn.disabled=false; btn.textContent='Save Status';
+  }
+};
+
+// Close modal on overlay click
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if(e.target===document.getElementById('modalOverlay')) closeModal();
+});
+
+// ── Nav ────────────────────────────────────────────────
+document.getElementById('prevBtn').addEventListener('click', ()=>navigate(-1));
+document.getElementById('nextBtn').addEventListener('click', ()=>navigate(1));
+document.getElementById('todayBtn').addEventListener('click', ()=>{ currentDate=today0(); syncDatePicker(); render(); });
+document.getElementById('btnDay').addEventListener('click', ()=>setView('day'));
+document.getElementById('btnWeek').addEventListener('click', ()=>setView('week'));
+
+function navigate(dir) {
+  currentDate.setDate(currentDate.getDate() + dir*(currentView==='week'?7:1));
+  syncDatePicker(); render();
+}
+
+function setView(v) {
+  currentView=v;
+  document.getElementById('btnDay').classList.toggle('active',v==='day');
+  document.getElementById('btnWeek').classList.toggle('active',v==='week');
+  render();
+}
+
+function syncDatePicker() { /* no date picker in this UI */ }
+
+// ── Boot ───────────────────────────────────────────────
+const savedUser = loadSession();
+document.getElementById('loadingOverlay').classList.add('hidden');
+
+if(savedUser) {
+  currentUser = savedUser;
+  document.getElementById('loginScreen').style.display = 'none';
+  startApp();
+} else {
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+</script>
+</body>
+</html>
