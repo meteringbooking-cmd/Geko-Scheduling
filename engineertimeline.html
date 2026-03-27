@@ -216,7 +216,7 @@ body::before {
 .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
 
 /* CONTENT */
-.content { flex: 1; padding: 28px 24px; max-width: 900px; margin: 0 auto; width: 100%; }
+.content { flex: 1; padding: 28px 32px; width: 100%; }
 
 /* DAY STATS BAR */
 .stats-bar {
@@ -240,31 +240,31 @@ body::before {
 .center-msg p { font-size: 15px; line-height: 1.6; }
 
 /* ── DAY VIEW TIMELINE ───────────────────────────────── */
-.timeline-wrap { position: relative; padding-left: 90px; }
+.timeline-wrap { position: relative; padding-left: 80px; }
 
 .timeline-line {
-  position: absolute; left: 70px; top: 0; bottom: 0;
+  position: absolute; left: 62px; top: 0; bottom: 0;
   width: 2px; background: linear-gradient(180deg, transparent, rgba(0,255,157,0.15) 5%, rgba(0,255,157,0.15) 95%, transparent);
 }
 
 .timeline-hour {
-  position: relative; min-height: 100px; margin-bottom: 0;
+  position: relative; min-height: 110px; margin-bottom: 0;
 }
 
 .timeline-hour-label {
-  position: absolute; left: -90px; top: 0;
-  width: 80px; text-align: right;
+  position: absolute; left: -80px; top: 0;
+  width: 70px; text-align: right;
   font-family: 'Space Mono', monospace;
   font-size: 11px; color: var(--text-dim); padding-top: 2px;
 }
 
 .timeline-hour-tick {
-  position: absolute; left: -14px; top: 8px;
-  width: 12px; height: 1px; background: var(--border2);
+  position: absolute; left: -12px; top: 8px;
+  width: 10px; height: 1px; background: var(--border2);
 }
 
 .timeline-job-slot {
-  padding: 6px 0 6px 20px; min-height: 100px;
+  padding: 8px 0 8px 20px; min-height: 110px;
   border-top: 1px solid var(--border);
   position: relative;
 }
@@ -273,13 +273,14 @@ body::before {
 .job-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-left: 4px solid var(--accent);
+  border-left: 5px solid var(--accent);
   border-radius: var(--radius);
-  padding: 18px 20px;
+  padding: 22px 26px;
   cursor: pointer;
   transition: all 0.2s;
   position: relative; overflow: hidden;
   box-shadow: var(--card-shadow);
+  margin-bottom: 10px;
 }
 
 .job-card::before {
@@ -290,7 +291,7 @@ body::before {
 
 .job-card:hover {
   border-color: rgba(0,255,157,0.3);
-  transform: translateX(4px);
+  transform: translateX(6px);
   box-shadow: 0 8px 40px rgba(0,0,0,0.6);
 }
 
@@ -302,46 +303,46 @@ body::before {
 
 .job-card-top {
   display: flex; align-items: flex-start; justify-content: space-between;
-  gap: 12px; margin-bottom: 10px;
+  gap: 16px; margin-bottom: 14px;
 }
 
 .job-type {
-  font-size: 18px; font-weight: 600; color: var(--text); line-height: 1.2;
+  font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.2;
 }
 
 .job-id {
   font-family: 'Space Mono', monospace;
-  font-size: 11px; color: var(--accent); font-weight: 700;
+  font-size: 12px; color: var(--accent); font-weight: 700;
   background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.2);
-  padding: 3px 8px; border-radius: 6px; flex-shrink: 0;
+  padding: 4px 10px; border-radius: 6px; flex-shrink: 0;
 }
 
 .job-meta {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px;
-  margin-bottom: 14px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 20px;
+  margin-bottom: 16px;
 }
 
-.job-meta-item { display: flex; flex-direction: column; gap: 2px; }
+.job-meta-item { display: flex; flex-direction: column; gap: 3px; }
 .job-meta-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); }
-.job-meta-val { font-size: 14px; color: var(--text); font-weight: 500; }
+.job-meta-val { font-size: 16px; color: var(--text); font-weight: 500; }
 
 .job-time-badge {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex; align-items: center; gap: 8px;
   font-family: 'Space Mono', monospace;
-  font-size: 14px; font-weight: 700; color: var(--text);
+  font-size: 16px; font-weight: 700; color: var(--text);
   background: var(--surface2); border: 1px solid var(--border2);
-  padding: 6px 12px; border-radius: 8px; margin-bottom: 14px;
+  padding: 8px 16px; border-radius: 10px; margin-bottom: 16px;
 }
 
 .job-bottom {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 10px;
+  gap: 12px; flex-wrap: wrap;
 }
 
 .status-badge {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 12px; border-radius: 100px;
-  font-size: 12px; font-weight: 600; border: 1px solid;
+  padding: 6px 14px; border-radius: 100px;
+  font-size: 13px; font-weight: 600; border: 1px solid;
   text-transform: capitalize;
 }
 
@@ -352,9 +353,21 @@ body::before {
 .status-badge.unassigned  { background: rgba(107,137,170,0.1); border-color: rgba(107,137,170,0.2); color: var(--text-muted); }
 
 .tap-hint {
-  font-size: 11px; color: var(--text-dim);
-  display: flex; align-items: center; gap: 4px;
+  font-size: 12px; color: var(--text-dim);
+  display: flex; align-items: center; gap: 5px;
 }
+
+/* Navigate button on card */
+.card-nav-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 8px;
+  border: 1px solid rgba(0,200,255,0.35);
+  background: rgba(0,200,255,0.07);
+  color: var(--accent2); font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all 0.18s; text-decoration: none;
+}
+.card-nav-btn:hover { background: rgba(0,200,255,0.15); border-color: rgba(0,200,255,0.6); }
 
 /* ── WEEK VIEW ───────────────────────────────────────── */
 .week-grid {
@@ -482,6 +495,41 @@ body::before {
 .status-option-icon { font-size: 22px; }
 .status-option-name { font-size: 15px; font-weight: 600; color: var(--opt-c); }
 .status-option-desc { font-size: 12px; color: var(--text-muted); }
+
+/* Navigate section (shown when en-route selected) */
+.navigate-section {
+  display: none; margin-top: 16px;
+  background: rgba(0,200,255,0.06);
+  border: 1px solid rgba(0,200,255,0.2);
+  border-radius: 12px; padding: 16px 18px;
+}
+.navigate-section.show { display: block; }
+.navigate-section-title {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--accent2); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.navigate-address-display {
+  font-size: 15px; font-weight: 500; color: var(--text);
+  margin-bottom: 12px; line-height: 1.5;
+}
+.navigate-btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.nav-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 18px; border-radius: 10px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.18s;
+  text-decoration: none; border: 1px solid;
+}
+.nav-btn-maps {
+  background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.4); color: var(--accent2);
+}
+.nav-btn-maps:hover { background: rgba(0,200,255,0.2); }
+.nav-btn-copy {
+  background: rgba(255,255,255,0.05); border-color: var(--border2); color: var(--text-muted);
+}
+.nav-btn-copy:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+.nav-btn-copy.copied { border-color: rgba(0,255,157,0.4); color: var(--accent); background: rgba(0,255,157,0.07); }
 
 /* Abort code */
 .abort-section {
@@ -689,6 +737,24 @@ body::before {
     <div class="abort-section" id="abortSection">
       <label>Abort Authorisation Code <span style="color:var(--danger)">*</span></label>
       <input class="abort-input" type="text" id="abortCode" placeholder="Enter authorisation code"/>
+    </div>
+
+    <div class="navigate-section" id="navigateSection">
+      <div class="navigate-section-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        Get Directions
+      </div>
+      <div class="navigate-address-display" id="navigateAddress"></div>
+      <div class="navigate-btn-row">
+        <a class="nav-btn nav-btn-maps" id="mapsLink" href="#" target="_blank">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Open in Google Maps
+        </a>
+        <button class="nav-btn nav-btn-copy" id="copyAddressBtn" onclick="copyAddress()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy Address
+        </button>
+      </div>
     </div>
 
     <div class="modal-actions">
@@ -1097,11 +1163,17 @@ function renderWeek() {
 }
 
 // ── Job Modal ──────────────────────────────────────────
+// Store address/postcode for the navigate section
+let activeJobAddress = '';
+let activeJobPostcode = '';
+
 window.openJobModal = function(jobDocId) {
   const job = allJobs.find(j=>j._id===jobDocId);
   if(!job) return;
   activeJobId = jobDocId;
   selectedStatus = null;
+  activeJobAddress = getAddress(job) || '';
+  activeJobPostcode = getPostcode(job) || '';
 
   const sh=getStartHour(job), dur=getDuration(getJobType(job));
   const timeStr = sh!==null ? `${fmtTime(sh)} – ${fmtTime(sh+dur)}` : 'Time TBC';
@@ -1114,7 +1186,7 @@ window.openJobModal = function(jobDocId) {
     <div class="modal-info-item"><div class="modal-info-lbl">Time</div><div class="modal-info-val">${timeStr}</div></div>
     <div class="modal-info-item"><div class="modal-info-lbl">Postcode</div><div class="modal-info-val">${esc(getPostcode(job))}</div></div>
     <div class="modal-info-item"><div class="modal-info-lbl">Contact</div><div class="modal-info-val">${esc(getPhone(job)||'—')}</div></div>
-    ${getAddress(job)?`<div class="modal-info-item" style="grid-column:1/-1"><div class="modal-info-lbl">Address</div><div class="modal-info-val">${esc(getAddress(job))}</div></div>`:''}
+    ${activeJobAddress?`<div class="modal-info-item" style="grid-column:1/-1"><div class="modal-info-lbl">Address</div><div class="modal-info-val">${esc(activeJobAddress)}</div></div>`:''}
   `;
 
   // Pre-select current status
@@ -1127,10 +1199,31 @@ window.openJobModal = function(jobDocId) {
 
   document.getElementById('abortSection').classList.remove('show');
   document.getElementById('abortCode').value = '';
+  document.getElementById('navigateSection').classList.remove('show');
   document.getElementById('submitStatusBtn').disabled = false;
+
+  // If already en-route, show navigate section immediately
+  if(cur === 'en-route') buildNavigateSection();
 
   document.getElementById('modalOverlay').classList.add('open');
 };
+
+function buildNavigateSection() {
+  // Best address to use: full address + postcode, or just postcode
+  const fullAddress = [activeJobAddress, activeJobPostcode].filter(Boolean).join(', ');
+  const queryStr = encodeURIComponent(fullAddress || activeJobPostcode);
+
+  // Google Maps URL: works on mobile (opens app) and desktop (opens browser)
+  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${queryStr}`;
+
+  document.getElementById('navigateAddress').textContent = fullAddress || activeJobPostcode || 'No address available';
+  document.getElementById('mapsLink').href = mapsUrl;
+  document.getElementById('copyAddressBtn').classList.remove('copied');
+  document.getElementById('copyAddressBtn').innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    Copy Address`;
+  document.getElementById('navigateSection').classList.add('show');
+}
 
 window.selectStatus = function(el) {
   document.querySelectorAll('.status-option').forEach(e=>e.classList.remove('selected'));
@@ -1138,17 +1231,61 @@ window.selectStatus = function(el) {
   selectedStatus = el.dataset.status;
   document.getElementById('submitStatusBtn').disabled = false;
 
+  // Abort section
   if(selectedStatus === 'abort') {
     document.getElementById('abortSection').classList.add('show');
   } else {
     document.getElementById('abortSection').classList.remove('show');
     document.getElementById('abortCode').value = '';
   }
+
+  // Navigate section — show when en-route is selected
+  if(selectedStatus === 'en-route') {
+    buildNavigateSection();
+  } else {
+    document.getElementById('navigateSection').classList.remove('show');
+  }
 };
+
+window.copyAddress = function() {
+  const fullAddress = [activeJobAddress, activeJobPostcode].filter(Boolean).join(', ');
+  const textToCopy = fullAddress || activeJobPostcode || '';
+  if(!textToCopy) { toast('No address to copy', 'err'); return; }
+
+  const btn = document.getElementById('copyAddressBtn');
+  // Use clipboard API, fall back to execCommand for older mobile browsers
+  if(navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+      toast('Address copied to clipboard ✓', 'ok');
+      setTimeout(()=>{ btn.classList.remove('copied'); btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Address`; }, 2500);
+    }).catch(()=>legacyCopy(textToCopy, btn));
+  } else {
+    legacyCopy(textToCopy, btn);
+  }
+};
+
+function legacyCopy(text, btn) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.cssText = 'position:fixed;top:-999px;opacity:0';
+  document.body.appendChild(ta); ta.select();
+  try {
+    document.execCommand('copy');
+    btn.classList.add('copied');
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+    toast('Address copied to clipboard ✓', 'ok');
+    setTimeout(()=>{ btn.classList.remove('copied'); btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Address`; }, 2500);
+  } catch(e) {
+    toast('Could not copy — please copy manually: '+text, 'err');
+  }
+  document.body.removeChild(ta);
+}
 
 window.closeModal = function() {
   document.getElementById('modalOverlay').classList.remove('open');
   activeJobId = null; selectedStatus = null;
+  activeJobAddress = ''; activeJobPostcode = '';
 };
 
 window.submitStatus = async function() {
