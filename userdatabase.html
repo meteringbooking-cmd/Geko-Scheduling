@@ -537,7 +537,7 @@
     }
 
     #edit-modal {
-        width: 420px;
+        width: 460px;
         max-width: 95%;
         padding: 20px;
         border-radius: 18px;
@@ -673,6 +673,14 @@
             </div>
         </div>
 
+        <div class="form-row">
+            <div class="form-field">
+                <label class="form-label" for="edit-postcode">Home Postcode</label>
+                <input class="form-input" type="text" id="edit-postcode" placeholder="e.g. NE8 3HU">
+                <div class="helper-text">UK format, auto‑formatted (e.g. ne83hu → NE8 3HU)</div>
+            </div>
+        </div>
+
         <div id="edit-actions">
             <button id="edit-cancel">Cancel</button>
             <button id="edit-save">Save</button>
@@ -733,6 +741,14 @@
                     </div>
                 </div>
 
+                <div class="form-row">
+                    <div class="form-field">
+                        <label class="form-label" for="postcode">Home Postcode</label>
+                        <input class="form-input" type="text" id="postcode" placeholder="e.g. NE8 3HU">
+                        <div class="helper-text">UK format, auto‑formatted (e.g. ne83hu → NE8 3HU)</div>
+                    </div>
+                </div>
+
                 <button id="add-user-btn" onclick="addUser()">Add User</button>
             </section>
 
@@ -742,7 +758,7 @@
                 <div class="panel-subtitle">Live view of all registered users</div>
 
                 <div id="user-controls">
-                    <input id="search-input" class="control-input" type="text" placeholder="Search name or email">
+                    <input id="search-input" class="control-input" type="text" placeholder="Search name, email or postcode">
                     <select id="filter-role" class="control-select">
                         <option value="">All roles</option>
                         <option value="scheduler">Scheduler</option>
@@ -758,6 +774,7 @@
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Postcode</th>
                             <th>Password</th>
                             <th>Role</th>
                             <th style="text-align:right;">Actions</th>
@@ -806,6 +823,22 @@
     const prevPageBtn = document.getElementById("prev-page");
     const nextPageBtn = document.getElementById("next-page");
 
+    // Simple UK postcode normaliser + validator (auto‑format)
+    function normalisePostcode(raw) {
+        if (!raw) return "";
+        let value = raw.replace(/\s+/g, "").toUpperCase();
+        if (value.length < 5 || value.length > 7) return raw.toUpperCase();
+
+        const outward = value.slice(0, value.length - 3);
+        const inward = value.slice(-3);
+        const formatted = outward + " " + inward;
+
+        const ukRegex = /^([A-Z]{1,2}[0-9][0-9A-Z]?)\s?[0-9][A-Z]{2}$/;
+        if (!ukRegex.test(formatted)) return raw.toUpperCase();
+
+        return formatted;
+    }
+
     window.login = function () {
         const u = document.getElementById("login-username").value.trim();
         const p = document.getElementById("login-password").value.trim();
@@ -846,7 +879,8 @@
             const matchesSearch =
                 !term ||
                 (u.name && u.name.toLowerCase().includes(term)) ||
-                (u.email && u.email.toLowerCase().includes(term));
+                (u.email && u.email.toLowerCase().includes(term)) ||
+                (u.postcode && u.postcode.toLowerCase().includes(term));
             return matchesRole && matchesSearch;
         });
     }
@@ -865,6 +899,7 @@
             row.innerHTML = `
                 <td>${u.name || ""}</td>
                 <td>${u.email || ""}</td>
+                <td>${u.postcode || ""}</td>
                 <td>${u.password || ""}</td>
                 <td><span class="role-pill">${(u.role || "").toUpperCase()}</span></td>
                 <td style="text-align:right;">
@@ -885,10 +920,12 @@
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
         const role = document.getElementById("role").value;
+        const rawPostcode = document.getElementById("postcode").value.trim();
+        const postcode = normalisePostcode(rawPostcode);
 
         const passRegex = /^[A-Za-z]{6}[0-9]{2}$/;
 
-        if (!name || !email || !password || !role) {
+        if (!name || !email || !password || !role || !rawPostcode) {
             alert("Please fill in all fields before adding a user.");
             return;
         }
@@ -898,12 +935,19 @@
             return;
         }
 
+        const ukRegex = /^([A-Z]{1,2}[0-9][0-9A-Z]?)\s?[0-9][A-Z]{2}$/;
+        if (!ukRegex.test(postcode)) {
+            alert("Please enter a valid UK postcode (e.g. NE8 3HU).");
+            return;
+        }
+
         try {
-            await setDoc(doc(userCollection), { name, email, password, role });
+            await setDoc(doc(userCollection), { name, email, password, role, postcode });
             document.getElementById("name").value = "";
             document.getElementById("email").value = "";
             document.getElementById("password").value = "";
             document.getElementById("role").value = "";
+            document.getElementById("postcode").value = "";
             await loadUsers();
             alert("User added successfully.");
         } catch (err) {
@@ -933,6 +977,7 @@
         document.getElementById("edit-email").value = user.email || "";
         document.getElementById("edit-password").value = user.password || "";
         document.getElementById("edit-role").value = user.role || "scheduler";
+        document.getElementById("edit-postcode").value = user.postcode || "";
 
         document.getElementById("edit-modal-backdrop").style.display = "flex";
     };
@@ -949,10 +994,13 @@
         const email = document.getElementById("edit-email").value.trim();
         const password = document.getElementById("edit-password").value.trim();
         const role = document.getElementById("edit-role").value;
+        const rawPostcode = document.getElementById("edit-postcode").value.trim();
+        const postcode = normalisePostcode(rawPostcode);
 
         const passRegex = /^[A-Za-z]{6}[0-9]{2}$/;
+        const ukRegex = /^([A-Z]{1,2}[0-9][0-9A-Z]?)\s?[0-9][A-Z]{2}$/;
 
-        if (!name || !email || !password || !role) {
+        if (!name || !email || !password || !role || !rawPostcode) {
             alert("Please fill in all fields.");
             return;
         }
@@ -962,8 +1010,13 @@
             return;
         }
 
+        if (!ukRegex.test(postcode)) {
+            alert("Please enter a valid UK postcode (e.g. NE8 3HU).");
+            return;
+        }
+
         try {
-            await updateDoc(doc(db, "userdatabase", currentEditId), { name, email, password, role });
+            await updateDoc(doc(db, "userdatabase", currentEditId), { name, email, password, role, postcode });
             document.getElementById("edit-modal-backdrop").style.display = "none";
             currentEditId = null;
             await loadUsers();
@@ -1006,10 +1059,11 @@
             return;
         }
 
-        const header = ["Name", "Email", "Password", "Role"];
+        const header = ["Name", "Email", "Postcode", "Password", "Role"];
         const rows = filtered.map(u => [
             u.name || "",
             u.email || "",
+            u.postcode || "",
             u.password || "",
             u.role || ""
         ]);
@@ -1027,6 +1081,14 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    });
+
+    // Auto‑format postcode fields on blur
+    document.getElementById("postcode").addEventListener("blur", (e) => {
+        e.target.value = normalisePostcode(e.target.value);
+    });
+    document.getElementById("edit-postcode").addEventListener("blur", (e) => {
+        e.target.value = normalisePostcode(e.target.value);
     });
 </script>
 
