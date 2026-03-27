@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Geko — View Data</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+  :root {
+    --sidebar-w-collapsed: 60px;
+    --sidebar-w-expanded:  200px;
+    --sidebar-bg: #0c1118;
+    --sidebar-border: #1a2535;
+    --sidebar-accent: #00c896;
+    --sidebar-text: #8a9bb0;
+    --sidebar-text-hover: #e8edf2;
+    --sidebar-active-bg: rgba(0,200,150,0.1);
+    --sidebar-active-text: #00c896;
+    --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+    --bg: #0b0f14; --surface: #131920; --surface2: #1a2330; --border: #1f2d3d;
+    --accent: #00c896; --accent2: #0084ff; --text: #e8edf2; --text-muted: #6b7f93;
+    --danger: #ff4d6a; --warning: #f59e0b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{display:flex;min-height:100vh;background:#0b0f14;font-family:"DM Sans",sans-serif;color:#e8edf2;overflow:hidden;}
+  body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,200,150,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,150,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+
+  /* SIDEBAR */
+  .sidebar{width:var(--sidebar-w-collapsed);min-height:100vh;background:var(--sidebar-bg);border-right:1px solid var(--sidebar-border);display:flex;flex-direction:column;flex-shrink:0;transition:width var(--transition);overflow:hidden;position:relative;z-index:100;}
+  .sidebar.expanded{width:var(--sidebar-w-expanded);}
+  .sidebar-header{height:68px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--sidebar-border);flex-shrink:0;padding:0 10px;gap:8px;}
+  .sidebar.expanded .sidebar-header{justify-content:space-between;}
+  .sidebar-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
+  .logo-text{font-family:"Syne",sans-serif;font-size:18px;font-weight:800;color:var(--sidebar-accent);opacity:0;max-width:0;overflow:hidden;transition:opacity var(--transition),max-width var(--transition);white-space:nowrap;}
+  .sidebar.expanded .logo-text{opacity:1;max-width:140px;}
+  .logo-icon{width:32px;height:32px;background:var(--sidebar-accent);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .logo-icon span{font-family:"Syne",sans-serif;font-size:14px;font-weight:800;color:#000;}
+  .sidebar-toggle{width:32px;height:32px;border-radius:7px;border:1px solid var(--sidebar-border);background:rgba(255,255,255,0.04);color:var(--sidebar-text);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.18s;}
+  .sidebar-toggle:hover{background:rgba(255,255,255,0.08);color:var(--sidebar-text-hover);}
+  .sidebar-nav{flex:1;padding:12px 0;display:flex;flex-direction:column;gap:2px;}
+  .sidebar-link{display:flex;align-items:center;gap:12px;padding:0 12px;height:44px;text-decoration:none;color:var(--sidebar-text);transition:all 0.18s;white-space:nowrap;border-left:2px solid transparent;flex-shrink:0;position:relative;}
+  .sidebar-link:hover{background:rgba(255,255,255,0.05);color:var(--sidebar-text-hover);}
+  .sidebar-link.active{background:var(--sidebar-active-bg);color:var(--sidebar-active-text);border-left-color:var(--sidebar-accent);}
+  .sidebar-icon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:8px;}
+  .sidebar-link.active .sidebar-icon{background:rgba(0,200,150,0.12);}
+  .sidebar-label{font-size:13px;font-weight:500;opacity:0;max-width:0;overflow:hidden;transition:opacity var(--transition),max-width var(--transition);pointer-events:none;}
+  .sidebar.expanded .sidebar-label{opacity:1;max-width:140px;}
+  .sidebar-link::after{content:attr(data-label);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);background:#0c1118;border:1px solid var(--sidebar-border);color:#e8edf2;font-size:12px;font-weight:500;padding:5px 10px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.15s;z-index:200;box-shadow:4px 4px 16px rgba(0,0,0,0.4);}
+  .sidebar:not(.expanded) .sidebar-link:hover::after{opacity:1;}
+  .sidebar-footer{padding:12px;border-top:1px solid var(--sidebar-border);flex-shrink:0;}
+  .sidebar-version{font-size:10px;color:rgba(138,155,176,0.4);text-align:center;letter-spacing:0.5px;opacity:0;transition:opacity var(--transition);}
+  .sidebar.expanded .sidebar-version{opacity:1;}
+
+  /* MAIN */
+  .main-content{flex:1;display:flex;flex-direction:column;min-width:0;overflow-y:auto;position:relative;z-index:1;}
+  main{max-width:1320px;margin:0 auto;padding:48px 32px;width:100%;flex:1;}
+  .page-header{margin-bottom:32px;}
+  .page-header h1{font-family:"Syne",sans-serif;font-size:32px;font-weight:800;margin-bottom:8px;}
+  .page-header p{color:var(--text-muted);font-size:15px;}
+
+  /* CARDS */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:20px;}
+  .card h2{font-family:"Syne",sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;}
+  .card-sub{color:var(--text-muted);font-size:14px;margin-bottom:20px;}
+
+  /* STATS */
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 20px;}
+  .stat-val{font-family:"Syne",sans-serif;font-size:26px;font-weight:800;color:var(--accent);}
+  .stat-val.amber{color:var(--warning);}
+  .stat-val.blue{color:#5aafff;}
+  .stat-lbl{font-size:12px;color:var(--text-muted);margin-top:3px;}
+
+  /* FILTERS */
+  .filters-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px;}
+  .filters-bar{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;}
+  .filter-group{display:flex;flex-direction:column;gap:6px;}
+  .filter-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;}
+  .search-wrap{position:relative;flex:1;min-width:240px;}
+  .search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none;opacity:0.5;}
+  .search-input{width:100%;height:40px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:"DM Sans",sans-serif;padding:0 12px 0 36px;outline:none;transition:border-color 0.2s;}
+  .search-input:focus{border-color:var(--accent);}
+  .search-input::placeholder{color:var(--text-muted);}
+  .filter-select,.date-input{height:40px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:"DM Sans",sans-serif;padding:0 12px;outline:none;transition:border-color 0.2s;cursor:pointer;}
+  .filter-select{min-width:160px;padding-right:28px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7f93' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
+  .date-input{min-width:150px;color-scheme:dark;}
+  .filter-select:focus,.date-input:focus{border-color:var(--accent);}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:0 18px;height:40px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.2s;font-family:"DM Sans",sans-serif;}
+  .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-muted);}
+  .btn-outline:hover{border-color:var(--text-muted);color:var(--text);}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,77,106,0.3);color:var(--danger);font-size:12px;height:36px;padding:0 14px;}
+  .btn-ghost:hover{background:rgba(255,77,106,0.1);}
+
+  /* TOOLBAR */
+  .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
+  .result-count{font-size:13px;color:var(--text-muted);}
+  .result-count strong{color:var(--text);}
+  .toolbar-right{display:flex;gap:8px;}
+
+  /* TABLE */
+  .table-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--border);}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead{background:var(--surface2);}
+  th{padding:12px 14px;text-align:left;font-weight:600;color:var(--text-muted);white-space:nowrap;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:0.6px;cursor:pointer;user-select:none;transition:color 0.15s;}
+  th:hover{color:var(--text);}
+  th .si{margin-left:4px;opacity:0.35;font-size:10px;}
+  th.sort-asc .si::after{content:"↑";}
+  th.sort-desc .si::after{content:"↓";}
+  th:not(.sort-asc):not(.sort-desc) .si::after{content:"↕";}
+  td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(255,255,255,0.02);}
+
+  /* CHIPS */
+  .chip{display:inline-flex;align-items:center;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:500;}
+  .chip-id{background:rgba(0,200,150,0.08);color:var(--accent);border:1px solid rgba(0,200,150,0.2);font-family:monospace;}
+  .chip-am{background:rgba(90,175,255,0.12);color:#5aafff;}
+  .chip-pm{background:rgba(245,158,11,0.12);color:var(--warning);}
+  .chip-none{background:rgba(107,127,147,0.12);color:var(--text-muted);}
+  .chip-status{background:rgba(0,200,150,0.1);color:var(--accent);}
+
+  /* PAGINATION */
+  .pagination{display:flex;align-items:center;justify-content:space-between;margin-top:16px;gap:10px;flex-wrap:wrap;}
+  .page-info{font-size:13px;color:var(--text-muted);}
+  .page-btns{display:flex;gap:5px;}
+  .page-btn{height:32px;min-width:32px;padding:0 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text-muted);font-size:13px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;font-family:"DM Sans",sans-serif;}
+  .page-btn:hover:not(:disabled){color:var(--text);border-color:var(--text-muted);}
+  .page-btn.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:600;}
+  .page-btn:disabled{opacity:0.3;cursor:not-allowed;}
+
+  /* EMPTY / LOADING */
+  .empty-state{text-align:center;padding:60px 20px;color:var(--text-muted);}
+  .empty-state h3{font-family:"Syne",sans-serif;font-size:18px;color:var(--text);margin-bottom:8px;margin-top:16px;}
+  .empty-icon{font-size:40px;opacity:0.3;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px;}
+  .loading-cell{text-align:center;padding:48px 20px;color:var(--text-muted);}
+
+  /* STATUS */
+  .fb-status{display:flex;align-items:center;gap:8px;font-size:13px;padding:10px 16px;border-radius:8px;margin-bottom:20px;background:var(--surface2);border:1px solid var(--border);}
+  .status-dot{width:8px;height:8px;border-radius:50%;background:var(--warning);flex-shrink:0;}
+  .status-dot.ok{background:var(--accent);}
+  .status-dot.err{background:var(--danger);}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+  .status-dot:not(.ok):not(.err){animation:pulse 1.5s infinite;}
+  .hidden{display:none!important;}
+
+  /* DETAIL MODAL */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:520px;max-width:90vw;max-height:85vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.6);}
+  .modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);}
+  .modal-header h3{font-family:"Syne",sans-serif;font-size:17px;font-weight:700;}
+  .modal-close{background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;line-height:1;padding:4px;}
+  .modal-close:hover{color:var(--text);}
+  .modal-body{padding:24px;}
+  .detail-row{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
+  .detail-key{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;min-width:130px;flex-shrink:0;padding-top:2px;}
+  .detail-val{font-size:14px;color:var(--text);}
+  .modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;}
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><span>G</span></div>
+      <span class="logo-text">Geko</span>
+    </div>
+    <button class="sidebar-toggle" id="sidebarToggle">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="dashboard.html" class="sidebar-link" data-label="Dashboard">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+      <span class="sidebar-label">Dashboard</span>
+    </a>
+    <a href="scheduling.html" class="sidebar-link" data-label="Scheduling">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span>
+      <span class="sidebar-label">Scheduling</span>
+    </a>
+    <a href="database.html" class="sidebar-link" data-label="Database">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 9v4c0 1.66 4.03 3 9 3s9-1.34 9-3V9"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/></svg></span>
+      <span class="sidebar-label">Database</span>
+    </a>
+    <a href="viewdata.html" class="sidebar-link active" data-label="View Data">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
+      <span class="sidebar-label">View Data</span>
+    </a>
+    <a href="users.html" class="sidebar-link" data-label="Users">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
+      <span class="sidebar-label">Users</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-version">v1.0.0</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-content">
+  <main>
+    <div class="page-header">
+      <h1>View Job Data</h1>
+      <p>Browse, search and filter all uploaded job records from the database.</p>
+    </div>
+
+    <div class="fb-status" id="fbStatus">
+      <div class="status-dot" id="fbDot"></div>
+      <span id="fbStatusText">Connecting to Firebase…</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-val" id="statTotal">—</div><div class="stat-lbl">Total Jobs</div></div>
+      <div class="stat-card"><div class="stat-val blue" id="statAM">—</div><div class="stat-lbl">AM Slots</div></div>
+      <div class="stat-card"><div class="stat-val amber" id="statPM">—</div><div class="stat-lbl">PM Slots</div></div>
+      <div class="stat-card"><div class="stat-val" id="statEngineers">—</div><div class="stat-lbl">Engineers</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-card">
+      <div class="filters-bar">
+        <div class="filter-group" style="flex:1;min-width:240px;">
+          <div class="filter-label">Search</div>
+          <div class="search-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" class="search-input" id="searchInput" placeholder="Job number or postcode…"/>
+          </div>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Engineer</div>
+          <select class="filter-select" id="engineerFilter">
+            <option value="">All Engineers</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Date From</div>
+          <input type="date" class="date-input" id="dateFrom"/>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Date To</div>
+          <input type="date" class="date-input" id="dateTo"/>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Time Slot</div>
+          <select class="filter-select" id="slotFilter" style="min-width:120px;">
+            <option value="">All Slots</option>
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">&nbsp;</div>
+          <button class="btn btn-outline" id="clearBtn">Clear Filters</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:20px 24px 16px;">
+        <div class="toolbar">
+          <div class="result-count" id="resultCount">Loading…</div>
+          <div class="toolbar-right">
+            <button class="btn btn-outline" id="exportBtn" style="font-size:12px;height:36px;padding:0 14px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export CSV
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap" id="tableWrap">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th data-col="jobId">Job ID<span class="si"></span></th>
+              <th data-col="customerName">Customer<span class="si"></span></th>
+              <th data-col="jobType">Job Type<span class="si"></span></th>
+              <th data-col="address">Address<span class="si"></span></th>
+              <th data-col="postcode">Postcode<span class="si"></span></th>
+              <th data-col="contactNumber">Contact<span class="si"></span></th>
+              <th data-col="engineerName">Engineer<span class="si"></span></th>
+              <th data-col="dateOfJob">Date<span class="si"></span></th>
+              <th data-col="timeSlot">Slot<span class="si"></span></th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td class="loading-cell" colspan="10"><span class="spinner"></span>Loading records…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:16px 24px;">
+        <div class="pagination">
+          <div class="page-info" id="pageInfo">—</div>
+          <div class="page-btns" id="pageBtns"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-backdrop hidden" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Job Details</h3>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="modalClose2">Close</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
+  authDomain: "geko-scheduling.firebaseapp.com",
+  projectId: "geko-scheduling",
+  storageBucket: "geko-scheduling.firebasestorage.app",
+  messagingSenderId: "824568732787",
+  appId: "1:824568732787:web:c12db983fd6a5b44b01e06"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ── State ──────────────────────────────────────────────────
+let allJobs = [];
+let filtered = [];
+let sortCol = 'jobId';
+let sortDir = 'asc';
+let page = 1;
+const PER_PAGE = 20;
+
+// ── Elements ───────────────────────────────────────────────
+const fbDot        = document.getElementById('fbDot');
+const fbStatusText = document.getElementById('fbStatusText');
+const tableBody    = document.getElementById('tableBody');
+const resultCount  = document.getElementById('resultCount');
+const pageInfo     = document.getElementById('pageInfo');
+const pageBtns     = document.getElementById('pageBtns');
+const searchInput  = document.getElementById('searchInput');
+const engineerFilter = document.getElementById('engineerFilter');
+const slotFilter   = document.getElementById('slotFilter');
+const dateFrom     = document.getElementById('dateFrom');
+const dateTo       = document.getElementById('dateTo');
+const clearBtn     = document.getElementById('clearBtn');
+const exportBtn    = document.getElementById('exportBtn');
+const modalBackdrop = document.getElementById('modalBackdrop');
+const modalTitle   = document.getElementById('modalTitle');
+const modalBody    = document.getElementById('modalBody');
+const modalClose   = document.getElementById('modalClose');
+const modalClose2  = document.getElementById('modalClose2');
+
+// ── Load data ──────────────────────────────────────────────
+async function loadJobs() {
+  try {
+    const snap = await getDocs(collection(db, 'uploaded_jobs'));
+    allJobs = [];
+    snap.forEach(d => allJobs.push({ id: d.id, ...d.data() }));
+
+    fbDot.className = 'status-dot ok';
+    fbStatusText.textContent = `Firebase connected — ${allJobs.length} records loaded`;
+
+    // Stats
+    document.getElementById('statTotal').textContent = allJobs.length;
+    document.getElementById('statAM').textContent = allJobs.filter(j => j.timeSlot === 'AM').length;
+    document.getElementById('statPM').textContent = allJobs.filter(j => j.timeSlot === 'PM').length;
+    const engineers = [...new Set(allJobs.map(j => j.engineerName).filter(Boolean))].sort();
+    document.getElementById('statEngineers').textContent = engineers.length;
+
+    // Populate engineer dropdown
+    engineers.forEach(e => {
+      const opt = document.createElement('option');
+      opt.value = e; opt.textContent = e;
+      engineerFilter.appendChild(opt);
+    });
+
+    applyFilters();
+  } catch (err) {
+    fbDot.className = 'status-dot err';
+    fbStatusText.textContent = 'Firebase error: ' + (err.message || err.code || err);
+    tableBody.innerHTML = `<tr><td class="loading-cell" colspan="10" style="color:var(--danger)">Failed to load data. Check Firebase connection.</td></tr>`;
+  }
+}
+
+// ── Filters ────────────────────────────────────────────────
+function parseUKDate(s) {
+  if (!s) return null;
+  const m = String(s).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[2]-1, +m[1]);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+function applyFilters() {
+  const q = searchInput.value.trim().toLowerCase();
+  const eng = engineerFilter.value;
+  const slot = slotFilter.value;
+  const from = dateFrom.value ? new Date(dateFrom.value) : null;
+  const to   = dateTo.value   ? new Date(dateTo.value + 'T23:59:59') : null;
+
+  filtered = allJobs.filter(j => {
+    if (q) {
+      const jobId = (j.jobId || j.id || '').toLowerCase();
+      const pc    = (j.postcode || '').toLowerCase().replace(/\s/g,'');
+      const qClean = q.replace(/\s/g,'');
+      if (!jobId.includes(q) && !pc.includes(qClean)) return false;
+    }
+    if (eng && j.engineerName !== eng) return false;
+    if (slot && j.timeSlot !== slot) return false;
+    if (from || to) {
+      const d = parseUKDate(j.dateOfJob);
+      if (!d) return false;
+      if (from && d < from) return false;
+      if (to   && d > to)   return false;
+    }
+    return true;
+  });
+
+  sortData();
+  page = 1;
+  render();
+}
+
+// ── Sort ───────────────────────────────────────────────────
+function sortData() {
+  filtered.sort((a, b) => {
+    let av = a[sortCol] || '';
+    let bv = b[sortCol] || '';
+    if (sortCol === 'dateOfJob') {
+      av = parseUKDate(av) || 0;
+      bv = parseUKDate(bv) || 0;
+      return sortDir === 'asc' ? av - bv : bv - av;
+    }
+    av = String(av).toLowerCase();
+    bv = String(bv).toLowerCase();
+    return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+  });
+}
+
+// ── Render ─────────────────────────────────────────────────
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function render() {
+  const total = filtered.length;
+  const pages = Math.max(1, Math.ceil(total / PER_PAGE));
+  if (page > pages) page = pages;
+  const start = (page - 1) * PER_PAGE;
+  const slice = filtered.slice(start, start + PER_PAGE);
+
+  resultCount.innerHTML = `Showing <strong>${slice.length}</strong> of <strong>${total}</strong> records`;
+
+  if (total === 0) {
+    tableBody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">🔍</div><h3>No records found</h3><p>Try adjusting your search or filters.</p></div></td></tr>`;
+  } else {
+    tableBody.innerHTML = slice.map(j => {
+      const jid = esc(j.jobId || j.id);
+      const slot = j.timeSlot === 'AM' ? `<span class="chip chip-am">AM</span>`
+                 : j.timeSlot === 'PM' ? `<span class="chip chip-pm">PM</span>`
+                 : `<span class="chip chip-none">—</span>`;
+      return `<tr>
+        <td><span class="chip chip-id">${jid}</span></td>
+        <td>${esc(j.customerName)}</td>
+        <td>${esc(j.jobType)}</td>
+        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(j.address) || '—'}</td>
+        <td><strong>${esc(j.postcode)}</strong></td>
+        <td>${esc(j.contactNumber) || '—'}</td>
+        <td>${esc(j.engineerName)}</td>
+        <td>${esc(j.dateOfJob) || '—'}</td>
+        <td>${slot}</td>
+        <td><button class="btn btn-outline" style="font-size:11px;height:30px;padding:0 10px;" onclick="showDetail(${JSON.stringify(j).replace(/"/g,'&quot;')})">View</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Pagination
+  pageInfo.textContent = `Page ${page} of ${pages}`;
+  pageBtns.innerHTML = '';
+
+  const addBtn = (label, p, active, disabled) => {
+    const b = document.createElement('button');
+    b.className = 'page-btn' + (active ? ' active' : '');
+    b.textContent = label;
+    b.disabled = disabled;
+    b.onclick = () => { page = p; render(); };
+    pageBtns.appendChild(b);
+  };
+
+  addBtn('‹', page - 1, false, page <= 1);
+  const range = getPageRange(page, pages);
+  range.forEach(p => {
+    if (p === '…') {
+      const s = document.createElement('span');
+      s.textContent = '…'; s.style.cssText = 'color:var(--text-muted);padding:0 4px;line-height:32px;';
+      pageBtns.appendChild(s);
+    } else {
+      addBtn(p, p, p === page, false);
+    }
+  });
+  addBtn('›', page + 1, false, page >= pages);
+
+  // Sort headers
+  document.querySelectorAll('th[data-col]').forEach(th => {
+    th.classList.remove('sort-asc','sort-desc');
+    if (th.dataset.col === sortCol) th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+  });
+}
+
+function getPageRange(cur, total) {
+  if (total <= 7) return Array.from({length:total},(_,i)=>i+1);
+  if (cur <= 4) return [1,2,3,4,5,'…',total];
+  if (cur >= total-3) return [1,'…',total-4,total-3,total-2,total-1,total];
+  return [1,'…',cur-1,cur,cur+1,'…',total];
+}
+
+// ── Sort click ─────────────────────────────────────────────
+document.querySelectorAll('th[data-col]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    else { sortCol = col; sortDir = 'asc'; }
+    sortData();
+    render();
+  });
+});
+
+// ── Filter events ──────────────────────────────────────────
+searchInput.addEventListener('input', applyFilters);
+engineerFilter.addEventListener('change', applyFilters);
+slotFilter.addEventListener('change', applyFilters);
+dateFrom.addEventListener('change', applyFilters);
+dateTo.addEventListener('change', applyFilters);
+
+clearBtn.addEventListener('click', () => {
+  searchInput.value = '';
+  engineerFilter.value = '';
+  slotFilter.value = '';
+  dateFrom.value = '';
+  dateTo.value = '';
+  applyFilters();
+});
+
+// ── Export CSV ─────────────────────────────────────────────
+exportBtn.addEventListener('click', () => {
+  const cols = ['jobId','customerName','jobType','address','postcode','contactNumber','engineerName','dateOfJob','timeSlot','status','uploadedAt'];
+  const rows = [cols.join(',')];
+  filtered.forEach(j => {
+    rows.push(cols.map(c => `"${String(j[c]||'').replace(/"/g,'""')}"`).join(','));
+  });
+  const blob = new Blob([rows.join('\n')], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'geko-jobs-export.csv';
+  a.click();
+});
+
+// ── Detail modal ───────────────────────────────────────────
+window.showDetail = function(j) {
+  modalTitle.textContent = `Job ${j.jobId || j.id}`;
+  const fields = [
+    ['Job ID', j.jobId || j.id],
+    ['Customer Name', j.customerName],
+    ['Job Type', j.jobType],
+    ['Address', j.address || '—'],
+    ['Postcode', j.postcode],
+    ['Contact Number', j.contactNumber || '—'],
+    ['Engineer', j.engineerName],
+    ['Date of Job', j.dateOfJob || '—'],
+    ['Time Slot', j.timeSlot || '—'],
+    ['Status', j.status || '—'],
+    ['Uploaded At', j.uploadedAt ? new Date(j.uploadedAt).toLocaleString('en-GB') : '—'],
+  ];
+  modalBody.innerHTML = fields.map(([k,v]) => `
+    <div class="detail-row">
+      <div class="detail-key">${k}</div>
+      <div class="detail-val">${String(v||'').replace(/</g,'&lt;')}</div>
+    </div>`).join('');
+  modalBackdrop.classList.remove('hidden');
+};
+
+modalClose.addEventListener('click', () => modalBackdrop.classList.add('hidden'));
+modalClose2.addEventListener('click', () => modalBackdrop.classList.add('hidden'));
+modalBackdrop.addEventListener('click', e => { if (e.target === modalBackdrop) modalBackdrop.classList.add('hidden'); });
+
+// ── Sidebar ────────────────────────────────────────────────
+const sidebar = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebarToggle');
+const saved = localStorage.getItem('geko-sidebar');
+if (saved === 'expanded') sidebar.classList.add('expanded');
+sidebarToggle.addEventListener('click', () => {
+  sidebar.classList.toggle('expanded');
+  localStorage.setItem('geko-sidebar', sidebar.classList.contains('expanded') ? 'expanded' : 'collapsed');
+});
+
+// ── Init ───────────────────────────────────────────────────
+loadJobs();
+</script>
+</body>
+</html>
