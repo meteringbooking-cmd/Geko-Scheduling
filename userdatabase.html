@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User Database | Geko Scheduling</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Inter', sans-serif;
+        background: #f4f6f9;
+    }
+
+    /* LOGIN SCREEN */
+    #login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    #login-box {
+        background: white;
+        padding: 40px;
+        width: 350px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    #login-box h2 {
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    input, select, button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+    }
+
+    button {
+        background: #1a73e8;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    button:hover {
+        background: #155fc0;
+    }
+
+    /* DASHBOARD */
+    #dashboard {
+        display: none;
+        padding: 20px;
+    }
+
+    #topbar {
+        display: flex;
+        align-items: center;
+        background: white;
+        padding: 15px 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    #topbar img {
+        height: 50px;
+        margin-right: 15px;
+    }
+
+    #user-form {
+        background: white;
+        padding: 20px;
+        margin-top: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    table {
+        width: 100%;
+        margin-top: 25px;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+        padding: 14px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+    }
+
+    th {
+        background: #1a73e8;
+        color: white;
+        font-weight: 600;
+    }
+
+    .delete-btn {
+        background: #d9534f;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        border: none;
+    }
+
+    .delete-btn:hover {
+        background: #b52b27;
+    }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-container">
+    <div id="login-box">
+        <h2>Admin Login</h2>
+        <input type="text" id="login-username" placeholder="Username">
+        <input type="password" id="login-password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <p id="login-error" style="color:red; display:none;">Invalid login</p>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+    <div id="topbar">
+        <img src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=llvwvpwg&dl=1">
+        <h2>User Database</h2>
+    </div>
+
+    <div id="user-form">
+        <h3>Add New User</h3>
+        <input type="text" id="name" placeholder="Full Name">
+        <input type="email" id="email" placeholder="Email Address">
+        <input type="text" id="password" placeholder="Password (6 letters + 2 digits)">
+        <select id="role">
+            <option value="">Select Role</option>
+            <option value="scheduler">Scheduler</option>
+            <option value="engineer">Engineer</option>
+            <option value="team leader">Team Leader</option>
+            <option value="admin">Admin</option>
+        </select>
+        <button onclick="addUser()">Add User</button>
+    </div>
+
+    <table id="user-table">
+        <thead>
+            <tr>
+                <th>Name</th><th>Email</th><th>Password</th><th>Role</th><th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, setDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
+        authDomain: "geko-scheduling.firebaseapp.com",
+        projectId: "geko-scheduling",
+        storageBucket: "geko-scheduling.firebasestorage.app",
+        messagingSenderId: "824568732787",
+        appId: "1:824568732787:web:c12db983fd6a5b44b01e06",
+        measurementId: "G-K9PKQJYPLJ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const userCollection = collection(db, "userdatabase");
+
+    // LOGIN
+    window.login = function () {
+        const u = document.getElementById("login-username").value;
+        const p = document.getElementById("login-password").value;
+
+        if (u === "admin" && p === "admin") {
+            document.getElementById("login-container").style.display = "none";
+            document.getElementById("dashboard").style.display = "block";
+            loadUsers();
+        } else {
+            document.getElementById("login-error").style.display = "block";
+        }
+    };
+
+    // LOAD USERS
+    async function loadUsers() {
+        const tableBody = document.querySelector("#user-table tbody");
+        tableBody.innerHTML = "";
+
+        const snapshot = await getDocs(userCollection);
+        snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const row = `
+                <tr>
+                    <td>${data.name}</td>
+                    <td>${data.email}</td>
+                    <td>${data.password}</td>
+                    <td>${data.role}</td>
+                    <td><button class="delete-btn" onclick="deleteUser('${docSnap.id}')">Delete</button></td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+    }
+
+    // ADD USER
+    window.addUser = async function () {
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const role = document.getElementById("role").value;
+
+        const passRegex = /^[A-Za-z]{6}[0-9]{2}$/;
+
+        if (!name || !email || !password || !role) {
+            alert("Please fill in all fields");
+            return;
+        }
+
+        if (!passRegex.test(password)) {
+            alert("Password must be 6 letters followed by 2 digits");
+            return;
+        }
+
+        await setDoc(doc(userCollection), { name, email, password, role });
+        loadUsers();
+        alert("User added");
+    };
+
+    // DELETE USER
+    window.deleteUser = async function (id) {
+        await deleteDoc(doc(db, "userdatabase", id));
+        loadUsers();
+    };
+</script>
+
+</body>
+</html>
