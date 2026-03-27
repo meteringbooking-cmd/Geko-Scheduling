@@ -604,10 +604,10 @@ body::before {
       src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=xh5pubjr&dl=1"
       alt="Geko"/>
     <div class="login-title">Engineer Portal</div>
-    <div class="login-sub">Sign in to view your schedule for today.</div>
+    <div class="login-sub">Sign in with your name and password to view your schedule.</div>
     <div class="login-field">
-      <label>Email Address</label>
-      <input type="email" id="loginEmail" placeholder="your.email@company.com" autocomplete="email"/>
+      <label>Full Name</label>
+      <input type="text" id="loginName" placeholder="e.g. Alex Johnson" autocomplete="name"/>
     </div>
     <div class="login-field">
       <label>Password</label>
@@ -824,26 +824,25 @@ function loadSession() {
 function clearSession() { localStorage.removeItem(SESSION_KEY); }
 
 // ── Login ──────────────────────────────────────────────
-async function attemptLogin(email, password) {
+async function attemptLogin(name, password) {
   const errEl = document.getElementById('loginError');
   errEl.classList.remove('show');
   document.getElementById('loginBtn').textContent = 'Signing in…';
   document.getElementById('loginBtn').disabled = true;
 
   try {
-    const snap = await getDocs(collection(db,'geko_users'));
+    const snap = await getDocs(collection(db,'userdatabase'));
     let matched = null;
     snap.forEach(d => {
       const u = { _id: d.id, ...d.data() };
-      if((u.email||'').toLowerCase() === email.toLowerCase()) matched = u;
+      // Case-insensitive name match
+      if((u.name||'').toLowerCase().trim() === name.toLowerCase().trim()) matched = u;
     });
 
-    if(!matched) throw new Error('No account found with that email address.');
-    // For now: any password accepted (no auth system yet — matches users.html which stores no passwords)
-    // If the user record has a password field, check it
-    if(matched.password && matched.password !== password) throw new Error('Incorrect password.');
+    if(!matched) throw new Error('No account found with that name.');
+    if(!matched.password || matched.password !== password) throw new Error('Incorrect password.');
 
-    const engineerName = `${matched.firstName||''} ${matched.lastName||''}`.trim() || matched.email;
+    const engineerName = matched.name || name;
     currentUser = { ...matched, displayName: engineerName };
     saveSession(currentUser);
     startApp();
@@ -856,13 +855,13 @@ async function attemptLogin(email, password) {
 }
 
 document.getElementById('loginBtn').addEventListener('click', () => {
-  const email = document.getElementById('loginEmail').value.trim();
+  const name = document.getElementById('loginName').value.trim();
   const pass  = document.getElementById('loginPass').value;
-  if(!email) { document.getElementById('loginError').textContent='Please enter your email.'; document.getElementById('loginError').classList.add('show'); return; }
-  attemptLogin(email, pass);
+  if(!name) { document.getElementById('loginError').textContent='Please enter your name.'; document.getElementById('loginError').classList.add('show'); return; }
+  attemptLogin(name, pass);
 });
 
-document.getElementById('loginEmail').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('loginPass').focus(); });
+document.getElementById('loginName').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('loginPass').focus(); });
 document.getElementById('loginPass').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('loginBtn').click(); });
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -870,7 +869,7 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
   currentUser = null; allJobs = [];
   document.getElementById('app').classList.remove('visible');
   document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('loginEmail').value='';
+  document.getElementById('loginName').value='';
   document.getElementById('loginPass').value='';
   document.getElementById('loginError').classList.remove('show');
 });
@@ -904,11 +903,13 @@ async function loadAndRender() {
 
 // ── Filter jobs for this engineer ─────────────────────
 function getMyJobs() {
-  const name = currentUser.displayName.toLowerCase();
-  const email = (currentUser.email||'').toLowerCase();
+  const name = (currentUser.name || currentUser.displayName || '').toLowerCase().trim();
   return allJobs.filter(j => {
-    const eng = getEngineerName(j).toLowerCase();
-    return eng === name || eng.includes(name.split(' ')[0]) || eng === email;
+    const eng = getEngineerName(j).toLowerCase().trim();
+    // Match full name, or first name, or last name
+    const parts = name.split(' ').filter(Boolean);
+    return eng === name ||
+      parts.some(p => p.length > 2 && eng.includes(p));
   });
 }
 
