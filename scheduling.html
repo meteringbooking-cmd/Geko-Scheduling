@@ -209,7 +209,6 @@
     height: var(--row-h); display: flex; align-items: center; gap: 10px;
     padding: 0 14px; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0;
   }
-  /* Week view: sidebar rows match auto-height rows */
   .eng-row.auto { height: auto; min-height: var(--row-h); padding: 8px 14px; align-items: flex-start; }
 
   .eng-avatar {
@@ -220,7 +219,13 @@
   }
   .eng-name { font-size: 12px; font-weight: 500; line-height: 1.3; color: var(--text-main); }
 
-  .scroll-area { flex: 1; overflow: auto; position: relative; }
+  /* ── FIX: scroll-area must NOT clip overflow so week popups can escape ── */
+  .scroll-area {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: auto;
+    position: relative;
+  }
   .scroll-area::-webkit-scrollbar { width: 5px; height: 5px; }
   .scroll-area::-webkit-scrollbar-track { background: transparent; }
   .scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
@@ -250,13 +255,16 @@
     display: flex; border-bottom: 1px solid rgba(255,255,255,0.04); position: relative;
   }
   .eng-tl-row.day-mode  { height: var(--row-h); }
-  /* Week mode: height is driven by the tallest cell content */
-  .eng-tl-row.week-mode { height: auto; min-height: var(--row-h); align-items: stretch; }
+  /* Week mode: height is driven by the tallest cell content.
+     overflow:visible is essential so stacked pop-ups escape the row. */
+  .eng-tl-row.week-mode {
+    height: auto;
+    min-height: var(--row-h);
+    align-items: stretch;
+    overflow: visible;   /* FIX: allow stacked popups to overflow row bounds */
+  }
 
-  /* ── DAY VIEW: DROP SLOTS ──
-     Critical fix: drop overlay sits at z-index 1 covering the full row.
-     Cards sit at z-index 10 visually. During drag, .dragging sets
-     pointer-events:none so mouse events fall through to the slot below. */
+  /* ── DAY VIEW: DROP SLOTS ── */
   .day-drop-overlay {
     position: absolute; top: 0; bottom: 0; left: 0;
     display: flex; z-index: 1; pointer-events: none;
@@ -278,14 +286,22 @@
     background: rgba(10,18,30,0.96); border: 1px solid rgba(255,255,255,0.08);
     border-top-width: 3px; border-radius: 8px;
     padding: 5px 8px; cursor: grab; user-select: none;
-    z-index: 10; overflow: hidden;
+    /* FIX: z-index 2 so cards sit above drop overlay (z-index 1) but
+       .dragging drops to z-index 0 + pointer-events:none so slots fire */
+    z-index: 2; overflow: hidden;
     transition: box-shadow 0.2s, opacity 0.15s;
     display: flex; flex-direction: column; justify-content: space-between;
   }
   .job-card-day:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.8); overflow: visible; z-index: 100; border-color: rgba(0,255,157,0.3); }
   .job-card-day:hover .jc-tooltip { opacity: 1; transform: translateY(0); }
-  /* KEY: during drag, no pointer events so drop slots fire underneath */
-  .job-card-day.dragging { opacity: 0.35; cursor: grabbing; pointer-events: none; }
+  /* KEY FIX: dragging card must be pointer-events:none so drag events
+     reach the drop slots underneath. Also lower z-index below overlay. */
+  .job-card-day.dragging {
+    opacity: 0.3;
+    cursor: grabbing;
+    pointer-events: none !important;
+    z-index: 0 !important;
+  }
 
   .job-card-day.staging-card {
     position: relative; top: auto; bottom: auto; left: auto !important;
@@ -327,13 +343,16 @@
   .staging-hint { display: flex; align-items: center; justify-content: center; flex: 1; pointer-events: none; }
   .staging-hint span { font-size: 9px; color: rgba(255,200,0,0.25); text-transform: uppercase; letter-spacing: 0.4px; text-align: center; }
 
-  /* ── WEEK VIEW CELLS ──
-     Key fix: overflow:visible on cells so expanded stacks show above row */
+  /* ── WEEK VIEW CELLS ── */
   .week-cell-drop {
-    flex: 1; border-right: 1px solid rgba(255,255,255,0.03);
-    padding: 4px; transition: background var(--transition-fast);
-    position: relative; overflow: visible;
-    /* Let cell grow with content */
+    flex: 1;
+    border-right: 1px solid rgba(255,255,255,0.03);
+    padding: 4px;
+    transition: background var(--transition-fast);
+    /* FIX: position relative + overflow visible so popup escapes row */
+    position: relative;
+    overflow: visible;
+    min-height: var(--row-h);
   }
   .week-cell-drop.today-col { background: rgba(0,255,157,0.02); }
   .week-cell-drop.weekend   { background: rgba(255,255,255,0.005); }
@@ -350,27 +369,46 @@
   .job-card-week:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.6); border-color: rgba(0,200,255,0.3); }
   .job-card-week.dragging { opacity: 0.35; pointer-events: none; }
 
-  /* Stacking: show only first card by default */
+  /* ── WEEK STACKED POPUP ──
+     The popup is a fixed-position floating panel anchored via JS.
+     This avoids ALL overflow-clip issues from parent rows/scroll containers. */
+  .week-stack-popup {
+    position: fixed;           /* escape ALL containing blocks */
+    z-index: 9000;
+    background: rgba(8,12,22,0.99);
+    border: 1px solid rgba(0,200,255,0.25);
+    border-radius: 10px;
+    padding: 8px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.9), 0 0 0 1px rgba(0,200,255,0.1);
+    min-width: 160px;
+    max-width: 220px;
+    /* Hidden by default */
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .week-stack-popup.visible {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+  }
+  .week-stack-popup .job-card-week {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .week-stack-popup .job-card-week:last-child { margin-bottom: 0; }
+
+  /* The visible "first card + badge" in collapsed state */
   .week-cell-drop.stacked .job-card-week { display: none; }
   .week-cell-drop.stacked .job-card-week:first-of-type { display: block; }
-  /* On hover: float the cell above everything and show all cards */
-  .week-cell-drop.stacked:hover {
-    z-index: 300;
-    background: rgba(10,14,24,0.98) !important;
-    outline: 1px solid rgba(0,200,255,0.25);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.8);
-    border-radius: 6px;
-    padding-bottom: 6px;
-  }
-  .week-cell-drop.stacked:hover .job-card-week { display: block; }
-  .week-cell-drop.stacked:hover .stack-badge { display: none; }
 
   .stack-badge {
     display: inline-flex; align-items: center; justify-content: center;
     position: absolute; bottom: 4px; right: 4px;
     background: var(--accent-blue); color: #020308;
     font-size: 9px; font-weight: 700; border-radius: 10px; padding: 2px 6px;
-    pointer-events: none; z-index: 5;
+    pointer-events: none; z-index: 5; cursor: default;
   }
 
   /* Search */
@@ -541,6 +579,9 @@
   </div>
 </div>
 
+<!-- Fixed-position popup for week stacked cards — lives outside all scroll/clip contexts -->
+<div class="week-stack-popup" id="weekStackPopup"></div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, updateDoc, deleteField }
@@ -556,24 +597,21 @@ const db = getFirestore(initializeApp({
 }));
 
 /* ─── Constants ──────────────────────────────────────────────── */
-const HOUR_W    = 160;   // px per hour
-const ROW_H     = 72;    // px per row (day view)
-const DAY_START = 7;     // 07:00
-const DAY_END_MIN = 18;  // show at least until 18:00
-const STAGING_W = 140;   // staging zone width
+const HOUR_W    = 160;
+const ROW_H     = 72;
+const DAY_START = 7;
+const DAY_END_MIN = 18;
+const STAGING_W = 140;
 
 const JOB_DURATIONS = { "dual fuel":2, "single gas":1.5, "single elec":1.5, "comms":0.5 };
 
 function getDuration(t){ const k=(t||"").toLowerCase(); for(const[key,v]of Object.entries(JOB_DURATIONS))if(k.includes(key))return v; return 1; }
 
-/* FIX #1 — getStartHour treats null/undefined/"" as "no time set" */
 function getStartHour(job){
   const v = job.startHour;
   if(v===null||v===undefined||v==="") return null;
   const n=+v; return isNaN(n)?null:n;
 }
-
-function defaultSlotHour(slot){ return (slot||"").toUpperCase().trim()==="PM"?13:8; }
 
 function calcDayEnd(jobs){
   let end=DAY_END_MIN;
@@ -657,6 +695,7 @@ async function loadJobs(){
 
 /* ─── Render ─────────────────────────────────────────────────── */
 function render(){
+  hideStackPopup();
   syncPicker();
   const cols=getCols();
   const colJobs=allJobs.filter(j=>{const jd=parseDate(j.dateOfJob);return jd&&cols.some(c=>sameDay(c,jd));});
@@ -727,7 +766,10 @@ function renderRows(cols,dayEnd){
     rowsWrap.style.width="";rowsWrap.style.minWidth="";
   }
 
-  document.getElementById("scrollArea").onscroll=()=>{engList.scrollTop=document.getElementById("scrollArea").scrollTop;};
+  document.getElementById("scrollArea").onscroll=()=>{
+    engList.scrollTop=document.getElementById("scrollArea").scrollTop;
+    hideStackPopup(); // hide popup on scroll to avoid stale position
+  };
 
   engineers.forEach(eng=>{
     /* sidebar row */
@@ -750,16 +792,16 @@ function renderRows(cols,dayEnd){
       const col=cols[0];
       const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),col));
 
-      /* FIX #1: scheduled = has numeric startHour; staged = no startHour */
       const scheduled=dayJobs.filter(j=>getStartHour(j)!==null);
       const staged   =dayJobs.filter(j=>getStartHour(j)===null);
 
-      /* FIX #2: Drop overlay fills full row, pointer-events:all on each slot.
-         Job cards sit above (z-index 10) but .dragging makes them pointer-events:none
-         so the slot underneath fires dragover/drop correctly. */
+      /* ── FIX: Drop overlay uses dragover on the ROW itself.
+         Cards have pointer-events:none while .dragging so events pass through.
+         We track position manually to find the nearest 30-min slot. ── */
       const dropOverlay=document.createElement("div");
       dropOverlay.className="day-drop-overlay";
       dropOverlay.style.width=`${HOUR_W*hours}px`;
+      dropOverlay.style.pointerEvents="none"; // overlay itself is transparent
 
       for(let h=DAY_START;h<dayEnd;h++){
         [0,0.5].forEach(half=>{
@@ -768,15 +810,27 @@ function renderRows(cols,dayEnd){
           const slot={eng,date:toUKStr(col),hour:h+half};
           const lbl=document.createElement("span");lbl.className="slot-label";lbl.textContent=fmtTime(h+half);
           dz.appendChild(lbl);
-          dz.addEventListener("dragover",e=>{e.preventDefault();dz.classList.add("drag-over");});
+
+          /* Re-enable pointer events on individual slots */
+          dz.style.pointerEvents="all";
+
+          dz.addEventListener("dragover",e=>{
+            e.preventDefault();
+            e.dataTransfer.dropEffect="move";
+            dz.classList.add("drag-over");
+          });
           dz.addEventListener("dragleave",()=>dz.classList.remove("drag-over"));
-          dz.addEventListener("drop",e=>{e.preventDefault();dz.classList.remove("drag-over");handleDrop(eng,toUKStr(col),h+half);});
+          dz.addEventListener("drop",e=>{
+            e.preventDefault();
+            dz.classList.remove("drag-over");
+            handleDrop(eng,toUKStr(col),h+half);
+          });
           dropOverlay.appendChild(dz);
         });
       }
       row.appendChild(dropOverlay);
 
-      /* Scheduled cards — absolutely positioned */
+      /* Scheduled cards — absolutely positioned, z-index 2 normally, 0 when dragging */
       scheduled.forEach(job=>{
         const sh=getStartHour(job),dur=getDuration(job.jobType);
         const left=(sh-DAY_START)*HOUR_W,width=dur*HOUR_W-4;
@@ -785,7 +839,7 @@ function renderRows(cols,dayEnd){
 
       /* Staging zone */
       const sz=document.createElement("div");sz.className="staging-zone";
-      sz.addEventListener("dragover",e=>{e.preventDefault();sz.classList.add("drag-over-s");});
+      sz.addEventListener("dragover",e=>{e.preventDefault();e.dataTransfer.dropEffect="move";sz.classList.add("drag-over-s");});
       sz.addEventListener("dragleave",()=>sz.classList.remove("drag-over-s"));
       sz.addEventListener("drop",e=>{e.preventDefault();sz.classList.remove("drag-over-s");handleDropStaged(eng,toUKStr(col));});
       if(staged.length===0){
@@ -810,19 +864,48 @@ function renderRows(cols,dayEnd){
         if(dow===0||dow===6)cell.classList.add("weekend");
         if(sameDay(col,todayD))cell.classList.add("today-col");
 
-        cell.addEventListener("dragover",e=>{e.preventDefault();cell.classList.add("drag-over");});
+        cell.addEventListener("dragover",e=>{e.preventDefault();e.dataTransfer.dropEffect="move";cell.classList.add("drag-over");});
         cell.addEventListener("dragleave",()=>cell.classList.remove("drag-over"));
-        cell.addEventListener("drop",e=>{e.preventDefault();cell.classList.remove("drag-over");handleDrop(eng,toUKStr(col),null);});
+        cell.addEventListener("drop",e=>{
+          e.preventDefault();
+          cell.classList.remove("drag-over");
+          hideStackPopup();
+          handleDrop(eng,toUKStr(col),null);
+        });
 
         const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),col));
 
-        /* FIX #3: stacked cells use CSS :hover to expand and float above row.
-           overflow:visible on both cell and row lets cards show outside row bounds. */
         if(dayJobs.length>1){
+          /* ── STACKED: show first card + badge.
+             Hover triggers a fixed-position floating popup with ALL cards. ── */
           cell.classList.add("stacked");
-          dayJobs.forEach(job=>cell.appendChild(makeCardWeek(job)));
-          const badge=document.createElement("div");badge.className="stack-badge";badge.textContent=`+${dayJobs.length-1}`;
+
+          // First card visible
+          const firstCard=makeCardWeek(dayJobs[0]);
+          cell.appendChild(firstCard);
+
+          // Badge
+          const badge=document.createElement("div");
+          badge.className="stack-badge";
+          badge.textContent=`+${dayJobs.length-1}`;
           cell.appendChild(badge);
+
+          /* Build popup cards list (all jobs for this cell) */
+          const popupCards=dayJobs.map(job=>makeCardWeek(job));
+
+          /* Mouseenter: position and show the fixed popup */
+          cell.addEventListener("mouseenter",()=>{
+            if(dragJob)return; // don't show popup during drag
+            showStackPopup(cell, popupCards, eng, col);
+          });
+          cell.addEventListener("mouseleave",(e)=>{
+            // Only hide if mouse isn't moving into the popup itself
+            const popup=document.getElementById("weekStackPopup");
+            if(!popup.contains(e.relatedTarget)){
+              scheduleHidePopup();
+            }
+          });
+
         }else{
           dayJobs.forEach(job=>cell.appendChild(makeCardWeek(job)));
         }
@@ -835,6 +918,81 @@ function renderRows(cols,dayEnd){
 
   if(currentView==="day")updateNowLine(dayEnd);
 }
+
+/* ─── Week stack popup (fixed-position, escapes all clip contexts) ─── */
+let popupHideTimer=null;
+const popup=document.getElementById("weekStackPopup");
+
+popup.addEventListener("mouseenter",()=>{
+  clearTimeout(popupHideTimer);
+});
+popup.addEventListener("mouseleave",()=>{
+  scheduleHidePopup();
+});
+
+function showStackPopup(cell, cards, eng, col){
+  clearTimeout(popupHideTimer);
+
+  // Position popup below the cell using getBoundingClientRect
+  const rect=cell.getBoundingClientRect();
+  popup.innerHTML="";
+
+  // Add drag support: week cells in popup should accept drops
+  popup.addEventListener("dragover",e=>{e.preventDefault();e.dataTransfer.dropEffect="move";popup.style.outline="2px dashed rgba(0,255,157,0.4)";});
+  popup.addEventListener("dragleave",()=>{popup.style.outline="";});
+  popup.addEventListener("drop",e=>{
+    e.preventDefault();
+    popup.style.outline="";
+    hideStackPopup();
+    handleDrop(eng,toUKStr(col),null);
+  });
+
+  cards.forEach(card=>{
+    // Reassign drag listeners for popup copies
+    const c=card.cloneNode(true);
+    const origJob=allJobs.find(j=>(j.jobId||j._id)===card.dataset.jobId);
+    if(origJob){
+      c.draggable=true;
+      c.addEventListener("dragstart",e=>{
+        dragJob=origJob;
+        c.classList.add("dragging");
+        e.dataTransfer.effectAllowed="move";
+        scheduleHidePopup();
+      });
+      c.addEventListener("dragend",()=>c.classList.remove("dragging"));
+      c.addEventListener("click",e=>{e.stopPropagation();hideStackPopup();openModal(origJob);});
+    }
+    popup.appendChild(c);
+  });
+
+  // Calculate position — show below cell, flip up if near bottom
+  let top=rect.bottom+6;
+  let left=rect.left;
+  const popW=220, popH=cards.length*72+24;
+  if(top+popH>window.innerHeight-16) top=rect.top-popH-6;
+  if(left+popW>window.innerWidth-16)  left=window.innerWidth-popW-16;
+
+  popup.style.top=top+"px";
+  popup.style.left=left+"px";
+  popup.style.width=Math.max(rect.width,160)+"px";
+  popup.classList.add("visible");
+}
+
+function scheduleHidePopup(){
+  clearTimeout(popupHideTimer);
+  popupHideTimer=setTimeout(hideStackPopup, 120);
+}
+
+function hideStackPopup(){
+  clearTimeout(popupHideTimer);
+  popup.classList.remove("visible");
+  popup.innerHTML="";
+}
+
+// Hide popup on scroll or click outside
+document.addEventListener("click",e=>{
+  if(!popup.contains(e.target))hideStackPopup();
+});
 
 /* ─── Card builders ──────────────────────────────────────────── */
 function makeCardDay(job,left,width,isStaged){
@@ -872,9 +1030,20 @@ function makeCardDay(job,left,width,isStaged){
     </div>`;
 
   card.addEventListener("dragstart",e=>{
-    dragJob=job;card.classList.add("dragging");e.dataTransfer.effectAllowed="move";
+    dragJob=job;
+    card.classList.add("dragging");
+    e.dataTransfer.effectAllowed="move";
+    /* Use a transparent drag image so the ghost doesn't block drop zones */
+    const ghost=document.createElement("div");
+    ghost.style.cssText="position:fixed;top:-1000px;left:-1000px;width:1px;height:1px;opacity:0;";
+    document.body.appendChild(ghost);
+    e.dataTransfer.setDragImage(ghost,0,0);
+    setTimeout(()=>ghost.remove(),0);
   });
-  card.addEventListener("dragend",()=>card.classList.remove("dragging"));
+  card.addEventListener("dragend",()=>{
+    card.classList.remove("dragging");
+    dragJob=null;
+  });
   card.addEventListener("click",e=>{e.stopPropagation();openModal(job);});
   return card;
 }
@@ -896,8 +1065,13 @@ function makeCardWeek(job){
       <span class="jc-id">${esc(job.jobId||job._id)}</span>
     </div>
     ${sh!==null?`<div style="font-size:9px;color:var(--text-muted);margin-top:2px">${fmtTime(sh)}</div>`:""}`;
-  card.addEventListener("dragstart",e=>{dragJob=job;card.classList.add("dragging");e.dataTransfer.effectAllowed="move";});
-  card.addEventListener("dragend",()=>card.classList.remove("dragging"));
+  card.addEventListener("dragstart",e=>{
+    dragJob=job;
+    card.classList.add("dragging");
+    e.dataTransfer.effectAllowed="move";
+    scheduleHidePopup();
+  });
+  card.addEventListener("dragend",()=>{card.classList.remove("dragging");dragJob=null;});
   card.addEventListener("click",e=>{e.stopPropagation();openModal(job);});
   return card;
 }
@@ -921,10 +1095,8 @@ function handleDrop(newEng,newDate,newHour){
   if(newEng!==dragJob.engineerName)updates.engineerName=newEng;
   if(newDate!==dragJob.dateOfJob)updates.dateOfJob=newDate;
   if(currentView==="day"&&newHour!==null){
-    // Always set an explicit startHour when dropping onto a time slot
     updates.startHour=newHour;
   }else if(currentView==="week"&&newDate!==dragJob.dateOfJob){
-    // Different day in week view → remove time, land in staging
     updates.startHour=null;
   }
   if(Object.keys(updates).length===0){dragJob=null;return;}
@@ -941,7 +1113,6 @@ function handleDropStaged(newEng,newDate){
 
 async function persistUpdate(jobId,updates){
   const job=allJobs.find(j=>j._id===jobId);
-  // Optimistic update
   if(job){for(const[k,v]of Object.entries(updates)){if(v===null)delete job[k];else job[k]=v;}}
   dragJob=null; render();
   try{
@@ -951,7 +1122,7 @@ async function persistUpdate(jobId,updates){
     toast("Saved ✓");
   }catch(err){
     console.error(err); toast("Save failed: "+(err.code||err.message),"error");
-    loadJobs(); // revert on failure
+    loadJobs();
   }
 }
 
