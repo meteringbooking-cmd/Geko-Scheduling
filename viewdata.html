@@ -78,27 +78,33 @@
         justify-content: center;
         border-bottom: 1px solid rgba(255,255,255,0.06);
         flex-shrink: 0;
-        padding: 0 12px;
-        gap: 10px;
+        padding: 0;
+        gap: 0;
         position: relative;
+        overflow: hidden;
     }
 
-    #sidebar.expanded .sidebar-header {
-        justify-content: space-between;
-    }
-
+    /* Collapsed state: logo fills the whole header, acts as the toggle */
     .sidebar-logo-collapsed {
-        width: 36px;
-        height: 36px;
-        object-fit: contain;
-        flex-shrink: 0;
-        filter: drop-shadow(0 0 10px rgba(0,255,157,0.6));
-        border-radius: 8px;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        filter: drop-shadow(0 0 10px rgba(0,255,157,0.5));
         display: block;
+        cursor: pointer;
+        transition: filter var(--transition-fast), transform var(--transition-fast);
+        flex-shrink: 0;
     }
 
+    .sidebar-logo-collapsed:hover {
+        filter: drop-shadow(0 0 16px rgba(0,255,157,0.8));
+        transform: scale(1.03);
+    }
+
+    /* Expanded state: logo + toggle button side by side */
     .sidebar-logo-expanded {
-        height: 38px;
+        height: 40px;
         object-fit: contain;
         filter: drop-shadow(0 0 10px rgba(0,255,157,0.5));
         border-radius: 8px;
@@ -107,15 +113,22 @@
         overflow: hidden;
         transition: opacity var(--transition-med), max-width var(--transition-med);
         display: block;
+        margin-left: 14px;
+        flex-shrink: 0;
     }
 
     #sidebar.expanded .sidebar-logo-collapsed {
         display: none;
     }
 
+    #sidebar.expanded .sidebar-header {
+        padding: 0 12px;
+        justify-content: space-between;
+    }
+
     #sidebar.expanded .sidebar-logo-expanded {
         opacity: 1;
-        max-width: 140px;
+        max-width: 150px;
     }
 
     .sidebar-toggle {
@@ -126,26 +139,20 @@
         background: rgba(255,255,255,0.04);
         color: var(--text-muted);
         cursor: pointer;
-        display: flex;
+        display: none; /* hidden by default, shown only when expanded */
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
         transition: all var(--transition-fast);
     }
 
+    #sidebar.expanded .sidebar-toggle {
+        display: flex;
+    }
+
     .sidebar-toggle:hover {
         background: rgba(255,255,255,0.08);
         color: var(--text-main);
-    }
-
-    /* hide toggle when collapsed — show it via absolute */
-    #sidebar:not(.expanded) .sidebar-toggle {
-        position: absolute;
-        bottom: 16px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 34px;
-        height: 34px;
     }
 
     .sidebar-nav {
@@ -812,16 +819,15 @@
 <!-- SIDEBAR -->
 <div id="sidebar">
     <div class="sidebar-header">
-        <!-- collapsed logo -->
-        <img class="sidebar-logo-collapsed"
+        <!-- collapsed: logo fills header, click to expand -->
+        <img class="sidebar-logo-collapsed" id="logoCollapsed"
              src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1"
-             alt="Geko">
-        <!-- expanded logo -->
+             alt="Geko" title="Expand sidebar">
+        <!-- expanded: logo + toggle button -->
         <img class="sidebar-logo-expanded"
              src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=xh5pubjr&dl=1"
              alt="Geko">
-        <!-- toggle (only visible when expanded) -->
-        <button class="sidebar-toggle" id="sidebarToggle" style="display:none;">
+        <button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
         </button>
     </div>
@@ -851,10 +857,6 @@
 
     <div class="sidebar-footer">
         <div class="sidebar-version">v1.0.0</div>
-        <!-- collapsed toggle -->
-        <button class="sidebar-toggle" id="sidebarToggleCollapsed">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-        </button>
     </div>
 </div>
 
@@ -1278,29 +1280,21 @@
 
     // ── Sidebar ────────────────────────────────────────────
     const sidebar = document.getElementById('sidebar');
-    const toggleExpanded = document.getElementById('sidebarToggle');
-    const toggleCollapsed = document.getElementById('sidebarToggleCollapsed');
-
-    function updateSidebar() {
-        const isExpanded = sidebar.classList.contains('expanded');
-        toggleExpanded.style.display = isExpanded ? 'flex' : 'none';
-        toggleCollapsed.style.display = isExpanded ? 'none' : 'flex';
-    }
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const logoCollapsed = document.getElementById('logoCollapsed');
 
     function toggleSidebar() {
         sidebar.classList.toggle('expanded');
         localStorage.setItem('geko-sidebar', sidebar.classList.contains('expanded') ? 'expanded' : 'collapsed');
-        updateSidebar();
     }
 
-    toggleExpanded.addEventListener('click', toggleSidebar);
-    toggleCollapsed.addEventListener('click', toggleSidebar);
+    toggleBtn.addEventListener('click', toggleSidebar);
+    logoCollapsed.addEventListener('click', toggleSidebar);
 
     // Restore saved state
     if (localStorage.getItem('geko-sidebar') === 'expanded') {
         sidebar.classList.add('expanded');
     }
-    updateSidebar();
 
     // ── Init ───────────────────────────────────────────────
     loadJobs();
