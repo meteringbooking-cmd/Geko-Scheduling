@@ -453,46 +453,58 @@
   .now-line::before { content:""; position:absolute; top:50%; left:-4px; width:10px; height:10px; border-radius:50%; background:var(--danger); transform:translateY(-50%); }
 
   /* MODAL */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(4px);
-    z-index: 500; display: flex; align-items: center; justify-content: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  /* ── BOTTOM DRAWER (replaces modal overlay) ── */
+  #jobDrawer {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    z-index: 500;
+    background: rgba(8,12,22,0.99);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -16px 60px rgba(0,0,0,0.85);
+    transform: translateY(100%);
+    transition: transform 0.28s cubic-bezier(0.32,0.72,0,1);
+    display: flex; flex-direction: column;
+    max-height: 52vh;
+    pointer-events: none;
   }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal {
-    background: rgba(10,14,24,0.98); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;
-    width: 560px; max-width: 94vw; max-height: 88vh; overflow-y: auto;
-    transform: translateY(16px); transition: transform 0.22s;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.9);
+  #jobDrawer.open {
+    transform: translateY(0);
+    pointer-events: all;
   }
-  .modal.docs-expanded {
-    width: 920px;
-    max-width: 96vw;
-    transition: transform 0.22s, width 0.3s ease;
+  /* Drag handle */
+  .drawer-handle {
+    width: 36px; height: 4px; border-radius: 2px;
+    background: rgba(255,255,255,0.15);
+    margin: 10px auto 0; flex-shrink: 0; cursor: ns-resize;
   }
-  .modal-overlay.open .modal { transform: translateY(0); }
   .modal-head {
-    padding: 22px 26px 16px; display: flex; justify-content: space-between; align-items: flex-start;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 10px 22px 12px; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0;
   }
-  .modal-title { font-size: 18px; font-weight: 600; letter-spacing: 0.05em; }
-  .modal-id    { font-size: 12px; color: var(--accent-green); font-weight: 700; margin-top: 3px; }
+  .modal-head-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .modal-title { font-size: 15px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .modal-id    { font-size: 11px; color: var(--accent-green); font-weight: 700; flex-shrink: 0; }
+  .modal-head-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .modal-close {
-    width: 30px; height: 30px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.08);
+    width: 28px; height: 28px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.08);
     background: transparent; color: var(--text-muted); cursor: pointer;
-    display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.15s;
   }
   .modal-close:hover { border-color: var(--danger); color: var(--danger); }
-
-  .modal-inner { display: flex; gap: 0; }
-  .modal-body { padding: 18px 26px 26px; flex: 1; min-width: 0; }
+  /* Scrollable content area inside drawer */
+  .modal-inner { display: flex; gap: 0; flex: 1; overflow: hidden; min-height: 0; }
+  .modal-body { padding: 14px 22px 20px; flex: 1; min-width: 0; overflow-y: auto; }
+  .modal-body::-webkit-scrollbar { width: 4px; }
+  .modal-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
   .modal-docs-panel {
-    width: 340px; flex-shrink: 0;
+    width: 320px; flex-shrink: 0;
     border-left: 1px solid rgba(255,255,255,0.06);
-    padding: 18px 20px 26px;
-    display: none; flex-direction: column; gap: 14px;
+    padding: 14px 18px 20px;
+    display: none; flex-direction: column; gap: 12px; overflow-y: auto;
   }
-  .modal.docs-expanded .modal-docs-panel { display: flex; }
+  .modal-docs-panel::-webkit-scrollbar { width: 4px; }
+  .modal-docs-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+  #jobDrawer.docs-expanded .modal-docs-panel { display: flex; }
 
   .dg { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .df label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 3px; }
@@ -872,29 +884,30 @@
 </div>
 
 <!-- MODAL -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal" id="theModal">
-    <div class="modal-head">
-      <div>
-        <div class="modal-title" id="modalTitle"></div>
-        <div class="modal-id" id="modalId"></div>
-        <div id="modalStatusPill"></div>
-      </div>
-      <button class="modal-close" id="modalClose">✕</button>
+<div id="jobDrawer">
+  <div class="drawer-handle" id="drawerHandle"></div>
+  <div class="modal-head">
+    <div class="modal-head-left">
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-id" id="modalId"></div>
+      <div id="modalStatusPill"></div>
     </div>
-    <div class="modal-inner">
-      <div class="modal-body" id="modalBody"></div>
-      <div class="modal-docs-panel" id="modalDocsPanel">
-        <div class="docs-panel-header">
-          <div class="docs-panel-title">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            Documents
-          </div>
-          <button class="docs-panel-close" id="docsPanelClose">✕</button>
+    <div class="modal-head-right">
+      <button class="modal-close" id="modalClose" title="Close">&#x2715;</button>
+    </div>
+  </div>
+  <div class="modal-inner">
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-docs-panel" id="modalDocsPanel">
+      <div class="docs-panel-header">
+        <div class="docs-panel-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Documents
         </div>
-        <div id="docsPanelContent">
-          <div class="docs-loading"><div class="docs-spinner"></div>Loading…</div>
-        </div>
+        <button class="docs-panel-close" id="docsPanelClose">&#x2715;</button>
+      </div>
+      <div id="docsPanelContent">
+        <div class="docs-loading"><div class="docs-spinner"></div>Loading&#8230;</div>
       </div>
     </div>
   </div>
@@ -1092,7 +1105,7 @@ document.getElementById('lightboxNext').onclick = () => lightboxGo(1);
 /* ─── Documents panel ───────────────────────────────────────── */
 function openDocsPanel(job){
   docsExpanded = true;
-  document.getElementById('theModal').classList.add('docs-expanded');
+  document.getElementById('jobDrawer').classList.add('docs-expanded');
   const panel = document.getElementById('docsPanelContent');
   const attachments = Array.isArray(job.attachments) ? job.attachments : [];
   if(attachments.length === 0){ panel.innerHTML = `<div class="docs-empty">No documents attached to this job.</div>`; return; }
@@ -1121,7 +1134,7 @@ function openDocsPanel(job){
 }
 function closeDocsPanel(){
   docsExpanded = false;
-  document.getElementById('theModal').classList.remove('docs-expanded');
+  document.getElementById('jobDrawer').classList.remove('docs-expanded');
 }
 document.getElementById('docsPanelClose').onclick = closeDocsPanel;
 
@@ -1843,6 +1856,9 @@ function openModal(job, updateTracker = true){
     nearbySelectedJob = job;
     applyNearbyFilter();
   }
+
+  // Open the bottom drawer
+  document.getElementById('jobDrawer').classList.add('open');
   const sh=getStartHour(job), dur=getDuration(job.jobType);
   const curStatus = normaliseStatus(job.jobStatus || job.status);
   const meta = getStatusMeta(curStatus);
@@ -1900,11 +1916,11 @@ function openModal(job, updateTracker = true){
   }
   if(docsExpanded) openDocsPanel(job);
 
-  document.getElementById("modalOverlay").classList.add("open");
+
 }
 
 function closeModal(){
-  document.getElementById("modalOverlay").classList.remove("open");
+  document.getElementById('jobDrawer').classList.remove('open');
   closeDocsPanel();
   openModalJobId = null;
 }
@@ -1947,7 +1963,8 @@ document.addEventListener('mousedown', e => {
 document.getElementById('nearbyBannerClear').addEventListener('click', () => {
   clearNearbyFilter();
 });
-document.getElementById("modalOverlay").onclick  = e=>{if(e.target===document.getElementById("modalOverlay"))closeModal();};
+// Close drawer when pressing Escape
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && document.getElementById('jobDrawer').classList.contains('open')) closeModal(); });
 document.getElementById("jobSearch").oninput = e=>{jobSearch=e.target.value.trim().toLowerCase();applySearch();};
 document.getElementById("engSearch").oninput = e=>{engSearch=e.target.value.trim().toLowerCase();applySearch();};
 
@@ -1976,6 +1993,26 @@ if(localStorage.getItem("geko-sidebar")==="expanded")sidebar.classList.add("expa
 syncPicker();
 startRealTimeListener();
 startAbsenceListener();
+
+/* ─── Drawer drag-to-resize ─────────────────────────────────── */
+(function(){
+  const drawer = document.getElementById('jobDrawer');
+  const handle = document.getElementById('drawerHandle');
+  let dragging = false, startY = 0, startH = 0;
+  handle.addEventListener('mousedown', e => {
+    dragging = true; startY = e.clientY; startH = drawer.offsetHeight;
+    document.body.style.cursor = 'ns-resize'; e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if(!dragging) return;
+    const delta = startY - e.clientY;
+    const newH = Math.min(Math.max(startH + delta, 120), window.innerHeight * 0.75);
+    drawer.style.maxHeight = newH + 'px';
+  });
+  document.addEventListener('mouseup', () => {
+    if(!dragging) return; dragging = false; document.body.style.cursor = '';
+  });
+})();
 </script>
 </body>
 </html>
