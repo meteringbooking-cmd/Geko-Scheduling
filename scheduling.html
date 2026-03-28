@@ -649,7 +649,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getFirestore, collection, onSnapshot, doc, updateDoc, deleteField
+  getFirestore, collection, onSnapshot, doc, updateDoc, deleteField, arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const db = getFirestore(initializeApp({
@@ -922,9 +922,45 @@ async function persistUpdate(jobId, updates, job){
   if(j){ for(const[k,v] of Object.entries(updates)){ if(v===null) delete j[k]; else j[k]=v; } }
   render();
   try {
+    const now = new Date().toISOString();
     const fs = {};
     for(const[k,v] of Object.entries(updates)) fs[k] = v===null ? deleteField() : v;
+
+    // If this drag op changed the engineer or date, log it to history
+    const rescheduleDetails = [];
+    if(updates.engineerName && updates.engineerName !== (job.engineerName||''))
+      rescheduleDetails.push(`reassigned to ${updates.engineerName}`);
+    if(updates.dateOfJob && updates.dateOfJob !== (job.dateOfJob||''))
+      rescheduleDetails.push(`rescheduled to ${updates.dateOfJob}`);
+    if(updates.startHour !== undefined) {
+      const h = updates.startHour;
+      rescheduleDetails.push(h === null ? 'unscheduled' : `time set to ${fmtTime(h)}`);
+    }
+
+    // Always write a history entry for any admin drag/drop action
+    const historyEntry = {
+      status:    updates.jobStatus || job.jobStatus || job.status || 'unassigned',
+      updatedBy: 'Admin',
+      updatedAt: now,
+      source:    'admin',
+      note:      rescheduleDetails.join('; ') || 'updated',
+    };
+    fs.statusHistory = arrayUnion(historyEntry);
+
+    // Also update flat timestamp fields so they stay in sync
+    fs.statusUpdatedAt  = now;
+    fs.statusUpdatedBy  = 'Admin';
+
     await updateDoc(doc(db,'uploaded_jobs',jobId), fs);
+
+    // Merge history entry into local state too
+    if(j) {
+      j.statusUpdatedAt = now;
+      j.statusUpdatedBy = 'Admin';
+      if(!Array.isArray(j.statusHistory)) j.statusHistory = [];
+      if(!j.statusHistory.some(e => e.updatedAt === now)) j.statusHistory.push(historyEntry);
+    }
+
     toast("Saved ✓");
   } catch(err) {
     console.error(err);
@@ -1195,69 +1231,91 @@ function applySearch(){
    MODAL with STATUS HISTORY TIMELINE
 ══════════════════════════════════════════════════════════════ */
 function buildStatusHistory(job){
-  // Collect all history entries from the job document
-  // Supports both: statusHistory array field, and individual statusUpdatedAt fields
   const entries = [];
 
-  // 1. Structured history array (preferred, if present)
+  // 1. Primary source: structured statusHistory array (written by both portals)
   if(Array.isArray(job.statusHistory)) {
     job.statusHistory.forEach(h => {
       entries.push({
-        status: h.status || h.jobStatus,
-        by:     h.updatedBy || h.statusUpdatedBy || h.by,
-        at:     h.updatedAt || h.statusUpdatedAt || h.at,
+        status: h.status || h.jobStatus || 'unassigned',
+        by:     h.updatedBy || h.statusUpdatedBy || h.by || '—',
+        at:     h.updatedAt || h.statusUpdatedAt || h.at || '',
         note:   h.note || h.abortCode || '',
+        source: h.source || 'engineer',
       });
     });
   }
 
-  // 2. Flat fields written by the engineer portal (statusUpdatedAt, statusUpdatedBy)
-  //    Treat this as the "current" entry if no history array or if not already covered
+  // 2. Fallback: flat statusUpdatedAt field (legacy / jobs updated before history array existed)
   if(job.statusUpdatedAt) {
     const alreadyIn = entries.some(e => e.at === job.statusUpdatedAt);
     if(!alreadyIn) {
       entries.push({
-        status: job.jobStatus || job.status,
+        status: job.jobStatus || job.status || 'unassigned',
         by:     job.statusUpdatedBy || 'Engineer',
         at:     job.statusUpdatedAt,
         note:   job.abortCode || '',
+        source: 'engineer',
       });
     }
   }
 
-  // 3. Created/uploaded entry
+  // 3. Job creation event
   if(job.uploadedAt) {
     entries.push({
       status: 'created',
       by:     job.uploadedBy || 'System',
       at:     job.uploadedAt,
       note:   '',
+      source: 'system',
     });
   }
 
+  // Deduplicate by exact timestamp
+  const seen = new Set();
+  const deduped = entries.filter(e => {
+    if(!e.at) return true;
+    if(seen.has(e.at + e.status)) return false;
+    seen.add(e.at + e.status); return true;
+  });
+
   // Sort newest first
-  entries.sort((a,b) => {
+  deduped.sort((a,b) => {
     try { return new Date(b.at) - new Date(a.at); } catch { return 0; }
   });
 
-  if(entries.length === 0) {
-    return `<div class="history-empty">No status updates recorded yet.<br>Updates will appear here when engineers change their job status.</div>`;
+  if(deduped.length === 0) {
+    return `<div class="history-empty">No status updates recorded yet.<br>Updates appear here automatically when engineers update their job status.</div>`;
   }
 
-  return entries.map((entry, i) => {
-    const meta = entry.status === 'created'
+  return deduped.map((entry, i) => {
+    const isCreated = entry.status === 'created';
+    const meta = isCreated
       ? { label: 'Job Created', icon: '●', cls: 's-created' }
       : getStatusMeta(entry.status);
     const timeStr = fmtTimestamp(entry.at);
-    const ago = timeAgo(entry.at);
-    const noteHtml = entry.note ? `<span style="font-size:10px;color:rgba(255,75,92,0.7);margin-left:6px">Code: ${esc(entry.note)}</span>` : '';
+    const ago     = timeAgo(entry.at);
+
+    // Source badge: show who made the change
+    const sourceBadge = entry.source === 'admin'
+      ? `<span style="font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.25);color:var(--accent-blue);font-weight:600;margin-left:6px;text-transform:uppercase;letter-spacing:.04em">Admin</span>`
+      : entry.source === 'system'
+      ? `<span style="font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(143,160,184,0.08);border:1px solid rgba(143,160,184,0.2);color:var(--text-muted);font-weight:600;margin-left:6px;text-transform:uppercase;letter-spacing:.04em">System</span>`
+      : `<span style="font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(0,255,157,0.08);border:1px solid rgba(0,255,157,0.2);color:var(--accent-green);font-weight:600;margin-left:6px;text-transform:uppercase;letter-spacing:.04em">Engineer</span>`;
+
+    const noteHtml = entry.note
+      ? `<div style="margin-top:3px;font-size:11px;color:rgba(255,75,92,0.8)">
+           <span style="color:var(--text-muted)">Note:</span> ${esc(entry.note)}
+         </div>`
+      : '';
+
     return `
-      <div class="history-item" style="animation-delay:${i*0.05}s">
+      <div class="history-item" style="animation-delay:${i*0.04}s">
         <div class="history-dot ${meta.cls}"></div>
         <div class="history-content">
           <div class="history-status">
             <span class="history-status-label ${meta.cls}">${meta.label}</span>
-            ${noteHtml}
+            ${sourceBadge}
           </div>
           <div class="history-meta">
             <span class="history-by">${esc(entry.by || '—')}</span>
@@ -1265,6 +1323,7 @@ function buildStatusHistory(job){
             <span class="history-time">${timeStr}</span>
             <span class="history-ago">${ago}</span>
           </div>
+          ${noteHtml}
         </div>
       </div>`;
   }).join('');
