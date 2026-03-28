@@ -182,6 +182,7 @@
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       text-align: center; padding: 80px 48px 60px;
+      width: 100%;
     }
 
     .hero-badge {
@@ -216,9 +217,14 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
 
+    .hero-text {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
     .hero p {
       max-width: 520px; font-size: 17px; line-height: 1.75;
-      color: var(--text-muted); margin-bottom: 56px; font-weight: 300;
+      color: var(--text-muted); margin: 0 auto 56px; font-weight: 300;
     }
 
     /* ── MODULE GRID ───────────────────────────────── */
@@ -226,6 +232,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 16px; width: 100%; max-width: 980px;
+      margin: 0 auto;
     }
 
     .module-card {
