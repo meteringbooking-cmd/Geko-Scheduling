@@ -145,7 +145,6 @@ body::before {
   filter: drop-shadow(0 0 8px rgba(0,255,157,0.35));
 }
 
-/* Mobile: stack date nav + view toggle */
 .topbar-center {
   display: flex; align-items: center; gap: 6px;
   flex: 1; justify-content: center; min-width: 0;
@@ -208,7 +207,6 @@ body::before {
 }
 .user-name { font-size: 12px; font-weight: 500; }
 
-/* Hide user name on small screens, show only avatar */
 @media (max-width: 540px) {
   .user-name { display: none; }
   .user-pill { padding: 4px; }
@@ -222,7 +220,6 @@ body::before {
 }
 .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
 
-/* Mobile second row for date nav */
 @media (max-width: 600px) {
   .topbar {
     flex-wrap: wrap; height: auto; padding: 10px 14px 10px;
@@ -263,26 +260,21 @@ body::before {
 .center-msg .big { font-size: 48px; margin-bottom: 14px; }
 .center-msg p { font-size: 15px; line-height: 1.6; }
 
-/* ── DAY VIEW TIMELINE — proportional vertical layout ── */
-
-/* Outer scroll container */
+/* ── DAY VIEW TIMELINE ── */
 .timeline-scroll {
   overflow-x: auto; overflow-y: visible;
   -webkit-overflow-scrolling: touch;
 }
 
-/* The grid: time gutter (60px) + card area (rest) */
 .timeline-wrap {
   display: flex;
   position: relative;
   min-height: 100px;
 }
 
-/* Left gutter: fixed-width column of hour labels */
 .timeline-gutter {
   width: 60px; flex-shrink: 0;
   position: relative;
-  /* top padding = half a row so "08:00" label centres on the 08:00 line */
 }
 
 .timeline-gutter-label {
@@ -294,18 +286,15 @@ body::before {
   pointer-events: none;
 }
 
-/* Right area: horizontal grid lines + job cards */
 .timeline-grid {
   flex: 1; position: relative;
   min-width: 0;
 }
 
-/* One row per hour — provides the grid lines */
 .timeline-hour-row {
   position: absolute; left: 0; right: 0;
   border-top: 1px solid var(--border);
 }
-/* Half-hour hairline */
 .timeline-hour-row::after {
   content: ''; position: absolute;
   left: 0; right: 0;
@@ -313,7 +302,6 @@ body::before {
   border-top: 1px dashed rgba(255,255,255,0.03);
 }
 
-/* Now line */
 .timeline-now-line {
   position: absolute; left: 0; right: 0;
   height: 2px; background: var(--danger);
@@ -333,7 +321,6 @@ body::before {
   pointer-events: none;
 }
 
-/* Absolutely-positioned job card — height = duration * HOUR_PX */
 .tl-job-card {
   position: absolute; left: 4px; right: 4px;
   border-radius: 12px;
@@ -375,10 +362,7 @@ body::before {
 .tl-postcode { font-size: 11px; font-weight: 600; color: var(--text); }
 .tl-id       { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent); }
 
-/* Unscheduled section below the grid */
-.unscheduled-section {
-  margin-top: 24px;
-}
+.unscheduled-section { margin-top: 24px; }
 .unscheduled-label {
   font-family: 'Space Mono', monospace; font-size: 11px;
   color: var(--warning); text-transform: uppercase; letter-spacing: 0.5px;
@@ -387,7 +371,7 @@ body::before {
 }
 .unscheduled-label::after { content: ''; flex: 1; height: 1px; background: rgba(245,158,11,0.2); }
 
-/* ── JOB CARD ──────────────────────────────────────── */
+/* ── JOB CARD ── */
 .job-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -408,7 +392,6 @@ body::before {
   pointer-events: none;
 }
 
-/* Active press state for touch */
 .job-card:active { transform: scale(0.99); }
 
 @media (min-width: 600px) {
@@ -419,7 +402,6 @@ body::before {
   }
 }
 
-/* Status-based left border + subtle bg tint */
 .job-card.status-complete    { border-left-color: var(--accent); background: rgba(0,255,157,0.03); }
 .job-card.status-en-route    { border-left-color: var(--accent2); background: rgba(0,200,255,0.04); }
 .job-card.status-in-progress { border-left-color: var(--warning); background: rgba(245,158,11,0.04); }
@@ -484,14 +466,14 @@ body::before {
   display: flex; align-items: center; gap: 5px;
 }
 
-/* ── WEEK VIEW ──────────────────────────────────────── */
+/* ── WEEK VIEW ── */
 .week-grid {
   display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;
 }
 
 @media (max-width: 600px) {
   .week-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 6px; }
-  .week-day-col:nth-child(n+8) { display: none; } /* hide if overflow */
+  .week-day-col:nth-child(n+8) { display: none; }
 }
 
 .week-day-col {
@@ -530,7 +512,6 @@ body::before {
   .week-job-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
 }
 
-/* Status colours with bg tint for week cards */
 .week-job-card.complete    { border-left-color: var(--accent); background: rgba(0,255,157,0.05); }
 .week-job-card.en-route    { border-left-color: var(--accent2); background: rgba(0,200,255,0.05); }
 .week-job-card.in-progress { border-left-color: var(--warning); background: rgba(245,158,11,0.05); }
@@ -544,7 +525,7 @@ body::before {
 
 .week-empty { padding: 16px; text-align: center; color: var(--text-dim); font-size: 12px; }
 
-/* ── STATUS MODAL ───────────────────────────────────── */
+/* ── STATUS MODAL ── */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 9000;
   background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
@@ -564,11 +545,8 @@ body::before {
   max-height: 92vh; overflow-y: auto;
 }
 
-/* On desktop, show as centered modal instead */
 @media (min-width: 680px) {
-  .modal-overlay {
-    align-items: center;
-  }
+  .modal-overlay { align-items: center; }
   .modal-sheet {
     border: 1px solid var(--border2);
     border-radius: 20px;
@@ -714,6 +692,136 @@ body::before {
 .modal-info-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); }
 .modal-info-val { font-size: 14px; font-weight: 500; }
 
+/* ── DOCUMENT UPLOAD SECTION ── */
+.doc-upload-section {
+  margin-top: 18px;
+}
+
+.doc-upload-zone {
+  border: 2px dashed rgba(0,200,255,0.25);
+  border-radius: 14px;
+  padding: 22px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(0,200,255,0.03);
+  position: relative;
+}
+.doc-upload-zone:hover,
+.doc-upload-zone.dragover {
+  border-color: rgba(0,200,255,0.5);
+  background: rgba(0,200,255,0.07);
+}
+.doc-upload-zone input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+
+.doc-upload-icon {
+  width: 36px; height: 36px; margin: 0 auto 10px;
+  background: rgba(0,200,255,0.12); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.doc-upload-label {
+  font-size: 14px; font-weight: 600; color: var(--text);
+  margin-bottom: 4px;
+}
+.doc-upload-hint {
+  font-size: 11px; color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Selected files queue */
+.doc-queue {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-top: 12px;
+}
+
+.doc-queue-item {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px;
+}
+
+.doc-queue-icon {
+  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.doc-queue-info { flex: 1; min-width: 0; }
+.doc-queue-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.doc-queue-size { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.doc-queue-remove {
+  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-dim); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; transition: all 0.15s; font-family: monospace;
+}
+.doc-queue-remove:hover { border-color: var(--danger); color: var(--danger); background: rgba(255,75,92,0.07); }
+
+/* Upload button */
+.doc-upload-btn {
+  width: 100%; height: 44px; border-radius: 10px;
+  border: 1px solid rgba(0,200,255,0.35);
+  background: rgba(0,200,255,0.08); color: var(--accent2);
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; margin-top: 10px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.18s;
+}
+.doc-upload-btn:hover { background: rgba(0,200,255,0.15); }
+.doc-upload-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* Upload progress */
+.doc-progress-item {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px;
+}
+.doc-progress-info { flex: 1; min-width: 0; }
+.doc-progress-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 5px; }
+.doc-progress-bar-track {
+  height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden;
+}
+.doc-progress-bar-fill {
+  height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent));
+  border-radius: 2px; transition: width 0.2s; width: 0%;
+}
+.doc-progress-pct {
+  font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent2); flex-shrink: 0;
+}
+
+/* Existing documents list */
+.doc-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+
+.doc-list-item {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px;
+  cursor: pointer; transition: all 0.15s; text-decoration: none;
+}
+.doc-list-item:hover { border-color: var(--border2); }
+
+.doc-list-icon {
+  width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.doc-list-info { flex: 1; min-width: 0; }
+.doc-list-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+.doc-list-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.doc-list-download {
+  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  background: rgba(0,200,255,0.1); border: 1px solid rgba(0,200,255,0.25);
+  color: var(--accent2); display: flex; align-items: center; justify-content: center;
+}
+
+.doc-empty {
+  text-align: center; padding: 16px; color: var(--text-dim);
+  font-size: 13px;
+}
+
 /* TOAST */
 #toast {
   position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
@@ -736,12 +844,10 @@ body::before {
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-text { font-size: 14px; color: var(--text-muted); }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
-/* NOW line */
 .now-line {
   position: relative; margin: 4px 0;
   height: 2px; background: var(--danger);
@@ -762,13 +868,11 @@ body::before {
 </head>
 <body>
 
-<!-- LOADING -->
 <div id="loadingOverlay">
   <div class="spinner"></div>
   <div class="loading-text">Loading schedule…</div>
 </div>
 
-<!-- TOAST -->
 <div id="toast"></div>
 
 <!-- LOGIN -->
@@ -881,6 +985,49 @@ body::before {
       </div>
     </div>
 
+    <!-- ── DOCUMENTS SECTION ── -->
+    <div class="doc-upload-section">
+      <div class="modal-section-label">Documents</div>
+
+      <!-- Existing docs list -->
+      <div id="docListContainer">
+        <div class="doc-empty" id="docListEmpty" style="display:none;">No documents attached yet.</div>
+        <div class="doc-list" id="docList"></div>
+      </div>
+
+      <!-- Upload zone -->
+      <div class="doc-upload-zone" id="docUploadZone">
+        <input type="file" id="docFileInput" multiple
+          accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp,.txt,.csv,.heic,.mp4,.mov"
+          onchange="handleFileSelect(event)"/>
+        <div class="doc-upload-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent2)" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div class="doc-upload-label">Tap to attach files</div>
+        <div class="doc-upload-hint">PDF, Word, Excel, Images, Video<br>Up to 50 MB per file</div>
+      </div>
+
+      <!-- Queued files (before upload) -->
+      <div class="doc-queue" id="docQueue"></div>
+
+      <!-- Active upload progress bars -->
+      <div class="doc-queue" id="docProgressList"></div>
+
+      <!-- Upload button — shown when files queued -->
+      <button class="doc-upload-btn" id="docUploadBtn" style="display:none;" onclick="uploadQueuedFiles()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        Upload Files
+      </button>
+    </div>
+
     <div class="modal-actions">
       <button class="modal-submit-btn" id="submitStatusBtn" disabled onclick="submitStatus()">Save Status</button>
       <button class="modal-cancel-btn" onclick="closeModal()">Cancel</button>
@@ -892,15 +1039,20 @@ body::before {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, updateDoc, arrayUnion }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, listAll }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-const db = getFirestore(initializeApp({
+const firebaseApp = initializeApp({
   apiKey:"AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
   authDomain:"geko-scheduling.firebaseapp.com",
   projectId:"geko-scheduling",
   storageBucket:"geko-scheduling.firebasestorage.app",
   messagingSenderId:"824568732787",
   appId:"1:824568732787:web:c12db983fd6a5b44b01e06"
-}));
+});
+
+const db = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp);
 
 // ── State ──────────────────────────────────────────────
 const SESSION_KEY = 'geko_engineer_session';
@@ -913,6 +1065,7 @@ let activeJobId = null;
 let selectedStatus = null;
 let activeJobAddress = '';
 let activeJobPostcode = '';
+let docQueue = []; // files pending upload
 
 // ── Helpers ────────────────────────────────────────────
 function today0() { const d = new Date(); d.setHours(0,0,0,0); return d; }
@@ -976,6 +1129,266 @@ function toast(msg, type='ok') {
   clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>t.className='',3500);
 }
+
+// ── Document helpers ────────────────────────────────────
+function fileIcon(name) {
+  const ext = (name||'').split('.').pop().toLowerCase();
+  const icons = { pdf:'📄', doc:'📝', docx:'📝', xls:'📊', xlsx:'📊',
+    jpg:'🖼️', jpeg:'🖼️', png:'🖼️', gif:'🖼️', webp:'🖼️', heic:'🖼️',
+    mp4:'🎥', mov:'🎥', txt:'📃', csv:'📊' };
+  return icons[ext] || '📎';
+}
+
+function fmtBytes(bytes) {
+  if(bytes < 1024) return `${bytes} B`;
+  if(bytes < 1024*1024) return `${(bytes/1024).toFixed(1)} KB`;
+  return `${(bytes/(1024*1024)).toFixed(1)} MB`;
+}
+
+function fmtTimestamp(ts) {
+  if(!ts) return '';
+  try {
+    const d = new Date(ts);
+    return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})
+      + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  } catch { return ''; }
+}
+
+// Storage path for a job's documents
+function jobStoragePath(jobDocId) {
+  return `job_documents/${jobDocId}`;
+}
+
+// Load existing docs from Firestore metadata (stored in job doc)
+async function loadJobDocs(jobDocId) {
+  const docListEl = document.getElementById('docList');
+  const docEmptyEl = document.getElementById('docListEmpty');
+  if(!docListEl || !docEmptyEl) return;
+
+  docListEl.innerHTML = '<div class="doc-empty" style="color:var(--text-dim)">Loading documents…</div>';
+  docEmptyEl.style.display = 'none';
+
+  try {
+    const job = allJobs.find(j => j._id === jobDocId);
+    const docs = Array.isArray(job?.attachments) ? job.attachments : [];
+
+    if(docs.length === 0) {
+      docListEl.innerHTML = '';
+      docEmptyEl.style.display = 'block';
+      docEmptyEl.textContent = 'No documents attached yet.';
+      return;
+    }
+
+    docEmptyEl.style.display = 'none';
+    docListEl.innerHTML = docs.map(d => `
+      <a class="doc-list-item" href="${esc(d.url)}" target="_blank" rel="noopener">
+        <div class="doc-list-icon">${fileIcon(d.name)}</div>
+        <div class="doc-list-info">
+          <div class="doc-list-name">${esc(d.name)}</div>
+          <div class="doc-list-meta">${esc(d.size||'')} · ${esc(fmtTimestamp(d.uploadedAt))} · ${esc(d.uploadedBy||'')}</div>
+        </div>
+        <div class="doc-list-download">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </div>
+      </a>
+    `).join('');
+  } catch(e) {
+    docListEl.innerHTML = `<div class="doc-empty" style="color:var(--danger)">Failed to load documents.</div>`;
+    console.error('loadJobDocs error:', e);
+  }
+}
+
+// Handle file selection
+window.handleFileSelect = function(event) {
+  const files = Array.from(event.target.files || []);
+  if(!files.length) return;
+
+  const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
+  files.forEach(file => {
+    if(file.size > MAX_SIZE) {
+      toast(`${file.name} exceeds 50 MB limit`, 'err');
+      return;
+    }
+    // Avoid duplicates
+    if(docQueue.some(f => f.name === file.name && f.size === file.size)) return;
+    docQueue.push(file);
+  });
+
+  // Reset input so same file can be re-selected if removed
+  event.target.value = '';
+  renderDocQueue();
+};
+
+function renderDocQueue() {
+  const qEl = document.getElementById('docQueue');
+  const btnEl = document.getElementById('docUploadBtn');
+  if(!qEl || !btnEl) return;
+
+  if(docQueue.length === 0) {
+    qEl.innerHTML = '';
+    btnEl.style.display = 'none';
+    return;
+  }
+
+  qEl.innerHTML = docQueue.map((file, idx) => `
+    <div class="doc-queue-item">
+      <div class="doc-queue-icon">${fileIcon(file.name)}</div>
+      <div class="doc-queue-info">
+        <div class="doc-queue-name">${esc(file.name)}</div>
+        <div class="doc-queue-size">${fmtBytes(file.size)}</div>
+      </div>
+      <button class="doc-queue-remove" onclick="removeFromQueue(${idx})" title="Remove">×</button>
+    </div>
+  `).join('');
+
+  btnEl.style.display = 'flex';
+  btnEl.textContent = '';
+  btnEl.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="17 8 12 3 7 8"/>
+      <line x1="12" y1="3" x2="12" y2="15"/>
+    </svg>
+    Upload ${docQueue.length} file${docQueue.length!==1?'s':''}`;
+}
+
+window.removeFromQueue = function(idx) {
+  docQueue.splice(idx, 1);
+  renderDocQueue();
+};
+
+// Upload all queued files
+window.uploadQueuedFiles = async function() {
+  if(!activeJobId || docQueue.length === 0) return;
+
+  const uploadBtn = document.getElementById('docUploadBtn');
+  const progressList = document.getElementById('docProgressList');
+  const queueEl = document.getElementById('docQueue');
+
+  uploadBtn.disabled = true;
+  uploadBtn.innerHTML = `<span class="spinner" style="width:16px;height:16px;border-width:2px;margin-right:6px;"></span>Uploading…`;
+
+  const filesToUpload = [...docQueue];
+  docQueue = [];
+  queueEl.innerHTML = '';
+  progressList.innerHTML = '';
+
+  // Create progress items
+  const progressItems = filesToUpload.map((file, idx) => {
+    const itemId = `prog_${idx}_${Date.now()}`;
+    progressList.innerHTML += `
+      <div class="doc-progress-item" id="${itemId}">
+        <div style="font-size:18px">${fileIcon(file.name)}</div>
+        <div class="doc-progress-info">
+          <div class="doc-progress-name">${esc(file.name)}</div>
+          <div class="doc-progress-bar-track">
+            <div class="doc-progress-bar-fill" id="fill_${itemId}"></div>
+          </div>
+        </div>
+        <span class="doc-progress-pct" id="pct_${itemId}">0%</span>
+      </div>`;
+    return { file, itemId };
+  });
+
+  const uploadedMeta = [];
+  let allOk = true;
+
+  for(const { file, itemId } of progressItems) {
+    try {
+      const storagePath = `${jobStoragePath(activeJobId)}/${Date.now()}_${file.name}`;
+      const storageRef = ref(storage, storagePath);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      await new Promise((resolve, reject) => {
+        uploadTask.on('state_changed',
+          snapshot => {
+            const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+            const fillEl = document.getElementById(`fill_${itemId}`);
+            const pctEl  = document.getElementById(`pct_${itemId}`);
+            if(fillEl) fillEl.style.width = pct + '%';
+            if(pctEl)  pctEl.textContent  = pct + '%';
+          },
+          err => reject(err),
+          async () => {
+            const url = await getDownloadURL(uploadTask.snapshot.ref);
+            uploadedMeta.push({
+              name: file.name,
+              size: fmtBytes(file.size),
+              url,
+              storagePath,
+              uploadedAt: new Date().toISOString(),
+              uploadedBy: currentUser.displayName,
+            });
+            const pctEl = document.getElementById(`pct_${itemId}`);
+            if(pctEl){ pctEl.textContent = '✓'; pctEl.style.color = 'var(--accent)'; }
+            resolve();
+          }
+        );
+      });
+    } catch(e) {
+      console.error('Upload error for', file.name, e);
+      allOk = false;
+      const pctEl = document.getElementById(`pct_${itemId}`);
+      if(pctEl){ pctEl.textContent = '✗'; pctEl.style.color = 'var(--danger)'; }
+      toast(`Failed to upload ${file.name}`, 'err');
+    }
+  }
+
+  // Save metadata to Firestore using arrayUnion to append without overwriting
+  if(uploadedMeta.length > 0) {
+    try {
+      const updates = { attachments: arrayUnion(...uploadedMeta) };
+      await updateDoc(doc(db, 'uploaded_jobs', activeJobId), updates);
+
+      // Update local state
+      const job = allJobs.find(j => j._id === activeJobId);
+      if(job) {
+        if(!Array.isArray(job.attachments)) job.attachments = [];
+        job.attachments.push(...uploadedMeta);
+      }
+
+      if(allOk) toast(`${uploadedMeta.length} file${uploadedMeta.length!==1?'s':''} uploaded ✓`, 'ok');
+      else toast(`${uploadedMeta.length} file${uploadedMeta.length!==1?'s':''} uploaded (some failed)`, 'err');
+
+      // Reload docs list
+      setTimeout(() => {
+        progressList.innerHTML = '';
+        loadJobDocs(activeJobId);
+      }, 1200);
+    } catch(e) {
+      console.error('Firestore metadata save error:', e);
+      toast('Files uploaded but metadata save failed: ' + (e.code||e.message), 'err');
+    }
+  }
+
+  uploadBtn.disabled = false;
+  uploadBtn.style.display = 'none';
+};
+
+// Drag-and-drop on upload zone
+document.getElementById('docUploadZone').addEventListener('dragover', e => {
+  e.preventDefault();
+  document.getElementById('docUploadZone').classList.add('dragover');
+});
+document.getElementById('docUploadZone').addEventListener('dragleave', () => {
+  document.getElementById('docUploadZone').classList.remove('dragover');
+});
+document.getElementById('docUploadZone').addEventListener('drop', e => {
+  e.preventDefault();
+  document.getElementById('docUploadZone').classList.remove('dragover');
+  const files = Array.from(e.dataTransfer.files);
+  const MAX_SIZE = 50 * 1024 * 1024;
+  files.forEach(file => {
+    if(file.size > MAX_SIZE) { toast(`${file.name} exceeds 50 MB limit`, 'err'); return; }
+    if(docQueue.some(f => f.name === file.name && f.size === file.size)) return;
+    docQueue.push(file);
+  });
+  renderDocQueue();
+});
 
 // ── Session ────────────────────────────────────────────
 function saveSession(user) {
@@ -1074,7 +1487,6 @@ function render() {
 function updateDateLabel() {
   const d=currentDate;
   if(currentView==='day') {
-    // Short format on mobile
     if(window.innerWidth<500) {
       document.getElementById('dateLbl').textContent=
         d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
@@ -1092,8 +1504,7 @@ function updateDateLabel() {
 }
 
 function renderDay() {
-  const HOUR_PX = 100; // pixels per hour — tune this to taste
-
+  const HOUR_PX = 100;
   const myJobs=getMyJobs().filter(j=>{const d=parseDate(getJobDate(j));return d&&sameDay(d,currentDate);});
   myJobs.sort((a,b)=>{const sa=getStartHour(a),sb=getStartHour(b);if(sa===null&&sb===null)return 0;if(sa===null)return 1;if(sb===null)return -1;return sa-sb;});
 
@@ -1117,15 +1528,13 @@ function renderDay() {
   const scheduled=myJobs.filter(j=>getStartHour(j)!==null);
   const unscheduled=myJobs.filter(j=>getStartHour(j)===null);
 
-  // Work out visible hour range
   let dayEnd=DAY_END_DEFAULT;
   scheduled.forEach(j=>{const fin=getStartHour(j)+getDuration(getJobType(j));if(fin>dayEnd)dayEnd=fin;});
-  dayEnd=Math.ceil(dayEnd)+0.5; // half-hour buffer at bottom
+  dayEnd=Math.ceil(dayEnd)+0.5;
 
   const totalHours = dayEnd - DAY_START;
   const gridHeight = Math.round(totalHours * HOUR_PX);
 
-  // Now-line
   const now=new Date();
   const isToday=sameDay(currentDate,today0());
   const nowHour=now.getHours()+now.getMinutes()/60;
@@ -1137,7 +1546,6 @@ function renderDay() {
     </div>`;
   }
 
-  // Hour rows (grid lines + labels)
   let gutterHtml='', rowsHtml='';
   for(let h=DAY_START; h<=Math.ceil(dayEnd); h++){
     const top=Math.round((h-DAY_START)*HOUR_PX);
@@ -1146,18 +1554,18 @@ function renderDay() {
     rowsHtml+=`<div class="timeline-hour-row" style="top:${top}px;height:${HOUR_PX}px"></div>`;
   }
 
-  // Job cards — absolutely positioned by start time, height by duration
   let cardsHtml='';
   scheduled.forEach(job=>{
     const sh=getStartHour(job);
     const dur=getDuration(getJobType(job));
     const top=Math.round((sh-DAY_START)*HOUR_PX);
-    const height=Math.max(Math.round(dur*HOUR_PX)-6, 36); // min 36px so card is always visible
+    const height=Math.max(Math.round(dur*HOUR_PX)-6, 36);
     const status=getJobStatus(job);
     const sc=statusClass(status);
     const timeStr=`${fmtTime(sh)} – ${fmtTime(sh+dur)}`;
     const jid=esc(job.jobId||job._id);
     const shortCard=height<70;
+    const hasAttachments = Array.isArray(job.attachments) && job.attachments.length > 0;
 
     cardsHtml+=`<div class="tl-job-card status-${sc}"
         style="top:${top}px;height:${height}px"
@@ -1175,6 +1583,7 @@ function renderDay() {
           <span class="tl-postcode">${esc(getPostcode(job))}</span>
           <span class="tl-id">${jid}</span>
           <span class="status-badge ${sc}" style="font-size:11px;padding:3px 10px">${statusLabel(status)}</span>
+          ${hasAttachments ? `<span style="font-size:11px;color:var(--text-muted)">📎 ${job.attachments.length}</span>` : ''}
         </div>
       `}
     </div>`;
@@ -1191,7 +1600,6 @@ function renderDay() {
     </div>
   </div>`;
 
-  // Unscheduled jobs below
   if(unscheduled.length>0){
     html+=`<div class="unscheduled-section">
       <div class="unscheduled-label">⏳ Time not yet scheduled</div>`;
@@ -1210,11 +1618,15 @@ function buildJobCardHTML(job, unscheduled=false) {
   const timeStyle=unscheduled?` style="border-color:rgba(245,158,11,0.3);color:var(--warning)"`:'';
   const timeIcon=unscheduled?'⏳ ':
     `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> `;
+  const hasAttachments = Array.isArray(job.attachments) && job.attachments.length > 0;
 
   return `<div class="job-card status-${sc}" onclick="openJobModal('${job._id}')">
     <div class="job-card-top">
       <div class="job-type">${esc(getJobType(job)||'Job')}</div>
-      <div class="job-id">${esc(jid)}</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        ${hasAttachments ? `<span style="font-size:13px;color:var(--text-muted)" title="${job.attachments.length} document(s)">📎 ${job.attachments.length}</span>` : ''}
+        <div class="job-id">${esc(jid)}</div>
+      </div>
     </div>
     <div class="job-time-badge"${timeStyle}>${timeIcon}${timeStr}</div>
     <div class="job-meta">
@@ -1259,11 +1671,13 @@ function renderWeek() {
       dayJobs.forEach(job=>{
         const status=getJobStatus(job),sc=statusClass(status);
         const sh=getStartHour(job),jid=job.jobId||job._id;
+        const hasAttachments = Array.isArray(job.attachments) && job.attachments.length > 0;
         html+=`<div class="week-job-card ${sc}" onclick="openJobModal('${job._id}')">
           <div class="week-job-type">${esc(getJobType(job)||'Job')}</div>
           <div class="week-job-post">${esc(getPostcode(job))}</div>
           ${sh!==null?`<div class="week-job-time">${fmtTime(sh)}</div>`:''}
           <div class="week-job-id">${esc(jid)}</div>
+          ${hasAttachments ? `<div style="font-size:10px;color:var(--text-dim);margin-top:2px">📎 ${job.attachments.length}</div>` : ''}
         </div>`;
       });
     }
@@ -1282,6 +1696,18 @@ window.openJobModal = function(jobDocId) {
   activeJobId=jobDocId; selectedStatus=null;
   activeJobAddress=getAddress(job)||'';
   activeJobPostcode=getPostcode(job)||'';
+
+  // Reset doc queue
+  docQueue = [];
+  const qEl = document.getElementById('docQueue');
+  const progEl = document.getElementById('docProgressList');
+  const uploadBtn = document.getElementById('docUploadBtn');
+  if(qEl) qEl.innerHTML = '';
+  if(progEl) progEl.innerHTML = '';
+  if(uploadBtn) uploadBtn.style.display = 'none';
+  // Reset file input
+  const fileInput = document.getElementById('docFileInput');
+  if(fileInput) fileInput.value = '';
 
   const sh=getStartHour(job),dur=getDuration(getJobType(job));
   const timeStr=sh!==null?`${fmtTime(sh)} – ${fmtTime(sh+dur)}`:'Time TBC';
@@ -1309,6 +1735,9 @@ window.openJobModal = function(jobDocId) {
   document.getElementById('submitStatusBtn').disabled=false;
 
   if(cur==='en-route') buildNavigateSection();
+
+  // Load existing documents
+  loadJobDocs(jobDocId);
 
   document.getElementById('modalOverlay').classList.add('open');
 };
@@ -1366,9 +1795,10 @@ function legacyCopy(text,onSuccess) {
 window.closeModal = function() {
   document.getElementById('modalOverlay').classList.remove('open');
   activeJobId=null; selectedStatus=null; activeJobAddress=''; activeJobPostcode='';
+  docQueue = [];
 };
 
-// ── Submit status — writes to Firebase with full history timestamping ──
+// ── Submit status ──────────────────────────────────────
 window.submitStatus = async function() {
   if(!selectedStatus||!activeJobId) return;
 
@@ -1384,7 +1814,6 @@ window.submitStatus = async function() {
     const statusMap={'en-route':'en-route','in-progress':'in-progress','complete':'complete','abort':'abort'};
     const now = new Date().toISOString();
 
-    // Structured history entry appended to the array — never overwrites previous entries
     const historyEntry = {
       status:    statusMap[selectedStatus],
       updatedBy: currentUser.displayName,
@@ -1398,7 +1827,6 @@ window.submitStatus = async function() {
       status:          statusMap[selectedStatus],
       statusUpdatedAt: now,
       statusUpdatedBy: currentUser.displayName,
-      // arrayUnion appends without overwriting existing history entries
       statusHistory:   arrayUnion(historyEntry),
     };
 
@@ -1409,11 +1837,9 @@ window.submitStatus = async function() {
 
     await updateDoc(doc(db,'uploaded_jobs',activeJobId), updates);
 
-    // Update local state immediately
     const j=allJobs.find(x=>x._id===activeJobId);
     if(j){
       Object.assign(j, updates);
-      // arrayUnion doesn't return the merged array; merge locally too
       if(!Array.isArray(j.statusHistory)) j.statusHistory = [];
       if(!j.statusHistory.some(e => e.updatedAt === now)) j.statusHistory.push(historyEntry);
     }
