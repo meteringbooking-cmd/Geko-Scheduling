@@ -17,8 +17,8 @@
     --transition-med:  0.28s ease-out;
     --sidebar-w-collapsed: 64px;
     --sidebar-w-expanded:  210px;
-    --row-h:    72px;
-    --time-h:   44px;
+    --row-h:    96px;
+    --time-h:   48px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -269,7 +269,7 @@
 
   /* DAY CARDS */
   .job-card-day {
-    position: absolute; top: 7px; bottom: 7px;
+    position: absolute; top: 6px; bottom: 6px;
     background: rgba(10,18,30,0.96); border: 1px solid rgba(255,255,255,0.08);
     border-top-width: 3px; border-radius: 8px;
     padding: 5px 8px; cursor: grab;
@@ -291,7 +291,7 @@
   .card-status-badge {
     display: inline-flex; align-items: center; gap: 3px;
     padding: 2px 6px; border-radius: 4px;
-    font-size: 9px; font-weight: 700; letter-spacing: 0.04em;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.03em;
     text-transform: uppercase; border: 1px solid;
     line-height: 1.4; flex-shrink: 0;
   }
@@ -662,7 +662,7 @@ const db = getFirestore(initializeApp({
 }));
 
 /* ─── Constants ─────────────────────────────────────────────── */
-const HOUR_W = 160, ROW_H = 72, DAY_START = 7, DAY_END_MIN = 18, STAGING_W = 140;
+const HOUR_W = 200, ROW_H = 96, DAY_START = 7, DAY_END_MIN = 18, STAGING_W = 160;
 const DRAG_THRESHOLD = 5;
 
 const JOB_DURATIONS = {"dual fuel":2,"single gas":1.5,"single elec":1.5,"comms":0.5};
@@ -1118,7 +1118,7 @@ function makeCardDay(job, left, width, isStaged){
   const card=document.createElement("div");
   card.className="job-card-day";
   card.dataset.jobId=job.jobId||job._id;
-  card.dataset.jobDocId=job._id;   // for live flash targeting
+  card.dataset.jobDocId=job._id;
   card.dataset.jobType=job.jobType||"";
   if(!isStaged){
     card.style.cssText=`position:absolute;left:${left}px;width:${width}px;border-top-color:${col}`;
@@ -1126,18 +1126,24 @@ function makeCardDay(job, left, width, isStaged){
     card.classList.add("staging-card");
     card.style.cssText=`position:relative;width:${STAGING_W-18}px;border-top-color:${col}`;
   }
-  const narrow=width<100;
+  const narrow=width<120;
   const timeStr=sh!==null?`${fmtTime(sh)}–${fmtTime(sh+dur)}`:"Unscheduled";
   const badge=makeStatusBadge(job);
+  const jid=esc(job.jobId||job._id);
+
+  // Layout: top row = customer + job ID; middle = job type; bottom = time + postcode + status badge
   card.innerHTML=`
-    <div style="overflow:hidden;flex:1;min-height:0">
-      <div class="jc-customer" style="font-size:${narrow?"9":"10"}px">${esc(job.customerName)}</div>
+    <div style="overflow:hidden;flex:1;min-height:0;display:flex;flex-direction:column;gap:2px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;min-width:0">
+        <div class="jc-customer" style="font-size:${narrow?"9":"10"}px;flex:1;min-width:0">${esc(job.customerName)}</div>
+        <span class="jc-id" style="font-size:${narrow?"8":"10"}px;flex-shrink:0">${jid}</span>
+      </div>
       <div class="jc-type" style="font-size:${narrow?"10":"12"}px">${esc(job.jobType)}</div>
       ${!isStaged?`<div class="jc-time" style="font-size:${narrow?"9":"10"}px">${timeStr}</div>`:""}
     </div>
-    <div class="jc-bottom" style="flex-wrap:wrap;gap:4px">
+    <div class="jc-bottom" style="flex-wrap:wrap;gap:4px;margin-top:3px">
       <span class="jc-post" style="font-size:${narrow?"9":"10"}px">${esc(job.postcode)}</span>
-      ${badge ? badge : `<span class="jc-id" style="font-size:${narrow?"9":"10"}px">${esc(job.jobId||job._id)}</span>`}
+      ${badge}
     </div>
     <div class="jc-tooltip">
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Customer</span><span class="jc-tooltip-val">${esc(job.customerName)}</span></div>
@@ -1146,7 +1152,7 @@ function makeCardDay(job, left, width, isStaged){
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Time</span><span class="jc-tooltip-val">${timeStr}</span></div>
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Engineer</span><span class="jc-tooltip-val">${esc(job.engineerName)}</span></div>
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Status</span><span class="jc-tooltip-val" style="color:${getStatusColour(job)}">${getStatusMeta(job.jobStatus||job.status).label}</span></div>
-      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Job ID</span><span class="jc-tooltip-val" style="color:var(--accent-green)">${esc(job.jobId||job._id)}</span></div>
+      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Job ID</span><span class="jc-tooltip-val" style="color:var(--accent-green)">${jid}</span></div>
     </div>`;
   attachDrag(card, job);
   return card;
@@ -1165,20 +1171,28 @@ function makeCardWeek(job){
   const col=cardColour(job.jobType);
   const sh=getStartHour(job);
   const badge=makeStatusBadge(job);
+  const jid=esc(job.jobId||job._id);
   const card=document.createElement("div");
   card.className="job-card-week";
   card.style.borderLeftColor=col;
   card.dataset.jobId=job.jobId||job._id;
   card.dataset.jobDocId=job._id;
   card.dataset.jobType=job.jobType||"";
+  // Row 1: customer name + job ID (right-aligned)
+  // Row 2: job type (bold)
+  // Row 3: time (if set) + postcode
+  // Row 4: status badge
   card.innerHTML=`
-    <div class="jc-customer">${esc(job.customerName)}</div>
-    <div class="jc-type" style="font-size:11px">${esc(job.jobType)}</div>
-    <div class="jc-bottom" style="flex-wrap:wrap;gap:3px;margin-top:3px">
-      <span class="jc-post">${esc(job.postcode)}</span>
-      ${badge || `<span class="jc-id">${esc(job.jobId||job._id)}</span>`}
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;margin-bottom:2px">
+      <div class="jc-customer" style="flex:1;min-width:0">${esc(job.customerName)}</div>
+      <span class="jc-id" style="font-size:9px;flex-shrink:0">${jid}</span>
     </div>
-    ${sh!==null?`<div style="font-size:9px;color:var(--text-muted);margin-top:2px">${fmtTime(sh)}</div>`:""}`;
+    <div class="jc-type" style="font-size:11px;margin-bottom:3px">${esc(job.jobType)}</div>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:${badge?'3':'0'}px">
+      ${sh!==null?`<span style="font-size:9px;color:var(--text-muted)">${fmtTime(sh)}</span><span style="font-size:9px;color:var(--text-dim)">·</span>`:''}
+      <span class="jc-post">${esc(job.postcode)}</span>
+    </div>
+    ${badge?`<div style="margin-top:1px">${badge}</div>`:''}`;
   attachDrag(card, job);
   return card;
 }
