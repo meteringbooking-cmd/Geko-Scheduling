@@ -683,13 +683,13 @@
   }
   .nearby-info-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(0,200,255,0.08); }
   .nearby-info-card {
-    position: absolute; top: calc(100% + 10px); left: 0; width: 300px;
+    position: fixed; width: 300px;
     background: rgba(8,13,24,0.99); border: 1px solid rgba(0,200,255,0.25);
     border-radius: 12px; padding: 16px 18px 14px;
     box-shadow: 0 16px 48px rgba(0,0,0,0.9), 0 0 0 1px rgba(0,200,255,0.06);
-    z-index: 9000; display: none; animation: nearbyCardIn 0.18s ease-out;
+    z-index: 99990; display: none;
   }
-  .nearby-info-card.visible { display: block; }
+  .nearby-info-card.visible { display: block; animation: nearbyCardIn 0.18s ease-out; }
   @keyframes nearbyCardIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
   .nearby-info-close {
     position: absolute; top: 10px; right: 10px;
@@ -842,19 +842,6 @@
       </div>
       <span style="font-size:12px;font-weight:600;letter-spacing:0.04em;color:var(--text-muted)" id="nearbyLabel">NearBy</span>
       <button class="nearby-info-btn" id="nearbyInfoBtn" title="What is NearBy?">i</button>
-      <div class="nearby-info-card" id="nearbyInfoCard">
-        <button class="nearby-info-close" id="nearbyInfoClose">&#x2715;</button>
-        <div class="nearby-info-title">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
-          NearBy Filter
-        </div>
-        <p class="nearby-info-body">When <strong>NearBy</strong> is enabled and you click on a job card, the engineer list is filtered to show only engineers who have at least one job scheduled within <strong>40 minutes drive</strong> of the selected job&#39;s postcode.</p>
-        <p class="nearby-info-body">This helps you quickly identify which engineers are already working in the same area and could be reassigned or given additional nearby jobs with minimal travel.</p>
-        <div class="nearby-info-tip">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          Click any job card while NearBy is on to apply the filter
-        </div>
-      </div>
     </div>
     <div class="tsep"></div>
     <span id="jobCountLbl"></span>
@@ -1944,10 +1931,23 @@ document.getElementById('nearbyTrack').addEventListener('click', () => {
   if (!nearbyActive) clearNearbyFilter();
 });
 
-// NearBy info card
+// NearBy info card — portalled to body, positioned via JS
+function positionNearbyCard() {
+  const btn  = document.getElementById('nearbyInfoBtn');
+  const card = document.getElementById('nearbyInfoCard');
+  const r = btn.getBoundingClientRect();
+  const cardW = 300;
+  let left = r.left;
+  if (left + cardW > window.innerWidth - 12) left = window.innerWidth - cardW - 12;
+  card.style.top  = (r.bottom + 8) + 'px';
+  card.style.left = left + 'px';
+}
 document.getElementById('nearbyInfoBtn').addEventListener('click', e => {
   e.stopPropagation();
-  document.getElementById('nearbyInfoCard').classList.toggle('visible');
+  const card = document.getElementById('nearbyInfoCard');
+  const isVisible = card.classList.contains('visible');
+  if (!isVisible) positionNearbyCard();
+  card.classList.toggle('visible');
 });
 document.getElementById('nearbyInfoClose').addEventListener('click', e => {
   e.stopPropagation();
@@ -2014,5 +2014,19 @@ startAbsenceListener();
   });
 })();
 </script>
+<!-- NearBy info card — portal at body level to avoid stacking context issues -->
+<div class="nearby-info-card" id="nearbyInfoCard" style="position:fixed;z-index:99990;display:none;">
+  <button class="nearby-info-close" id="nearbyInfoClose">&#x2715;</button>
+  <div class="nearby-info-title">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+    NearBy Filter
+  </div>
+  <p class="nearby-info-body">When <strong>NearBy</strong> is enabled and you click on a job card, the engineer list is filtered to show only engineers who have at least one job scheduled within <strong>40 minutes drive</strong> of the selected job&#39;s postcode.</p>
+  <p class="nearby-info-body">This helps you quickly identify which engineers are already working in the same area and could be reassigned or given additional nearby jobs with minimal travel.</p>
+  <div class="nearby-info-tip">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    Click any job card while NearBy is on to apply the filter
+  </div>
+</div>
 </body>
 </html>
