@@ -229,6 +229,7 @@
     font-size: 11px; font-weight: 700; color: #020308;
   }
   .eng-name { font-size: 12px; font-weight: 500; line-height: 1.3; color: var(--text-main); }
+  .eng-postcode { font-size: 10px; color: var(--text-muted); letter-spacing: 0.04em; margin-top: 1px; }
   .scroll-area { flex: 1; overflow: auto; position: relative; }
   .scroll-area::-webkit-scrollbar { width: 5px; height: 5px; }
   .scroll-area::-webkit-scrollbar-track { background: transparent; }
@@ -918,7 +919,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getFirestore, collection, onSnapshot, doc, updateDoc, deleteField, arrayUnion
+  getFirestore, collection, onSnapshot, getDocs, doc, updateDoc, deleteField, arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const db = getFirestore(initializeApp({
@@ -973,6 +974,9 @@ let unsubAbsences = null;
 let docsExpanded = false;
 let nearbyActive = false;
 let nearbySelectedJob = null;
+
+// Map of lowercase engineer name → postcode from userdatabase
+let engPostcodes = new Map();
 
 // Lightbox state
 let lightboxImages = [];
@@ -1439,7 +1443,8 @@ function renderRows(cols,dayEnd){
     sr.className="eng-row"+(currentView==="week"?" auto":"");
     sr.dataset.eng=eng;
     const init=eng.split(" ").map(w=>w[0]||"").join("").toUpperCase().slice(0,2);
-    sr.innerHTML=`<div class="eng-avatar">${esc(init)}</div><div class="eng-name">${esc(eng)}</div>`;
+    const engPc = engPostcodes.get(eng.trim().toLowerCase()) || '';
+    sr.innerHTML=`<div class="eng-avatar">${esc(init)}</div><div><div class="eng-name">${esc(eng)}</div>${engPc ? `<div class="eng-postcode">${esc(engPc)}</div>` : ''}</div>`;
     engList.appendChild(sr);
 
     const engJobs=visibleJobs.filter(j=>j.engineerName===eng);
@@ -2026,10 +2031,27 @@ document.getElementById("logoCollapsed").onclick=toggleSidebar;
 function toggleSidebar(){sidebar.classList.toggle("expanded");localStorage.setItem("geko-sidebar",sidebar.classList.contains("expanded")?"expanded":"collapsed");}
 if(localStorage.getItem("geko-sidebar")==="expanded")sidebar.classList.add("expanded");
 
+/* ─── User postcodes ────────────────────────────────────────── */
+async function loadEngPostcodes() {
+  try {
+    const snap = await getDocs(collection(db, 'userdatabase'));
+    snap.forEach(d => {
+      const data = d.data();
+      if (data.name && data.postcode) {
+        engPostcodes.set(data.name.trim().toLowerCase(), data.postcode.trim());
+      }
+    });
+    render(); // re-render so postcodes appear
+  } catch(e) {
+    console.warn('Could not load user postcodes:', e);
+  }
+}
+
 /* ─── Boot ──────────────────────────────────────────────────── */
 syncPicker();
 startRealTimeListener();
 startAbsenceListener();
+loadEngPostcodes();
 
 /* ─── Drawer drag-to-resize ─────────────────────────────────── */
 (function(){
