@@ -900,6 +900,21 @@
   </div>
 </div>
 
+<!-- NearBy info card — portal at body level to avoid stacking context issues -->
+<div class="nearby-info-card" id="nearbyInfoCard" style="position:fixed;z-index:99990;display:none;">
+  <button class="nearby-info-close" id="nearbyInfoClose">&#x2715;</button>
+  <div class="nearby-info-title">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+    NearBy Filter
+  </div>
+  <p class="nearby-info-body">When <strong>NearBy</strong> is enabled and you click on a job card, the engineer list is filtered to show only engineers who have at least one job scheduled within <strong>40 minutes drive</strong> of the selected job&#39;s postcode.</p>
+  <p class="nearby-info-body">This helps you quickly identify which engineers are already working in the same area and could be reassigned or given additional nearby jobs with minimal travel.</p>
+  <div class="nearby-info-tip">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    Click any job card while NearBy is on to apply the filter
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
@@ -2014,19 +2029,3 @@ startAbsenceListener();
   });
 })();
 </script>
-<!-- NearBy info card — portal at body level to avoid stacking context issues -->
-<div class="nearby-info-card" id="nearbyInfoCard" style="position:fixed;z-index:99990;display:none;">
-  <button class="nearby-info-close" id="nearbyInfoClose">&#x2715;</button>
-  <div class="nearby-info-title">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
-    NearBy Filter
-  </div>
-  <p class="nearby-info-body">When <strong>NearBy</strong> is enabled and you click on a job card, the engineer list is filtered to show only engineers who have at least one job scheduled within <strong>40 minutes drive</strong> of the selected job&#39;s postcode.</p>
-  <p class="nearby-info-body">This helps you quickly identify which engineers are already working in the same area and could be reassigned or given additional nearby jobs with minimal travel.</p>
-  <div class="nearby-info-tip">
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-    Click any job card while NearBy is on to apply the filter
-  </div>
-</div>
-</body>
-</html>
