@@ -181,7 +181,7 @@
     .hero {
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      text-align: center; padding: 80px 48px 60px;
+      text-align: center; padding: 60px 32px 60px;
       width: 100%;
     }
 
@@ -230,9 +230,15 @@
     /* ── MODULE GRID ───────────────────────────────── */
     .modules {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px; width: 100%; max-width: 980px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px; width: 100%;
       margin: 0 auto;
+    }
+    @media (max-width: 900px) {
+      .modules { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .modules { grid-template-columns: 1fr; }
     }
 
     .module-card {
