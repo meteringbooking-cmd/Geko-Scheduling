@@ -122,7 +122,6 @@
   #topbar-right { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-muted); }
   #status-dot { width: 10px; height: 10px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 10px rgba(0,255,157,0.8); display: inline-block; }
 
-  /* LIVE INDICATOR */
   #live-indicator {
     display: flex; align-items: center; gap: 7px;
     padding: 5px 12px; border-radius: 20px;
@@ -235,7 +234,6 @@
   .scroll-area::-webkit-scrollbar-track { background: transparent; }
   .scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
 
-  /* TIME HEADER */
   .time-header {
     display: flex; height: var(--time-h); position: sticky; top: 0; z-index: 50;
     background: rgba(10,14,24,0.97); border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -248,7 +246,6 @@
   .t-hdr-cell.today-col { color: var(--accent-green); background: rgba(0,255,157,0.04); }
   .t-hdr-cell.weekend   { opacity: 0.45; }
 
-  /* ROWS */
   .rows-wrap { position: relative; min-height: 100%; }
   .hour-grid { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 0; display: flex; }
   .hg-col { flex-shrink: 0; height: 100%; border-right: 1px solid rgba(255,255,255,0.03); position: relative; }
@@ -257,7 +254,6 @@
   .eng-tl-row.day-mode  { height: var(--row-h); }
   .eng-tl-row.week-mode { height: auto; min-height: var(--row-h); align-items: stretch; }
 
-  /* DAY: time slot drop zones */
   .day-slots { position: absolute; top: 0; bottom: 0; left: 0; display: flex; z-index: 1; }
   .day-slot {
     flex-shrink: 0; height: 100%; position: relative;
@@ -267,7 +263,6 @@
   .day-slot.drop-active { background: rgba(0,255,157,0.13) !important; border-right-color: rgba(0,255,157,0.3); }
   .slot-label { position: absolute; bottom: 3px; left: 4px; font-size: 9px; color: rgba(143,160,184,0.18); pointer-events: none; }
 
-  /* DAY CARDS */
   .job-card-day {
     position: absolute; top: 6px; bottom: 6px;
     background: rgba(10,18,30,0.96); border: 1px solid rgba(255,255,255,0.08);
@@ -287,7 +282,6 @@
   }
   @keyframes pendingPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,200,0,0)} 50%{box-shadow:0 0 10px 2px rgba(255,200,0,0.15)} }
 
-  /* ── STATUS BADGE ON CARD ── */
   .card-status-badge {
     display: inline-flex; align-items: center; gap: 3px;
     padding: 2px 6px; border-radius: 4px;
@@ -301,7 +295,6 @@
   .card-status-badge.s-abort       { background: rgba(255,75,92,0.12); border-color: rgba(255,75,92,0.35); color: #ff4b5c; }
   .card-status-badge.s-unassigned  { background: rgba(143,160,184,0.08); border-color: rgba(143,160,184,0.2); color: #8fa0b8; }
 
-  /* Flash animation when status updates live */
   @keyframes statusFlash {
     0%   { box-shadow: 0 0 0 0 rgba(0,255,157,0.7); }
     40%  { box-shadow: 0 0 0 8px rgba(0,255,157,0); }
@@ -312,7 +305,6 @@
     animation: statusFlash 0.8s ease-out forwards;
   }
 
-  /* TOOLTIP */
   .jc-tooltip {
     position: absolute; top: calc(100% + 6px); left: 0; min-width: 210px; max-width: 260px;
     background: rgba(5,10,18,0.99); border: 1px solid rgba(0,255,157,0.22); border-radius: 10px;
@@ -332,7 +324,6 @@
   .jc-id       { font-size: 10px; color: var(--accent-green); font-weight: 700; }
   .jc-time     { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
 
-  /* STAGING */
   .staging-zone {
     position: absolute; top: 0; bottom: 0; right: 0; width: 140px;
     border-left: 2px dashed rgba(255,200,0,0.2); background: rgba(15,12,0,0.5);
@@ -343,7 +334,6 @@
   .staging-hint { display: flex; align-items: center; justify-content: center; flex: 1; pointer-events: none; }
   .staging-hint span { font-size: 9px; color: rgba(255,200,0,0.25); text-transform: uppercase; letter-spacing: 0.4px; text-align: center; }
 
-  /* WEEK CELLS */
   .week-cell-drop {
     flex: 1; border-right: 1px solid rgba(255,255,255,0.03);
     padding: 4px; transition: background 0.1s;
@@ -353,7 +343,6 @@
   .week-cell-drop.weekend   { background: rgba(255,255,255,0.005); }
   .week-cell-drop.drop-active { background: rgba(0,255,157,0.10) !important; outline: 2px dashed rgba(0,255,157,0.4); outline-offset: -2px; }
 
-  /* WEEK CARDS */
   .job-card-week {
     background: rgba(10,18,30,0.96); border: 1px solid rgba(255,255,255,0.08); border-left-width: 3px;
     border-radius: 7px; padding: 5px 7px; cursor: grab;
@@ -364,6 +353,13 @@
   .job-card-week:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.6); border-color: rgba(0,200,255,0.3); }
   .job-card-week.is-dragging { opacity: 0.2; cursor: grabbing; }
 
+  /* Attachment indicator on card */
+  .card-attach-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 9px; color: rgba(0,200,255,0.7); font-weight: 600;
+    margin-left: 4px;
+  }
+
   .stack-more-btn {
     display: block; width: 100%; margin-top: 3px;
     background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.2);
@@ -373,7 +369,6 @@
   }
   .stack-more-btn:hover { background: rgba(0,200,255,0.16); }
 
-  /* FLOATING DRAG GHOST */
   #drag-ghost {
     position: fixed; z-index: 99999; pointer-events: none;
     background: rgba(10,18,30,0.97); border: 1px solid rgba(0,255,157,0.5);
@@ -383,7 +378,6 @@
     font-size: 11px; display: none; transform: rotate(1.5deg);
   }
 
-  /* WEEK STACK POPUP */
   #stack-popup {
     position: fixed; z-index: 9000;
     background: rgba(8,12,22,0.99); border: 1px solid rgba(0,200,255,0.25);
@@ -395,17 +389,15 @@
   #stack-popup .job-card-week { margin-bottom: 4px; }
   #stack-popup .job-card-week:last-child { margin-bottom: 0; }
 
-  /* SEARCH */
   .job-card-day.search-match, .job-card-week.search-match { box-shadow: 0 0 0 2px var(--accent-blue) !important; }
   .job-card-day.search-dim,   .job-card-week.search-dim   { opacity: 0.15 !important; }
 
-  /* NOW LINE */
   .now-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--danger); z-index: 30; pointer-events: none; }
   .now-line::before { content:""; position:absolute; top:50%; left:-4px; width:10px; height:10px; border-radius:50%; background:var(--danger); transform:translateY(-50%); }
 
-  /* ══════════════════════════════════
+  /* ══════════════════════════════════════════════════════
      MODAL
-  ══════════════════════════════════ */
+  ══════════════════════════════════════════════════════ */
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(4px);
     z-index: 500; display: flex; align-items: center; justify-content: center;
@@ -417,6 +409,12 @@
     width: 560px; max-width: 94vw; max-height: 88vh; overflow-y: auto;
     transform: translateY(16px); transition: transform 0.22s;
     box-shadow: 0 24px 60px rgba(0,0,0,0.9);
+  }
+  /* Wider modal when documents panel is open */
+  .modal.docs-expanded {
+    width: 920px;
+    max-width: 96vw;
+    transition: transform 0.22s, width 0.3s ease;
   }
   .modal-overlay.open .modal { transform: translateY(0); }
   .modal-head {
@@ -431,35 +429,49 @@
     display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s;
   }
   .modal-close:hover { border-color: var(--danger); color: var(--danger); }
-  .modal-body { padding: 18px 26px 26px; }
+
+  /* Two-column layout when docs panel open */
+  .modal-inner {
+    display: flex; gap: 0;
+  }
+  .modal-body {
+    padding: 18px 26px 26px;
+    flex: 1; min-width: 0;
+  }
+  .modal-docs-panel {
+    width: 340px; flex-shrink: 0;
+    border-left: 1px solid rgba(255,255,255,0.06);
+    padding: 18px 20px 26px;
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .modal.docs-expanded .modal-docs-panel { display: flex; }
+
   .dg { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .df label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 3px; }
   .df span  { font-size: 13px; color: var(--text-main); }
   .df.full  { grid-column: 1/-1; }
   .ddiv     { height: 1px; background: rgba(255,255,255,0.06); grid-column: 1/-1; }
 
-  /* ── STATUS HISTORY SECTION ── */
+  /* Status history */
   .modal-section-title {
     font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
     color: var(--text-muted); margin: 22px 0 14px; display: flex; align-items: center; gap: 8px;
   }
-  .modal-section-title::after {
-    content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06);
-  }
+  .modal-section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
 
   .history-timeline { display: flex; flex-direction: column; gap: 0; position: relative; }
   .history-timeline::before {
     content: ''; position: absolute; left: 14px; top: 8px; bottom: 8px;
     width: 1px; background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
   }
-
   .history-item {
     display: flex; gap: 14px; align-items: flex-start;
     padding: 8px 0; position: relative;
     animation: historyFadeIn 0.3s ease-out both;
   }
   @keyframes historyFadeIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
-
   .history-dot {
     width: 10px; height: 10px; border-radius: 50%;
     flex-shrink: 0; margin-top: 3px; z-index: 1;
@@ -471,35 +483,19 @@
   .history-dot.s-in-progress { background: #f59e0b; border-color: rgba(245,158,11,0.4); box-shadow: 0 0 8px rgba(245,158,11,0.5); }
   .history-dot.s-abort       { background: #ff4b5c; border-color: rgba(255,75,92,0.4); box-shadow: 0 0 8px rgba(255,75,92,0.5); }
   .history-dot.s-created     { background: rgba(143,160,184,0.4); border-color: rgba(143,160,184,0.2); }
-
   .history-content { flex: 1; padding-left: 12px; }
-  .history-status {
-    font-size: 12px; font-weight: 600;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .history-status-label { }
+  .history-status { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
   .history-status-label.s-complete    { color: #00ff9d; }
   .history-status-label.s-en-route    { color: #00c8ff; }
   .history-status-label.s-in-progress { color: #f59e0b; }
   .history-status-label.s-abort       { color: #ff4b5c; }
   .history-status-label.s-created     { color: var(--text-muted); }
-
-  .history-meta {
-    font-size: 11px; color: var(--text-muted); margin-top: 2px;
-    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
-  }
-  .history-by {
-    font-size: 11px; color: var(--text-main); font-weight: 500;
-  }
+  .history-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .history-by { font-size: 11px; color: var(--text-main); font-weight: 500; }
   .history-time { color: var(--text-muted); }
   .history-ago  { color: rgba(143,160,184,0.5); font-size: 10px; }
+  .history-empty { text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px; border: 1px dashed rgba(255,255,255,0.06); border-radius: 8px; }
 
-  .history-empty {
-    text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;
-    border: 1px dashed rgba(255,255,255,0.06); border-radius: 8px;
-  }
-
-  /* ── CURRENT STATUS PILL in modal header ── */
   .modal-status-pill {
     display: inline-flex; align-items: center; gap: 5px;
     padding: 4px 10px; border-radius: 20px;
@@ -512,6 +508,182 @@
   .modal-status-pill.s-abort       { background: rgba(255,75,92,0.1); border-color: rgba(255,75,92,0.3); color: #ff4b5c; }
   .modal-status-pill.s-unassigned  { background: rgba(143,160,184,0.08); border-color: rgba(143,160,184,0.2); color: var(--text-muted); }
 
+  /* ── VIEW DOCUMENTS BUTTON ── */
+  .view-docs-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 16px; border-radius: 8px;
+    border: 1px solid rgba(0,200,255,0.3);
+    background: rgba(0,200,255,0.06);
+    color: var(--accent-blue); font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.18s; margin-top: 16px;
+    font-family: 'Inter', sans-serif;
+    user-select: none;
+  }
+  .view-docs-btn:hover { background: rgba(0,200,255,0.12); border-color: rgba(0,200,255,0.5); }
+  .view-docs-btn.active { background: rgba(0,200,255,0.14); border-color: rgba(0,200,255,0.6); color: #fff; }
+  .view-docs-btn .doc-count-badge {
+    background: rgba(0,200,255,0.2); border-radius: 10px;
+    padding: 1px 7px; font-size: 10px; font-weight: 700; color: var(--accent-blue);
+  }
+
+  /* ── DOCUMENTS PANEL ── */
+  .docs-panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .docs-panel-title {
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-muted); display: flex; align-items: center; gap: 8px;
+  }
+  .docs-panel-close {
+    width: 26px; height: 26px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);
+    background: transparent; color: var(--text-muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 13px;
+    transition: all 0.15s;
+  }
+  .docs-panel-close:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* Image grid */
+  .docs-image-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+  }
+  .docs-image-thumb {
+    aspect-ratio: 4/3; border-radius: 8px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer; position: relative;
+    background: rgba(255,255,255,0.03);
+    transition: border-color 0.18s, transform 0.18s;
+  }
+  .docs-image-thumb:hover { border-color: rgba(0,200,255,0.4); transform: scale(1.02); }
+  .docs-image-thumb img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: opacity 0.2s;
+  }
+  .docs-image-thumb .thumb-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0); transition: background 0.18s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .docs-image-thumb:hover .thumb-overlay { background: rgba(0,200,255,0.15); }
+  .docs-image-thumb .thumb-expand {
+    opacity: 0; transition: opacity 0.18s;
+    background: rgba(0,200,255,0.8); border-radius: 50%;
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  }
+  .docs-image-thumb:hover .thumb-expand { opacity: 1; }
+  .docs-image-name {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.75));
+    padding: 16px 8px 6px; font-size: 10px; color: rgba(255,255,255,0.8);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* File list (non-image docs) */
+  .docs-file-list { display: flex; flex-direction: column; gap: 6px; }
+  .docs-file-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 8px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+    cursor: pointer; transition: all 0.15s; text-decoration: none;
+  }
+  .docs-file-item:hover { border-color: rgba(0,200,255,0.3); background: rgba(0,200,255,0.05); }
+  .docs-file-icon { font-size: 20px; flex-shrink: 0; }
+  .docs-file-info { flex: 1; min-width: 0; }
+  .docs-file-name { font-size: 12px; font-weight: 500; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .docs-file-meta { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .docs-file-dl {
+    width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;
+    background: rgba(0,200,255,0.1); border: 1px solid rgba(0,200,255,0.25);
+    color: var(--accent-blue); display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .docs-file-dl:hover { background: rgba(0,200,255,0.2); }
+
+  .docs-section-label {
+    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--text-muted); margin-bottom: 8px; margin-top: 4px;
+  }
+
+  .docs-empty {
+    text-align: center; padding: 30px 16px; color: var(--text-muted);
+    font-size: 12px; border: 1px dashed rgba(255,255,255,0.06); border-radius: 8px;
+  }
+  .docs-loading {
+    text-align: center; padding: 24px; color: var(--text-muted); font-size: 12px;
+  }
+  .docs-spinner {
+    width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.06); border-top-color: var(--accent-blue);
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    margin: 0 auto 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── LIGHTBOX ── */
+  #lightbox {
+    position: fixed; inset: 0; z-index: 99999;
+    background: rgba(0,0,0,0.95); backdrop-filter: blur(12px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  #lightbox.open { opacity: 1; pointer-events: all; }
+  .lightbox-header {
+    position: absolute; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px;
+    background: linear-gradient(rgba(0,0,0,0.8), transparent);
+  }
+  .lightbox-filename {
+    font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8);
+    max-width: 60vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .lightbox-actions { display: flex; align-items: center; gap: 10px; }
+  .lightbox-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8);
+    font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+    font-family: 'Inter', sans-serif; text-decoration: none;
+  }
+  .lightbox-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  .lightbox-close {
+    width: 36px; height: 36px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+    transition: all 0.15s;
+  }
+  .lightbox-close:hover { border-color: var(--danger); color: var(--danger); background: rgba(255,75,92,0.1); }
+  .lightbox-img-wrap {
+    max-width: 90vw; max-height: 85vh;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lightbox-img-wrap img {
+    max-width: 90vw; max-height: 80vh;
+    border-radius: 8px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.9);
+    object-fit: contain;
+    animation: lightboxIn 0.25s ease-out;
+  }
+  @keyframes lightboxIn { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+
+  /* Nav arrows */
+  .lightbox-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.6);
+    color: rgba(255,255,255,0.8); cursor: pointer; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .lightbox-nav:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  .lightbox-nav.prev { left: 20px; }
+  .lightbox-nav.next { right: 20px; }
+  .lightbox-nav.hidden { display: none; }
+
+  .lightbox-counter {
+    position: absolute; bottom: 20px;
+    font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 0.5px;
+  }
+
   /* TOAST */
   #toast { position: fixed; bottom: 24px; right: 24px; z-index: 99999; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; transform: translateY(20px); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; pointer-events: none; }
   #toast.show { transform: translateY(0); opacity: 1; }
@@ -522,38 +694,27 @@
   #loading-overlay { position: fixed; inset: 0; background: rgba(2,3,8,0.75); display: flex; align-items: center; justify-content: center; z-index: 9998; backdrop-filter: blur(6px); }
   #loading-overlay.hidden { display: none; }
   .loading-box { padding: 30px 40px; border-radius: 18px; background: rgba(10,14,24,0.98); border: 1px solid rgba(255,255,255,0.06); text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.9); }
-  @keyframes spin { to { transform: rotate(360deg); } }
   .loading-spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.06); border-top-color: var(--accent-green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
   .loading-text { font-size: 13px; color: var(--text-muted); }
 
-  /* ── ABSENCE BLOCKING ─────────────────────────────────────── */
+  /* Absence */
   .absence-block {
     position: absolute; top: 0; bottom: 0; left: 0; right: 0;
     z-index: 2; pointer-events: none;
-    background: repeating-linear-gradient(
-      -45deg,
-      rgba(168,85,247,0.07) 0px, rgba(168,85,247,0.07) 4px,
-      transparent 4px, transparent 12px
-    );
+    background: repeating-linear-gradient(-45deg, rgba(168,85,247,0.07) 0px, rgba(168,85,247,0.07) 4px, transparent 4px, transparent 12px);
     border-left: 3px solid rgba(168,85,247,0.5);
   }
   .absence-block-label {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%,-50%);
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
     background: rgba(168,85,247,0.18); border: 1px solid rgba(168,85,247,0.4);
     color: #c084fc; font-size: 10px; font-weight: 700; text-transform: uppercase;
     letter-spacing: 0.8px; padding: 4px 10px; border-radius: 6px;
     white-space: nowrap; pointer-events: none;
   }
-  /* Day view absence stripe (full row overlay) */
   .absence-row-block {
     position: absolute; top: 0; bottom: 0; left: 0;
     z-index: 1; pointer-events: none;
-    background: repeating-linear-gradient(
-      -45deg,
-      rgba(168,85,247,0.06) 0px, rgba(168,85,247,0.06) 4px,
-      transparent 4px, transparent 12px
-    );
+    background: repeating-linear-gradient(-45deg, rgba(168,85,247,0.06) 0px, rgba(168,85,247,0.06) 4px, transparent 4px, transparent 12px);
     border-left: 3px solid rgba(168,85,247,0.4);
     display: flex; align-items: center;
   }
@@ -563,11 +724,9 @@
     letter-spacing: 0.7px; padding: 3px 10px; border-radius: 5px;
     margin-left: 10px; white-space: nowrap;
   }
-  /* Weekend stripe on absent eng sidebar label */
   .eng-row.is-absent .eng-name { color: #c084fc; }
   .eng-row.is-absent .eng-avatar { background: linear-gradient(135deg, #a855f7, #6366f1); }
 
-  /* Flash animation for conflicting job cards */
   @keyframes conflictFlash {
     0%   { box-shadow: 0 0 0 0   rgba(245,158,11,0.9); border-color: rgba(245,158,11,0.9); }
     25%  { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
@@ -575,8 +734,7 @@
     75%  { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
     100% { box-shadow: 0 0 0 0   rgba(245,158,11,0.5); border-color: rgba(245,158,11,0.5); }
   }
-  .job-card-day.needs-realloc,
-  .job-card-week.needs-realloc {
+  .job-card-day.needs-realloc, .job-card-week.needs-realloc {
     animation: conflictFlash 1.4s ease-out forwards;
     border-color: rgba(245,158,11,0.6) !important;
     background: rgba(245,158,11,0.06) !important;
@@ -595,6 +753,24 @@
 <div id="toast"></div>
 <div id="drag-ghost"></div>
 <div id="stack-popup"></div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <div class="lightbox-header">
+    <div class="lightbox-filename" id="lightboxFilename"></div>
+    <div class="lightbox-actions">
+      <a class="lightbox-btn" id="lightboxDownload" href="#" target="_blank" download>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download
+      </a>
+      <button class="lightbox-close" id="lightboxClose">✕</button>
+    </div>
+  </div>
+  <button class="lightbox-nav prev hidden" id="lightboxPrev">&#8249;</button>
+  <div class="lightbox-img-wrap" id="lightboxImgWrap"></div>
+  <button class="lightbox-nav next hidden" id="lightboxNext">&#8250;</button>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
+</div>
 
 <!-- SIDEBAR -->
 <div id="sidebar">
@@ -698,8 +874,9 @@
   </div>
 </div>
 
+<!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
+  <div class="modal" id="theModal">
     <div class="modal-head">
       <div>
         <div class="modal-title" id="modalTitle"></div>
@@ -708,7 +885,21 @@
       </div>
       <button class="modal-close" id="modalClose">✕</button>
     </div>
-    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-inner">
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-docs-panel" id="modalDocsPanel">
+        <div class="docs-panel-header">
+          <div class="docs-panel-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Documents
+          </div>
+          <button class="docs-panel-close" id="docsPanelClose">✕</button>
+        </div>
+        <div id="docsPanelContent">
+          <div class="docs-loading"><div class="docs-spinner"></div>Loading…</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -730,6 +921,7 @@ const db = getFirestore(initializeApp({
 /* ─── Constants ─────────────────────────────────────────────── */
 const HOUR_W = 200, ROW_H = 96, DAY_START = 7, DAY_END_MIN = 18, STAGING_W = 160;
 const DRAG_THRESHOLD = 5;
+const IMAGE_EXTS = new Set(['jpg','jpeg','png','gif','webp','heic','bmp','svg']);
 
 const JOB_DURATIONS = {"dual fuel":2,"single gas":1.5,"single elec":1.5,"comms":0.5};
 function getDuration(t){const k=(t||"").toLowerCase();for(const[key,v]of Object.entries(JOB_DURATIONS))if(k.includes(key))return v;return 1;}
@@ -739,7 +931,6 @@ function calcDayEnd(jobs){let end=DAY_END_MIN;jobs.forEach(j=>{const sh=getStart
 const COLOURS=["#00c896","#0084ff","#f59e0b","#ff4d6a","#a855f7","#06b6d4","#f97316","#10b981"];
 function cardColour(t){const h=[...(t||"x")].reduce((a,c)=>a+c.charCodeAt(0),0);return COLOURS[h%COLOURS.length];}
 
-/* ─── Status helpers ────────────────────────────────────────── */
 const STATUS_META = {
   'complete':    { label: 'Complete',    icon: '✓', cls: 's-complete' },
   'en-route':    { label: 'En Route',    icon: '→', cls: 's-en-route' },
@@ -755,33 +946,184 @@ function normaliseStatus(raw){
   if(s==='inprogress') return 'in-progress';
   return ['complete','en-route','in-progress','abort'].includes(s) ? s : 'unassigned';
 }
-
-function getStatusMeta(raw){
-  return STATUS_META[normaliseStatus(raw)] || STATUS_META['unassigned'];
-}
+function getStatusMeta(raw){ return STATUS_META[normaliseStatus(raw)] || STATUS_META['unassigned']; }
 
 /* ─── App state ─────────────────────────────────────────────── */
 let allJobs = [], currentView = "day", currentDate = today0(), jobSearch = "", engSearch = "";
-let openModalJobId = null; // track which job is open in modal
-let unsubscribe = null;    // Firestore listener cleanup
-let allAbsences = [];      // live absence records from Firestore
-let unsubAbsences = null;  // Firestore absence listener cleanup
+let openModalJobId = null;
+let unsubscribe = null;
+let allAbsences = [];
+let unsubAbsences = null;
+let docsExpanded = false;
 
-/* ─── Absence helpers ───────────────────────────────────── */
+// Lightbox state
+let lightboxImages = []; // array of {url, name}
+let lightboxIndex  = 0;
+
+/* ─── Doc helpers ───────────────────────────────────────────── */
+function isImage(filename){
+  const ext = (filename||'').split('.').pop().toLowerCase();
+  return IMAGE_EXTS.has(ext);
+}
+
+function fileIcon(name){
+  const ext = (name||'').split('.').pop().toLowerCase();
+  const icons = { pdf:'📄', doc:'📝', docx:'📝', xls:'📊', xlsx:'📊',
+    mp4:'🎥', mov:'🎥', txt:'📃', csv:'📊' };
+  return icons[ext] || '📎';
+}
+
+function fmtBytes(s){ return s||''; }
+
+function fmtTimestamp(isoStr){
+  if(!isoStr) return '—';
+  try {
+    const d = new Date(isoStr);
+    return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})
+      + ' at '
+      + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  } catch { return isoStr; }
+}
+
+/* ─── Lightbox ──────────────────────────────────────────────── */
+function openLightbox(images, startIndex){
+  lightboxImages = images;
+  lightboxIndex  = startIndex;
+  renderLightboxSlide();
+  document.getElementById('lightbox').classList.add('open');
+  document.addEventListener('keydown', lightboxKeyHandler);
+}
+
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.removeEventListener('keydown', lightboxKeyHandler);
+  lightboxImages = []; lightboxIndex = 0;
+}
+
+function lightboxKeyHandler(e){
+  if(e.key === 'Escape') closeLightbox();
+  if(e.key === 'ArrowLeft')  lightboxGo(-1);
+  if(e.key === 'ArrowRight') lightboxGo(1);
+}
+
+function lightboxGo(dir){
+  lightboxIndex = Math.max(0, Math.min(lightboxImages.length-1, lightboxIndex+dir));
+  renderLightboxSlide();
+}
+
+function renderLightboxSlide(){
+  const img = lightboxImages[lightboxIndex];
+  document.getElementById('lightboxFilename').textContent = img.name;
+  document.getElementById('lightboxDownload').href = img.url;
+  document.getElementById('lightboxDownload').download = img.name;
+  const wrap = document.getElementById('lightboxImgWrap');
+  wrap.innerHTML = `<img src="${img.url}" alt="${img.name}" draggable="false"/>`;
+  document.getElementById('lightboxCounter').textContent =
+    lightboxImages.length > 1 ? `${lightboxIndex+1} / ${lightboxImages.length}` : '';
+  document.getElementById('lightboxPrev').classList.toggle('hidden', lightboxIndex === 0);
+  document.getElementById('lightboxNext').classList.toggle('hidden', lightboxIndex === lightboxImages.length-1);
+}
+
+document.getElementById('lightboxClose').onclick = closeLightbox;
+document.getElementById('lightbox').addEventListener('click', e => { if(e.target === document.getElementById('lightbox')) closeLightbox(); });
+document.getElementById('lightboxPrev').onclick = () => lightboxGo(-1);
+document.getElementById('lightboxNext').onclick = () => lightboxGo(1);
+
+/* ─── Documents panel ───────────────────────────────────────── */
+function openDocsPanel(job){
+  docsExpanded = true;
+  document.getElementById('theModal').classList.add('docs-expanded');
+
+  const panel = document.getElementById('docsPanelContent');
+  const attachments = Array.isArray(job.attachments) ? job.attachments : [];
+
+  if(attachments.length === 0){
+    panel.innerHTML = `<div class="docs-empty">No documents attached to this job.</div>`;
+    return;
+  }
+
+  const images = attachments.filter(a => isImage(a.name));
+  const files  = attachments.filter(a => !isImage(a.name));
+
+  // Build lightbox image array
+  const lightboxImgs = images.map(a => ({ url: a.url, name: a.name }));
+
+  let html = '';
+
+  if(images.length > 0){
+    html += `<div class="docs-section-label">Images (${images.length})</div>`;
+    html += `<div class="docs-image-grid">`;
+    images.forEach((att, idx) => {
+      html += `
+        <div class="docs-image-thumb" data-lightbox-idx="${idx}" title="${att.name}">
+          <img src="${att.url}" alt="${att.name}" loading="lazy"/>
+          <div class="thumb-overlay">
+            <div class="thumb-expand">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+                <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+              </svg>
+            </div>
+          </div>
+          <div class="docs-image-name">${att.name}</div>
+        </div>`;
+    });
+    html += `</div>`;
+  }
+
+  if(files.length > 0){
+    html += `<div class="docs-section-label" style="margin-top:${images.length>0?'16px':'4px'}">Files (${files.length})</div>`;
+    html += `<div class="docs-file-list">`;
+    files.forEach(att => {
+      html += `
+        <a class="docs-file-item" href="${att.url}" target="_blank" rel="noopener" title="${att.name}">
+          <div class="docs-file-icon">${fileIcon(att.name)}</div>
+          <div class="docs-file-info">
+            <div class="docs-file-name">${att.name}</div>
+            <div class="docs-file-meta">${fmtBytes(att.size)} · ${att.uploadedBy||''} · ${att.uploadedAt ? new Date(att.uploadedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : ''}</div>
+          </div>
+          <div class="docs-file-dl">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </div>
+        </a>`;
+    });
+    html += `</div>`;
+  }
+
+  panel.innerHTML = html;
+
+  // Wire up image thumbnails to lightbox
+  panel.querySelectorAll('.docs-image-thumb').forEach(el => {
+    el.addEventListener('click', () => {
+      const idx = parseInt(el.dataset.lightboxIdx, 10);
+      openLightbox(lightboxImgs, idx);
+    });
+  });
+}
+
+function closeDocsPanel(){
+  docsExpanded = false;
+  document.getElementById('theModal').classList.remove('docs-expanded');
+}
+
+document.getElementById('docsPanelClose').onclick = closeDocsPanel;
+
+/* ─── Absence helpers ───────────────────────────────────────── */
 function isEngineerAbsent(engName, dateObj){
-  // Returns the absence record if this engineer is absent on this date
   const dateStr = toInputDateStr(dateObj);
   return allAbsences.find(a =>
     (a.engineerName||'').toLowerCase().trim() === (engName||'').toLowerCase().trim()
     && a.date === dateStr
   );
 }
-
 function toInputDateStr(d){
   if(!d) return '';
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
-
 function today0(){const d=new Date();d.setHours(0,0,0,0);return d;}
 
 /* ─── Date helpers ──────────────────────────────────────────── */
@@ -801,7 +1143,6 @@ function getCols(){
   const mon=new Date(currentDate);mon.setDate(currentDate.getDate()+diff);
   return Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
 }
-
 function timeAgo(isoStr){
   if(!isoStr) return '';
   const diff = Date.now() - new Date(isoStr).getTime();
@@ -811,47 +1152,24 @@ function timeAgo(isoStr){
   return `${Math.floor(diff/86400000)}d ago`;
 }
 
-function fmtTimestamp(isoStr){
-  if(!isoStr) return '—';
-  try {
-    const d = new Date(isoStr);
-    return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})
-      + ' at '
-      + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-  } catch { return isoStr; }
-}
-
-/* ══════════════════════════════════════════════════════════════
-   REAL-TIME FIRESTORE LISTENER
-   Uses onSnapshot instead of getDocs so we get pushed updates
-   the instant an engineer changes a status on their portal.
-══════════════════════════════════════════════════════════════ */
+/* ─── Firestore listeners ───────────────────────────────────── */
 function startAbsenceListener(){
   if(unsubAbsences){ unsubAbsences(); unsubAbsences=null; }
   unsubAbsences = onSnapshot(
     collection(db,'absences'),
-    snap => {
-      allAbsences = [];
-      snap.forEach(d => allAbsences.push({ _id: d.id, ...d.data() }));
-      // Re-render only if we already have job data
-      if(allJobs.length > 0) render();
-    },
+    snap => { allAbsences = []; snap.forEach(d => allAbsences.push({ _id: d.id, ...d.data() })); if(allJobs.length > 0) render(); },
     err => console.error('Absence listener error:', err)
   );
 }
 
 function startRealTimeListener(){
   setLive('connecting', 'Connecting…');
-
-  // Clean up any existing listener
   if(unsubscribe) { unsubscribe(); unsubscribe = null; }
-
   try {
     unsubscribe = onSnapshot(
       collection(db, 'uploaded_jobs'),
       { includeMetadataChanges: false },
       (snapshot) => {
-        // First load
         if(allJobs.length === 0) {
           allJobs = [];
           snapshot.forEach(d => allJobs.push({ _id: d.id, ...d.data() }));
@@ -862,62 +1180,38 @@ function startRealTimeListener(){
           document.getElementById('loading-overlay').classList.add('hidden');
           return;
         }
-
-        // Incremental changes — process each change individually
         let changedCount = 0;
         const updatedIds = [];
-
         snapshot.docChanges().forEach(change => {
           const newData = { _id: change.doc.id, ...change.doc.data() };
-
           if(change.type === 'added') {
-            if(!allJobs.find(j => j._id === newData._id)) {
-              allJobs.push(newData);
-              changedCount++;
-            }
+            if(!allJobs.find(j => j._id === newData._id)){ allJobs.push(newData); changedCount++; }
           } else if(change.type === 'modified') {
             const idx = allJobs.findIndex(j => j._id === newData._id);
-            if(idx !== -1) {
+            if(idx !== -1){
               const old = allJobs[idx];
               const oldStatus = normaliseStatus(old.jobStatus || old.status);
               const newStatus = normaliseStatus(newData.jobStatus || newData.status);
-              allJobs[idx] = newData;
-              changedCount++;
-              // If status changed, track for flash effect and toast
-              if(oldStatus !== newStatus) {
-                updatedIds.push({ id: newData._id, status: newStatus, eng: newData.engineerName });
-              }
+              allJobs[idx] = newData; changedCount++;
+              if(oldStatus !== newStatus) updatedIds.push({ id: newData._id, status: newStatus, eng: newData.engineerName });
             }
           } else if(change.type === 'removed') {
-            allJobs = allJobs.filter(j => j._id !== change.doc.id);
-            changedCount++;
+            allJobs = allJobs.filter(j => j._id !== change.doc.id); changedCount++;
           }
         });
-
-        if(changedCount > 0) {
+        if(changedCount > 0){
           setLive('live', `Live · ${allJobs.length} jobs`);
           setStatus('ok', `Updated ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
           render();
-
-          // Flash updated cards and show toasts for status changes
           updatedIds.forEach(({ id, status, eng }) => {
             const meta = getStatusMeta(status);
             toast(`${esc(eng||'Engineer')}: ${meta.label}`, 'info');
-
-            // Flash matching cards (they're freshly rendered so use setTimeout)
             setTimeout(() => {
               document.querySelectorAll(`[data-job-doc-id="${id}"]`).forEach(el => {
-                el.classList.remove('status-updated');
-                void el.offsetWidth; // reflow to restart animation
-                el.classList.add('status-updated');
+                el.classList.remove('status-updated'); void el.offsetWidth; el.classList.add('status-updated');
               });
             }, 50);
-
-            // If modal is open for this job, refresh it
-            if(openModalJobId === id) {
-              const job = allJobs.find(j => j._id === id);
-              if(job) openModal(job, false);
-            }
+            if(openModalJobId === id){ const job = allJobs.find(j => j._id === id); if(job) openModal(job, false); }
           });
         }
       },
@@ -926,14 +1220,11 @@ function startRealTimeListener(){
         setLive('error', 'Disconnected');
         setStatus('err', 'Connection lost: ' + (error.code || error.message));
         toast('Real-time connection lost. Retrying…', 'error');
-        // Retry after 5s
         setTimeout(startRealTimeListener, 5000);
       }
     );
   } catch(e) {
-    console.error(e);
-    setLive('error', 'Error');
-    setStatus('err', e.message);
+    console.error(e); setLive('error', 'Error'); setStatus('err', e.message);
     document.getElementById('loading-overlay').classList.add('hidden');
   }
 }
@@ -941,7 +1232,6 @@ function startRealTimeListener(){
 /* ─── Drag engine ───────────────────────────────────────────── */
 const ghost = document.getElementById("drag-ghost");
 let activeDrag = null;
-
 function attachDrag(cardEl, job) {
   cardEl.addEventListener("mousedown", e => {
     if(e.button !== 0) return;
@@ -951,7 +1241,6 @@ function attachDrag(cardEl, job) {
     document.addEventListener("mouseup",   onUp,   {capture:true});
   });
 }
-
 function onMove(e) {
   if(!activeDrag) return;
   const dx = e.clientX - activeDrag.startX, dy = e.clientY - activeDrag.startY;
@@ -977,7 +1266,6 @@ function onMove(e) {
   if(activeDrag.currentZone) { activeDrag.currentZone.classList.remove("drop-active"); activeDrag.currentZone = null; }
   if(el) { const zone = el.closest("[data-drop]"); if(zone) { zone.classList.add("drop-active"); activeDrag.currentZone = zone; } }
 }
-
 function onUp(e) {
   document.removeEventListener("mousemove", onMove, {capture:true});
   document.removeEventListener("mouseup",   onUp,   {capture:true});
@@ -991,7 +1279,6 @@ function onUp(e) {
   if(!started) { openModal(job); return; }
   if(currentZone) commitDrop(job, currentZone);
 }
-
 function commitDrop(job, zoneEl) {
   const type = zoneEl.dataset.drop;
   const eng  = zoneEl.dataset.eng  || job.engineerName;
@@ -1014,7 +1301,6 @@ function commitDrop(job, zoneEl) {
 
 /* ─── Firebase write ────────────────────────────────────────── */
 async function persistUpdate(jobId, updates, job){
-  // Optimistic update
   const j = allJobs.find(x => x._id === jobId);
   if(j){ for(const[k,v] of Object.entries(updates)){ if(v===null) delete j[k]; else j[k]=v; } }
   render();
@@ -1022,48 +1308,18 @@ async function persistUpdate(jobId, updates, job){
     const now = new Date().toISOString();
     const fs = {};
     for(const[k,v] of Object.entries(updates)) fs[k] = v===null ? deleteField() : v;
-
-    // If this drag op changed the engineer or date, log it to history
     const rescheduleDetails = [];
-    if(updates.engineerName && updates.engineerName !== (job.engineerName||''))
-      rescheduleDetails.push(`reassigned to ${updates.engineerName}`);
-    if(updates.dateOfJob && updates.dateOfJob !== (job.dateOfJob||''))
-      rescheduleDetails.push(`rescheduled to ${updates.dateOfJob}`);
-    if(updates.startHour !== undefined) {
-      const h = updates.startHour;
-      rescheduleDetails.push(h === null ? 'unscheduled' : `time set to ${fmtTime(h)}`);
-    }
-
-    // Always write a history entry for any admin drag/drop action
-    const historyEntry = {
-      status:    updates.jobStatus || job.jobStatus || job.status || 'unassigned',
-      updatedBy: 'Admin',
-      updatedAt: now,
-      source:    'admin',
-      note:      rescheduleDetails.join('; ') || 'updated',
-    };
+    if(updates.engineerName && updates.engineerName !== (job.engineerName||'')) rescheduleDetails.push(`reassigned to ${updates.engineerName}`);
+    if(updates.dateOfJob && updates.dateOfJob !== (job.dateOfJob||'')) rescheduleDetails.push(`rescheduled to ${updates.dateOfJob}`);
+    if(updates.startHour !== undefined){ const h = updates.startHour; rescheduleDetails.push(h === null ? 'unscheduled' : `time set to ${fmtTime(h)}`); }
+    const historyEntry = { status: updates.jobStatus || job.jobStatus || job.status || 'unassigned', updatedBy: 'Admin', updatedAt: now, source: 'admin', note: rescheduleDetails.join('; ') || 'updated' };
     fs.statusHistory = arrayUnion(historyEntry);
-
-    // Also update flat timestamp fields so they stay in sync
-    fs.statusUpdatedAt  = now;
-    fs.statusUpdatedBy  = 'Admin';
-
+    fs.statusUpdatedAt = now;
+    fs.statusUpdatedBy = 'Admin';
     await updateDoc(doc(db,'uploaded_jobs',jobId), fs);
-
-    // Merge history entry into local state too
-    if(j) {
-      j.statusUpdatedAt = now;
-      j.statusUpdatedBy = 'Admin';
-      if(!Array.isArray(j.statusHistory)) j.statusHistory = [];
-      if(!j.statusHistory.some(e => e.updatedAt === now)) j.statusHistory.push(historyEntry);
-    }
-
+    if(j){ j.statusUpdatedAt = now; j.statusUpdatedBy = 'Admin'; if(!Array.isArray(j.statusHistory)) j.statusHistory = []; if(!j.statusHistory.some(e => e.updatedAt === now)) j.statusHistory.push(historyEntry); }
     toast("Saved ✓");
-  } catch(err) {
-    console.error(err);
-    toast("Save failed: "+(err.code||err.message),"error");
-    // onSnapshot will auto-correct the local state
-  }
+  } catch(err) { console.error(err); toast("Save failed: "+(err.code||err.message),"error"); }
 }
 
 /* ─── Render ────────────────────────────────────────────────── */
@@ -1159,14 +1415,12 @@ function renderRows(cols,dayEnd){
       const scheduled=dayJobs.filter(j=>getStartHour(j)!==null);
       const staged   =dayJobs.filter(j=>getStartHour(j)===null);
 
-      // Absence overlay + flag conflicts
       if(absence){
         const absBlock=document.createElement("div");
         absBlock.className="absence-row-block";
         absBlock.style.width=`${HOUR_W*hours}px`;
         absBlock.innerHTML=`<span class="absence-row-block-pill">🚫 ${absence.reason||'Absent'}</span>`;
         row.appendChild(absBlock);
-        // Mark engineer label row
         sr.classList.add('is-absent');
       }
 
@@ -1185,9 +1439,7 @@ function renderRows(cols,dayEnd){
         const card=makeCardDay(job,(getStartHour(job)-DAY_START)*HOUR_W,getDuration(job.jobType)*HOUR_W-4,false);
         if(absence){
           card.classList.add('needs-realloc');
-          const badge=document.createElement('div');
-          badge.className='conflict-warning-badge';
-          badge.textContent='⚠ Reassign';
+          const badge=document.createElement('div'); badge.className='conflict-warning-badge'; badge.textContent='⚠ Reassign';
           card.appendChild(badge);
         }
         row.appendChild(card);
@@ -1210,7 +1462,6 @@ function renderRows(cols,dayEnd){
         const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),col));
 
         if(weekAbsence){
-          // Absence overlay in cell
           const ab=document.createElement("div"); ab.className="absence-block";
           ab.innerHTML=`<span class="absence-block-label">🚫 ${weekAbsence.reason||'Absent'}</span>`;
           cell.appendChild(ab);
@@ -1219,27 +1470,13 @@ function renderRows(cols,dayEnd){
         if(dayJobs.length<=1){
           dayJobs.forEach(job=>{
             const card=makeCardWeek(job);
-            if(weekAbsence){
-              card.classList.add('needs-realloc');
-              const badge=document.createElement('div');
-              badge.className='conflict-warning-badge';
-              badge.textContent='⚠ Reassign';
-              card.style.position='relative';
-              card.appendChild(badge);
-            }
+            if(weekAbsence){ card.classList.add('needs-realloc'); const badge=document.createElement('div'); badge.className='conflict-warning-badge'; badge.textContent='⚠ Reassign'; card.style.position='relative'; card.appendChild(badge); }
             cell.appendChild(card);
           });
         } else {
           const makeConflictCard=(job)=>{
             const card=makeCardWeek(job);
-            if(weekAbsence){
-              card.classList.add('needs-realloc');
-              const badge=document.createElement('div');
-              badge.className='conflict-warning-badge';
-              badge.textContent='⚠ Reassign';
-              card.style.position='relative';
-              card.appendChild(badge);
-            }
+            if(weekAbsence){ card.classList.add('needs-realloc'); const badge=document.createElement('div'); badge.className='conflict-warning-badge'; badge.textContent='⚠ Reassign'; card.style.position='relative'; card.appendChild(badge); }
             return card;
           };
           cell.appendChild(makeConflictCard(dayJobs[0]));
@@ -1260,8 +1497,14 @@ function renderRows(cols,dayEnd){
 function makeStatusBadge(job) {
   const raw = job.jobStatus || job.status;
   const meta = getStatusMeta(raw);
-  if(normaliseStatus(raw) === 'unassigned') return ''; // don't show badge for unassigned
+  if(normaliseStatus(raw) === 'unassigned') return '';
   return `<span class="card-status-badge ${meta.cls}">${meta.icon} ${meta.label}</span>`;
+}
+
+function makeAttachBadge(job){
+  const count = Array.isArray(job.attachments) ? job.attachments.length : 0;
+  if(!count) return '';
+  return `<span class="card-attach-badge" title="${count} document(s)">📎${count}</span>`;
 }
 
 function makeCardDay(job, left, width, isStaged){
@@ -1272,23 +1515,18 @@ function makeCardDay(job, left, width, isStaged){
   card.dataset.jobId=job.jobId||job._id;
   card.dataset.jobDocId=job._id;
   card.dataset.jobType=job.jobType||"";
-  if(!isStaged){
-    card.style.cssText=`position:absolute;left:${left}px;width:${width}px;border-top-color:${col}`;
-  } else {
-    card.classList.add("staging-card");
-    card.style.cssText=`position:relative;width:${STAGING_W-18}px;border-top-color:${col}`;
-  }
+  if(!isStaged){ card.style.cssText=`position:absolute;left:${left}px;width:${width}px;border-top-color:${col}`; }
+  else { card.classList.add("staging-card"); card.style.cssText=`position:relative;width:${STAGING_W-18}px;border-top-color:${col}`; }
   const narrow=width<120;
   const timeStr=sh!==null?`${fmtTime(sh)}–${fmtTime(sh+dur)}`:"Unscheduled";
   const badge=makeStatusBadge(job);
+  const attachBadge=makeAttachBadge(job);
   const jid=esc(job.jobId||job._id);
-
-  // Layout: top row = customer + job ID; middle = job type; bottom = time + postcode + status badge
   card.innerHTML=`
     <div style="overflow:hidden;flex:1;min-height:0;display:flex;flex-direction:column;gap:2px;">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;min-width:0">
         <div class="jc-customer" style="font-size:${narrow?"9":"10"}px;flex:1;min-width:0">${esc(job.customerName)}</div>
-        <span class="jc-id" style="font-size:${narrow?"8":"10"}px;flex-shrink:0">${jid}</span>
+        <span class="jc-id" style="font-size:${narrow?"8":"10"}px;flex-shrink:0">${jid}${attachBadge}</span>
       </div>
       <div class="jc-type" style="font-size:${narrow?"10":"12"}px">${esc(job.jobType)}</div>
       ${!isStaged?`<div class="jc-time" style="font-size:${narrow?"9":"10"}px">${timeStr}</div>`:""}
@@ -1305,6 +1543,7 @@ function makeCardDay(job, left, width, isStaged){
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Engineer</span><span class="jc-tooltip-val">${esc(job.engineerName)}</span></div>
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Status</span><span class="jc-tooltip-val" style="color:${getStatusColour(job)}">${getStatusMeta(job.jobStatus||job.status).label}</span></div>
       <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Job ID</span><span class="jc-tooltip-val" style="color:var(--accent-green)">${jid}</span></div>
+      ${Array.isArray(job.attachments)&&job.attachments.length?`<div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Docs</span><span class="jc-tooltip-val" style="color:var(--accent-blue)">${job.attachments.length} file(s)</span></div>`:''}
     </div>`;
   attachDrag(card, job);
   return card;
@@ -1323,6 +1562,7 @@ function makeCardWeek(job){
   const col=cardColour(job.jobType);
   const sh=getStartHour(job);
   const badge=makeStatusBadge(job);
+  const attachBadge=makeAttachBadge(job);
   const jid=esc(job.jobId||job._id);
   const card=document.createElement("div");
   card.className="job-card-week";
@@ -1330,14 +1570,10 @@ function makeCardWeek(job){
   card.dataset.jobId=job.jobId||job._id;
   card.dataset.jobDocId=job._id;
   card.dataset.jobType=job.jobType||"";
-  // Row 1: customer name + job ID (right-aligned)
-  // Row 2: job type (bold)
-  // Row 3: time (if set) + postcode
-  // Row 4: status badge
   card.innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;margin-bottom:2px">
       <div class="jc-customer" style="flex:1;min-width:0">${esc(job.customerName)}</div>
-      <span class="jc-id" style="font-size:9px;flex-shrink:0">${jid}</span>
+      <span class="jc-id" style="font-size:9px;flex-shrink:0">${jid}${attachBadge}</span>
     </div>
     <div class="jc-type" style="font-size:11px;margin-bottom:3px">${esc(job.jobType)}</div>
     <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:${badge?'3':'0'}px">
@@ -1394,104 +1630,31 @@ function applySearch(){
 }
 
 /* ══════════════════════════════════════════════════════════════
-   MODAL with STATUS HISTORY TIMELINE
+   MODAL
 ══════════════════════════════════════════════════════════════ */
 function buildStatusHistory(job){
   const entries = [];
-
-  // 1. Primary source: structured statusHistory array (written by both portals)
-  if(Array.isArray(job.statusHistory)) {
-    job.statusHistory.forEach(h => {
-      entries.push({
-        status: h.status || h.jobStatus || 'unassigned',
-        by:     h.updatedBy || h.statusUpdatedBy || h.by || '—',
-        at:     h.updatedAt || h.statusUpdatedAt || h.at || '',
-        note:   h.note || h.abortCode || '',
-        source: h.source || 'engineer',
-      });
-    });
+  if(Array.isArray(job.statusHistory)){
+    job.statusHistory.forEach(h => { entries.push({ status: h.status || h.jobStatus || 'unassigned', by: h.updatedBy || h.statusUpdatedBy || h.by || '—', at: h.updatedAt || h.statusUpdatedAt || h.at || '', note: h.note || h.abortCode || '', source: h.source || 'engineer' }); });
   }
-
-  // 2. Fallback: flat statusUpdatedAt field (legacy / jobs updated before history array existed)
-  if(job.statusUpdatedAt) {
-    const alreadyIn = entries.some(e => e.at === job.statusUpdatedAt);
-    if(!alreadyIn) {
-      entries.push({
-        status: job.jobStatus || job.status || 'unassigned',
-        by:     job.statusUpdatedBy || 'Engineer',
-        at:     job.statusUpdatedAt,
-        note:   job.abortCode || '',
-        source: 'engineer',
-      });
-    }
-  }
-
-  // 3. Job creation event
-  if(job.uploadedAt) {
-    entries.push({
-      status: 'created',
-      by:     job.uploadedBy || 'System',
-      at:     job.uploadedAt,
-      note:   '',
-      source: 'system',
-    });
-  }
-
-  // Deduplicate by exact timestamp
+  if(job.statusUpdatedAt){ const alreadyIn = entries.some(e => e.at === job.statusUpdatedAt); if(!alreadyIn){ entries.push({ status: job.jobStatus || job.status || 'unassigned', by: job.statusUpdatedBy || 'Engineer', at: job.statusUpdatedAt, note: job.abortCode || '', source: 'engineer' }); } }
+  if(job.uploadedAt){ entries.push({ status: 'created', by: job.uploadedBy || 'System', at: job.uploadedAt, note: '', source: 'system' }); }
   const seen = new Set();
-  const deduped = entries.filter(e => {
-    if(!e.at) return true;
-    if(seen.has(e.at + e.status)) return false;
-    seen.add(e.at + e.status); return true;
-  });
-
-  // Sort newest first
-  deduped.sort((a,b) => {
-    try { return new Date(b.at) - new Date(a.at); } catch { return 0; }
-  });
-
-  if(deduped.length === 0) {
-    return `<div class="history-empty">No status updates recorded yet.<br>Updates appear here automatically when engineers update their job status.</div>`;
-  }
-
+  const deduped = entries.filter(e => { if(!e.at) return true; if(seen.has(e.at + e.status)) return false; seen.add(e.at + e.status); return true; });
+  deduped.sort((a,b) => { try { return new Date(b.at) - new Date(a.at); } catch { return 0; } });
+  if(deduped.length === 0){ return `<div class="history-empty">No status updates recorded yet.</div>`; }
   return deduped.map((entry, i) => {
     const isCreated = entry.status === 'created';
-    const meta = isCreated
-      ? { label: 'Job Created', icon: '●', cls: 's-created' }
-      : getStatusMeta(entry.status);
+    const meta = isCreated ? { label: 'Job Created', icon: '●', cls: 's-created' } : getStatusMeta(entry.status);
     const timeStr = fmtTimestamp(entry.at);
     const ago     = timeAgo(entry.at);
-
-    // Source badge: show who made the change
     const sourceBadge = entry.source === 'admin'
       ? `<span style="font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.25);color:var(--accent-blue);font-weight:600;margin-left:6px;text-transform:uppercase;letter-spacing:.04em">Admin</span>`
       : entry.source === 'system'
       ? `<span style="font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(143,160,184,0.08);border:1px solid rgba(143,160,184,0.2);color:var(--text-muted);font-weight:600;margin-left:6px;text-transform:uppercase;letter-spacing:.04em">System</span>`
       : `<span style="font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(0,255,157,0.08);border:1px solid rgba(0,255,157,0.2);color:var(--accent-green);font-weight:600;margin-left:6px;text-transform:uppercase;letter-spacing:.04em">Engineer</span>`;
-
-    const noteHtml = entry.note
-      ? `<div style="margin-top:3px;font-size:11px;color:rgba(255,75,92,0.8)">
-           <span style="color:var(--text-muted)">Note:</span> ${esc(entry.note)}
-         </div>`
-      : '';
-
-    return `
-      <div class="history-item" style="animation-delay:${i*0.04}s">
-        <div class="history-dot ${meta.cls}"></div>
-        <div class="history-content">
-          <div class="history-status">
-            <span class="history-status-label ${meta.cls}">${meta.label}</span>
-            ${sourceBadge}
-          </div>
-          <div class="history-meta">
-            <span class="history-by">${esc(entry.by || '—')}</span>
-            <span>·</span>
-            <span class="history-time">${timeStr}</span>
-            <span class="history-ago">${ago}</span>
-          </div>
-          ${noteHtml}
-        </div>
-      </div>`;
+    const noteHtml = entry.note ? `<div style="margin-top:3px;font-size:11px;color:rgba(255,75,92,0.8)"><span style="color:var(--text-muted)">Note:</span> ${esc(entry.note)}</div>` : '';
+    return `<div class="history-item" style="animation-delay:${i*0.04}s"><div class="history-dot ${meta.cls}"></div><div class="history-content"><div class="history-status"><span class="history-status-label ${meta.cls}">${meta.label}</span>${sourceBadge}</div><div class="history-meta"><span class="history-by">${esc(entry.by || '—')}</span><span>·</span><span class="history-time">${timeStr}</span><span class="history-ago">${ago}</span></div>${noteHtml}</div></div>`;
   }).join('');
 }
 
@@ -1501,11 +1664,10 @@ function openModal(job, updateTracker = true){
   const sh=getStartHour(job), dur=getDuration(job.jobType);
   const curStatus = normaliseStatus(job.jobStatus || job.status);
   const meta = getStatusMeta(curStatus);
+  const attachCount = Array.isArray(job.attachments) ? job.attachments.length : 0;
 
   document.getElementById("modalTitle").textContent = job.jobType||"Job Details";
   document.getElementById("modalId").textContent    = `# ${job.jobId||job._id}`;
-
-  // Status pill in header
   document.getElementById("modalStatusPill").innerHTML = curStatus !== 'unassigned'
     ? `<span class="modal-status-pill ${meta.cls}">${meta.icon} ${meta.label}</span>`
     : '';
@@ -1529,16 +1691,43 @@ function openModal(job, updateTracker = true){
       <div class="df"><label>Uploaded</label><span>${job.uploadedAt?new Date(job.uploadedAt).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}):"—"}</span></div>
     </div>
 
+    ${attachCount > 0 ? `
+      <button class="view-docs-btn" id="viewDocsBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        View Documents
+        <span class="doc-count-badge">${attachCount}</span>
+      </button>` : `
+      <div style="margin-top:16px;padding:10px 14px;border-radius:8px;border:1px dashed rgba(255,255,255,0.06);font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:8px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        No documents attached
+      </div>`}
+
     <div class="modal-section-title">Status History</div>
-    <div class="history-timeline">
-      ${buildStatusHistory(job)}
-    </div>`;
+    <div class="history-timeline">${buildStatusHistory(job)}</div>`;
+
+  // Wire up docs button
+  const docsBtn = document.getElementById('viewDocsBtn');
+  if(docsBtn){
+    docsBtn.addEventListener('click', () => {
+      if(docsExpanded){ closeDocsPanel(); docsBtn.classList.remove('active'); }
+      else { openDocsPanel(job); docsBtn.classList.add('active'); }
+    });
+  }
+
+  // If docs were previously open, refresh the panel for the new job
+  if(docsExpanded) openDocsPanel(job);
 
   document.getElementById("modalOverlay").classList.add("open");
 }
 
 function closeModal(){
   document.getElementById("modalOverlay").classList.remove("open");
+  closeDocsPanel();
   openModalJobId = null;
 }
 
@@ -1557,30 +1746,13 @@ document.getElementById("engSearch").oninput = e=>{engSearch=e.target.value.trim
 function navigate(dir){currentDate.setDate(currentDate.getDate()+dir*(currentView==="week"?7:1));syncPicker();render();}
 function setView(v){currentView=v;document.getElementById("btnDay").classList.toggle("active",v==="day");document.getElementById("btnWeek").classList.toggle("active",v==="week");render();}
 function syncPicker(){const y=currentDate.getFullYear(),mo=String(currentDate.getMonth()+1).padStart(2,"0"),d=String(currentDate.getDate()).padStart(2,"0");document.getElementById("datePicker").value=`${y}-${mo}-${d}`;}
-
-function setStatus(st,msg){
-  const dot=document.getElementById("sdot"),txt=document.getElementById("stxt");
-  dot.className="sdot"+(st==="spin"?" spin":st==="ok"?" ok":" err");
-  txt.textContent=msg;
-}
-
-function setLive(state, text){
-  const el = document.getElementById("live-indicator");
-  const txt = document.getElementById("live-text");
-  el.className = state === 'live' ? '' : state === 'connecting' ? 'connecting' : 'error';
-  txt.textContent = text;
-}
-
-function setLoading(on){document.getElementById("lbar").classList.toggle("on",on);}
+function setStatus(st,msg){ const dot=document.getElementById("sdot"),txt=document.getElementById("stxt"); dot.className="sdot"+(st==="spin"?" spin":st==="ok"?" ok":" err"); txt.textContent=msg; }
+function setLive(state, text){ const el = document.getElementById("live-indicator"); const txt = document.getElementById("live-text"); el.className = state === 'live' ? '' : state === 'connecting' ? 'connecting' : 'error'; txt.textContent = text; }
 
 let toastTimer;
 function toast(msg, type="success"){
   const t=document.getElementById("toast");
-  const ico = type==="success"
-    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
-    : type==="info"
-    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>`
-    : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+  const ico = type==="success" ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>` : type==="info" ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>` : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
   t.className=`${type} show`; t.innerHTML=ico+" "+msg;
   clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove("show"),3800);
 }
