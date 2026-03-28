@@ -1957,7 +1957,15 @@ document.getElementById('nearbyTrack').addEventListener('click', () => {
   const label = document.getElementById('nearbyLabel');
   track.classList.toggle('on', nearbyActive);
   label.classList.toggle('on', nearbyActive);
-  if (!nearbyActive) clearNearbyFilter();
+  if (!nearbyActive) {
+    clearNearbyFilter();
+  } else {
+    // If a job is already selected, apply filter immediately
+    if (!nearbySelectedJob && openModalJobId) {
+      nearbySelectedJob = allJobs.find(j => j._id === openModalJobId) || null;
+    }
+    if (nearbySelectedJob) applyNearbyFilter();
+  }
 });
 
 // NearBy info card — portalled to body, positioned via JS
