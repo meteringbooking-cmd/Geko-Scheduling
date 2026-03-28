@@ -427,6 +427,85 @@
   .drive-time-connector.top { margin-bottom: -2px; }
   .drive-time-connector.bottom { margin-top: -2px; }
 
+  /* Home-to-first badge — sits at left edge of timeline before first card */
+  .home-badge {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    z-index: 25; display: flex; flex-direction: column; align-items: center;
+    pointer-events: none; gap: 2px;
+  }
+  .home-pill {
+    display: flex; align-items: center; gap: 3px;
+    padding: 2px 6px; border-radius: 20px;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.03em;
+    white-space: nowrap; border: 1px solid; line-height: 1.5;
+    backdrop-filter: blur(4px); box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    background: rgba(168,85,247,0.12); border-color: rgba(168,85,247,0.4); color: #c084fc;
+  }
+  .home-pill.dt-loading { background: rgba(143,160,184,0.08); border-color: rgba(143,160,184,0.2); color: rgba(143,160,184,0.5); animation: dtPulse 1.4s ease-in-out infinite; }
+
+  /* Isochrone violation flash — gentle amber pulse on card */
+  @keyframes isoFlash {
+    0%,100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); border-color: rgba(255,255,255,0.08); }
+    50%     { box-shadow: 0 0 10px 3px rgba(245,158,11,0.35); border-color: rgba(245,158,11,0.6); }
+  }
+  .job-card-day.iso-violation  { animation: isoFlash 2.4s ease-in-out infinite; }
+  .job-card-week.iso-violation { animation: isoFlash 2.4s ease-in-out infinite; }
+  .iso-badge {
+    position: absolute; top: -6px; left: 6px;
+    background: rgba(245,158,11,0.9); color: #020308;
+    font-size: 8px; font-weight: 800; padding: 1px 5px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 0.3px; pointer-events: none; z-index: 20;
+    white-space: nowrap;
+  }
+
+  /* Isochrone panel (modal inside toolbar area, fixed) */
+  #isoPanel {
+    position: fixed; top: 0; right: 0; bottom: 0; width: 320px;
+    background: rgba(8,12,22,0.99); border-left: 1px solid rgba(255,255,255,0.08);
+    z-index: 9500; transform: translateX(100%);
+    transition: transform 0.28s cubic-bezier(0.32,0.72,0,1);
+    display: flex; flex-direction: column;
+    box-shadow: -12px 0 40px rgba(0,0,0,0.7);
+  }
+  #isoPanel.open { transform: translateX(0); }
+  .iso-panel-head {
+    padding: 16px 18px 12px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+  }
+  .iso-panel-title { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-blue); display: flex; align-items: center; gap: 7px; }
+  .iso-panel-close { width: 26px; height: 26px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.15s; }
+  .iso-panel-close:hover { border-color: var(--danger); color: var(--danger); }
+  .iso-panel-body { flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .iso-panel-body::-webkit-scrollbar { width: 4px; }
+  .iso-panel-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+  .iso-eng-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: 9px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  }
+  .iso-eng-avatar { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, var(--accent-blue), var(--accent-green)); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #020308; }
+  .iso-eng-name { font-size: 12px; font-weight: 500; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .iso-eng-mins {
+    font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 10px; border: 1px solid; white-space: nowrap; flex-shrink: 0;
+  }
+  .iso-eng-mins.band-none  { background: rgba(61,84,112,0.12); border-color: rgba(61,84,112,0.3); color: #3d5470; }
+  .iso-eng-mins.band-short { background: rgba(0,255,157,0.12); border-color: rgba(0,255,157,0.35); color: #00ff9d; }
+  .iso-eng-mins.band-mid   { background: rgba(0,200,255,0.12); border-color: rgba(0,200,255,0.35); color: #00c8ff; }
+  .iso-eng-mins.band-long  { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.35); color: #f59e0b; }
+  .iso-eng-mins.band-xlong { background: rgba(255,75,92,0.12); border-color: rgba(255,75,92,0.35); color: #ff4b5c; }
+  .iso-panel-empty { text-align: center; padding: 40px 16px; color: var(--text-muted); font-size: 12px; }
+
+  /* View Isochrone button */
+  .view-iso-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(0,200,255,0.3);
+    background: rgba(0,200,255,0.06); color: var(--accent-blue);
+    font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+    font-family: 'Inter', sans-serif; white-space: nowrap; flex-shrink: 0;
+  }
+  .view-iso-btn:hover { background: rgba(0,200,255,0.12); border-color: rgba(0,200,255,0.5); }
+  .view-iso-btn.active { background: rgba(0,200,255,0.16); border-color: rgba(0,200,255,0.7); color: #fff; }
+
   #drag-ghost {
     position: fixed; z-index: 99999; pointer-events: none;
     background: rgba(10,18,30,0.97); border: 1px solid rgba(0,255,157,0.5);
@@ -844,6 +923,10 @@
       <span style="font-size:12px;font-weight:600;letter-spacing:0.04em;color:var(--text-muted)" id="nearbyLabel">NearBy</span>
       <button class="nearby-info-btn" id="nearbyInfoBtn" title="What is NearBy?">i</button>
     </div>
+    <button class="view-iso-btn" id="viewIsoBtn" title="View Isochrone settings">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      Isochrone
+    </button>
     <div class="tsep"></div>
     <span id="jobCountLbl"></span>
   </div>
@@ -868,6 +951,20 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ISOCHRONE PANEL -->
+<div id="isoPanel">
+  <div class="iso-panel-head">
+    <div class="iso-panel-title">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      Isochrone Limits
+    </div>
+    <button class="iso-panel-close" id="isoPanelClose">&#x2715;</button>
+  </div>
+  <div class="iso-panel-body" id="isoPanelBody">
+    <div class="iso-panel-empty">Loading&hellip;</div>
   </div>
 </div>
 
@@ -1376,6 +1473,8 @@ function render(){
 
   // Re-apply nearby filter after DOM is rebuilt
   applyNearbyFilter();
+  // Refresh isochrone panel if open
+  if (document.getElementById('isoPanel')?.classList.contains('open')) renderIsoPanel();
 }
 
 function updateLabel(cols){
@@ -1554,33 +1653,89 @@ function renderRows(cols,dayEnd){
  * and the start of the next.
  */
 function renderDriveTimeBadgesForRow(row, sortedJobs, dayEnd) {
-  // Remove any existing badges in this row first
-  row.querySelectorAll('.drive-time-badge').forEach(b => b.remove());
+  // Remove any existing badges and home badges
+  row.querySelectorAll('.drive-time-badge, .home-badge').forEach(b => b.remove());
+  // Remove isochrone violation markers
+  row.querySelectorAll('.job-card-day').forEach(c => {
+    c.classList.remove('iso-violation');
+    c.querySelector('.iso-badge')?.remove();
+  });
 
-  for (let i = 0; i < sortedJobs.length - 1; i++) {
+  const eng = row.dataset.eng || '';
+  const engKey = eng.trim().toLowerCase();
+  const homePc = engPostcodes.get(engKey) || '';
+  const isoMins = engIsoMinutes.get(engKey) || 0;
+
+  // ── Home-to-first badge ──
+  if (sortedJobs.length > 0 && homePc) {
+    const firstJob = sortedJobs[0];
+    const leftFirst = (getStartHour(firstJob) - DAY_START) * HOUR_W;
+    // Place badge at midpoint between left edge (0) and first card
+    const midX = leftFirst / 2;
+    if (leftFirst > 20) { // only if there's visible space
+      const badge = document.createElement('div');
+      badge.className = 'home-badge';
+      badge.style.left = midX + 'px';
+      badge.style.transform = 'translate(-50%, -50%)';
+      const topLine = document.createElement('div');
+      topLine.className = 'drive-time-connector top';
+      const pill = document.createElement('div');
+      pill.className = 'home-pill dt-loading';
+      const homeSvg = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
+      pill.innerHTML = `${homeSvg} …`;
+      const botLine = document.createElement('div');
+      botLine.className = 'drive-time-connector bottom';
+      badge.appendChild(topLine); badge.appendChild(pill); badge.appendChild(botLine);
+      // Resolve drive time from home postcode to first job
+      const homeToFirst = driveMinutes(homePc, firstJob.postcode);
+      if (homeToFirst !== null) {
+        let cls = homeToFirst > 30 ? 'dt-slow' : homeToFirst > 15 ? 'dt-medium' : 'dt-fast';
+        pill.className = 'home-pill'; // reset, keep base home-pill style
+        pill.innerHTML = `${homeSvg} ${homeToFirst}m`;
+      }
+      row.appendChild(badge);
+    }
+  }
+
+  // ── Job-to-job badges + isochrone violation check ──
+  for (let i = 0; i < sortedJobs.length; i++) {
+    const job = sortedJobs[i];
+
+    // Isochrone violation: drive time from this job's postcode to engineer home exceeds limit
+    if (isoMins > 0 && job.postcode && homePc) {
+      const dist = driveMinutes(homePc, job.postcode);
+      if (dist !== null && dist > isoMins) {
+        // Find the card for this job and flag it
+        const cardEl = row.querySelector(`[data-job-doc-id="${job._id}"]`);
+        if (cardEl && !cardEl.classList.contains('staging-card')) {
+          cardEl.classList.add('iso-violation');
+          if (!cardEl.querySelector('.iso-badge')) {
+            const badge = document.createElement('div');
+            badge.className = 'iso-badge';
+            badge.textContent = `⚠ ${dist}m > ${isoMins}m limit`;
+            cardEl.appendChild(badge);
+          }
+        }
+      }
+    }
+
+    // Drive-time badge to next job
+    if (i >= sortedJobs.length - 1) continue;
     const jobA = sortedJobs[i];
     const jobB = sortedJobs[i + 1];
-
     const endA  = getStartHour(jobA) + getDuration(jobA.jobType);
     const startB = getStartHour(jobB);
-
-    // Only show badge if there's actual gap between the jobs
     const gapHours = startB - endA;
-    if (gapHours < 0.1) continue; // jobs overlap or are back-to-back, skip
+    if (gapHours < 0.1) continue;
 
-    // Position: centre of the gap between the two cards
     const leftA  = (getStartHour(jobA) - DAY_START) * HOUR_W;
     const widthA = getDuration(jobA.jobType) * HOUR_W - 4;
     const leftB  = (getStartHour(jobB) - DAY_START) * HOUR_W;
-
-    const gapStart = leftA + widthA + 4;
-    const gapEnd   = leftB;
-    const midX     = (gapStart + gapEnd) / 2;
+    const midX   = (leftA + widthA + 4 + leftB) / 2;
 
     const badge = createDriveTimeBadge(jobA.postcode, jobB.postcode);
     badge.style.left = midX + 'px';
     badge.style.transform = 'translate(-50%, -50%)';
-
     row.appendChild(badge);
   }
 }
@@ -2005,6 +2160,20 @@ document.addEventListener('mousedown', e => {
 document.getElementById('nearbyBannerClear').addEventListener('click', () => {
   clearNearbyFilter();
 });
+
+// View Isochrone panel
+document.getElementById('viewIsoBtn').addEventListener('click', () => {
+  const panel = document.getElementById('isoPanel');
+  const btn   = document.getElementById('viewIsoBtn');
+  const isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open', !isOpen);
+  btn.classList.toggle('active', !isOpen);
+  if (!isOpen) renderIsoPanel();
+});
+document.getElementById('isoPanelClose').addEventListener('click', () => {
+  document.getElementById('isoPanel').classList.remove('open');
+  document.getElementById('viewIsoBtn').classList.remove('active');
+});
 // Close drawer when pressing Escape
 document.addEventListener('keydown', e => { if(e.key === 'Escape' && document.getElementById('jobDrawer').classList.contains('open')) closeModal(); });
 document.getElementById("jobSearch").oninput = e=>{jobSearch=e.target.value.trim().toLowerCase();applySearch();};
@@ -2032,19 +2201,56 @@ function toggleSidebar(){sidebar.classList.toggle("expanded");localStorage.setIt
 if(localStorage.getItem("geko-sidebar")==="expanded")sidebar.classList.add("expanded");
 
 /* ─── User postcodes ────────────────────────────────────────── */
+// Also stores isochroneMinutes per engineer name
+const engIsoMinutes = new Map(); // name.lower() → minutes (or 0)
+
 async function loadEngPostcodes() {
   try {
     const snap = await getDocs(collection(db, 'userdatabase'));
     snap.forEach(d => {
       const data = d.data();
-      if (data.name && data.postcode) {
-        engPostcodes.set(data.name.trim().toLowerCase(), data.postcode.trim());
+      if (data.name) {
+        const key = data.name.trim().toLowerCase();
+        if (data.postcode) engPostcodes.set(key, data.postcode.trim());
+        engIsoMinutes.set(key, data.isochroneMinutes || 0);
       }
     });
-    render(); // re-render so postcodes appear
+    render();
+    renderIsoPanel();
   } catch(e) {
     console.warn('Could not load user postcodes:', e);
   }
+}
+
+/* ── Isochrone panel ─────────────────────────────────────────── */
+function isochroneBand(mins) {
+  if (!mins || mins <= 0) return 'none';
+  if (mins <= 20) return 'short';
+  if (mins <= 40) return 'mid';
+  if (mins <= 60) return 'long';
+  return 'xlong';
+}
+
+function renderIsoPanel() {
+  const body = document.getElementById('isoPanelBody');
+  if (!body) return;
+  const engSet = [...new Set(allJobs.map(j => j.engineerName).filter(Boolean))].sort();
+  if (!engSet.length) {
+    body.innerHTML = '<div class="iso-panel-empty">No engineers loaded yet.</div>';
+    return;
+  }
+  body.innerHTML = engSet.map(eng => {
+    const key  = eng.trim().toLowerCase();
+    const mins = engIsoMinutes.get(key) || 0;
+    const band = isochroneBand(mins);
+    const init = eng.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2);
+    const label = mins ? mins + ' min' : 'Not set';
+    return `<div class="iso-eng-row">
+      <div class="iso-eng-avatar">${esc(init)}</div>
+      <div class="iso-eng-name">${esc(eng)}</div>
+      <span class="iso-eng-mins band-${band}">${esc(label)}</span>
+    </div>`;
+  }).join('');
 }
 
 /* ─── Boot ──────────────────────────────────────────────────── */
