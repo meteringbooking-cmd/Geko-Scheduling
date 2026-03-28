@@ -6,6 +6,7 @@
 <title>Geko — Absence Management</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
+/* ══ DARK MODE (default) ══ */
 :root {
   --bg:        #070a10;
   --surface:   #0d1520;
@@ -23,7 +24,6 @@
   --dim:       #3a5570;
   --radius:    14px;
 
-  /* Reason colours */
   --c-holiday:  #00c8ff;
   --c-sick:     #ff4b5c;
   --c-aaup:     #a855f7;
@@ -31,7 +31,233 @@
   --c-other:    #6b8aaa;
 
   --sidebar-w: 210px;
+
+  /* Theme tokens */
+  --bg-sidebar:     rgba(5,10,18,0.97);
+  --bg-topbar:      rgba(7,10,16,0.96);
+  --bg-form:        rgba(10,16,26,0.5);
+  --bg-input:       #121d2b;
+  --bg-card:        #0d1520;
+  --scrollbar:      rgba(255,255,255,0.13);
+  --radial1:        rgba(0,255,157,0.04);
+  --radial2:        rgba(168,85,247,0.04);
 }
+
+/* ══ LIGHT MODE ══ */
+html.light-mode {
+  --bg:        #f0f4f8;
+  --surface:   #ffffff;
+  --surface2:  #f8fafc;
+  --surface3:  #edf2f7;
+  --border:    rgba(0,0,0,0.08);
+  --border2:   rgba(0,0,0,0.13);
+  --accent:    #00b86e;
+  --accent2:   #0099cc;
+  --danger:    #d93545;
+  --warning:   #c2820a;
+  --purple:    #7c3aed;
+  --text:      #1a2636;
+  --muted:     #6b7f96;
+  --dim:       #a0b4c8;
+
+  --c-holiday:  #0088bb;
+  --c-sick:     #d93545;
+  --c-aaup:     #7c3aed;
+  --c-training: #c2820a;
+  --c-other:    #6b7f96;
+
+  --bg-sidebar:     rgba(255,255,255,0.98);
+  --bg-topbar:      rgba(255,255,255,0.97);
+  --bg-form:        rgba(248,250,252,0.8);
+  --bg-input:       #f8fafc;
+  --bg-card:        #ffffff;
+  --scrollbar:      rgba(0,0,0,0.12);
+  --radial1:        rgba(0,184,110,0.04);
+  --radial2:        rgba(124,58,237,0.03);
+}
+
+html.light-mode body::before {
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 0%, var(--radial1) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 100%, var(--radial2) 0%, transparent 60%);
+}
+
+html.light-mode #sidebar {
+  box-shadow: 4px 0 20px rgba(0,0,0,0.08);
+}
+html.light-mode .topbar {
+  box-shadow: 0 1px 0 var(--border), 0 4px 16px rgba(0,0,0,0.06);
+}
+html.light-mode .sidebar-link:hover {
+  background: rgba(0,0,0,0.04);
+}
+html.light-mode .sidebar-link.active {
+  background: rgba(124,58,237,0.08);
+  color: var(--purple);
+  border-left-color: var(--purple);
+}
+html.light-mode .sidebar-link.active .sidebar-icon {
+  background: rgba(124,58,237,0.10);
+}
+html.light-mode .sidebar-link::after {
+  background: rgba(255,255,255,0.99);
+  border-color: rgba(0,0,0,0.1);
+  color: var(--text);
+}
+html.light-mode .sidebar-toggle {
+  border-color: rgba(0,0,0,0.1);
+  background: rgba(0,0,0,0.04);
+  color: var(--muted);
+}
+html.light-mode .sidebar-toggle:hover {
+  background: rgba(0,0,0,0.08);
+  color: var(--text);
+}
+html.light-mode .sidebar-ver { color: rgba(107,127,150,0.4); }
+html.light-mode .topbar-badge {
+  border-color: rgba(124,58,237,0.25);
+  background: rgba(124,58,237,0.07);
+  color: var(--purple);
+}
+html.light-mode .topbar-badge-dot { background: var(--purple); }
+html.light-mode .topbar-title {
+  background: linear-gradient(90deg, var(--text), var(--muted));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+html.light-mode .section-head { color: var(--muted); }
+html.light-mode .section-head::after { background: var(--border); }
+html.light-mode .field-input,
+html.light-mode .field-select,
+html.light-mode .field-textarea {
+  background: var(--bg-input);
+  border-color: var(--border);
+  color: var(--text);
+}
+html.light-mode .field-input:focus,
+html.light-mode .field-select:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.10);
+}
+html.light-mode .field-input::placeholder { color: var(--dim); }
+html.light-mode .reason-pill {
+  background: var(--surface2);
+  border-color: var(--border);
+}
+html.light-mode .reason-pill:hover { border-color: var(--border2); }
+html.light-mode .reason-pill[data-reason="Holiday"].selected { border-color: var(--c-holiday); background: rgba(0,136,187,0.07); }
+html.light-mode .reason-pill[data-reason="Sick"].selected    { border-color: var(--c-sick);    background: rgba(217,53,69,0.07); }
+html.light-mode .reason-pill[data-reason="AAUP"].selected    { border-color: var(--c-aaup);    background: rgba(124,58,237,0.07); }
+html.light-mode .reason-pill[data-reason="Training"].selected{ border-color: var(--c-training); background: rgba(194,130,10,0.07); }
+html.light-mode .reason-pill[data-reason="Other"].selected   { border-color: var(--c-other);   background: rgba(107,127,150,0.07); }
+html.light-mode .submit-btn {
+  background: linear-gradient(90deg, var(--purple), #6366f1);
+}
+html.light-mode .conflict-box {
+  background: rgba(194,130,10,0.06);
+  border-color: rgba(194,130,10,0.25);
+}
+html.light-mode .conflict-job { color: var(--muted); }
+html.light-mode .conflict-job strong { color: var(--text); }
+html.light-mode .absence-card {
+  background: var(--bg-card);
+  border-color: var(--border);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+html.light-mode .absence-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+  border-color: rgba(0,0,0,0.12);
+}
+html.light-mode .absence-eng  { color: var(--text); }
+html.light-mode .absence-date { color: var(--muted); }
+html.light-mode .absence-meta-item { color: var(--muted); }
+html.light-mode .absence-meta-item strong { color: var(--text); }
+html.light-mode .absence-delete-btn {
+  border-color: var(--border);
+  color: var(--dim);
+}
+html.light-mode .absence-delete-btn:hover {
+  border-color: rgba(217,53,69,0.4);
+  color: var(--danger);
+  background: rgba(217,53,69,0.06);
+}
+html.light-mode .conflict-badge {
+  background: rgba(194,130,10,0.08);
+  border-color: rgba(194,130,10,0.25);
+  color: var(--warning);
+}
+html.light-mode .log-empty { color: var(--dim); }
+html.light-mode .confirm-box {
+  background: var(--surface);
+  border-color: var(--border2);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+html.light-mode .confirm-body { color: var(--muted); }
+html.light-mode .confirm-yes {
+  background: rgba(217,53,69,0.10);
+  border-color: rgba(217,53,69,0.35);
+  color: var(--danger);
+}
+html.light-mode .confirm-yes:hover { background: rgba(217,53,69,0.18); }
+html.light-mode .confirm-no {
+  border-color: var(--border);
+  color: var(--muted);
+}
+html.light-mode .confirm-no:hover { border-color: var(--border2); color: var(--text); }
+html.light-mode #toast.ok  { background: rgba(240,255,248,0.99); border-color: rgba(0,184,110,0.4); color: #007a4a; box-shadow: 0 0 20px rgba(0,184,110,0.08), 0 8px 24px rgba(0,0,0,0.08); }
+html.light-mode #toast.err { background: rgba(255,240,242,0.99); border-color: rgba(217,53,69,0.4); color: #b02030; box-shadow: 0 0 20px rgba(217,53,69,0.08), 0 8px 24px rgba(0,0,0,0.08); }
+html.light-mode #loadingOverlay { background: var(--bg); }
+html.light-mode .spinner { border-color: var(--border2); border-top-color: var(--purple); }
+
+/* ── Theme toggle button ── */
+#themeToggle {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 12px 5px 10px; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  color: var(--muted); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.04em; cursor: pointer;
+  transition: all 0.22s ease;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap; user-select: none; flex-shrink: 0;
+}
+#themeToggle:hover {
+  border-color: rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.09);
+  color: var(--text);
+}
+html.light-mode #themeToggle {
+  border-color: rgba(0,0,0,0.12);
+  background: rgba(0,0,0,0.04);
+  color: var(--muted);
+}
+html.light-mode #themeToggle:hover {
+  border-color: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.07);
+  color: var(--text);
+}
+.theme-toggle-track {
+  width: 30px; height: 16px; border-radius: 8px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.18);
+  position: relative; flex-shrink: 0;
+  transition: background 0.22s, border-color 0.22s;
+}
+html.light-mode .theme-toggle-track {
+  background: rgba(0,0,0,0.1);
+  border-color: rgba(0,0,0,0.15);
+}
+.theme-toggle-thumb {
+  position: absolute; top: 2px; left: 2px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--muted);
+  transition: transform 0.22s cubic-bezier(0.32,0.72,0,1), background 0.22s;
+  pointer-events: none;
+}
+html.light-mode .theme-toggle-thumb {
+  transform: translateX(14px);
+  background: var(--purple);
+}
+.theme-icon { font-size: 12px; line-height: 1; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -39,22 +265,23 @@ body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg); color: var(--text);
   min-height: 100vh; display: flex; overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
 }
 
 body::before {
   content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse 70% 50% at 15% 0%, rgba(0,255,157,0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 85% 100%, rgba(168,85,247,0.04) 0%, transparent 60%);
+    radial-gradient(ellipse 70% 50% at 15% 0%, var(--radial1) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 100%, var(--radial2) 0%, transparent 60%);
 }
 
 /* ── SIDEBAR ─────────────────────────────────────────── */
 #sidebar {
   width: 64px; min-height: 100vh; flex-shrink: 0;
-  background: rgba(5,10,18,0.97); border-right: 1px solid var(--border);
+  background: var(--bg-sidebar); border-right: 1px solid var(--border);
   display: flex; flex-direction: column; z-index: 100;
   box-shadow: 4px 0 30px rgba(0,0,0,0.5);
-  transition: width 0.26s ease-out; overflow: hidden;
+  transition: width 0.26s ease-out, background 0.3s; overflow: hidden;
 }
 #sidebar.expanded { width: var(--sidebar-w); }
 
@@ -65,9 +292,9 @@ body::before {
 .sidebar-logo-sm {
   width: 100%; height: 100%; object-fit: cover; object-position: center;
   filter: drop-shadow(0 0 10px rgba(0,255,157,0.5));
-  cursor: pointer; display: block;
-  transition: filter 0.18s;
+  cursor: pointer; display: block; transition: filter 0.18s;
 }
+html.light-mode .sidebar-logo-sm { filter: drop-shadow(0 0 8px rgba(0,184,110,0.3)); }
 #sidebar.expanded .sidebar-logo-sm { display: none; }
 #sidebar.expanded .sidebar-header  { padding: 0 14px; justify-content: space-between; }
 .sidebar-logo-lg {
@@ -100,7 +327,6 @@ body::before {
 .sidebar-link.active .sidebar-icon { background: rgba(168,85,247,0.12); }
 .sidebar-lbl { font-size: 13px; font-weight: 500; opacity: 0; max-width: 0; overflow: hidden; transition: opacity 0.26s, max-width 0.26s; pointer-events: none; }
 #sidebar.expanded .sidebar-lbl { opacity: 1; max-width: 140px; }
-/* Tooltip for collapsed */
 .sidebar-link::after {
   content: attr(data-label); position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
   background: rgba(5,10,18,0.97); border: 1px solid var(--border2);
@@ -122,8 +348,8 @@ body::before {
 .topbar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 28px; height: 64px; flex-shrink: 0;
-  background: rgba(7,10,16,0.96); border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(12px);
+  background: var(--bg-topbar); border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px); transition: background 0.3s;
 }
 .topbar-title {
   font-family: 'Space Mono', monospace; font-size: 15px; font-weight: 700;
@@ -132,6 +358,7 @@ body::before {
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
 .topbar-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
 .topbar-badge {
   display: flex; align-items: center; gap: 7px; padding: 6px 14px;
   border-radius: 20px; border: 1px solid rgba(168,85,247,0.3);
@@ -146,7 +373,6 @@ body::before {
   flex: 1; display: grid; grid-template-columns: 420px 1fr;
   gap: 0; overflow: hidden;
 }
-
 @media (max-width: 900px) {
   .page-body { grid-template-columns: 1fr; overflow: auto; }
 }
@@ -154,12 +380,12 @@ body::before {
 /* ── LEFT PANEL — FORM ───────────────────────────────── */
 .form-panel {
   border-right: 1px solid var(--border); padding: 28px 28px;
-  overflow-y: auto; background: rgba(10,16,26,0.5);
+  overflow-y: auto; background: var(--bg-form);
   display: flex; flex-direction: column; gap: 0;
+  transition: background 0.3s;
 }
-
 .form-panel::-webkit-scrollbar { width: 4px; }
-.form-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.form-panel::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 2px; }
 
 .section-head {
   font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700;
@@ -176,7 +402,7 @@ body::before {
 
 .field-input, .field-select {
   width: 100%; height: 48px;
-  background: var(--surface2); border: 1px solid var(--border);
+  background: var(--bg-input); border: 1px solid var(--border);
   border-radius: 10px; color: var(--text); font-size: 14px;
   padding: 0 14px; font-family: 'DM Sans', sans-serif;
   outline: none; transition: border-color 0.18s, box-shadow 0.18s;
@@ -209,17 +435,6 @@ body::before {
 .reason-pill[data-reason="Training"] .reason-name { color: var(--c-training); }
 .reason-pill[data-reason="Other"]    .reason-name { color: var(--c-other); }
 
-/* Notes */
-.field-textarea {
-  width: 100%; min-height: 80px; resize: vertical;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 10px; color: var(--text); font-size: 14px;
-  padding: 12px 14px; font-family: 'DM Sans', sans-serif;
-  outline: none; transition: border-color 0.18s, box-shadow 0.18s; line-height: 1.5;
-}
-.field-textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(168,85,247,0.12); }
-.field-textarea::placeholder { color: var(--dim); }
-
 /* Submit button */
 .submit-btn {
   width: 100%; height: 52px; border-radius: 12px; border: none;
@@ -236,7 +451,7 @@ body::before {
 
 /* Conflict warning */
 .conflict-box {
-  display: none; margin-top: 16px; padding: 14px 16px; border-radius: 10px;
+  display: none; margin-top: 0; margin-bottom: 18px; padding: 14px 16px; border-radius: 10px;
   background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3);
   font-size: 13px; line-height: 1.6;
 }
@@ -253,40 +468,20 @@ body::before {
   padding: 28px 28px; overflow-y: auto; display: flex; flex-direction: column;
 }
 .log-panel::-webkit-scrollbar { width: 4px; }
-.log-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
-.log-controls {
-  display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;
-}
-.log-filter {
-  height: 34px; background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; color: var(--text); font-size: 12px;
-  padding: 0 12px; font-family: 'DM Sans', sans-serif; outline: none;
-  transition: border-color 0.15s; appearance: none; cursor: pointer;
-}
-.log-filter:focus { border-color: var(--purple); }
-.log-search {
-  flex: 1; height: 34px; background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; color: var(--text); font-size: 12px;
-  padding: 0 12px 0 32px; font-family: 'DM Sans', sans-serif; outline: none;
-  transition: border-color 0.15s; min-width: 120px;
-}
-.log-search:focus { border-color: var(--purple); }
-.log-search-wrap { position: relative; flex: 1; min-width: 120px; }
-.log-search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); opacity: 0.35; pointer-events: none; }
+.log-panel::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 2px; }
 
 /* Absence cards */
 .absence-list { display: flex; flex-direction: column; gap: 10px; }
 
 .absence-card {
-  background: var(--surface); border: 1px solid var(--border);
+  background: var(--bg-card); border: 1px solid var(--border);
   border-left: 4px solid; border-radius: 12px;
   padding: 16px 18px; position: relative;
   transition: box-shadow 0.18s, border-color 0.18s;
   animation: slideIn 0.25s ease-out both;
 }
 @keyframes slideIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-.absence-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.11); }
+.absence-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.11); }
 
 .absence-card[data-reason="Holiday"]  { border-left-color: var(--c-holiday); }
 .absence-card[data-reason="Sick"]     { border-left-color: var(--c-sick); }
@@ -314,7 +509,6 @@ body::before {
 .absence-meta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 .absence-meta-item { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
 .absence-meta-item strong { color: var(--text); font-weight: 500; }
-.absence-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 8px; border-top: 1px solid var(--border); padding-top: 8px; }
 
 .absence-delete-btn {
   position: absolute; top: 12px; right: 12px;
@@ -342,20 +536,7 @@ body::before {
 }
 .log-empty-icon { font-size: 44px; }
 .log-empty-text { font-size: 14px; line-height: 1.6; }
-
-/* Stats row */
-.stats-row {
-  display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
-}
-.stat-chip {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 14px; border-radius: 10px;
-  background: var(--surface); border: 1px solid var(--border);
-  font-size: 12px;
-}
-.stat-chip-dot { width: 8px; height: 8px; border-radius: 50%; }
-.stat-chip-num { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 16px; }
-.stat-chip-lbl { color: var(--muted); font-size: 11px; }
+.hidden { display: none !important; }
 
 /* TOAST */
 #toast {
@@ -373,6 +554,7 @@ body::before {
 #loadingOverlay {
   position: fixed; inset: 0; z-index: 8000; background: var(--bg);
   display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px;
+  transition: background 0.3s;
 }
 #loadingOverlay.hidden { display: none; }
 .spinner { width: 34px; height: 34px; border: 3px solid var(--border2); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -389,14 +571,14 @@ body::before {
 .confirm-box {
   background: var(--surface); border: 1px solid var(--border2); border-radius: 16px;
   padding: 28px 28px; max-width: 360px; width: 90%;
-  transform: scale(0.95); transition: transform 0.22s;
+  transform: scale(0.95); transition: transform 0.22s, background 0.3s;
 }
 .confirm-overlay.open .confirm-box { transform: scale(1); }
-.confirm-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.confirm-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
 .confirm-body  { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 22px; }
 .confirm-actions { display: flex; gap: 10px; }
 .confirm-yes {
-  flex: 1; height: 44px; border-radius: 10px; border: none;
+  flex: 1; height: 44px; border-radius: 10px;
   background: rgba(255,75,92,0.15); border: 1px solid rgba(255,75,92,0.4);
   color: var(--danger); font-size: 14px; font-weight: 700; cursor: pointer;
   font-family: 'DM Sans', sans-serif; transition: all 0.15s;
@@ -409,13 +591,36 @@ body::before {
 }
 .confirm-no:hover { border-color: var(--border2); color: var(--text); }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 2px; }
 </style>
 </head>
 <body>
+
+<!-- Theme toggle — runs before module for instant apply -->
+<script>
+(function(){
+  const saved = localStorage.getItem('geko-theme');
+  if(saved === 'light') document.documentElement.classList.add('light-mode');
+  function updateUI(){
+    const isLight = document.documentElement.classList.contains('light-mode');
+    const icon  = document.getElementById('themeIcon');
+    const label = document.getElementById('themeLabel');
+    if(icon)  icon.textContent  = isLight ? '🌙' : '☀️';
+    if(label) label.textContent = isLight ? 'Dark' : 'Light';
+  }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    updateUI();
+    document.getElementById('themeToggle').addEventListener('click', ()=>{
+      document.documentElement.classList.toggle('light-mode');
+      const isLight = document.documentElement.classList.contains('light-mode');
+      localStorage.setItem('geko-theme', isLight ? 'light' : 'dark');
+      updateUI();
+    });
+  });
+})();
+</script>
 
 <div id="loadingOverlay">
   <div class="spinner"></div>
@@ -486,9 +691,19 @@ body::before {
       <div class="topbar-title">Absence Management</div>
       <div class="topbar-sub">Submit and manage engineer absences · Conflicts auto-flag on the scheduler</div>
     </div>
-    <div class="topbar-badge">
-      <div class="topbar-badge-dot"></div>
-      <span id="absenceCountBadge">0 active absences</span>
+    <div class="topbar-right">
+      <div class="topbar-badge">
+        <div class="topbar-badge-dot"></div>
+        <span id="absenceCountBadge">0 active absences</span>
+      </div>
+      <!-- Theme toggle -->
+      <button id="themeToggle" title="Toggle light / dark mode">
+        <span class="theme-icon" id="themeIcon">☀️</span>
+        <div class="theme-toggle-track">
+          <div class="theme-toggle-thumb"></div>
+        </div>
+        <span id="themeLabel" style="font-size:11px;font-weight:600;letter-spacing:0.04em">Light</span>
+      </button>
     </div>
   </header>
 
@@ -498,7 +713,6 @@ body::before {
     <div class="form-panel">
       <div class="section-head">New Absence</div>
 
-      <!-- Engineer selector -->
       <div class="field">
         <label>Engineer</label>
         <select class="field-select" id="engSelect">
@@ -506,7 +720,6 @@ body::before {
         </select>
       </div>
 
-      <!-- Date range -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div class="field">
           <label>From Date</label>
@@ -518,7 +731,6 @@ body::before {
         </div>
       </div>
 
-      <!-- Reason pills -->
       <div class="field">
         <label>Reason</label>
         <div class="reason-grid">
@@ -528,12 +740,6 @@ body::before {
           <div class="reason-pill" data-reason="Training" onclick="selectReason(this)"><span class="reason-icon">🎓</span><span class="reason-name">Training</span></div>
           <div class="reason-pill" data-reason="Other"    onclick="selectReason(this)" style="grid-column:1/-1"><span class="reason-icon">📌</span><span class="reason-name">Other</span></div>
         </div>
-      </div>
-
-      <!-- Notes -->
-      <div class="field">
-        <label>Notes <span style="color:var(--dim);font-size:10px;text-transform:none;letter-spacing:0">(optional)</span></label>
-        <textarea class="field-textarea" id="notes" placeholder="Any additional details…"></textarea>
       </div>
 
       <!-- Conflict preview -->
@@ -554,27 +760,6 @@ body::before {
     <!-- ── RIGHT: ABSENCE LOG ── -->
     <div class="log-panel">
       <div class="section-head">Absence Records</div>
-
-      <div class="stats-row" id="statsRow"></div>
-
-      <div class="log-controls">
-        <select class="log-filter" id="filterReason">
-          <option value="">All reasons</option>
-          <option value="Holiday">Holiday</option>
-          <option value="Sick">Sick</option>
-          <option value="AAUP">AAUP</option>
-          <option value="Training">Training</option>
-          <option value="Other">Other</option>
-        </select>
-        <select class="log-filter" id="filterEng">
-          <option value="">All engineers</option>
-        </select>
-        <div class="log-search-wrap">
-          <svg class="log-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input type="text" class="log-search" id="logSearch" placeholder="Search…">
-        </div>
-      </div>
-
       <div class="absence-list" id="absenceList"></div>
       <div class="log-empty hidden" id="logEmpty">
         <div class="log-empty-icon">📭</div>
@@ -589,7 +774,7 @@ body::before {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore, collection, getDocs, addDoc, deleteDoc,
-  doc, onSnapshot, query, orderBy, serverTimestamp
+  doc, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const db = getFirestore(initializeApp({
@@ -615,15 +800,8 @@ function parseDate(s){
   const d=new Date(s); if(!isNaN(d)){d.setHours(0,0,0,0);return d;} return null;
 }
 
-function toInputDate(d){ // → YYYY-MM-DD for <input type=date>
+function toInputDate(d){
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-
-function toUKDate(s){ // YYYY-MM-DD → DD/MM/YYYY display
-  if(!s) return '—';
-  const p=s.split('-');
-  if(p.length===3) return `${p[2]}/${p[1]}/${p[0]}`;
-  return s;
 }
 
 function fmtDisplayDate(s){
@@ -631,7 +809,6 @@ function fmtDisplayDate(s){
   return d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
 }
 
-// Get all dates in a range (inclusive), returned as YYYY-MM-DD strings
 function datesInRange(fromStr, toStr){
   const dates=[];
   const from=parseDate(fromStr), to=parseDate(toStr);
@@ -643,7 +820,6 @@ function datesInRange(fromStr, toStr){
 }
 
 const REASON_ICON = { Holiday:'🌴', Sick:'🤒', AAUP:'📋', Training:'🎓', Other:'📌' };
-const REASON_COL  = { Holiday:'var(--c-holiday)', Sick:'var(--c-sick)', AAUP:'var(--c-aaup)', Training:'var(--c-training)', Other:'var(--c-other)' };
 
 let toastTimer;
 function toast(msg, type='ok'){
@@ -655,20 +831,17 @@ function toast(msg, type='ok'){
 
 /* ── State ───────────────────────────────────────────── */
 let allJobs=[], allAbsences=[], selectedReason='';
-let filterReason='', filterEng='', searchTerm='';
 let pendingDeleteId=null;
 
-/* ── Load engineers from jobs ────────────────────────── */
+/* ── Load engineers ──────────────────────────────────── */
 async function loadEngineers(){
   const snap=await getDocs(collection(db,'uploaded_jobs'));
   const engSet=new Set();
   snap.forEach(d=>{ const j=d.data(); if(j.engineerName) engSet.add(j.engineerName); allJobs.push({_id:d.id,...j}); });
   const engineers=[...engSet].sort((a,b)=>a.localeCompare(b));
   const sel=document.getElementById('engSelect');
-  const filterSel=document.getElementById('filterEng');
   engineers.forEach(e=>{
     sel.innerHTML+=`<option value="${esc(e)}">${esc(e)}</option>`;
-    filterSel.innerHTML+=`<option value="${esc(e)}">${esc(e)}</option>`;
   });
 }
 
@@ -677,13 +850,11 @@ function startAbsenceListener(){
   onSnapshot(collection(db,'absences'), snap=>{
     allAbsences=[];
     snap.forEach(d=>allAbsences.push({_id:d.id,...d.data()}));
-    // Sort by createdAt desc
     allAbsences.sort((a,b)=>{
       const ta=a.createdAt?.seconds||0, tb=b.createdAt?.seconds||0;
       return tb-ta;
     });
     renderLog();
-    updateStats();
     document.getElementById('loadingOverlay').classList.add('hidden');
     document.getElementById('absenceCountBadge').textContent=
       `${allAbsences.length} absence record${allAbsences.length!==1?'s':''}`;
@@ -694,21 +865,6 @@ function startAbsenceListener(){
   });
 }
 
-/* ── Stats ───────────────────────────────────────────── */
-function updateStats(){
-  const reasons=['Holiday','Sick','AAUP','Training','Other'];
-  const cols={Holiday:'var(--c-holiday)',Sick:'var(--c-sick)',AAUP:'var(--c-aaup)',Training:'var(--c-training)',Other:'var(--c-other)'};
-  const counts={};
-  reasons.forEach(r=>counts[r]=0);
-  allAbsences.forEach(a=>{ if(counts[a.reason]!==undefined) counts[a.reason]++; });
-  document.getElementById('statsRow').innerHTML=reasons
-    .filter(r=>counts[r]>0)
-    .map(r=>`<div class="stat-chip">
-      <div class="stat-chip-dot" style="background:${cols[r]}"></div>
-      <div><div class="stat-chip-num">${counts[r]}</div><div class="stat-chip-lbl">${r}</div></div>
-    </div>`).join('');
-}
-
 /* ── Conflict check ──────────────────────────────────── */
 function checkConflicts(eng, fromStr, toStr){
   if(!eng||!fromStr||!toStr) return [];
@@ -716,13 +872,10 @@ function checkConflicts(eng, fromStr, toStr){
   const conflicts=[];
   allJobs.forEach(job=>{
     if((job.engineerName||'').toLowerCase().trim() !== eng.toLowerCase().trim()) return;
-    // Parse the job's date
     const jd=parseDate(job.dateOfJob);
     if(!jd) return;
     const jdStr=toInputDate(jd);
-    if(days.includes(jdStr)){
-      conflicts.push(job);
-    }
+    if(days.includes(jdStr)) conflicts.push(job);
   });
   return conflicts;
 }
@@ -760,9 +913,10 @@ window.selectReason=function(el){
 };
 
 document.getElementById('engSelect').addEventListener('change',()=>{ validateForm(); showConflicts(); });
-document.getElementById('dateFrom').addEventListener('change',()=>{ validateForm(); showConflicts();
-  // Auto-set dateTo if blank
-  if(!document.getElementById('dateTo').value) document.getElementById('dateTo').value=document.getElementById('dateFrom').value;
+document.getElementById('dateFrom').addEventListener('change',()=>{
+  validateForm(); showConflicts();
+  if(!document.getElementById('dateTo').value)
+    document.getElementById('dateTo').value=document.getElementById('dateFrom').value;
 });
 document.getElementById('dateTo').addEventListener('change',()=>{ showConflicts(); });
 
@@ -771,35 +925,31 @@ document.getElementById('submitBtn').addEventListener('click', async()=>{
   const eng=document.getElementById('engSelect').value.trim();
   const from=document.getElementById('dateFrom').value;
   const to=document.getElementById('dateTo').value||from;
-  const notes=document.getElementById('notes').value.trim();
   if(!eng||!from||!selectedReason) return;
 
   const btn=document.getElementById('submitBtn');
-  btn.disabled=true; btn.innerHTML='<div class="spinner" style="width:18px;height:18px;border-width:2px;margin:0"></div> Submitting…';
+  btn.disabled=true;
+  btn.innerHTML='<div class="spinner" style="width:18px;height:18px;border-width:2px;margin:0"></div> Submitting…';
 
   try {
-    // Expand range into individual day records so scheduling.html
-    // can do a simple engineerName + date lookup
     const days=datesInRange(from,to);
     const writePromises=days.map(day=>addDoc(collection(db,'absences'),{
       engineerName: eng,
-      date:         day,       // YYYY-MM-DD
+      date:         day,
       dateFrom:     from,
       dateTo:       to,
       reason:       selectedReason,
-      notes:        notes||null,
+      notes:        null,
       createdAt:    serverTimestamp(),
       conflictCount: checkConflicts(eng,day,day).length,
     }));
     await Promise.all(writePromises);
-
     toast(`Absence submitted for ${eng} (${days.length} day${days.length!==1?'s':''}) ✓`,'ok');
 
     // Reset form
     document.getElementById('engSelect').value='';
     document.getElementById('dateFrom').value='';
     document.getElementById('dateTo').value='';
-    document.getElementById('notes').value='';
     document.querySelectorAll('.reason-pill').forEach(p=>p.classList.remove('selected'));
     selectedReason='';
     document.getElementById('conflictBox').classList.remove('show');
@@ -816,17 +966,14 @@ document.getElementById('submitBtn').addEventListener('click', async()=>{
 function renderLog(){
   const list=document.getElementById('absenceList');
   const empty=document.getElementById('logEmpty');
-  let items=allAbsences.slice();
-  if(filterReason) items=items.filter(a=>a.reason===filterReason);
-  if(filterEng)    items=items.filter(a=>a.engineerName===filterEng);
-  if(searchTerm)   items=items.filter(a=>(a.engineerName||'').toLowerCase().includes(searchTerm)||(a.reason||'').toLowerCase().includes(searchTerm)||(a.notes||'').toLowerCase().includes(searchTerm));
+  const items=allAbsences.slice();
 
   if(items.length===0){
     list.innerHTML=''; empty.classList.remove('hidden'); return;
   }
   empty.classList.add('hidden');
 
-  // Group by (engineerName + dateFrom + dateTo) so multi-day absences show as one card
+  // Group multi-day absences into one card
   const grouped={};
   items.forEach(a=>{
     const key=`${a.engineerName}||${a.dateFrom||a.date}||${a.dateTo||a.date}||${a.reason}`;
@@ -848,9 +995,8 @@ function renderLog(){
     const isSingleDay=from===to;
     const dateDisplay=isSingleDay?fmtDisplayDate(from):`${fmtDisplayDate(from)} → ${fmtDisplayDate(to)}`;
     const days=a.dates.length;
-    const conflictHtml=a.conflictCount>0?`<div class="conflict-badge">⚠️ ${a.conflictCount} job conflict${a.conflictCount!==1?'s':''} on these dates</div>`:'';
-    const noteHtml=a.notes?`<div class="absence-note">${esc(a.notes)}</div>`:'';
-    // Use first id for delete (deletes all in the group)
+    const conflictHtml=a.conflictCount>0
+      ?`<div class="conflict-badge">⚠️ ${a.conflictCount} job conflict${a.conflictCount!==1?'s':''} on these dates</div>`:'';
     const idsJson=esc(JSON.stringify(a.ids));
     return `
     <div class="absence-card" data-reason="${esc(a.reason)}" data-ids="${idsJson}">
@@ -868,7 +1014,6 @@ function renderLog(){
         </div>
       </div>
       ${conflictHtml}
-      ${noteHtml}
       <button class="absence-delete-btn" title="Remove absence" onclick="confirmDelete(this)">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
       </button>
@@ -903,19 +1048,16 @@ document.getElementById('confirmNo').addEventListener('click',()=>{
   pendingDeleteId=null;
 });
 
-/* ── Filters ─────────────────────────────────────────── */
-document.getElementById('filterReason').addEventListener('change',e=>{filterReason=e.target.value;renderLog();});
-document.getElementById('filterEng').addEventListener('change',e=>{filterEng=e.target.value;renderLog();});
-document.getElementById('logSearch').addEventListener('input',e=>{searchTerm=e.target.value.trim().toLowerCase();renderLog();});
-
 /* ── Sidebar ─────────────────────────────────────────── */
 const sidebar=document.getElementById('sidebar');
-document.getElementById('sidebarToggle').addEventListener('click',()=>{ sidebar.classList.toggle('expanded'); localStorage.setItem('geko-sidebar',sidebar.classList.contains('expanded')?'expanded':'collapsed'); });
+document.getElementById('sidebarToggle').addEventListener('click',()=>{
+  sidebar.classList.toggle('expanded');
+  localStorage.setItem('geko-sidebar',sidebar.classList.contains('expanded')?'expanded':'collapsed');
+});
 document.getElementById('logoSm').addEventListener('click',()=>{ sidebar.classList.toggle('expanded'); });
 if(localStorage.getItem('geko-sidebar')==='expanded') sidebar.classList.add('expanded');
 
 /* ── Boot ────────────────────────────────────────────── */
-// Set default date to today
 const today=new Date();
 document.getElementById('dateFrom').value=toInputDate(today);
 document.getElementById('dateTo').value=toInputDate(today);
