@@ -263,26 +263,129 @@ body::before {
 .center-msg .big { font-size: 48px; margin-bottom: 14px; }
 .center-msg p { font-size: 15px; line-height: 1.6; }
 
-/* ── DAY VIEW TIMELINE ─────────────────────────────── */
-/* FIX: removed heavy padding-left so cards fill the width */
-.timeline-wrap { position: relative; }
+/* ── DAY VIEW TIMELINE — proportional vertical layout ── */
 
-.timeline-hour { position: relative; margin-bottom: 0; }
+/* Outer scroll container */
+.timeline-scroll {
+  overflow-x: auto; overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+}
 
-.timeline-hour-label {
+/* The grid: time gutter (60px) + card area (rest) */
+.timeline-wrap {
+  display: flex;
+  position: relative;
+  min-height: 100px;
+}
+
+/* Left gutter: fixed-width column of hour labels */
+.timeline-gutter {
+  width: 60px; flex-shrink: 0;
+  position: relative;
+  /* top padding = half a row so "08:00" label centres on the 08:00 line */
+}
+
+.timeline-gutter-label {
+  position: absolute; right: 10px;
   font-family: 'Space Mono', monospace;
-  font-size: 11px; color: var(--text-dim);
-  padding: 8px 0 4px;
+  font-size: 10px; color: var(--text-dim);
+  transform: translateY(-50%);
+  white-space: nowrap; user-select: none;
+  pointer-events: none;
+}
+
+/* Right area: horizontal grid lines + job cards */
+.timeline-grid {
+  flex: 1; position: relative;
+  min-width: 0;
+}
+
+/* One row per hour — provides the grid lines */
+.timeline-hour-row {
+  position: absolute; left: 0; right: 0;
+  border-top: 1px solid var(--border);
+}
+/* Half-hour hairline */
+.timeline-hour-row::after {
+  content: ''; position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  border-top: 1px dashed rgba(255,255,255,0.03);
+}
+
+/* Now line */
+.timeline-now-line {
+  position: absolute; left: 0; right: 0;
+  height: 2px; background: var(--danger);
+  z-index: 10; pointer-events: none;
+}
+.timeline-now-line::before {
+  content: '';
+  position: absolute; left: -4px; top: -4px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--danger);
+}
+.timeline-now-line-label {
+  position: absolute; right: 6px; top: -9px;
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  color: var(--danger); background: var(--bg);
+  padding: 1px 4px; border-radius: 3px;
+  pointer-events: none;
+}
+
+/* Absolutely-positioned job card — height = duration * HOUR_PX */
+.tl-job-card {
+  position: absolute; left: 4px; right: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--accent);
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+  padding: 10px 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  z-index: 2;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.tl-job-card:active { transform: scale(0.99); }
+@media (min-width: 600px) {
+  .tl-job-card:hover {
+    transform: translateX(3px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    border-color: rgba(255,255,255,0.18);
+    z-index: 5;
+  }
+}
+.tl-job-card::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(135deg, rgba(0,255,157,0.03) 0%, transparent 60%);
+}
+
+.tl-job-card.status-complete    { border-left-color: var(--accent);   background: rgba(0,255,157,0.04); }
+.tl-job-card.status-en-route    { border-left-color: var(--accent2);  background: rgba(0,200,255,0.04); }
+.tl-job-card.status-in-progress { border-left-color: var(--warning);  background: rgba(245,158,11,0.04); }
+.tl-job-card.status-abort       { border-left-color: var(--danger);   background: rgba(255,75,92,0.04); }
+.tl-job-card.status-unassigned  { border-left-color: var(--text-dim); }
+
+.tl-time     { font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; color: var(--text); }
+.tl-type     { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tl-customer { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tl-meta     { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+.tl-postcode { font-size: 11px; font-weight: 600; color: var(--text); }
+.tl-id       { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent); }
+
+/* Unscheduled section below the grid */
+.unscheduled-section {
+  margin-top: 24px;
+}
+.unscheduled-label {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  color: var(--warning); text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 10px;
   display: flex; align-items: center; gap: 8px;
 }
-.timeline-hour-label::after {
-  content: ''; flex: 1; height: 1px; background: var(--border);
-}
-
-.timeline-job-slot {
-  padding: 4px 0 12px 0;
-  position: relative;
-}
+.unscheduled-label::after { content: ''; flex: 1; height: 1px; background: rgba(245,158,11,0.2); }
 
 /* ── JOB CARD ──────────────────────────────────────── */
 .job-card {
@@ -989,6 +1092,8 @@ function updateDateLabel() {
 }
 
 function renderDay() {
+  const HOUR_PX = 100; // pixels per hour — tune this to taste
+
   const myJobs=getMyJobs().filter(j=>{const d=parseDate(getJobDate(j));return d&&sameDay(d,currentDate);});
   myJobs.sort((a,b)=>{const sa=getStartHour(a),sb=getStartHour(b);if(sa===null&&sb===null)return 0;if(sa===null)return 1;if(sb===null)return -1;return sa-sb;});
 
@@ -1009,49 +1114,91 @@ function renderDay() {
     document.getElementById('mainContent').innerHTML=html; return;
   }
 
-  let dayEnd=DAY_END_DEFAULT;
-  myJobs.forEach(j=>{const sh=getStartHour(j);if(sh!==null){const fin=sh+getDuration(getJobType(j));if(fin>dayEnd)dayEnd=Math.ceil(fin)+1;}});
+  const scheduled=myJobs.filter(j=>getStartHour(j)!==null);
+  const unscheduled=myJobs.filter(j=>getStartHour(j)===null);
 
+  // Work out visible hour range
+  let dayEnd=DAY_END_DEFAULT;
+  scheduled.forEach(j=>{const fin=getStartHour(j)+getDuration(getJobType(j));if(fin>dayEnd)dayEnd=fin;});
+  dayEnd=Math.ceil(dayEnd)+0.5; // half-hour buffer at bottom
+
+  const totalHours = dayEnd - DAY_START;
+  const gridHeight = Math.round(totalHours * HOUR_PX);
+
+  // Now-line
   const now=new Date();
   const isToday=sameDay(currentDate,today0());
   const nowHour=now.getHours()+now.getMinutes()/60;
-
-  html+=`<div class="timeline-wrap">`;
-
-  for(let h=DAY_START; h<=dayEnd; h++) {
-    const jobsAtHour=myJobs.filter(j=>{
-      const sh=getStartHour(j);
-      if(sh===null) return false;
-      return Math.floor(sh)===h;
-    });
-
-    let nowLineHtml='';
-    if(isToday&&nowHour>=h&&nowHour<h+1){
-      nowLineHtml=`<div class="now-line"><span class="now-line-label">${fmtTime(nowHour)}</span></div>`;
-    }
-
-    html+=`<div class="timeline-hour">
-      <div class="timeline-hour-label">${String(h).padStart(2,'0')}:00</div>
-      <div class="timeline-job-slot">${nowLineHtml}`;
-
-    jobsAtHour.forEach(job=>{
-      html += buildJobCardHTML(job);
-    });
-
-    html+=`</div></div>`;
+  let nowLineHtml='';
+  if(isToday && nowHour>=DAY_START && nowHour<=dayEnd){
+    const top=Math.round((nowHour-DAY_START)*HOUR_PX);
+    nowLineHtml=`<div class="timeline-now-line" style="top:${top}px">
+      <span class="timeline-now-line-label">${fmtTime(nowHour)}</span>
+    </div>`;
   }
 
-  // Unscheduled
-  const unscheduled=myJobs.filter(j=>getStartHour(j)===null);
+  // Hour rows (grid lines + labels)
+  let gutterHtml='', rowsHtml='';
+  for(let h=DAY_START; h<=Math.ceil(dayEnd); h++){
+    const top=Math.round((h-DAY_START)*HOUR_PX);
+    if(top>gridHeight) break;
+    gutterHtml+=`<div class="timeline-gutter-label" style="top:${top}px">${String(h).padStart(2,'0')}:00</div>`;
+    rowsHtml+=`<div class="timeline-hour-row" style="top:${top}px;height:${HOUR_PX}px"></div>`;
+  }
+
+  // Job cards — absolutely positioned by start time, height by duration
+  let cardsHtml='';
+  scheduled.forEach(job=>{
+    const sh=getStartHour(job);
+    const dur=getDuration(getJobType(job));
+    const top=Math.round((sh-DAY_START)*HOUR_PX);
+    const height=Math.max(Math.round(dur*HOUR_PX)-6, 36); // min 36px so card is always visible
+    const status=getJobStatus(job);
+    const sc=statusClass(status);
+    const timeStr=`${fmtTime(sh)} – ${fmtTime(sh+dur)}`;
+    const jid=esc(job.jobId||job._id);
+    const shortCard=height<70;
+
+    cardsHtml+=`<div class="tl-job-card status-${sc}"
+        style="top:${top}px;height:${height}px"
+        onclick="openJobModal('${job._id}')">
+      <div class="tl-time">${timeStr}</div>
+      ${shortCard ? `
+        <div style="display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden">
+          <span class="tl-type" style="flex:1">${esc(getJobType(job)||'Job')}</span>
+          <span class="tl-id">${jid}</span>
+        </div>
+      ` : `
+        <div class="tl-type">${esc(getJobType(job)||'Job')}</div>
+        <div class="tl-customer">${esc(getCustomerName(job))}</div>
+        <div class="tl-meta">
+          <span class="tl-postcode">${esc(getPostcode(job))}</span>
+          <span class="tl-id">${jid}</span>
+          <span class="status-badge ${sc}" style="font-size:11px;padding:3px 10px">${statusLabel(status)}</span>
+        </div>
+      `}
+    </div>`;
+  });
+
+  html+=`<div class="timeline-scroll">
+    <div class="timeline-wrap">
+      <div class="timeline-gutter" style="height:${gridHeight}px">${gutterHtml}</div>
+      <div class="timeline-grid" style="height:${gridHeight}px">
+        ${rowsHtml}
+        ${nowLineHtml}
+        ${cardsHtml}
+      </div>
+    </div>
+  </div>`;
+
+  // Unscheduled jobs below
   if(unscheduled.length>0){
-    html+=`<div class="timeline-hour">
-      <div class="timeline-hour-label" style="color:var(--warning)">⏳ TIME TBC</div>
-      <div class="timeline-job-slot">`;
+    html+=`<div class="unscheduled-section">
+      <div class="unscheduled-label">⏳ Time not yet scheduled</div>`;
     unscheduled.forEach(job=>{ html+=buildJobCardHTML(job, true); });
-    html+=`</div></div>`;
+    html+=`</div>`;
   }
 
-  html+=`</div>`;
   document.getElementById('mainContent').innerHTML=html;
 }
 
