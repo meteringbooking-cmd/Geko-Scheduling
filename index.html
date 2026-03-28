@@ -16,10 +16,11 @@
       --border2: rgba(255,255,255,0.12);
       --accent: #00ff9d;
       --accent2: #00c8ff;
+      --danger: #ff4b5c;
+      --warning: #f59e0b;
       --text: #e8f4ff;
       --text-muted: #6b8aaa;
       --text-dim: #3a5570;
-
       --sidebar-w-collapsed: 64px;
       --sidebar-w-expanded:  210px;
       --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
@@ -73,11 +74,7 @@
       border-bottom: 1px solid var(--border);
       flex-shrink: 0; padding: 0; overflow: hidden;
     }
-
-    #sidebar.expanded .sidebar-header {
-      padding: 0 12px;
-      justify-content: space-between;
-    }
+    #sidebar.expanded .sidebar-header { padding: 0 12px; justify-content: space-between; }
 
     .sidebar-logo-collapsed {
       width: 100%; height: 100%;
@@ -86,10 +83,7 @@
       display: block; cursor: pointer;
       transition: filter var(--transition), transform var(--transition);
     }
-    .sidebar-logo-collapsed:hover {
-      filter: drop-shadow(0 0 16px rgba(0,255,157,0.8));
-      transform: scale(1.03);
-    }
+    .sidebar-logo-collapsed:hover { filter: drop-shadow(0 0 16px rgba(0,255,157,0.8)); transform: scale(1.03); }
 
     .sidebar-logo-expanded {
       height: 40px; object-fit: contain;
@@ -113,10 +107,7 @@
     #sidebar.expanded .sidebar-toggle { display: flex; }
     .sidebar-toggle:hover { background: rgba(255,255,255,0.08); color: var(--text); }
 
-    .sidebar-nav {
-      flex: 1; padding: 14px 0;
-      display: flex; flex-direction: column; gap: 2px;
-    }
+    .sidebar-nav { flex: 1; padding: 14px 0; display: flex; flex-direction: column; gap: 2px; }
 
     .sidebar-link {
       display: flex; align-items: center; gap: 12px;
@@ -127,28 +118,14 @@
       flex-shrink: 0; position: relative;
     }
     .sidebar-link:hover { background: rgba(255,255,255,0.05); color: var(--text); }
-    .sidebar-link.active {
-      background: rgba(0,255,157,0.08);
-      color: var(--accent);
-      border-left-color: var(--accent);
-    }
+    .sidebar-link.active { background: rgba(0,255,157,0.08); color: var(--accent); border-left-color: var(--accent); }
 
-    .sidebar-icon {
-      width: 36px; height: 36px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; border-radius: 8px;
-    }
+    .sidebar-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 8px; }
     .sidebar-link.active .sidebar-icon { background: rgba(0,255,157,0.10); }
 
-    .sidebar-label {
-      font-size: 13px; font-weight: 500;
-      opacity: 0; max-width: 0; overflow: hidden;
-      transition: opacity var(--transition), max-width var(--transition);
-      pointer-events: none;
-    }
+    .sidebar-label { font-size: 13px; font-weight: 500; opacity: 0; max-width: 0; overflow: hidden; transition: opacity var(--transition), max-width var(--transition); pointer-events: none; }
     #sidebar.expanded .sidebar-label { opacity: 1; max-width: 140px; }
 
-    /* Tooltip for collapsed */
     .sidebar-link::after {
       content: attr(data-label);
       position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
@@ -160,14 +137,8 @@
     }
     #sidebar:not(.expanded) .sidebar-link:hover::after { opacity: 1; }
 
-    .sidebar-footer {
-      padding: 14px; border-top: 1px solid var(--border); flex-shrink: 0;
-    }
-    .sidebar-version {
-      font-size: 10px; color: rgba(107,138,170,0.35);
-      text-align: center; letter-spacing: 0.5px;
-      opacity: 0; transition: opacity var(--transition);
-    }
+    .sidebar-footer { padding: 14px; border-top: 1px solid var(--border); flex-shrink: 0; }
+    .sidebar-version { font-size: 10px; color: rgba(107,138,170,0.35); text-align: center; letter-spacing: 0.5px; opacity: 0; transition: opacity var(--transition); }
     #sidebar.expanded .sidebar-version { opacity: 1; }
 
     /* ── MAIN CONTENT ─────────────────────────────── */
@@ -177,12 +148,109 @@
       position: relative; z-index: 1;
     }
 
-    /* ── HERO ─────────────────────────────────────── */
-    .hero {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center; padding: 60px 32px 60px;
-      width: 100%;
+    /* ── MAIN LAYOUT: 3-column ─────────────────────── */
+    .dashboard-layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 280px 1fr 280px;
+      gap: 0;
+      min-height: 100vh;
+      align-items: start;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-layout { grid-template-columns: 240px 1fr 240px; }
+    }
+    @media (max-width: 960px) {
+      .dashboard-layout { grid-template-columns: 1fr; }
+      .nav-col, .stats-col { display: none; }
+    }
+
+    /* ── LEFT NAV COLUMN ──────────────────────────── */
+    .nav-col {
+      padding: 40px 20px 40px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      max-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .nav-col-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      padding: 0 4px;
+      margin-bottom: 4px;
+      margin-top: 8px;
+    }
+    .nav-col-label:first-child { margin-top: 0; }
+
+    .nav-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(13,21,32,0.7);
+      text-decoration: none;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .nav-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      border-radius: 3px 0 0 3px;
+    }
+    .nav-card.green::before  { background: var(--accent); }
+    .nav-card.blue::before   { background: var(--accent2); }
+    .nav-card.purple::before { background: #a855f7; }
+    .nav-card.amber::before  { background: var(--warning); }
+
+    .nav-card:hover {
+      background: rgba(13,21,32,0.95);
+      border-color: rgba(255,255,255,0.12);
+      color: var(--text);
+      transform: translateX(3px);
+    }
+    .nav-card:hover::before { opacity: 1; }
+
+    .nav-card-icon {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .nav-card.green .nav-card-icon  { background: rgba(0,255,157,0.08); }
+    .nav-card.blue .nav-card-icon   { background: rgba(0,200,255,0.08); }
+    .nav-card.purple .nav-card-icon { background: rgba(168,85,247,0.08); }
+    .nav-card.amber .nav-card-icon  { background: rgba(245,158,11,0.08); }
+
+    .nav-card-text { min-width: 0; }
+    .nav-card-title { font-size: 13px; font-weight: 600; color: inherit; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nav-card-desc  { font-size: 11px; color: var(--text-dim); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nav-card:hover .nav-card-desc { color: var(--text-muted); }
+
+    /* ── HERO (CENTER) ────────────────────────────── */
+    .hero-col {
+      padding: 60px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 100vh;
     }
 
     .hero-badge {
@@ -201,118 +269,181 @@
       background: var(--accent);
       animation: pulse 2s infinite;
     }
-    @keyframes pulse {
-      0%,100% { opacity:1; transform:scale(1); }
-      50%      { opacity:.5; transform:scale(1.3); }
-    }
+    @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.5; transform:scale(1.3); } }
 
     .hero h1 {
       font-family: 'Syne', sans-serif;
-      font-size: clamp(38px, 5.5vw, 68px);
+      font-size: clamp(36px, 4.5vw, 62px);
       font-weight: 800; line-height: 1.07;
-      letter-spacing: -1.5px; margin-bottom: 24px;
+      letter-spacing: -1.5px; margin-bottom: 20px;
     }
     .hero h1 span {
       background: linear-gradient(90deg, var(--accent), var(--accent2));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
 
-    .hero-text {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
     .hero p {
-      max-width: 520px; font-size: 17px; line-height: 1.75;
-      color: var(--text-muted); margin: 0 auto 56px; font-weight: 300;
+      max-width: 440px; font-size: 16px; line-height: 1.75;
+      color: var(--text-muted); margin: 0 auto 48px; font-weight: 300;
     }
 
-    /* ── MODULE GRID ───────────────────────────────── */
-    .modules {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px; width: 100%;
-      margin: 0 auto;
+    /* Stats strip inside hero */
+    .hero-stats {
+      display: flex; gap: 40px; justify-content: center; flex-wrap: wrap;
+      padding-top: 48px;
+      border-top: 1px solid var(--border);
+      width: 100%;
+      max-width: 500px;
     }
-    @media (max-width: 900px) {
-      .modules { grid-template-columns: repeat(2, 1fr); }
+    .hero-stat { text-align: center; }
+    .hero-stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px; font-weight: 800; color: var(--text);
     }
-    @media (max-width: 600px) {
-      .modules { grid-template-columns: 1fr; }
+    .hero-stat-label { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    /* ── RIGHT STATS COLUMN ───────────────────────── */
+    .stats-col {
+      padding: 40px 28px 40px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      max-height: 100vh;
+      overflow-y: auto;
     }
 
-    .module-card {
-      background: var(--surface);
+    .stats-section-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      padding: 0 4px;
+      margin-bottom: 2px;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .stats-section-label:first-child { margin-top: 0; }
+
+    .live-dot-sm {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px rgba(0,255,157,0.8);
+      animation: livePulse 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes livePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+
+    .stat-block {
+      background: rgba(13,21,32,0.7);
       border: 1px solid var(--border);
-      border-radius: 16px; padding: 28px;
-      text-decoration: none; color: var(--text);
-      transition: all 0.25s ease;
-      position: relative; overflow: hidden; text-align: left;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      transition: border-color 0.2s;
     }
-    .module-card::before {
-      content: ''; position: absolute;
-      top: 0; left: 0; right: 0; height: 2px;
-      opacity: 0; transition: opacity 0.25s;
-    }
-    .module-card.green::before { background: linear-gradient(90deg, var(--accent), transparent); }
-    .module-card.blue::before  { background: linear-gradient(90deg, var(--accent2), transparent); }
-    .module-card.purple::before{ background: linear-gradient(90deg, #a855f7, transparent); }
-    .module-card.amber::before { background: linear-gradient(90deg, #f59e0b, transparent); }
+    .stat-block:hover { border-color: rgba(255,255,255,0.1); }
 
-    .module-card:hover {
-      background: #111e2c;
-      border-color: rgba(0,255,157,0.2);
-      transform: translateY(-3px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    .stat-block.today-block {
+      border-color: rgba(0,255,157,0.1);
+      background: rgba(0,255,157,0.03);
     }
-    .module-card:hover::before { opacity: 1; }
 
-    .card-icon {
-      width: 44px; height: 44px; border-radius: 11px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 18px; font-size: 20px;
-    }
-    .card-icon.green  { background: rgba(0,255,157,0.1); }
-    .card-icon.blue   { background: rgba(0,200,255,0.1); }
-    .card-icon.purple { background: rgba(168,85,247,0.1); }
-    .card-icon.amber  { background: rgba(245,158,11,0.1); }
+    .stat-item { display: flex; flex-direction: column; gap: 2px; align-items: center; text-align: center; }
 
-    .card-title {
+    .stat-num {
       font-family: 'Syne', sans-serif;
-      font-size: 18px; font-weight: 700; margin-bottom: 8px;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1;
+      transition: color 0.3s;
     }
-    .card-desc {
-      font-size: 13px; color: var(--text-muted);
-      line-height: 1.65; margin-bottom: 22px;
-    }
-    .card-arrow {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 12px; font-weight: 500; color: var(--accent);
-    }
-    .module-card.blue   .card-arrow { color: var(--accent2); }
-    .module-card.purple .card-arrow { color: #c084fc; }
-    .module-card.amber  .card-arrow { color: #fbbf24; }
-    .card-arrow svg { transition: transform 0.2s; }
-    .module-card:hover .card-arrow svg { transform: translateX(4px); }
+    .stat-num.green  { color: var(--accent); }
+    .stat-num.blue   { color: var(--accent2); }
+    .stat-num.red    { color: var(--danger); }
+    .stat-num.amber  { color: var(--warning); }
+    .stat-num.white  { color: var(--text); }
 
-    /* ── STATS STRIP ───────────────────────────────── */
-    .stats-strip {
-      display: flex; justify-content: center; gap: 60px;
-      padding: 48px; border-top: 1px solid var(--border);
-      margin-top: auto; flex-wrap: wrap;
+    .stat-lbl {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-dim);
+      line-height: 1.3;
     }
-    .stat { text-align: center; }
-    .stat-value {
-      font-family: 'Syne', sans-serif;
-      font-size: 26px; font-weight: 800; color: var(--text);
-    }
-    .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
-    /* ── FOOTER ────────────────────────────────────── */
+    .stat-divider {
+      width: 1px;
+      background: var(--border);
+      margin: 2px 0;
+    }
+
+    .stat-block-header {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      grid-column: 1 / -1;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-block-header .period-badge {
+      font-size: 9px;
+      padding: 2px 7px;
+      border-radius: 20px;
+      font-weight: 700;
+    }
+    .stat-block.today-block .period-badge {
+      background: rgba(0,255,157,0.1);
+      color: var(--accent);
+      border: 1px solid rgba(0,255,157,0.2);
+    }
+    .stat-block.week-block .period-badge {
+      background: rgba(0,200,255,0.08);
+      color: var(--accent2);
+      border: 1px solid rgba(0,200,255,0.2);
+    }
+
+    /* Live status indicator */
+    .stats-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-dim);
+      padding: 0 4px;
+    }
+    .stats-status.connected { color: var(--accent); }
+    .stats-status.connecting { color: var(--accent2); }
+    .stats-status.error { color: var(--danger); }
+
+    /* Number counter animation */
+    @keyframes numPop {
+      0% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+    .stat-num.updated {
+      animation: numPop 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+
+    /* Footer */
     footer {
       text-align: center; padding: 20px 48px;
       border-top: 1px solid var(--border);
       font-size: 12px; color: var(--text-muted);
+      position: relative; z-index: 1;
     }
   </style>
 </head>
@@ -332,62 +463,38 @@
 
   <nav class="sidebar-nav">
     <a href="dashboard.html" class="sidebar-link active" data-label="Dashboard">
-      <span class="sidebar-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      </span>
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
       <span class="sidebar-label">Dashboard</span>
     </a>
-
     <a href="scheduling.html" class="sidebar-link" data-label="Scheduling">
-      <span class="sidebar-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
-      </span>
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span>
       <span class="sidebar-label">Scheduling</span>
     </a>
-
     <a href="database.html" class="sidebar-link" data-label="Database">
-      <span class="sidebar-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 9v4c0 1.66 4.03 3 9 3s9-1.34 9-3V9"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/></svg>
-      </span>
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 9v4c0 1.66 4.03 3 9 3s9-1.34 9-3V9"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/></svg></span>
       <span class="sidebar-label">Database</span>
     </a>
-
     <a href="viewdata.html" class="sidebar-link" data-label="View Data">
-      <span class="sidebar-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      </span>
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
       <span class="sidebar-label">View Data</span>
     </a>
-
     <a href="userdatabase.html" class="sidebar-link" data-label="Users">
-      <span class="sidebar-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87"/></svg>
-      </span>
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
       <span class="sidebar-label">Users</span>
     </a>
-
     <a href="mapping.html" class="sidebar-link" data-label="Field Mapping">
-      <span class="sidebar-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
-      </span>
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg></span>
       <span class="sidebar-label">Field Mapping</span>
     </a>
-
     <a href="isochrone.html" class="sidebar-link" data-label="Isochrone">
-      <span class="sidebar-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-      </span>
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
       <span class="sidebar-label">Isochrone</span>
     </a>
-
     <a href="absencesubmission.html" class="sidebar-link" data-label="Absence">
-      <span class="sidebar-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg>
-      </span>
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg></span>
       <span class="sidebar-label">Absence</span>
     </a>
   </nav>
-
   <div class="sidebar-footer">
     <div class="sidebar-version">v1.0.0</div>
   </div>
@@ -395,81 +502,214 @@
 
 <!-- MAIN -->
 <div class="main-content">
-  <section class="hero">
-    <div class="hero-badge">Field Service Management</div>
-    <h1>Manage Jobs.<br/><span>Schedule Engineers.</span></h1>
-    <p>Geko gives your team a central platform to upload job data, assign engineers, and visualise your schedule — all in real time.</p>
+  <div class="dashboard-layout">
 
-    <div class="modules">
+    <!-- ── LEFT: Nav Cards ── -->
+    <div class="nav-col">
+      <div class="nav-col-label">Data</div>
 
-      <a href="dataupload.html" class="module-card green">
-        <div class="card-icon green">📤</div>
-        <div class="card-title">Data Upload</div>
-        <div class="card-desc">Import job data from Excel. Map your columns, preview entries, and push directly to your job database with auto-generated Job IDs.</div>
-        <div class="card-arrow">Open Upload <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      <a href="dataupload.html" class="nav-card green">
+        <div class="nav-card-icon">📤</div>
+        <div class="nav-card-text">
+          <div class="nav-card-title">Data Upload</div>
+          <div class="nav-card-desc">Import jobs from Excel</div>
+        </div>
       </a>
 
-      <a href="scheduling.html" class="module-card blue">
-        <div class="card-icon blue">📅</div>
-        <div class="card-title">Scheduling</div>
-        <div class="card-desc">Visualise all jobs on an engineer timeline. Switch between day and week views, drag & drop jobs between engineers, and track every assignment live.</div>
-        <div class="card-arrow">Open Schedule <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      <a href="viewdata.html" class="nav-card blue">
+        <div class="nav-card-icon">🔍</div>
+        <div class="nav-card-text">
+          <div class="nav-card-title">View Data</div>
+          <div class="nav-card-desc">Browse all job records</div>
+        </div>
       </a>
 
-      <a href="viewdata.html" class="module-card blue">
-        <div class="card-icon blue">🔍</div>
-        <div class="card-title">View Data</div>
-        <div class="card-desc">Browse, filter, and search all job records. See full job details, status history, and engineer assignments in one place.</div>
-        <div class="card-arrow">View Data <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      <a href="database.html" class="nav-card blue">
+        <div class="nav-card-icon">🗄️</div>
+        <div class="nav-card-text">
+          <div class="nav-card-title">Database</div>
+          <div class="nav-card-desc">Manage raw data</div>
+        </div>
       </a>
 
-      <a href="userdatabase.html" class="module-card purple">
-        <div class="card-icon purple">👥</div>
-        <div class="card-title">User Database</div>
-        <div class="card-desc">Manage engineer profiles, home postcodes, isochrone limits, and login credentials for the engineer portal.</div>
-        <div class="card-arrow">Manage Users <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      <div class="nav-col-label">Operations</div>
+
+      <a href="scheduling.html" class="nav-card green">
+        <div class="nav-card-icon">📅</div>
+        <div class="nav-card-text">
+          <div class="nav-card-title">Scheduling</div>
+          <div class="nav-card-desc">Drag &amp; drop timeline</div>
+        </div>
       </a>
 
-      <a href="mapping.html" class="module-card amber">
-        <div class="card-icon amber">🗺️</div>
-        <div class="card-title">Field Mapping</div>
-        <div class="card-desc">Map engineer locations and job sites. Visualise coverage areas, routes, and proximity across your entire field team.</div>
-        <div class="card-arrow">Open Mapping <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      <a href="userdatabase.html" class="nav-card purple">
+        <div class="nav-card-icon">👥</div>
+        <div class="nav-card-text">
+          <div class="nav-card-title">User Database</div>
+          <div class="nav-card-desc">Manage engineers</div>
+        </div>
       </a>
 
-      <a href="isochrone.html" class="module-card blue">
-        <div class="card-icon blue">🎯</div>
-        <div class="card-title">Isochrone Settings</div>
-        <div class="card-desc">Configure drive-time limits per engineer. The scheduler uses these to flag jobs that exceed travel time thresholds automatically.</div>
-        <div class="card-arrow">Configure <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      <a href="absencesubmission.html" class="nav-card purple">
+        <div class="nav-card-icon">📋</div>
+        <div class="nav-card-text">
+          <div class="nav-card-title">Absence</div>
+          <div class="nav-card-desc">Log &amp; manage leave</div>
+        </div>
       </a>
 
-      <a href="absencesubmission.html" class="module-card purple">
-        <div class="card-icon purple">📋</div>
-        <div class="card-title">Absence</div>
-        <div class="card-desc">Log and manage engineer absences. Absence dates are reflected directly on the scheduling board with conflict warnings.</div>
-        <div class="card-arrow">Manage Absence <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      <div class="nav-col-label">Config</div>
+
+      <a href="mapping.html" class="nav-card amber">
+        <div class="nav-card-icon">🗺️</div>
+        <div class="nav-card-text">
+          <div class="nav-card-title">Field Mapping</div>
+          <div class="nav-card-desc">Coverage &amp; routes</div>
+        </div>
       </a>
 
+      <a href="isochrone.html" class="nav-card blue">
+        <div class="nav-card-icon">🎯</div>
+        <div class="nav-card-text">
+          <div class="nav-card-title">Isochrone</div>
+          <div class="nav-card-desc">Drive-time limits</div>
+        </div>
+      </a>
     </div>
-  </section>
 
-  <div class="stats-strip">
-    <div class="stat">
-      <div class="stat-value">Live</div>
-      <div class="stat-label">Real-time Firebase sync</div>
+    <!-- ── CENTER: Hero ── -->
+    <div class="hero-col">
+      <div class="hero-badge">Field Service Management</div>
+      <h1>Manage Jobs.<br/><span>Schedule Engineers.</span></h1>
+      <p>Geko gives your team a central platform to upload job data, assign engineers, and visualise your schedule — all in real time.</p>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value">Live</div>
+          <div class="hero-stat-label">Firebase sync</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">Excel</div>
+          <div class="hero-stat-label">Bulk import</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">D&amp;D</div>
+          <div class="hero-stat-label">Drag &amp; drop</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">AI</div>
+          <div class="hero-stat-label">Drive estimation</div>
+        </div>
+      </div>
     </div>
-    <div class="stat">
-      <div class="stat-value">Excel</div>
-      <div class="stat-label">Bulk data import</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">D&amp;D</div>
-      <div class="stat-label">Drag &amp; drop scheduling</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value">AI</div>
-      <div class="stat-label">Drive time estimation</div>
+
+    <!-- ── RIGHT: Live Stats ── -->
+    <div class="stats-col">
+
+      <div class="stats-section-label">
+        <div class="live-dot-sm"></div>
+        Live Job Stats
+      </div>
+
+      <div class="stats-status connecting" id="statsStatus">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+        Connecting…
+      </div>
+
+      <!-- TODAY -->
+      <div class="stat-block today-block">
+        <div class="stat-block-header">
+          Today's Jobs
+          <span class="period-badge" id="todayDate">—</span>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num white" id="todayTotal">—</div>
+          <div class="stat-lbl">Total</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num green" id="todayComplete">—</div>
+          <div class="stat-lbl">Complete</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num red" id="todayAbort">—</div>
+          <div class="stat-lbl">Aborted</div>
+        </div>
+      </div>
+
+      <!-- TODAY sub-stats -->
+      <div class="stat-block">
+        <div class="stat-block-header">Today's Progress</div>
+        <div class="stat-item">
+          <div class="stat-num amber" id="todayInProgress">—</div>
+          <div class="stat-lbl">In Progress</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num blue" id="todayEnRoute">—</div>
+          <div class="stat-lbl">En Route</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num white" id="todayUnassigned">—</div>
+          <div class="stat-lbl">Unassigned</div>
+        </div>
+      </div>
+
+      <div class="stats-section-label" style="margin-top:4px">This Week</div>
+
+      <!-- WEEK -->
+      <div class="stat-block week-block">
+        <div class="stat-block-header">
+          Week's Jobs
+          <span class="period-badge" id="weekRange">—</span>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num white" id="weekTotal">—</div>
+          <div class="stat-lbl">Total</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num green" id="weekComplete">—</div>
+          <div class="stat-lbl">Complete</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num red" id="weekAbort">—</div>
+          <div class="stat-lbl">Aborted</div>
+        </div>
+      </div>
+
+      <!-- WEEK sub-stats -->
+      <div class="stat-block">
+        <div class="stat-block-header">Week's Progress</div>
+        <div class="stat-item">
+          <div class="stat-num amber" id="weekInProgress">—</div>
+          <div class="stat-lbl">In Progress</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num blue" id="weekEnRoute">—</div>
+          <div class="stat-lbl">En Route</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num white" id="weekUnassigned">—</div>
+          <div class="stat-lbl">Unassigned</div>
+        </div>
+      </div>
+
+      <!-- TOTALS -->
+      <div class="stats-section-label" style="margin-top:4px">All Time</div>
+      <div class="stat-block">
+        <div class="stat-block-header">Database Totals</div>
+        <div class="stat-item">
+          <div class="stat-num white" id="allTotal">—</div>
+          <div class="stat-lbl">All Jobs</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num green" id="allComplete">—</div>
+          <div class="stat-lbl">Complete</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num blue" id="allEngineers">—</div>
+          <div class="stat-lbl">Engineers</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -478,7 +718,160 @@
   </footer>
 </div>
 
-<script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const app = initializeApp({
+    apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
+    authDomain: "geko-scheduling.firebaseapp.com",
+    projectId: "geko-scheduling",
+    storageBucket: "geko-scheduling.firebasestorage.app",
+    messagingSenderId: "824568732787",
+    appId: "1:824568732787:web:c12db983fd6a5b44b01e06"
+  });
+  const db = getFirestore(app);
+
+  // ── Helpers ────────────────────────────────────────────
+  function today0() {
+    const d = new Date(); d.setHours(0,0,0,0); return d;
+  }
+
+  function getWeekBounds() {
+    const now = today0();
+    const dow = now.getDay();
+    const diff = dow === 0 ? -6 : 1 - dow; // Monday
+    const mon = new Date(now); mon.setDate(now.getDate() + diff);
+    const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+    return { mon, sun };
+  }
+
+  function parseDate(s) {
+    if (!s) return null;
+    s = String(s).trim();
+    let m;
+    m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (m) { const d = new Date(+m[3], +m[2]-1, +m[1]); d.setHours(0,0,0,0); return isNaN(d) ? null : d; }
+    m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (m) { const d = new Date(+m[1], +m[2]-1, +m[3]); d.setHours(0,0,0,0); return isNaN(d) ? null : d; }
+    const d = new Date(s); if (!isNaN(d)) { d.setHours(0,0,0,0); return d; }
+    return null;
+  }
+
+  function sameDay(a, b) {
+    return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+
+  function normaliseStatus(raw) {
+    if (!raw) return 'unassigned';
+    const s = String(raw).toLowerCase().trim().replace(/\s+/g, '-');
+    if (s === 'enroute') return 'en-route';
+    if (s === 'inprogress') return 'in-progress';
+    return ['complete', 'en-route', 'in-progress', 'abort'].includes(s) ? s : 'unassigned';
+  }
+
+  function getJobStatus(job) {
+    return normaliseStatus(job.jobStatus || job.status || job.Status || '');
+  }
+
+  // ── DOM helpers ────────────────────────────────────────
+  function setNum(id, val) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const prev = el.textContent;
+    const newVal = String(val);
+    if (prev !== newVal) {
+      el.textContent = newVal;
+      el.classList.remove('updated');
+      void el.offsetWidth;
+      el.classList.add('updated');
+      el.addEventListener('animationend', () => el.classList.remove('updated'), { once: true });
+    }
+  }
+
+  function setStatus(state, msg) {
+    const el = document.getElementById('statsStatus');
+    el.className = 'stats-status ' + state;
+    const icons = {
+      connected: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`,
+      connecting: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>`,
+      error: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
+    };
+    el.innerHTML = (icons[state] || '') + ' ' + msg;
+  }
+
+  // ── Date labels ────────────────────────────────────────
+  function updateDateLabels() {
+    const now = new Date();
+    document.getElementById('todayDate').textContent =
+      now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+
+    const { mon, sun } = getWeekBounds();
+    document.getElementById('weekRange').textContent =
+      mon.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' – ' +
+      sun.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  }
+  updateDateLabels();
+
+  // ── Compute + render stats ─────────────────────────────
+  function computeStats(jobs) {
+    const todayD = today0();
+    const { mon, sun } = getWeekBounds();
+
+    const todayJobs = jobs.filter(j => {
+      const d = parseDate(j.dateOfJob || j.Date || j.Appointment_Date);
+      return d && sameDay(d, todayD);
+    });
+
+    const weekJobs = jobs.filter(j => {
+      const d = parseDate(j.dateOfJob || j.Date || j.Appointment_Date);
+      return d && d >= mon && d <= sun;
+    });
+
+    const count = (arr, status) => arr.filter(j => getJobStatus(j) === status).length;
+
+    // Today
+    setNum('todayTotal',      todayJobs.length);
+    setNum('todayComplete',   count(todayJobs, 'complete'));
+    setNum('todayAbort',      count(todayJobs, 'abort'));
+    setNum('todayInProgress', count(todayJobs, 'in-progress'));
+    setNum('todayEnRoute',    count(todayJobs, 'en-route'));
+    setNum('todayUnassigned', count(todayJobs, 'unassigned'));
+
+    // Week
+    setNum('weekTotal',       weekJobs.length);
+    setNum('weekComplete',    count(weekJobs, 'complete'));
+    setNum('weekAbort',       count(weekJobs, 'abort'));
+    setNum('weekInProgress',  count(weekJobs, 'in-progress'));
+    setNum('weekEnRoute',     count(weekJobs, 'en-route'));
+    setNum('weekUnassigned',  count(weekJobs, 'unassigned'));
+
+    // All time
+    setNum('allTotal',     jobs.length);
+    setNum('allComplete',  count(jobs, 'complete'));
+    const engineers = new Set(jobs.map(j => j.engineerName || j.Engineer || '').filter(Boolean));
+    setNum('allEngineers', engineers.size);
+  }
+
+  // ── Live Firestore listener ────────────────────────────
+  let allJobs = [];
+
+  onSnapshot(
+    collection(db, 'uploaded_jobs'),
+    { includeMetadataChanges: false },
+    snapshot => {
+      allJobs = [];
+      snapshot.forEach(d => allJobs.push({ _id: d.id, ...d.data() }));
+      computeStats(allJobs);
+      setStatus('connected', `Live · ${allJobs.length} jobs`);
+    },
+    error => {
+      console.error('Dashboard stats error:', error);
+      setStatus('error', 'Connection error');
+    }
+  );
+
+  // ── Sidebar ────────────────────────────────────────────
   const sidebar = document.getElementById('sidebar');
   const toggleBtn = document.getElementById('sidebarToggle');
   const logoCollapsed = document.getElementById('logoCollapsed');
@@ -493,6 +886,14 @@
 
   toggleBtn.addEventListener('click', toggleSidebar);
   logoCollapsed.addEventListener('click', toggleSidebar);
+
+  // ── Refresh date labels at midnight ──────────────────
+  function msUntilMidnight() {
+    const now = new Date();
+    const midnight = new Date(now); midnight.setHours(24,0,0,0);
+    return midnight - now;
+  }
+  setTimeout(() => { updateDateLabels(); computeStats(allJobs); }, msUntilMidnight());
 </script>
 </body>
 </html>
