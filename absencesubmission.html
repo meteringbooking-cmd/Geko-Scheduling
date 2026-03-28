@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Geko — Absence Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:        #070a10;
+  --surface:   #0d1520;
+  --surface2:  #121d2b;
+  --surface3:  #172436;
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.13);
+  --accent:    #00ff9d;
+  --accent2:   #00c8ff;
+  --danger:    #ff4b5c;
+  --warning:   #f59e0b;
+  --purple:    #a855f7;
+  --text:      #e8f4ff;
+  --muted:     #6b8aaa;
+  --dim:       #3a5570;
+  --radius:    14px;
+
+  /* Reason colours */
+  --c-holiday:  #00c8ff;
+  --c-sick:     #ff4b5c;
+  --c-aaup:     #a855f7;
+  --c-training: #f59e0b;
+  --c-other:    #6b8aaa;
+
+  --sidebar-w: 210px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; display: flex; overflow-x: hidden;
+}
+
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 0%, rgba(0,255,157,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 100%, rgba(168,85,247,0.04) 0%, transparent 60%);
+}
+
+/* ── SIDEBAR ─────────────────────────────────────────── */
+#sidebar {
+  width: 64px; min-height: 100vh; flex-shrink: 0;
+  background: rgba(5,10,18,0.97); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; z-index: 100;
+  box-shadow: 4px 0 30px rgba(0,0,0,0.5);
+  transition: width 0.26s ease-out; overflow: hidden;
+}
+#sidebar.expanded { width: var(--sidebar-w); }
+
+.sidebar-header {
+  height: 70px; display: flex; align-items: center; justify-content: center;
+  border-bottom: 1px solid var(--border); flex-shrink: 0; overflow: hidden;
+}
+.sidebar-logo-sm {
+  width: 100%; height: 100%; object-fit: cover; object-position: center;
+  filter: drop-shadow(0 0 10px rgba(0,255,157,0.5));
+  cursor: pointer; display: block;
+  transition: filter 0.18s;
+}
+#sidebar.expanded .sidebar-logo-sm { display: none; }
+#sidebar.expanded .sidebar-header  { padding: 0 14px; justify-content: space-between; }
+.sidebar-logo-lg {
+  height: 38px; object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(0,255,157,0.4));
+  opacity: 0; max-width: 0; overflow: hidden;
+  transition: opacity 0.26s, max-width 0.26s;
+}
+#sidebar.expanded .sidebar-logo-lg { opacity: 1; max-width: 140px; }
+.sidebar-toggle {
+  width: 28px; height: 28px; border-radius: 7px;
+  border: 1px solid var(--border2); background: rgba(255,255,255,0.04);
+  color: var(--muted); cursor: pointer; display: none;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  transition: all 0.15s;
+}
+#sidebar.expanded .sidebar-toggle { display: flex; }
+.sidebar-toggle:hover { background: rgba(255,255,255,0.09); color: var(--text); }
+
+.sidebar-nav { flex: 1; padding: 12px 0; display: flex; flex-direction: column; gap: 2px; }
+.sidebar-link {
+  display: flex; align-items: center; gap: 12px;
+  height: 46px; padding: 0 13px; text-decoration: none; color: var(--muted);
+  border-left: 2px solid transparent; white-space: nowrap;
+  position: relative; transition: all 0.15s;
+}
+.sidebar-link:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.sidebar-link.active { background: rgba(168,85,247,0.09); color: var(--purple); border-left-color: var(--purple); }
+.sidebar-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 8px; }
+.sidebar-link.active .sidebar-icon { background: rgba(168,85,247,0.12); }
+.sidebar-lbl { font-size: 13px; font-weight: 500; opacity: 0; max-width: 0; overflow: hidden; transition: opacity 0.26s, max-width 0.26s; pointer-events: none; }
+#sidebar.expanded .sidebar-lbl { opacity: 1; max-width: 140px; }
+/* Tooltip for collapsed */
+.sidebar-link::after {
+  content: attr(data-label); position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
+  background: rgba(5,10,18,0.97); border: 1px solid var(--border2);
+  color: var(--text); font-size: 12px; font-weight: 500;
+  padding: 5px 11px; border-radius: 7px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity 0.13s; z-index: 200;
+}
+#sidebar:not(.expanded) .sidebar-link:hover::after { opacity: 1; }
+.sidebar-footer { padding: 12px; border-top: 1px solid var(--border); }
+.sidebar-ver { font-size: 10px; color: rgba(107,138,170,0.3); text-align: center; opacity: 0; transition: opacity 0.26s; }
+#sidebar.expanded .sidebar-ver { opacity: 1; }
+
+/* ── MAIN ───────────────────────────────────────────── */
+#main {
+  flex: 1; display: flex; flex-direction: column; min-width: 0;
+  position: relative; z-index: 1;
+}
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; height: 64px; flex-shrink: 0;
+  background: rgba(7,10,16,0.96); border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+.topbar-title {
+  font-family: 'Space Mono', monospace; font-size: 15px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  background: linear-gradient(90deg, var(--text), var(--muted));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.topbar-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.topbar-badge {
+  display: flex; align-items: center; gap: 7px; padding: 6px 14px;
+  border-radius: 20px; border: 1px solid rgba(168,85,247,0.3);
+  background: rgba(168,85,247,0.07); font-size: 12px; font-weight: 600;
+  color: var(--purple);
+}
+.topbar-badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--purple); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── PAGE BODY ──────────────────────────────────────── */
+.page-body {
+  flex: 1; display: grid; grid-template-columns: 420px 1fr;
+  gap: 0; overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .page-body { grid-template-columns: 1fr; overflow: auto; }
+}
+
+/* ── LEFT PANEL — FORM ───────────────────────────────── */
+.form-panel {
+  border-right: 1px solid var(--border); padding: 28px 28px;
+  overflow-y: auto; background: rgba(10,16,26,0.5);
+  display: flex; flex-direction: column; gap: 0;
+}
+
+.form-panel::-webkit-scrollbar { width: 4px; }
+.form-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.section-head {
+  font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
+  margin-bottom: 18px; display: flex; align-items: center; gap: 10px;
+}
+.section-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.field { margin-bottom: 18px; }
+.field label {
+  display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.9px; color: var(--muted); margin-bottom: 7px;
+}
+
+.field-input, .field-select {
+  width: 100%; height: 48px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text); font-size: 14px;
+  padding: 0 14px; font-family: 'DM Sans', sans-serif;
+  outline: none; transition: border-color 0.18s, box-shadow 0.18s;
+  appearance: none;
+}
+.field-input:focus, .field-select:focus {
+  border-color: var(--purple); box-shadow: 0 0 0 3px rgba(168,85,247,0.12);
+}
+.field-input::placeholder { color: var(--dim); }
+
+/* Reason pills */
+.reason-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.reason-pill {
+  padding: 12px 14px; border-radius: 12px; border: 2px solid var(--border);
+  background: var(--surface2); cursor: pointer; transition: all 0.16s;
+  display: flex; align-items: center; gap: 10px; user-select: none;
+}
+.reason-pill:hover { border-color: var(--border2); }
+.reason-pill.selected { transform: translateY(-1px); }
+.reason-pill[data-reason="Holiday"].selected   { border-color: var(--c-holiday);  background: rgba(0,200,255,0.08); }
+.reason-pill[data-reason="Sick"].selected      { border-color: var(--c-sick);     background: rgba(255,75,92,0.08); }
+.reason-pill[data-reason="AAUP"].selected      { border-color: var(--c-aaup);     background: rgba(168,85,247,0.08); }
+.reason-pill[data-reason="Training"].selected  { border-color: var(--c-training); background: rgba(245,158,11,0.08); }
+.reason-pill[data-reason="Other"].selected     { border-color: var(--c-other);    background: rgba(107,138,170,0.08); }
+.reason-icon { font-size: 20px; }
+.reason-name { font-size: 13px; font-weight: 600; }
+.reason-pill[data-reason="Holiday"]  .reason-name { color: var(--c-holiday); }
+.reason-pill[data-reason="Sick"]     .reason-name { color: var(--c-sick); }
+.reason-pill[data-reason="AAUP"]     .reason-name { color: var(--c-aaup); }
+.reason-pill[data-reason="Training"] .reason-name { color: var(--c-training); }
+.reason-pill[data-reason="Other"]    .reason-name { color: var(--c-other); }
+
+/* Notes */
+.field-textarea {
+  width: 100%; min-height: 80px; resize: vertical;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text); font-size: 14px;
+  padding: 12px 14px; font-family: 'DM Sans', sans-serif;
+  outline: none; transition: border-color 0.18s, box-shadow 0.18s; line-height: 1.5;
+}
+.field-textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(168,85,247,0.12); }
+.field-textarea::placeholder { color: var(--dim); }
+
+/* Submit button */
+.submit-btn {
+  width: 100%; height: 52px; border-radius: 12px; border: none;
+  background: linear-gradient(90deg, var(--purple), #6366f1);
+  color: #fff; font-size: 15px; font-weight: 700;
+  font-family: 'DM Sans', sans-serif; cursor: pointer;
+  letter-spacing: 0.3px; margin-top: 6px;
+  transition: filter 0.18s, transform 0.18s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.submit-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.submit-btn:active { transform: scale(0.99); }
+.submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* Conflict warning */
+.conflict-box {
+  display: none; margin-top: 16px; padding: 14px 16px; border-radius: 10px;
+  background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3);
+  font-size: 13px; line-height: 1.6;
+}
+.conflict-box.show { display: block; }
+.conflict-box-title {
+  font-weight: 700; color: var(--warning); font-size: 13px;
+  display: flex; align-items: center; gap: 7px; margin-bottom: 6px;
+}
+.conflict-job { color: var(--muted); font-size: 12px; }
+.conflict-job strong { color: var(--text); font-weight: 600; }
+
+/* ── RIGHT PANEL — LOG ───────────────────────────────── */
+.log-panel {
+  padding: 28px 28px; overflow-y: auto; display: flex; flex-direction: column;
+}
+.log-panel::-webkit-scrollbar { width: 4px; }
+.log-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.log-controls {
+  display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;
+}
+.log-filter {
+  height: 34px; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 12px;
+  padding: 0 12px; font-family: 'DM Sans', sans-serif; outline: none;
+  transition: border-color 0.15s; appearance: none; cursor: pointer;
+}
+.log-filter:focus { border-color: var(--purple); }
+.log-search {
+  flex: 1; height: 34px; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 12px;
+  padding: 0 12px 0 32px; font-family: 'DM Sans', sans-serif; outline: none;
+  transition: border-color 0.15s; min-width: 120px;
+}
+.log-search:focus { border-color: var(--purple); }
+.log-search-wrap { position: relative; flex: 1; min-width: 120px; }
+.log-search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); opacity: 0.35; pointer-events: none; }
+
+/* Absence cards */
+.absence-list { display: flex; flex-direction: column; gap: 10px; }
+
+.absence-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-left: 4px solid; border-radius: 12px;
+  padding: 16px 18px; position: relative;
+  transition: box-shadow 0.18s, border-color 0.18s;
+  animation: slideIn 0.25s ease-out both;
+}
+@keyframes slideIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.absence-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.11); }
+
+.absence-card[data-reason="Holiday"]  { border-left-color: var(--c-holiday); }
+.absence-card[data-reason="Sick"]     { border-left-color: var(--c-sick); }
+.absence-card[data-reason="AAUP"]     { border-left-color: var(--c-aaup); }
+.absence-card[data-reason="Training"] { border-left-color: var(--c-training); }
+.absence-card[data-reason="Other"]    { border-left-color: var(--c-other); }
+
+.absence-card-top {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px;
+}
+.absence-eng  { font-size: 16px; font-weight: 700; color: var(--text); }
+.absence-date { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.absence-reason-badge {
+  display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px;
+  border-radius: 20px; font-size: 12px; font-weight: 700; border: 1px solid;
+  flex-shrink: 0;
+}
+.absence-reason-badge[data-reason="Holiday"]  { background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.3); color: var(--c-holiday); }
+.absence-reason-badge[data-reason="Sick"]     { background: rgba(255,75,92,0.1); border-color: rgba(255,75,92,0.3); color: var(--c-sick); }
+.absence-reason-badge[data-reason="AAUP"]     { background: rgba(168,85,247,0.1); border-color: rgba(168,85,247,0.3); color: var(--c-aaup); }
+.absence-reason-badge[data-reason="Training"] { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: var(--c-training); }
+.absence-reason-badge[data-reason="Other"]    { background: rgba(107,138,170,0.1); border-color: rgba(107,138,170,0.2); color: var(--c-other); }
+
+.absence-meta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.absence-meta-item { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+.absence-meta-item strong { color: var(--text); font-weight: 500; }
+.absence-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 8px; border-top: 1px solid var(--border); padding-top: 8px; }
+
+.absence-delete-btn {
+  position: absolute; top: 12px; right: 12px;
+  width: 28px; height: 28px; border-radius: 7px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--dim); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; opacity: 0;
+}
+.absence-card:hover .absence-delete-btn { opacity: 1; }
+.absence-delete-btn:hover { border-color: rgba(255,75,92,0.4); color: var(--danger); background: rgba(255,75,92,0.08); }
+
+.conflict-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 8px; border-radius: 5px;
+  background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);
+  color: var(--warning); font-size: 11px; font-weight: 600;
+  margin-top: 6px;
+}
+
+/* Empty state */
+.log-empty {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 12px; color: var(--dim); text-align: center;
+  padding: 40px;
+}
+.log-empty-icon { font-size: 44px; }
+.log-empty-text { font-size: 14px; line-height: 1.6; }
+
+/* Stats row */
+.stats-row {
+  display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.stat-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  font-size: 12px;
+}
+.stat-chip-dot { width: 8px; height: 8px; border-radius: 50%; }
+.stat-chip-num { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 16px; }
+.stat-chip-lbl { color: var(--muted); font-size: 11px; }
+
+/* TOAST */
+#toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; gap: 10px;
+  transform: translateY(20px); opacity: 0; pointer-events: none;
+  transition: all 0.28s ease;
+}
+#toast.show { opacity: 1; transform: translateY(0); }
+#toast.ok  { background: rgba(5,15,10,0.98); border: 1px solid rgba(0,255,157,0.4); color: var(--accent); box-shadow: 0 0 24px rgba(0,255,157,0.1), 0 8px 32px rgba(0,0,0,0.7); }
+#toast.err { background: rgba(15,5,8,0.98);  border: 1px solid rgba(255,75,92,0.4);  color: var(--danger); box-shadow: 0 0 24px rgba(255,75,92,0.1),  0 8px 32px rgba(0,0,0,0.7); }
+
+/* Loading */
+#loadingOverlay {
+  position: fixed; inset: 0; z-index: 8000; background: var(--bg);
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px;
+}
+#loadingOverlay.hidden { display: none; }
+.spinner { width: 34px; height: 34px; border: 3px solid var(--border2); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-txt { font-size: 13px; color: var(--muted); }
+
+/* Confirm delete dialog */
+.confirm-overlay {
+  position: fixed; inset: 0; z-index: 7000; background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.confirm-overlay.open { opacity: 1; pointer-events: all; }
+.confirm-box {
+  background: var(--surface); border: 1px solid var(--border2); border-radius: 16px;
+  padding: 28px 28px; max-width: 360px; width: 90%;
+  transform: scale(0.95); transition: transform 0.22s;
+}
+.confirm-overlay.open .confirm-box { transform: scale(1); }
+.confirm-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.confirm-body  { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 22px; }
+.confirm-actions { display: flex; gap: 10px; }
+.confirm-yes {
+  flex: 1; height: 44px; border-radius: 10px; border: none;
+  background: rgba(255,75,92,0.15); border: 1px solid rgba(255,75,92,0.4);
+  color: var(--danger); font-size: 14px; font-weight: 700; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+}
+.confirm-yes:hover { background: rgba(255,75,92,0.25); }
+.confirm-no {
+  flex: 1; height: 44px; border-radius: 10px; border: 1px solid var(--border);
+  background: transparent; color: var(--muted); font-size: 14px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+}
+.confirm-no:hover { border-color: var(--border2); color: var(--text); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-txt">Loading absence records…</div>
+</div>
+<div id="toast"></div>
+
+<!-- Confirm delete dialog -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-title">Remove Absence?</div>
+    <div class="confirm-body" id="confirmBody">This will remove the absence record and unblock this engineer's day on the scheduler.</div>
+    <div class="confirm-actions">
+      <button class="confirm-yes" id="confirmYes">Yes, Remove</button>
+      <button class="confirm-no"  id="confirmNo">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sidebar-header">
+    <img class="sidebar-logo-sm" id="logoSm"
+      src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1" alt="Geko">
+    <img class="sidebar-logo-lg"
+      src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=xh5pubjr&dl=1" alt="Geko">
+    <button class="sidebar-toggle" id="sidebarToggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="dashboard.html" class="sidebar-link" data-label="Dashboard">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+      <span class="sidebar-lbl">Dashboard</span>
+    </a>
+    <a href="scheduling.html" class="sidebar-link" data-label="Scheduling">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+      <span class="sidebar-lbl">Scheduling</span>
+    </a>
+    <a href="database.html" class="sidebar-link" data-label="Database">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 9v4c0 1.66 4.03 3 9 3s9-1.34 9-3V9"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/></svg></span>
+      <span class="sidebar-lbl">Database</span>
+    </a>
+    <a href="viewdata.html" class="sidebar-link" data-label="View Data">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
+      <span class="sidebar-lbl">View Data</span>
+    </a>
+    <a href="userdatabase.html" class="sidebar-link" data-label="Users">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
+      <span class="sidebar-lbl">Users</span>
+    </a>
+    <a href="mapping.html" class="sidebar-link" data-label="Mapping">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg></span>
+      <span class="sidebar-lbl">Mapping</span>
+    </a>
+    <a href="absencesubmission.html" class="sidebar-link active" data-label="Absence">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg></span>
+      <span class="sidebar-lbl">Absence</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-ver">v1.0.0</div></div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <header class="topbar">
+    <div>
+      <div class="topbar-title">Absence Management</div>
+      <div class="topbar-sub">Submit and manage engineer absences · Conflicts auto-flag on the scheduler</div>
+    </div>
+    <div class="topbar-badge">
+      <div class="topbar-badge-dot"></div>
+      <span id="absenceCountBadge">0 active absences</span>
+    </div>
+  </header>
+
+  <div class="page-body">
+
+    <!-- ── LEFT: SUBMISSION FORM ── -->
+    <div class="form-panel">
+      <div class="section-head">New Absence</div>
+
+      <!-- Engineer selector -->
+      <div class="field">
+        <label>Engineer</label>
+        <select class="field-select" id="engSelect">
+          <option value="">Select engineer…</option>
+        </select>
+      </div>
+
+      <!-- Date range -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field">
+          <label>From Date</label>
+          <input type="date" class="field-input" id="dateFrom"/>
+        </div>
+        <div class="field">
+          <label>To Date</label>
+          <input type="date" class="field-input" id="dateTo"/>
+        </div>
+      </div>
+
+      <!-- Reason pills -->
+      <div class="field">
+        <label>Reason</label>
+        <div class="reason-grid">
+          <div class="reason-pill" data-reason="Holiday"  onclick="selectReason(this)"><span class="reason-icon">🌴</span><span class="reason-name">Holiday</span></div>
+          <div class="reason-pill" data-reason="Sick"     onclick="selectReason(this)"><span class="reason-icon">🤒</span><span class="reason-name">Sick</span></div>
+          <div class="reason-pill" data-reason="AAUP"     onclick="selectReason(this)"><span class="reason-icon">📋</span><span class="reason-name">AAUP</span></div>
+          <div class="reason-pill" data-reason="Training" onclick="selectReason(this)"><span class="reason-icon">🎓</span><span class="reason-name">Training</span></div>
+          <div class="reason-pill" data-reason="Other"    onclick="selectReason(this)" style="grid-column:1/-1"><span class="reason-icon">📌</span><span class="reason-name">Other</span></div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="field">
+        <label>Notes <span style="color:var(--dim);font-size:10px;text-transform:none;letter-spacing:0">(optional)</span></label>
+        <textarea class="field-textarea" id="notes" placeholder="Any additional details…"></textarea>
+      </div>
+
+      <!-- Conflict preview -->
+      <div class="conflict-box" id="conflictBox">
+        <div class="conflict-box-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Jobs conflict on this date
+        </div>
+        <div id="conflictList"></div>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Submit Absence
+      </button>
+    </div>
+
+    <!-- ── RIGHT: ABSENCE LOG ── -->
+    <div class="log-panel">
+      <div class="section-head">Absence Records</div>
+
+      <div class="stats-row" id="statsRow"></div>
+
+      <div class="log-controls">
+        <select class="log-filter" id="filterReason">
+          <option value="">All reasons</option>
+          <option value="Holiday">Holiday</option>
+          <option value="Sick">Sick</option>
+          <option value="AAUP">AAUP</option>
+          <option value="Training">Training</option>
+          <option value="Other">Other</option>
+        </select>
+        <select class="log-filter" id="filterEng">
+          <option value="">All engineers</option>
+        </select>
+        <div class="log-search-wrap">
+          <svg class="log-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" class="log-search" id="logSearch" placeholder="Search…">
+        </div>
+      </div>
+
+      <div class="absence-list" id="absenceList"></div>
+      <div class="log-empty hidden" id="logEmpty">
+        <div class="log-empty-icon">📭</div>
+        <div class="log-empty-text">No absence records found.<br>Submit one using the form on the left.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore, collection, getDocs, addDoc, deleteDoc,
+  doc, onSnapshot, query, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const db = getFirestore(initializeApp({
+  apiKey:"AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
+  authDomain:"geko-scheduling.firebaseapp.com",
+  projectId:"geko-scheduling",
+  storageBucket:"geko-scheduling.firebasestorage.app",
+  messagingSenderId:"824568732787",
+  appId:"1:824568732787:web:c12db983fd6a5b44b01e06"
+}));
+
+/* ── Helpers ──────────────────────────────────────────── */
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function parseDate(s){
+  if(!s) return null;
+  s=String(s).trim();
+  let m;
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(m){const d=new Date(+m[1],+m[2]-1,+m[3]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
+  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m){const d=new Date(+m[3],+m[2]-1,+m[1]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
+  const d=new Date(s); if(!isNaN(d)){d.setHours(0,0,0,0);return d;} return null;
+}
+
+function toInputDate(d){ // → YYYY-MM-DD for <input type=date>
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function toUKDate(s){ // YYYY-MM-DD → DD/MM/YYYY display
+  if(!s) return '—';
+  const p=s.split('-');
+  if(p.length===3) return `${p[2]}/${p[1]}/${p[0]}`;
+  return s;
+}
+
+function fmtDisplayDate(s){
+  const d=parseDate(s); if(!d) return s||'—';
+  return d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+}
+
+// Get all dates in a range (inclusive), returned as YYYY-MM-DD strings
+function datesInRange(fromStr, toStr){
+  const dates=[];
+  const from=parseDate(fromStr), to=parseDate(toStr);
+  if(!from||!to) return dates;
+  for(let d=new Date(from); d<=to; d.setDate(d.getDate()+1)){
+    dates.push(toInputDate(new Date(d)));
+  }
+  return dates;
+}
+
+const REASON_ICON = { Holiday:'🌴', Sick:'🤒', AAUP:'📋', Training:'🎓', Other:'📌' };
+const REASON_COL  = { Holiday:'var(--c-holiday)', Sick:'var(--c-sick)', AAUP:'var(--c-aaup)', Training:'var(--c-training)', Other:'var(--c-other)' };
+
+let toastTimer;
+function toast(msg, type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className='',3500);
+}
+
+/* ── State ───────────────────────────────────────────── */
+let allJobs=[], allAbsences=[], selectedReason='';
+let filterReason='', filterEng='', searchTerm='';
+let pendingDeleteId=null;
+
+/* ── Load engineers from jobs ────────────────────────── */
+async function loadEngineers(){
+  const snap=await getDocs(collection(db,'uploaded_jobs'));
+  const engSet=new Set();
+  snap.forEach(d=>{ const j=d.data(); if(j.engineerName) engSet.add(j.engineerName); allJobs.push({_id:d.id,...j}); });
+  const engineers=[...engSet].sort((a,b)=>a.localeCompare(b));
+  const sel=document.getElementById('engSelect');
+  const filterSel=document.getElementById('filterEng');
+  engineers.forEach(e=>{
+    sel.innerHTML+=`<option value="${esc(e)}">${esc(e)}</option>`;
+    filterSel.innerHTML+=`<option value="${esc(e)}">${esc(e)}</option>`;
+  });
+}
+
+/* ── Real-time absence listener ──────────────────────── */
+function startAbsenceListener(){
+  onSnapshot(collection(db,'absences'), snap=>{
+    allAbsences=[];
+    snap.forEach(d=>allAbsences.push({_id:d.id,...d.data()}));
+    // Sort by createdAt desc
+    allAbsences.sort((a,b)=>{
+      const ta=a.createdAt?.seconds||0, tb=b.createdAt?.seconds||0;
+      return tb-ta;
+    });
+    renderLog();
+    updateStats();
+    document.getElementById('loadingOverlay').classList.add('hidden');
+    document.getElementById('absenceCountBadge').textContent=
+      `${allAbsences.length} absence record${allAbsences.length!==1?'s':''}`;
+  }, err=>{
+    console.error(err);
+    document.getElementById('loadingOverlay').classList.add('hidden');
+    toast('Failed to load absences: '+err.message,'err');
+  });
+}
+
+/* ── Stats ───────────────────────────────────────────── */
+function updateStats(){
+  const reasons=['Holiday','Sick','AAUP','Training','Other'];
+  const cols={Holiday:'var(--c-holiday)',Sick:'var(--c-sick)',AAUP:'var(--c-aaup)',Training:'var(--c-training)',Other:'var(--c-other)'};
+  const counts={};
+  reasons.forEach(r=>counts[r]=0);
+  allAbsences.forEach(a=>{ if(counts[a.reason]!==undefined) counts[a.reason]++; });
+  document.getElementById('statsRow').innerHTML=reasons
+    .filter(r=>counts[r]>0)
+    .map(r=>`<div class="stat-chip">
+      <div class="stat-chip-dot" style="background:${cols[r]}"></div>
+      <div><div class="stat-chip-num">${counts[r]}</div><div class="stat-chip-lbl">${r}</div></div>
+    </div>`).join('');
+}
+
+/* ── Conflict check ──────────────────────────────────── */
+function checkConflicts(eng, fromStr, toStr){
+  if(!eng||!fromStr||!toStr) return [];
+  const days=datesInRange(fromStr,toStr);
+  const conflicts=[];
+  allJobs.forEach(job=>{
+    if((job.engineerName||'').toLowerCase().trim() !== eng.toLowerCase().trim()) return;
+    // Parse the job's date
+    const jd=parseDate(job.dateOfJob);
+    if(!jd) return;
+    const jdStr=toInputDate(jd);
+    if(days.includes(jdStr)){
+      conflicts.push(job);
+    }
+  });
+  return conflicts;
+}
+
+function showConflicts(){
+  const eng=document.getElementById('engSelect').value;
+  const from=document.getElementById('dateFrom').value;
+  const to=document.getElementById('dateTo').value||from;
+  const box=document.getElementById('conflictBox');
+  const list=document.getElementById('conflictList');
+  if(!eng||!from){ box.classList.remove('show'); return; }
+  const conflicts=checkConflicts(eng,from,to);
+  if(conflicts.length===0){ box.classList.remove('show'); return; }
+  box.classList.add('show');
+  list.innerHTML=conflicts.map(j=>`
+    <div class="conflict-job">
+      <strong>${esc(j.jobType||'Job')}</strong> · ${esc(j.customerName||'—')} · ${esc(j.postcode||'—')}
+      <span style="color:var(--dim);margin-left:4px">${esc(j.jobId||j._id)}</span>
+    </div>`).join('');
+}
+
+/* ── Form validation ─────────────────────────────────── */
+function validateForm(){
+  const eng=document.getElementById('engSelect').value;
+  const from=document.getElementById('dateFrom').value;
+  const ok=eng&&from&&selectedReason;
+  document.getElementById('submitBtn').disabled=!ok;
+}
+
+window.selectReason=function(el){
+  document.querySelectorAll('.reason-pill').forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedReason=el.dataset.reason;
+  validateForm();
+};
+
+document.getElementById('engSelect').addEventListener('change',()=>{ validateForm(); showConflicts(); });
+document.getElementById('dateFrom').addEventListener('change',()=>{ validateForm(); showConflicts();
+  // Auto-set dateTo if blank
+  if(!document.getElementById('dateTo').value) document.getElementById('dateTo').value=document.getElementById('dateFrom').value;
+});
+document.getElementById('dateTo').addEventListener('change',()=>{ showConflicts(); });
+
+/* ── Submit ──────────────────────────────────────────── */
+document.getElementById('submitBtn').addEventListener('click', async()=>{
+  const eng=document.getElementById('engSelect').value.trim();
+  const from=document.getElementById('dateFrom').value;
+  const to=document.getElementById('dateTo').value||from;
+  const notes=document.getElementById('notes').value.trim();
+  if(!eng||!from||!selectedReason) return;
+
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true; btn.innerHTML='<div class="spinner" style="width:18px;height:18px;border-width:2px;margin:0"></div> Submitting…';
+
+  try {
+    // Expand range into individual day records so scheduling.html
+    // can do a simple engineerName + date lookup
+    const days=datesInRange(from,to);
+    const writePromises=days.map(day=>addDoc(collection(db,'absences'),{
+      engineerName: eng,
+      date:         day,       // YYYY-MM-DD
+      dateFrom:     from,
+      dateTo:       to,
+      reason:       selectedReason,
+      notes:        notes||null,
+      createdAt:    serverTimestamp(),
+      conflictCount: checkConflicts(eng,day,day).length,
+    }));
+    await Promise.all(writePromises);
+
+    toast(`Absence submitted for ${eng} (${days.length} day${days.length!==1?'s':''}) ✓`,'ok');
+
+    // Reset form
+    document.getElementById('engSelect').value='';
+    document.getElementById('dateFrom').value='';
+    document.getElementById('dateTo').value='';
+    document.getElementById('notes').value='';
+    document.querySelectorAll('.reason-pill').forEach(p=>p.classList.remove('selected'));
+    selectedReason='';
+    document.getElementById('conflictBox').classList.remove('show');
+
+  } catch(e){
+    console.error(e); toast('Failed: '+e.message,'err');
+  }
+  btn.disabled=false;
+  btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Submit Absence';
+  validateForm();
+});
+
+/* ── Log rendering ───────────────────────────────────── */
+function renderLog(){
+  const list=document.getElementById('absenceList');
+  const empty=document.getElementById('logEmpty');
+  let items=allAbsences.slice();
+  if(filterReason) items=items.filter(a=>a.reason===filterReason);
+  if(filterEng)    items=items.filter(a=>a.engineerName===filterEng);
+  if(searchTerm)   items=items.filter(a=>(a.engineerName||'').toLowerCase().includes(searchTerm)||(a.reason||'').toLowerCase().includes(searchTerm)||(a.notes||'').toLowerCase().includes(searchTerm));
+
+  if(items.length===0){
+    list.innerHTML=''; empty.classList.remove('hidden'); return;
+  }
+  empty.classList.add('hidden');
+
+  // Group by (engineerName + dateFrom + dateTo) so multi-day absences show as one card
+  const grouped={};
+  items.forEach(a=>{
+    const key=`${a.engineerName}||${a.dateFrom||a.date}||${a.dateTo||a.date}||${a.reason}`;
+    if(!grouped[key]){
+      grouped[key]={ ...a, dates:[a.date], ids:[a._id], conflictCount:a.conflictCount||0 };
+    } else {
+      grouped[key].dates.push(a.date);
+      grouped[key].ids.push(a._id);
+      grouped[key].conflictCount=Math.max(grouped[key].conflictCount,a.conflictCount||0);
+    }
+  });
+
+  const cards=Object.values(grouped).sort((a,b)=>{
+    const ta=a.createdAt?.seconds||0, tb=b.createdAt?.seconds||0; return tb-ta;
+  });
+
+  list.innerHTML=cards.map(a=>{
+    const from=a.dateFrom||a.date, to=a.dateTo||a.date;
+    const isSingleDay=from===to;
+    const dateDisplay=isSingleDay?fmtDisplayDate(from):`${fmtDisplayDate(from)} → ${fmtDisplayDate(to)}`;
+    const days=a.dates.length;
+    const conflictHtml=a.conflictCount>0?`<div class="conflict-badge">⚠️ ${a.conflictCount} job conflict${a.conflictCount!==1?'s':''} on these dates</div>`:'';
+    const noteHtml=a.notes?`<div class="absence-note">${esc(a.notes)}</div>`:'';
+    // Use first id for delete (deletes all in the group)
+    const idsJson=esc(JSON.stringify(a.ids));
+    return `
+    <div class="absence-card" data-reason="${esc(a.reason)}" data-ids="${idsJson}">
+      <div class="absence-card-top">
+        <div>
+          <div class="absence-eng">${esc(a.engineerName)}</div>
+          <div class="absence-date">${dateDisplay}</div>
+        </div>
+        <span class="absence-reason-badge" data-reason="${esc(a.reason)}">${REASON_ICON[a.reason]||'📌'} ${esc(a.reason)}</span>
+      </div>
+      <div class="absence-meta">
+        <div class="absence-meta-item">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <strong>${days} day${days!==1?'s':''}</strong>
+        </div>
+      </div>
+      ${conflictHtml}
+      ${noteHtml}
+      <button class="absence-delete-btn" title="Remove absence" onclick="confirmDelete(this)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </button>
+    </div>`;
+  }).join('');
+}
+
+/* ── Delete ──────────────────────────────────────────── */
+window.confirmDelete=function(btn){
+  const card=btn.closest('.absence-card');
+  const idsJson=card.dataset.ids;
+  try{ pendingDeleteId=JSON.parse(idsJson); }
+  catch{ pendingDeleteId=[card.dataset.ids]; }
+  const eng=card.querySelector('.absence-eng').textContent;
+  const date=card.querySelector('.absence-date').textContent;
+  document.getElementById('confirmBody').textContent=
+    `Remove absence for ${eng} on ${date}? The scheduler will unblock this date.`;
+  document.getElementById('confirmOverlay').classList.add('open');
+};
+
+document.getElementById('confirmYes').addEventListener('click', async()=>{
+  document.getElementById('confirmOverlay').classList.remove('open');
+  if(!pendingDeleteId) return;
+  try{
+    await Promise.all(pendingDeleteId.map(id=>deleteDoc(doc(db,'absences',id))));
+    toast('Absence removed ✓','ok');
+  }catch(e){ toast('Failed to remove: '+e.message,'err'); }
+  pendingDeleteId=null;
+});
+document.getElementById('confirmNo').addEventListener('click',()=>{
+  document.getElementById('confirmOverlay').classList.remove('open');
+  pendingDeleteId=null;
+});
+
+/* ── Filters ─────────────────────────────────────────── */
+document.getElementById('filterReason').addEventListener('change',e=>{filterReason=e.target.value;renderLog();});
+document.getElementById('filterEng').addEventListener('change',e=>{filterEng=e.target.value;renderLog();});
+document.getElementById('logSearch').addEventListener('input',e=>{searchTerm=e.target.value.trim().toLowerCase();renderLog();});
+
+/* ── Sidebar ─────────────────────────────────────────── */
+const sidebar=document.getElementById('sidebar');
+document.getElementById('sidebarToggle').addEventListener('click',()=>{ sidebar.classList.toggle('expanded'); localStorage.setItem('geko-sidebar',sidebar.classList.contains('expanded')?'expanded':'collapsed'); });
+document.getElementById('logoSm').addEventListener('click',()=>{ sidebar.classList.toggle('expanded'); });
+if(localStorage.getItem('geko-sidebar')==='expanded') sidebar.classList.add('expanded');
+
+/* ── Boot ────────────────────────────────────────────── */
+// Set default date to today
+const today=new Date();
+document.getElementById('dateFrom').value=toInputDate(today);
+document.getElementById('dateTo').value=toInputDate(today);
+
+await loadEngineers();
+startAbsenceListener();
+</script>
+</body>
+</html>
