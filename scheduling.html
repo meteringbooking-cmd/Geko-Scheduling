@@ -647,6 +647,74 @@
   }
   .job-card-day.needs-realloc, .job-card-week.needs-realloc { animation: conflictFlash 1.4s ease-out forwards; border-color: rgba(245,158,11,0.6) !important; background: rgba(245,158,11,0.06) !important; }
   .conflict-warning-badge { position: absolute; top: -6px; right: 6px; background: var(--warning); color: #020308; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.4px; pointer-events: none; z-index: 20; }
+
+  /* ── NEARBY TOGGLE ── */
+  .nearby-track {
+    position: relative; width: 34px; height: 18px; border-radius: 9px;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.12);
+    cursor: pointer; transition: background 0.22s, border-color 0.22s; flex-shrink: 0;
+  }
+  .nearby-track.on { background: rgba(0,255,157,0.25); border-color: rgba(0,255,157,0.5); }
+  .nearby-thumb {
+    position: absolute; top: 2px; left: 2px; width: 12px; height: 12px;
+    border-radius: 50%; background: rgba(143,160,184,0.6);
+    transition: transform 0.22s, background 0.22s; pointer-events: none;
+  }
+  .nearby-track.on .nearby-thumb { transform: translateX(16px); background: var(--accent-green); }
+  #nearbyLabel.on { color: var(--accent-green); }
+  .nearby-info-btn {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 1px solid rgba(143,160,184,0.3); background: rgba(143,160,184,0.08);
+    color: var(--text-muted); font-size: 10px; font-weight: 700; font-style: italic;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-family: Georgia, serif; transition: all 0.15s; flex-shrink: 0; line-height: 1;
+  }
+  .nearby-info-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(0,200,255,0.08); }
+  .nearby-info-card {
+    position: absolute; top: calc(100% + 10px); left: 0; width: 300px;
+    background: rgba(8,13,24,0.99); border: 1px solid rgba(0,200,255,0.25);
+    border-radius: 12px; padding: 16px 18px 14px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.9), 0 0 0 1px rgba(0,200,255,0.06);
+    z-index: 300; display: none; animation: nearbyCardIn 0.18s ease-out;
+  }
+  .nearby-info-card.visible { display: block; }
+  @keyframes nearbyCardIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+  .nearby-info-close {
+    position: absolute; top: 10px; right: 10px;
+    width: 22px; height: 22px; border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.08); background: transparent;
+    color: var(--text-muted); cursor: pointer; font-size: 11px;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .nearby-info-close:hover { border-color: var(--danger); color: var(--danger); }
+  .nearby-info-title {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 12px; font-weight: 600; color: var(--accent-blue);
+    letter-spacing: 0.04em; margin-bottom: 10px; padding-right: 20px;
+  }
+  .nearby-info-body { font-size: 12px; color: var(--text-muted); line-height: 1.65; margin-bottom: 8px; }
+  .nearby-info-body strong { color: var(--text-main); font-weight: 600; }
+  .nearby-info-tip {
+    display: flex; align-items: flex-start; gap: 6px;
+    background: rgba(0,255,157,0.06); border: 1px solid rgba(0,255,157,0.15);
+    border-radius: 7px; padding: 8px 10px;
+    font-size: 11px; color: rgba(0,255,157,0.7); line-height: 1.5;
+  }
+  .nearby-info-tip svg { flex-shrink: 0; margin-top: 1px; }
+  .eng-row.nearby-hidden, .eng-tl-row.nearby-hidden { display: none !important; }
+  .nearby-active-banner {
+    display: none; align-items: center; gap: 8px;
+    padding: 5px 16px; font-size: 11px; font-weight: 600;
+    background: rgba(0,255,157,0.06); border-bottom: 1px solid rgba(0,255,157,0.15);
+    color: var(--accent-green); flex-shrink: 0;
+  }
+  .nearby-active-banner.visible { display: flex; }
+  .nearby-banner-clear {
+    margin-left: auto; font-size: 10px; color: var(--text-muted); cursor: pointer;
+    padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);
+    background: transparent; transition: all 0.15s; font-family: 'Inter', sans-serif;
+  }
+  .nearby-banner-clear:hover { color: var(--text-main); border-color: rgba(255,255,255,0.25); }
 </style>
 </head>
 <body>
@@ -755,7 +823,34 @@
       <input type="text" class="search-input" id="engSearch" placeholder="Engineer name…">
     </div>
     <div class="tsep"></div>
+    <!-- NearBy toggle -->
+    <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;position:relative">
+      <div class="nearby-track" id="nearbyTrack">
+        <span class="nearby-thumb" id="nearbyThumb"></span>
+      </div>
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.04em;color:var(--text-muted)" id="nearbyLabel">NearBy</span>
+      <button class="nearby-info-btn" id="nearbyInfoBtn" title="What is NearBy?">i</button>
+      <div class="nearby-info-card" id="nearbyInfoCard">
+        <button class="nearby-info-close" id="nearbyInfoClose">&#x2715;</button>
+        <div class="nearby-info-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+          NearBy Filter
+        </div>
+        <p class="nearby-info-body">When <strong>NearBy</strong> is enabled and you click on a job card, the engineer list is filtered to show only engineers who have at least one job scheduled within <strong>40 minutes drive</strong> of the selected job&#39;s postcode.</p>
+        <p class="nearby-info-body">This helps you quickly identify which engineers are already working in the same area and could be reassigned or given additional nearby jobs with minimal travel.</p>
+        <div class="nearby-info-tip">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Click any job card while NearBy is on to apply the filter
+        </div>
+      </div>
+    </div>
+    <div class="tsep"></div>
     <span id="jobCountLbl"></span>
+  </div>
+  <div class="nearby-active-banner" id="nearbyBanner">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 1 8 8c0 5.25-8 13-8 13S4 15.25 4 10a8 8 0 0 1 8-8z"/></svg>
+    <span id="nearbyBannerText">NearBy active — showing engineers within 40 min of selected job</span>
+    <button class="nearby-banner-clear" id="nearbyBannerClear">Clear filter</button>
   </div>
   <div class="lbar" id="lbar"></div>
   <div class="status-bar"><div class="sdot spin" id="sdot"></div><span id="stxt">Connecting…</span></div>
@@ -861,6 +956,8 @@ let unsubscribe = null;
 let allAbsences = [];
 let unsubAbsences = null;
 let docsExpanded = false;
+let nearbyActive = false;
+let nearbySelectedJob = null;
 
 // Lightbox state
 let lightboxImages = [];
@@ -1651,6 +1748,51 @@ function updateNowLine(dayEnd){
 }
 setInterval(()=>{if(currentView==="day"){const dj=allJobs.filter(j=>{const d=parseDate(j.dateOfJob);return d&&sameDay(d,currentDate);});updateNowLine(calcDayEnd(dj));}},60000);
 
+/* ─── NearBy filter ─────────────────────────────────────────── */
+/**
+ * Given a reference postcode, find all engineer names who have at least
+ * one job within 40 minutes drive (using our haversine + winding estimate).
+ */
+function getEngineersNearPostcode(refPostcode) {
+  const NEARBY_THRESHOLD_MINS = 40;
+  const qualifying = new Set();
+  allJobs.forEach(job => {
+    if (!job.engineerName || !job.postcode) return;
+    const mins = driveMinutes(refPostcode, job.postcode);
+    if (mins !== null && mins <= NEARBY_THRESHOLD_MINS) {
+      qualifying.add(job.engineerName);
+    }
+  });
+  return qualifying;
+}
+
+function applyNearbyFilter() {
+  const banner = document.getElementById('nearbyBanner');
+  if (!nearbyActive || !nearbySelectedJob) {
+    // Show all engineers
+    document.querySelectorAll('.eng-row[data-eng]').forEach(r => r.classList.remove('nearby-hidden'));
+    document.querySelectorAll('.eng-tl-row[data-eng]').forEach(r => r.classList.remove('nearby-hidden'));
+    banner.classList.remove('visible');
+    return;
+  }
+  const qualifying = getEngineersNearPostcode(nearbySelectedJob.postcode);
+  document.querySelectorAll('.eng-row[data-eng]').forEach(r => {
+    r.classList.toggle('nearby-hidden', !qualifying.has(r.dataset.eng));
+  });
+  document.querySelectorAll('.eng-tl-row[data-eng]').forEach(r => {
+    r.classList.toggle('nearby-hidden', !qualifying.has(r.dataset.eng));
+  });
+  const count = qualifying.size;
+  document.getElementById('nearbyBannerText').textContent =
+    `NearBy active — ${count} engineer${count !== 1 ? 's' : ''} within 40 min of ${nearbySelectedJob.postcode} (${nearbySelectedJob.jobType || 'selected job'})`;
+  banner.classList.add('visible');
+}
+
+function clearNearbyFilter() {
+  nearbySelectedJob = null;
+  applyNearbyFilter();
+}
+
 /* ─── Search ────────────────────────────────────────────────── */
 function applySearch(){
   const hasJ=jobSearch.length>0,hasE=engSearch.length>0;
@@ -1695,6 +1837,12 @@ function buildStatusHistory(job){
 
 function openModal(job, updateTracker = true){
   if(updateTracker) openModalJobId = job._id;
+
+  // NearBy: if active, filter engineers near this job's postcode
+  if (nearbyActive && job.postcode) {
+    nearbySelectedJob = job;
+    applyNearbyFilter();
+  }
   const sh=getStartHour(job), dur=getDuration(job.jobType);
   const curStatus = normaliseStatus(job.jobStatus || job.status);
   const meta = getStatusMeta(curStatus);
@@ -1769,6 +1917,36 @@ document.getElementById("btnDay").onclick     = ()=>setView("day");
 document.getElementById("btnWeek").onclick    = ()=>setView("week");
 document.getElementById("datePicker").onchange= e=>{const[y,mo,d]=e.target.value.split("-").map(Number);currentDate=new Date(y,mo-1,d);currentDate.setHours(0,0,0,0);render();};
 document.getElementById("modalClose").onclick    = closeModal;
+
+// NearBy toggle
+document.getElementById('nearbyTrack').addEventListener('click', () => {
+  nearbyActive = !nearbyActive;
+  const track = document.getElementById('nearbyTrack');
+  const label = document.getElementById('nearbyLabel');
+  track.classList.toggle('on', nearbyActive);
+  label.classList.toggle('on', nearbyActive);
+  if (!nearbyActive) clearNearbyFilter();
+});
+
+// NearBy info card
+document.getElementById('nearbyInfoBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('nearbyInfoCard').classList.toggle('visible');
+});
+document.getElementById('nearbyInfoClose').addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('nearbyInfoCard').classList.remove('visible');
+});
+document.addEventListener('mousedown', e => {
+  const card = document.getElementById('nearbyInfoCard');
+  const btn  = document.getElementById('nearbyInfoBtn');
+  if (!card.contains(e.target) && e.target !== btn) card.classList.remove('visible');
+});
+
+// NearBy banner clear button
+document.getElementById('nearbyBannerClear').addEventListener('click', () => {
+  clearNearbyFilter();
+});
 document.getElementById("modalOverlay").onclick  = e=>{if(e.target===document.getElementById("modalOverlay"))closeModal();};
 document.getElementById("jobSearch").oninput = e=>{jobSearch=e.target.value.trim().toLowerCase();applySearch();};
 document.getElementById("engSearch").oninput = e=>{engSearch=e.target.value.trim().toLowerCase();applySearch();};
