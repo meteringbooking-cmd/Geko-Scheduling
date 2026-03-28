@@ -901,7 +901,7 @@
 </div>
 
 <!-- NearBy info card — portal at body level to avoid stacking context issues -->
-<div class="nearby-info-card" id="nearbyInfoCard" style="position:fixed;z-index:99990;display:none;">
+<div class="nearby-info-card" id="nearbyInfoCard">
   <button class="nearby-info-close" id="nearbyInfoClose">&#x2715;</button>
   <div class="nearby-info-title">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
@@ -1369,6 +1369,9 @@ function render(){
     const visible = colJobs.map(j => j.postcode).filter(Boolean);
     geocodePostcodes(visible).then(() => renderAllDriveTimeBadges(cols[0], dayEnd));
   }
+
+  // Re-apply nearby filter after DOM is rebuilt
+  applyNearbyFilter();
 }
 
 function updateLabel(cols){
@@ -1781,15 +1784,18 @@ function getEngineersNearPostcode(refPostcode) {
   return qualifying;
 }
 
-function applyNearbyFilter() {
+async function applyNearbyFilter() {
   const banner = document.getElementById('nearbyBanner');
   if (!nearbyActive || !nearbySelectedJob) {
-    // Show all engineers
     document.querySelectorAll('.eng-row[data-eng]').forEach(r => r.classList.remove('nearby-hidden'));
     document.querySelectorAll('.eng-tl-row[data-eng]').forEach(r => r.classList.remove('nearby-hidden'));
     banner.classList.remove('visible');
     return;
   }
+  // Make sure all relevant postcodes (ref + all job postcodes) are geocoded
+  const allPostcodes = [nearbySelectedJob.postcode, ...allJobs.map(j => j.postcode).filter(Boolean)];
+  await geocodePostcodes(allPostcodes);
+
   const qualifying = getEngineersNearPostcode(nearbySelectedJob.postcode);
   document.querySelectorAll('.eng-row[data-eng]').forEach(r => {
     r.classList.toggle('nearby-hidden', !qualifying.has(r.dataset.eng));
@@ -1811,8 +1817,16 @@ function clearNearbyFilter() {
 /* ─── Search ────────────────────────────────────────────────── */
 function applySearch(){
   const hasJ=jobSearch.length>0,hasE=engSearch.length>0;
-  document.querySelectorAll(".eng-tl-row[data-eng]").forEach(r=>{r.style.display=hasE&&!r.dataset.eng.toLowerCase().includes(engSearch)?"none":"";});
-  document.querySelectorAll(".eng-row[data-eng]").forEach(r=>{r.style.display=hasE&&!r.dataset.eng.toLowerCase().includes(engSearch)?"none":"";});
+  document.querySelectorAll(".eng-tl-row[data-eng]").forEach(r=>{
+    const hiddenByNearby = r.classList.contains('nearby-hidden');
+    const hiddenBySearch = hasE && !r.dataset.eng.toLowerCase().includes(engSearch);
+    r.style.display = (hiddenByNearby || hiddenBySearch) ? 'none' : '';
+  });
+  document.querySelectorAll(".eng-row[data-eng]").forEach(r=>{
+    const hiddenByNearby = r.classList.contains('nearby-hidden');
+    const hiddenBySearch = hasE && !r.dataset.eng.toLowerCase().includes(engSearch);
+    r.style.display = (hiddenByNearby || hiddenBySearch) ? 'none' : '';
+  });
   if(hasJ){
     document.querySelectorAll(".job-card-day,.job-card-week").forEach(c=>{
       const m=(c.dataset.jobId||"").toLowerCase().includes(jobSearch)||(c.dataset.jobType||"").toLowerCase().includes(jobSearch);
