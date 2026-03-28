@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Geko — Isochrone Settings</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #05070b;
+  --surface:  rgba(10,14,24,0.92);
+  --surface2: rgba(14,20,34,0.9);
+  --surface3: rgba(18,26,42,0.85);
+  --border:   rgba(255,255,255,0.06);
+  --border2:  rgba(255,255,255,0.11);
+  --accent:   #00ff9d;
+  --accent2:  #00c8ff;
+  --danger:   #ff4b5c;
+  --warning:  #f59e0b;
+  --text:     #e6f7ff;
+  --muted:    #8fa0b8;
+  --dim:      #3d5470;
+  --radius:   16px;
+
+  /* Minute-range colour bands */
+  --c-short:  #00ff9d;   /* ≤20 min */
+  --c-mid:    #00c8ff;   /* 21-40 min */
+  --c-long:   #f59e0b;   /* 41-60 min */
+  --c-xlong:  #ff4b5c;   /* >60 min */
+
+  --sidebar-w: 64px;
+  --sidebar-w-open: 210px;
+  --tr-fast: 0.16s ease-out;
+  --tr-med:  0.26s ease-out;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: radial-gradient(circle at 12% 8%, #101828 0%, #05070b 48%, #020308 100%);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+}
+
+/* Animated grid bg */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,255,157,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,157,0.025) 1px, transparent 1px);
+  background-size: 44px 44px;
+  animation: gridDrift 50s linear infinite;
+}
+@keyframes gridDrift { to { background-position: -44px -44px; } }
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+#sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh; flex-shrink: 0;
+  background: rgba(4,7,13,0.97);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  position: relative; z-index: 100;
+  box-shadow: 4px 0 32px rgba(0,0,0,0.6);
+  transition: width var(--tr-med); overflow: hidden;
+}
+#sidebar.open { width: var(--sidebar-w-open); }
+
+.sb-head {
+  height: 70px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-bottom: 1px solid var(--border); overflow: hidden;
+}
+.sb-logo-sm {
+  width: 100%; height: 100%; object-fit: cover; object-position: center;
+  cursor: pointer; display: block;
+  filter: drop-shadow(0 0 10px rgba(0,255,157,0.5));
+  transition: filter var(--tr-fast);
+}
+.sb-logo-sm:hover { filter: drop-shadow(0 0 16px rgba(0,255,157,0.8)); }
+#sidebar.open .sb-logo-sm { display: none; }
+#sidebar.open .sb-head { padding: 0 12px; justify-content: space-between; }
+.sb-logo-lg {
+  height: 38px; object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(0,255,157,0.4));
+  opacity: 0; max-width: 0; overflow: hidden;
+  transition: opacity var(--tr-med), max-width var(--tr-med);
+}
+#sidebar.open .sb-logo-lg { opacity: 1; max-width: 160px; }
+.sb-toggle {
+  width: 28px; height: 28px; border-radius: 7px;
+  border: 1px solid var(--border2); background: rgba(255,255,255,0.04);
+  color: var(--muted); cursor: pointer; display: none;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  transition: all var(--tr-fast);
+}
+#sidebar.open .sb-toggle { display: flex; }
+.sb-toggle:hover { background: rgba(255,255,255,0.09); color: var(--text); }
+
+.sb-nav { flex: 1; padding: 12px 0; display: flex; flex-direction: column; gap: 2px; }
+.sb-link {
+  display: flex; align-items: center; gap: 11px;
+  height: 46px; padding: 0 14px;
+  text-decoration: none; color: var(--muted);
+  border-left: 2px solid transparent;
+  white-space: nowrap; position: relative;
+  transition: all var(--tr-fast);
+}
+.sb-link:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.sb-link.active {
+  background: rgba(0,255,157,0.08);
+  color: var(--accent); border-left-color: var(--accent);
+}
+.sb-icon {
+  width: 36px; height: 36px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; border-radius: 8px;
+}
+.sb-link.active .sb-icon { background: rgba(0,255,157,0.1); }
+.sb-label {
+  font-size: 13px; font-weight: 500;
+  opacity: 0; max-width: 0; overflow: hidden;
+  transition: opacity var(--tr-med), max-width var(--tr-med);
+  pointer-events: none;
+}
+#sidebar.open .sb-label { opacity: 1; max-width: 140px; }
+/* Collapsed tooltip */
+.sb-link::after {
+  content: attr(data-tip);
+  position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
+  background: rgba(4,7,13,0.98); border: 1px solid var(--border2);
+  color: var(--text); font-size: 12px; font-weight: 500;
+  padding: 5px 12px; border-radius: 7px; white-space: nowrap;
+  opacity: 0; pointer-events: none; z-index: 200;
+  transition: opacity 0.12s;
+}
+#sidebar:not(.open) .sb-link:hover::after { opacity: 1; }
+
+.sb-foot { padding: 12px; border-top: 1px solid var(--border); }
+.sb-ver { font-size: 10px; color: rgba(143,160,184,0.28); text-align: center; opacity: 0; transition: opacity var(--tr-med); }
+#sidebar.open .sb-ver { opacity: 1; }
+
+/* ── MAIN ────────────────────────────────────────────────── */
+#main {
+  flex: 1; display: flex; flex-direction: column;
+  min-width: 0; position: relative; z-index: 1;
+}
+
+/* TOPBAR */
+.topbar {
+  height: 66px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+  background: rgba(4,7,13,0.96);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+.topbar-left h1 {
+  font-family: 'Space Mono', monospace;
+  font-size: 16px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.topbar-left p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.live-pill {
+  display: flex; align-items: center; gap: 7px;
+  padding: 6px 14px; border-radius: 20px;
+  border: 1px solid rgba(0,255,157,0.25);
+  background: rgba(0,255,157,0.06);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
+  color: var(--accent); font-family: 'Space Mono', monospace;
+}
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 6px rgba(0,255,157,0.8);
+  animation: livePulse 2s ease-in-out infinite;
+}
+@keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── CONTENT ─────────────────────────────────────────────── */
+.content { flex: 1; padding: 28px 28px; overflow-y: auto; }
+.content::-webkit-scrollbar { width: 5px; }
+.content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ── CONTROLS BAR ────────────────────────────────────────── */
+.controls {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 24px; flex-wrap: wrap;
+}
+
+.search-wrap { position: relative; }
+.search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); opacity: 0.35; pointer-events: none; }
+.search-input {
+  height: 38px; padding: 0 14px 0 34px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text); font-size: 13px;
+  font-family: 'DM Sans', sans-serif; outline: none; width: 220px;
+  transition: border-color var(--tr-fast), box-shadow var(--tr-fast);
+}
+.search-input:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(0,200,255,0.12); }
+.search-input::placeholder { color: var(--dim); }
+
+.filter-select {
+  height: 38px; padding: 0 12px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text); font-size: 13px;
+  font-family: 'DM Sans', sans-serif; outline: none;
+  appearance: none; cursor: pointer;
+  transition: border-color var(--tr-fast);
+}
+.filter-select:focus { border-color: var(--accent2); }
+
+/* Bulk set bar */
+.bulk-bar {
+  display: flex; align-items: center; gap: 10px; margin-left: auto; flex-wrap: wrap;
+}
+.bulk-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.bulk-input {
+  width: 80px; height: 38px; padding: 0 12px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text); font-size: 14px;
+  font-family: 'Space Mono', monospace; outline: none; text-align: center;
+  transition: border-color var(--tr-fast), box-shadow var(--tr-fast);
+}
+.bulk-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,255,157,0.1); }
+.bulk-input::placeholder { color: var(--dim); font-size: 11px; }
+
+.btn-save-all {
+  height: 38px; padding: 0 18px; border-radius: 10px; border: none;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  color: #020308; font-size: 13px; font-weight: 700;
+  font-family: 'DM Sans', sans-serif; cursor: pointer; letter-spacing: 0.03em;
+  transition: filter var(--tr-fast), transform var(--tr-fast);
+  display: flex; align-items: center; gap: 7px; white-space: nowrap;
+}
+.btn-save-all:hover { filter: brightness(1.07); transform: translateY(-1px); }
+.btn-save-all:active { transform: scale(0.99); }
+.btn-save-all:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+/* ── STATS ROW ───────────────────────────────────────────── */
+.stats-row { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+.stat-card {
+  flex: 1; min-width: 120px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 18px;
+  display: flex; align-items: center; gap: 12px;
+}
+.stat-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.stat-num { font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; line-height: 1; }
+.stat-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* ── ENGINEER GRID ───────────────────────────────────────── */
+.eng-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 14px;
+}
+
+/* Engineer card */
+.eng-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: flex; flex-direction: column; gap: 14px;
+  position: relative; overflow: hidden;
+  transition: border-color var(--tr-fast), box-shadow var(--tr-fast), transform var(--tr-fast);
+  animation: cardIn 0.3s ease-out both;
+}
+.eng-card:hover { border-color: var(--border2); box-shadow: 0 6px 28px rgba(0,0,0,0.5); transform: translateY(-2px); }
+@keyframes cardIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* Coloured left strip based on current isochrone band */
+.eng-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px; border-radius: var(--radius) 0 0 var(--radius);
+  background: var(--card-accent, var(--dim));
+  transition: background 0.3s;
+}
+
+/* Header row: avatar + name/role */
+.eng-head { display: flex; align-items: center; gap: 12px; }
+.eng-avatar {
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: #020308;
+  font-family: 'Space Mono', monospace;
+}
+.eng-info { flex: 1; min-width: 0; }
+.eng-name { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.eng-role {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.7px; margin-top: 2px; color: var(--muted);
+}
+.eng-postcode {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  color: var(--accent2); background: rgba(0,200,255,0.08);
+  border: 1px solid rgba(0,200,255,0.2); padding: 3px 8px; border-radius: 5px;
+  white-space: nowrap; flex-shrink: 0;
+}
+
+/* Input row */
+.eng-input-row {
+  display: flex; align-items: center; gap: 10px;
+}
+
+.mins-input-wrap {
+  flex: 1; position: relative;
+}
+.mins-input {
+  width: 100%; height: 44px; padding: 0 44px 0 14px;
+  background: var(--surface3); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text); font-size: 18px; font-weight: 700;
+  font-family: 'Space Mono', monospace; outline: none; text-align: left;
+  transition: border-color var(--tr-fast), box-shadow var(--tr-fast), background var(--tr-fast);
+}
+.mins-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,255,157,0.1);
+  background: rgba(20,28,44,0.95);
+}
+.mins-input.dirty { border-color: var(--warning); }
+.mins-input.saved { border-color: var(--accent); }
+.mins-suffix {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: 0.5px;
+  pointer-events: none;
+}
+
+/* Save button per card */
+.eng-save-btn {
+  height: 44px; padding: 0 16px; border-radius: 10px; border: none;
+  background: rgba(0,255,157,0.1); border: 1px solid rgba(0,255,157,0.3);
+  color: var(--accent); font-size: 13px; font-weight: 700;
+  font-family: 'DM Sans', sans-serif; cursor: pointer; white-space: nowrap;
+  transition: all var(--tr-fast); flex-shrink: 0;
+}
+.eng-save-btn:hover { background: rgba(0,255,157,0.2); border-color: rgba(0,255,157,0.6); }
+.eng-save-btn:active { transform: scale(0.97); }
+.eng-save-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.eng-save-btn.saving { opacity: 0.5; }
+
+/* Range slider */
+.range-row { display: flex; align-items: center; gap: 10px; }
+.iso-slider {
+  flex: 1; height: 4px; appearance: none; background: var(--border2);
+  border-radius: 2px; outline: none; cursor: pointer;
+  background: linear-gradient(90deg, var(--card-accent, var(--dim)) var(--pct, 0%), var(--border2) var(--pct, 0%));
+}
+.iso-slider::-webkit-slider-thumb {
+  appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--card-accent, var(--accent));
+  border: 2px solid rgba(255,255,255,0.15);
+  box-shadow: 0 0 8px rgba(0,255,157,0.4);
+  cursor: pointer; transition: transform 0.12s;
+}
+.iso-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.range-min, .range-max { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); flex-shrink: 0; }
+
+/* Visual bar showing travel band */
+.band-bar {
+  display: flex; align-items: center; gap: 8px;
+}
+.band-indicator {
+  display: flex; gap: 3px; flex: 1;
+}
+.band-seg {
+  flex: 1; height: 5px; border-radius: 2px;
+  background: var(--border2); transition: background 0.25s;
+}
+.band-label {
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+  font-family: 'Space Mono', monospace;
+  padding: 2px 8px; border-radius: 4px; border: 1px solid;
+}
+
+/* Saved flash animation */
+@keyframes savedPop {
+  0%  { box-shadow: 0 0 0 0 rgba(0,255,157,0.7); }
+  50% { box-shadow: 0 0 0 10px rgba(0,255,157,0); }
+  100%{ box-shadow: 0 0 0 0 rgba(0,255,157,0); }
+}
+.eng-card.just-saved { animation: savedPop 0.7s ease-out; }
+
+/* Empty / loading */
+.empty-state {
+  grid-column: 1/-1; text-align: center; padding: 60px 20px;
+  color: var(--muted);
+}
+.empty-icon { font-size: 46px; margin-bottom: 12px; }
+.empty-txt  { font-size: 14px; line-height: 1.7; }
+
+/* Loading overlay */
+#loadOverlay {
+  position: fixed; inset: 0; z-index: 8000; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+}
+#loadOverlay.hidden { display: none; }
+.spinner {
+  width: 36px; height: 36px; border: 3px solid var(--border2);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.load-txt { font-size: 13px; color: var(--muted); }
+
+/* Toast */
+#toast {
+  position: fixed; bottom: 26px; right: 26px; z-index: 9999;
+  padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; gap: 10px;
+  transform: translateY(16px); opacity: 0; pointer-events: none;
+  transition: all 0.26s ease;
+}
+#toast.show { opacity: 1; transform: translateY(0); }
+#toast.ok  { background: rgba(4,14,10,0.98); border: 1px solid rgba(0,255,157,0.4); color: var(--accent); box-shadow: 0 0 24px rgba(0,255,157,0.1), 0 8px 32px rgba(0,0,0,0.8); }
+#toast.err { background: rgba(14,4,6,0.98);  border: 1px solid rgba(255,75,92,0.4);  color: var(--danger); box-shadow: 0 0 24px rgba(255,75,92,0.1),  0 8px 32px rgba(0,0,0,0.8); }
+</style>
+</head>
+<body>
+
+<div id="loadOverlay">
+  <div class="spinner"></div>
+  <div class="load-txt">Loading engineer profiles…</div>
+</div>
+<div id="toast"></div>
+
+<!-- ── SIDEBAR ─────────────────────────────────────────── -->
+<div id="sidebar">
+  <div class="sb-head">
+    <img class="sb-logo-sm" id="sbLogoSm"
+      src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1" alt="Geko">
+    <img class="sb-logo-lg"
+      src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=xh5pubjr&dl=1" alt="Geko">
+    <button class="sb-toggle" id="sbToggle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+  </div>
+  <nav class="sb-nav">
+    <a href="dashboard.html" class="sb-link" data-tip="Dashboard">
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+      <span class="sb-label">Dashboard</span>
+    </a>
+    <a href="scheduling.html" class="sb-link" data-tip="Scheduling">
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span>
+      <span class="sb-label">Scheduling</span>
+    </a>
+    <a href="database.html" class="sb-link" data-tip="Database">
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 9v4c0 1.66 4.03 3 9 3s9-1.34 9-3V9"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/></svg></span>
+      <span class="sb-label">Database</span>
+    </a>
+    <a href="viewdata.html" class="sb-link" data-tip="View Data">
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
+      <span class="sb-label">View Data</span>
+    </a>
+    <a href="userdatabase.html" class="sb-link" data-tip="Users">
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
+      <span class="sb-label">Users</span>
+    </a>
+    <a href="mapping.html" class="sb-link" data-tip="Mapping">
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg></span>
+      <span class="sb-label">Mapping</span>
+    </a>
+    <a href="absencesubmission.html" class="sb-link" data-tip="Absence">
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg></span>
+      <span class="sb-label">Absence</span>
+    </a>
+    <a href="isochrone.html" class="sb-link active" data-tip="Isochrone">
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg></span>
+      <span class="sb-label">Isochrone</span>
+    </a>
+  </nav>
+  <div class="sb-foot"><div class="sb-ver">v1.0.0</div></div>
+</div>
+
+<!-- ── MAIN ───────────────────────────────────────────── -->
+<div id="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1>Isochrone Settings</h1>
+      <p>Set each engineer's maximum travel radius in minutes from their home postcode</p>
+    </div>
+    <div class="topbar-right">
+      <div class="live-pill">
+        <div class="live-dot"></div>
+        <span id="liveCount">— engineers</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search engineer name…">
+      </div>
+      <select class="filter-select" id="filterRole">
+        <option value="">All roles</option>
+        <option value="engineer">Engineer</option>
+        <option value="team leader">Team Leader</option>
+        <option value="scheduler">Scheduler</option>
+        <option value="admin">Admin</option>
+      </select>
+
+      <div class="bulk-bar">
+        <span class="bulk-label">Set all visible to:</span>
+        <input type="number" class="bulk-input" id="bulkMins" min="1" max="180" placeholder="mins">
+        <button class="btn-save-all" id="btnSaveAll">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Apply & Save All
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow"></div>
+
+    <!-- Engineer cards -->
+    <div class="eng-grid" id="engGrid">
+      <div class="empty-state">
+        <div class="empty-icon">⏳</div>
+        <div class="empty-txt">Loading engineers…</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const db = getFirestore(initializeApp({
+  apiKey:"AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
+  authDomain:"geko-scheduling.firebaseapp.com",
+  projectId:"geko-scheduling",
+  storageBucket:"geko-scheduling.firebasestorage.app",
+  messagingSenderId:"824568732787",
+  appId:"1:824568732787:web:c12db983fd6a5b44b01e06"
+}));
+
+/* ── State ─────────────────────────────────────────── */
+const MAX_MINS = 120;
+let allUsers = [];
+let search = '', roleFilter = '';
+
+/* ── Band helpers ──────────────────────────────────── */
+function bandOf(mins) {
+  if (!mins || mins <= 0) return 'none';
+  if (mins <= 20) return 'short';
+  if (mins <= 40) return 'mid';
+  if (mins <= 60) return 'long';
+  return 'xlong';
+}
+const BAND = {
+  none:  { colour: 'var(--dim)',     label: 'Not set',   bg: 'rgba(61,84,112,0.12)', border: 'rgba(61,84,112,0.3)' },
+  short: { colour: 'var(--c-short)', label: '≤ 20 min',  bg: 'rgba(0,255,157,0.12)', border: 'rgba(0,255,157,0.35)' },
+  mid:   { colour: 'var(--c-mid)',   label: '21–40 min', bg: 'rgba(0,200,255,0.12)', border: 'rgba(0,200,255,0.35)' },
+  long:  { colour: 'var(--c-long)',  label: '41–60 min', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.35)' },
+  xlong: { colour: 'var(--c-xlong)', label: '> 60 min',  bg: 'rgba(255,75,92,0.12)', border: 'rgba(255,75,92,0.35)' },
+};
+
+function initials(name) {
+  return (name||'?').split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2);
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+let toastTimer;
+function toast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = '', 3200);
+}
+
+/* ── Load users ────────────────────────────────────── */
+async function loadUsers() {
+  const snap = await getDocs(collection(db,'userdatabase'));
+  allUsers = [];
+  snap.forEach(d => allUsers.push({ _id: d.id, ...d.data() }));
+  allUsers.sort((a,b) => (a.name||'').localeCompare(b.name||''));
+  document.getElementById('liveCount').textContent = `${allUsers.length} engineer${allUsers.length!==1?'s':''}`;
+  render();
+  document.getElementById('loadOverlay').classList.add('hidden');
+}
+
+/* ── Persist isochrone to Firebase ─────────────────── */
+async function saveIsochrone(userId, mins, cardEl, btn) {
+  btn.disabled = true; btn.classList.add('saving'); btn.textContent = '…';
+  try {
+    await updateDoc(doc(db,'userdatabase',userId), { isochroneMinutes: mins });
+    // Update local cache
+    const u = allUsers.find(x => x._id === userId);
+    if (u) u.isochroneMinutes = mins;
+    // Flash card
+    cardEl.classList.remove('just-saved');
+    void cardEl.offsetWidth;
+    cardEl.classList.add('just-saved');
+    // Update card styling
+    updateCardAccent(cardEl, mins);
+    toast(`Saved ${mins} min for ${u?.name||'engineer'} ✓`);
+  } catch(e) {
+    console.error(e);
+    toast('Save failed: '+(e.code||e.message), 'err');
+  }
+  btn.disabled = false; btn.classList.remove('saving'); btn.textContent = 'Save';
+}
+
+function updateCardAccent(cardEl, mins) {
+  const band = bandOf(mins);
+  const meta = BAND[band];
+  cardEl.style.setProperty('--card-accent', meta.colour);
+
+  // Update band label
+  const bandLbl = cardEl.querySelector('.band-label');
+  if (bandLbl) {
+    bandLbl.textContent = meta.label;
+    bandLbl.style.background = meta.bg;
+    bandLbl.style.borderColor = meta.border;
+    bandLbl.style.color = meta.colour;
+  }
+
+  // Update segment fills
+  const segs = cardEl.querySelectorAll('.band-seg');
+  const pct = Math.min(100, Math.round((mins / MAX_MINS) * 100));
+  const filledSegs = Math.round((pct / 100) * segs.length);
+  segs.forEach((seg, i) => {
+    seg.style.background = i < filledSegs ? meta.colour : 'var(--border2)';
+    seg.style.opacity = i < filledSegs ? '1' : '0.3';
+  });
+
+  // Update slider
+  const slider = cardEl.querySelector('.iso-slider');
+  if (slider) {
+    slider.style.setProperty('--pct', pct + '%');
+    slider.style.setProperty('--card-accent', meta.colour);
+  }
+}
+
+/* ── Render ────────────────────────────────────────── */
+function render() {
+  const term = search.toLowerCase();
+  const filtered = allUsers.filter(u => {
+    const matchRole = !roleFilter || (u.role||'') === roleFilter;
+    const matchSearch = !term || (u.name||'').toLowerCase().includes(term);
+    return matchRole && matchSearch;
+  });
+
+  renderStats(filtered);
+  renderGrid(filtered);
+}
+
+function renderStats(users) {
+  const counts = { none:0, short:0, mid:0, long:0, xlong:0 };
+  users.forEach(u => counts[bandOf(u.isochroneMinutes)]++);
+  const defs = [
+    { key:'none',  icon:'○', label:'Not set',   col:'var(--dim)' },
+    { key:'short', icon:'●', label:'≤20 min',   col:'var(--c-short)' },
+    { key:'mid',   icon:'●', label:'21–40 min', col:'var(--c-mid)' },
+    { key:'long',  icon:'●', label:'41–60 min', col:'var(--c-long)' },
+    { key:'xlong', icon:'●', label:'>60 min',   col:'var(--c-xlong)' },
+  ];
+  document.getElementById('statsRow').innerHTML = defs
+    .filter(d => counts[d.key] > 0)
+    .map(d => `
+      <div class="stat-card">
+        <div class="stat-icon" style="background:${BAND[d.key].bg};border:1px solid ${BAND[d.key].border}">
+          <span style="color:${d.col};font-size:18px">${d.icon}</span>
+        </div>
+        <div>
+          <div class="stat-num" style="color:${d.col}">${counts[d.key]}</div>
+          <div class="stat-lbl">${d.label}</div>
+        </div>
+      </div>`
+    ).join('');
+}
+
+function renderGrid(users) {
+  const grid = document.getElementById('engGrid');
+  if (!users.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-txt">No engineers match your filters.</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = users.map((u, i) => {
+    const mins = u.isochroneMinutes || 0;
+    const band = bandOf(mins);
+    const meta = BAND[band];
+    const pct  = Math.min(100, Math.round((mins / MAX_MINS) * 100));
+    const NUM_SEGS = 12;
+    const filledSegs = Math.round((pct / 100) * NUM_SEGS);
+
+    const segHtml = Array.from({length: NUM_SEGS}, (_,si) =>
+      `<div class="band-seg" style="background:${si < filledSegs ? meta.colour : 'var(--border2)'};opacity:${si < filledSegs ? 1 : 0.3}"></div>`
+    ).join('');
+
+    return `
+    <div class="eng-card" style="--card-accent:${meta.colour};animation-delay:${i*0.03}s" data-uid="${esc(u._id)}">
+      <!-- Header -->
+      <div class="eng-head">
+        <div class="eng-avatar">${esc(initials(u.name))}</div>
+        <div class="eng-info">
+          <div class="eng-name">${esc(u.name||'Unnamed')}</div>
+          <div class="eng-role">${esc(u.role||'—')}</div>
+        </div>
+        ${u.postcode ? `<div class="eng-postcode">${esc(u.postcode)}</div>` : ''}
+      </div>
+
+      <!-- Minutes input -->
+      <div class="eng-input-row">
+        <div class="mins-input-wrap">
+          <input
+            type="number" min="1" max="180"
+            class="mins-input"
+            value="${mins || ''}"
+            placeholder="e.g. 30"
+            data-original="${mins || ''}"
+            oninput="handleInput(this)"
+          >
+          <span class="mins-suffix">min</span>
+        </div>
+        <button class="eng-save-btn" onclick="handleSave(this)">Save</button>
+      </div>
+
+      <!-- Slider -->
+      <div class="range-row">
+        <span class="range-min">0</span>
+        <input type="range" min="0" max="${MAX_MINS}" value="${mins}"
+          class="iso-slider"
+          style="--pct:${pct}%;--card-accent:${meta.colour}"
+          oninput="handleSlider(this)">
+        <span class="range-max">${MAX_MINS}</span>
+      </div>
+
+      <!-- Band bar -->
+      <div class="band-bar">
+        <div class="band-indicator">${segHtml}</div>
+        <span class="band-label" style="background:${meta.bg};border-color:${meta.border};color:${meta.colour}">${meta.label}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Input/slider sync ─────────────────────────────── */
+window.handleInput = function(input) {
+  const card = input.closest('.eng-card');
+  const val  = parseInt(input.value) || 0;
+  const orig = parseInt(input.dataset.original) || 0;
+  input.classList.toggle('dirty', val !== orig && val > 0);
+  // Sync slider
+  const slider = card.querySelector('.iso-slider');
+  if (slider) {
+    slider.value = Math.min(val, MAX_MINS);
+    const pct = Math.min(100, Math.round((val / MAX_MINS) * 100));
+    slider.style.setProperty('--pct', pct + '%');
+  }
+  updateCardAccent(card, val);
+};
+
+window.handleSlider = function(slider) {
+  const card  = slider.closest('.eng-card');
+  const val   = parseInt(slider.value) || 0;
+  const pct   = Math.min(100, Math.round((val / MAX_MINS) * 100));
+  slider.style.setProperty('--pct', pct + '%');
+  // Sync number input
+  const input = card.querySelector('.mins-input');
+  if (input) {
+    input.value = val || '';
+    const orig = parseInt(input.dataset.original) || 0;
+    input.classList.toggle('dirty', val !== orig && val > 0);
+  }
+  updateCardAccent(card, val);
+};
+
+window.handleSave = function(btn) {
+  const card  = btn.closest('.eng-card');
+  const uid   = card.dataset.uid;
+  const input = card.querySelector('.mins-input');
+  const val   = parseInt(input.value);
+  if (!val || val < 1 || val > 180) {
+    toast('Enter a value between 1 and 180 minutes.', 'err'); return;
+  }
+  input.dataset.original = val;
+  input.classList.remove('dirty');
+  input.classList.add('saved');
+  setTimeout(() => input.classList.remove('saved'), 1200);
+  saveIsochrone(uid, val, card, btn);
+};
+
+/* ── Save all visible ──────────────────────────────── */
+document.getElementById('btnSaveAll').addEventListener('click', async () => {
+  const mins = parseInt(document.getElementById('bulkMins').value);
+  if (!mins || mins < 1 || mins > 180) {
+    toast('Enter a bulk value between 1 and 180 minutes first.', 'err'); return;
+  }
+  const btn = document.getElementById('btnSaveAll');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  // Update all visible cards
+  const cards = document.querySelectorAll('.eng-card');
+  const saves = [];
+  cards.forEach(card => {
+    const uid   = card.dataset.uid;
+    const input = card.querySelector('.mins-input');
+    input.value = mins;
+    input.dataset.original = mins;
+    input.classList.remove('dirty','saved');
+    updateCardAccent(card, mins);
+    // Update slider
+    const slider = card.querySelector('.iso-slider');
+    if (slider) {
+      slider.value = Math.min(mins, MAX_MINS);
+      slider.style.setProperty('--pct', Math.min(100, Math.round((mins/MAX_MINS)*100)) + '%');
+    }
+    saves.push(updateDoc(doc(db,'userdatabase',uid), { isochroneMinutes: mins }));
+    const u = allUsers.find(x => x._id === uid);
+    if (u) u.isochroneMinutes = mins;
+  });
+
+  try {
+    await Promise.all(saves);
+    renderStats(getVisible());
+    toast(`All ${saves.length} engineer${saves.length!==1?'s':''} set to ${mins} min ✓`);
+  } catch(e) {
+    toast('Some saves failed: '+e.message, 'err');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Apply & Save All`;
+  document.getElementById('bulkMins').value = '';
+});
+
+function getVisible() {
+  const term = search.toLowerCase();
+  return allUsers.filter(u => {
+    const matchRole = !roleFilter || (u.role||'') === roleFilter;
+    const matchSearch = !term || (u.name||'').toLowerCase().includes(term);
+    return matchRole && matchSearch;
+  });
+}
+
+/* ── Filters ───────────────────────────────────────── */
+document.getElementById('searchInput').addEventListener('input', e => {
+  search = e.target.value.trim();
+  render();
+});
+document.getElementById('filterRole').addEventListener('change', e => {
+  roleFilter = e.target.value;
+  render();
+});
+
+/* ── Sidebar ───────────────────────────────────────── */
+const sidebar = document.getElementById('sidebar');
+document.getElementById('sbToggle').addEventListener('click', toggleSidebar);
+document.getElementById('sbLogoSm').addEventListener('click', toggleSidebar);
+function toggleSidebar() {
+  sidebar.classList.toggle('open');
+  localStorage.setItem('geko-sidebar', sidebar.classList.contains('open') ? 'expanded' : 'collapsed');
+}
+if (localStorage.getItem('geko-sidebar') === 'expanded') sidebar.classList.add('open');
+
+/* ── Boot ──────────────────────────────────────────── */
+loadUsers();
+</script>
+</body>
+</html>
