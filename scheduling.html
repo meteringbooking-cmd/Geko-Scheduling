@@ -525,6 +525,68 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.06); border-top-color: var(--accent-green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
   .loading-text { font-size: 13px; color: var(--text-muted); }
+
+  /* ── ABSENCE BLOCKING ─────────────────────────────────────── */
+  .absence-block {
+    position: absolute; top: 0; bottom: 0; left: 0; right: 0;
+    z-index: 2; pointer-events: none;
+    background: repeating-linear-gradient(
+      -45deg,
+      rgba(168,85,247,0.07) 0px, rgba(168,85,247,0.07) 4px,
+      transparent 4px, transparent 12px
+    );
+    border-left: 3px solid rgba(168,85,247,0.5);
+  }
+  .absence-block-label {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    background: rgba(168,85,247,0.18); border: 1px solid rgba(168,85,247,0.4);
+    color: #c084fc; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; padding: 4px 10px; border-radius: 6px;
+    white-space: nowrap; pointer-events: none;
+  }
+  /* Day view absence stripe (full row overlay) */
+  .absence-row-block {
+    position: absolute; top: 0; bottom: 0; left: 0;
+    z-index: 1; pointer-events: none;
+    background: repeating-linear-gradient(
+      -45deg,
+      rgba(168,85,247,0.06) 0px, rgba(168,85,247,0.06) 4px,
+      transparent 4px, transparent 12px
+    );
+    border-left: 3px solid rgba(168,85,247,0.4);
+    display: flex; align-items: center;
+  }
+  .absence-row-block-pill {
+    background: rgba(168,85,247,0.18); border: 1px solid rgba(168,85,247,0.4);
+    color: #c084fc; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.7px; padding: 3px 10px; border-radius: 5px;
+    margin-left: 10px; white-space: nowrap;
+  }
+  /* Weekend stripe on absent eng sidebar label */
+  .eng-row.is-absent .eng-name { color: #c084fc; }
+  .eng-row.is-absent .eng-avatar { background: linear-gradient(135deg, #a855f7, #6366f1); }
+
+  /* Flash animation for conflicting job cards */
+  @keyframes conflictFlash {
+    0%   { box-shadow: 0 0 0 0   rgba(245,158,11,0.9); border-color: rgba(245,158,11,0.9); }
+    25%  { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
+    50%  { box-shadow: 0 0 0 0   rgba(245,158,11,0.9); border-color: rgba(245,158,11,0.9); }
+    75%  { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
+    100% { box-shadow: 0 0 0 0   rgba(245,158,11,0.5); border-color: rgba(245,158,11,0.5); }
+  }
+  .job-card-day.needs-realloc,
+  .job-card-week.needs-realloc {
+    animation: conflictFlash 1.4s ease-out forwards;
+    border-color: rgba(245,158,11,0.6) !important;
+    background: rgba(245,158,11,0.06) !important;
+  }
+  .conflict-warning-badge {
+    position: absolute; top: -6px; right: 6px;
+    background: var(--warning); color: #020308;
+    font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.4px; pointer-events: none; z-index: 20;
+  }
 </style>
 </head>
 <body>
@@ -569,6 +631,10 @@
     <a href="mapping.html" class="sidebar-link" data-label="Mapping">
       <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg></span>
       <span class="sidebar-label">Mapping</span>
+    </a>
+    <a href="absencesubmission.html" class="sidebar-link" data-label="Absence">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg></span>
+      <span class="sidebar-label">Absence</span>
     </a>
   </nav>
   <div class="sidebar-footer"><div class="sidebar-version">v1.0.0</div></div>
@@ -698,6 +764,23 @@ function getStatusMeta(raw){
 let allJobs = [], currentView = "day", currentDate = today0(), jobSearch = "", engSearch = "";
 let openModalJobId = null; // track which job is open in modal
 let unsubscribe = null;    // Firestore listener cleanup
+let allAbsences = [];      // live absence records from Firestore
+let unsubAbsences = null;  // Firestore absence listener cleanup
+
+/* ─── Absence helpers ───────────────────────────────────── */
+function isEngineerAbsent(engName, dateObj){
+  // Returns the absence record if this engineer is absent on this date
+  const dateStr = toInputDateStr(dateObj);
+  return allAbsences.find(a =>
+    (a.engineerName||'').toLowerCase().trim() === (engName||'').toLowerCase().trim()
+    && a.date === dateStr
+  );
+}
+
+function toInputDateStr(d){
+  if(!d) return '';
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
 
 function today0(){const d=new Date();d.setHours(0,0,0,0);return d;}
 
@@ -743,6 +826,20 @@ function fmtTimestamp(isoStr){
    Uses onSnapshot instead of getDocs so we get pushed updates
    the instant an engineer changes a status on their portal.
 ══════════════════════════════════════════════════════════════ */
+function startAbsenceListener(){
+  if(unsubAbsences){ unsubAbsences(); unsubAbsences=null; }
+  unsubAbsences = onSnapshot(
+    collection(db,'absences'),
+    snap => {
+      allAbsences = [];
+      snap.forEach(d => allAbsences.push({ _id: d.id, ...d.data() }));
+      // Re-render only if we already have job data
+      if(allJobs.length > 0) render();
+    },
+    err => console.error('Absence listener error:', err)
+  );
+}
+
 function startRealTimeListener(){
   setLive('connecting', 'Connecting…');
 
@@ -1057,9 +1154,21 @@ function renderRows(cols,dayEnd){
       row.style.height=ROW_H+"px";
       row.style.width=`${HOUR_W*hours+STAGING_W}px`;
       const col=cols[0];
+      const absence=isEngineerAbsent(eng,col);
       const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),col));
       const scheduled=dayJobs.filter(j=>getStartHour(j)!==null);
       const staged   =dayJobs.filter(j=>getStartHour(j)===null);
+
+      // Absence overlay + flag conflicts
+      if(absence){
+        const absBlock=document.createElement("div");
+        absBlock.className="absence-row-block";
+        absBlock.style.width=`${HOUR_W*hours}px`;
+        absBlock.innerHTML=`<span class="absence-row-block-pill">🚫 ${absence.reason||'Absent'}</span>`;
+        row.appendChild(absBlock);
+        // Mark engineer label row
+        sr.classList.add('is-absent');
+      }
 
       const slotWrap=document.createElement("div");
       slotWrap.className="day-slots"; slotWrap.style.width=`${HOUR_W*hours}px`;
@@ -1072,7 +1181,17 @@ function renderRows(cols,dayEnd){
         }
       }
       row.appendChild(slotWrap);
-      scheduled.forEach(job=>{ row.appendChild(makeCardDay(job,(getStartHour(job)-DAY_START)*HOUR_W,getDuration(job.jobType)*HOUR_W-4,false)); });
+      scheduled.forEach(job=>{
+        const card=makeCardDay(job,(getStartHour(job)-DAY_START)*HOUR_W,getDuration(job.jobType)*HOUR_W-4,false);
+        if(absence){
+          card.classList.add('needs-realloc');
+          const badge=document.createElement('div');
+          badge.className='conflict-warning-badge';
+          badge.textContent='⚠ Reassign';
+          card.appendChild(badge);
+        }
+        row.appendChild(card);
+      });
 
       const sz=document.createElement("div"); sz.className="staging-zone";
       sz.dataset.drop="staging"; sz.dataset.eng=eng; sz.dataset.date=toUKStr(col);
@@ -1087,10 +1206,43 @@ function renderRows(cols,dayEnd){
         const dow=col.getDay();
         if(dow===0||dow===6) cell.classList.add("weekend");
         if(sameDay(col,todayD)) cell.classList.add("today-col");
+        const weekAbsence=isEngineerAbsent(eng,col);
         const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),col));
-        if(dayJobs.length<=1){ dayJobs.forEach(job=>cell.appendChild(makeCardWeek(job))); }
-        else {
-          cell.appendChild(makeCardWeek(dayJobs[0]));
+
+        if(weekAbsence){
+          // Absence overlay in cell
+          const ab=document.createElement("div"); ab.className="absence-block";
+          ab.innerHTML=`<span class="absence-block-label">🚫 ${weekAbsence.reason||'Absent'}</span>`;
+          cell.appendChild(ab);
+        }
+
+        if(dayJobs.length<=1){
+          dayJobs.forEach(job=>{
+            const card=makeCardWeek(job);
+            if(weekAbsence){
+              card.classList.add('needs-realloc');
+              const badge=document.createElement('div');
+              badge.className='conflict-warning-badge';
+              badge.textContent='⚠ Reassign';
+              card.style.position='relative';
+              card.appendChild(badge);
+            }
+            cell.appendChild(card);
+          });
+        } else {
+          const makeConflictCard=(job)=>{
+            const card=makeCardWeek(job);
+            if(weekAbsence){
+              card.classList.add('needs-realloc');
+              const badge=document.createElement('div');
+              badge.className='conflict-warning-badge';
+              badge.textContent='⚠ Reassign';
+              card.style.position='relative';
+              card.appendChild(badge);
+            }
+            return card;
+          };
+          cell.appendChild(makeConflictCard(dayJobs[0]));
           const btn=document.createElement("div"); btn.className="stack-more-btn"; btn.textContent=`+${dayJobs.length-1} more`;
           btn.addEventListener("mousedown",e=>{e.stopPropagation();e.preventDefault();});
           btn.addEventListener("click",e=>{e.stopPropagation();showStackPopup(cell,dayJobs);});
@@ -1443,6 +1595,7 @@ if(localStorage.getItem("geko-sidebar")==="expanded")sidebar.classList.add("expa
 /* ─── Boot ──────────────────────────────────────────────────── */
 syncPicker();
 startRealTimeListener();
+startAbsenceListener();
 </script>
 </body>
 </html>
