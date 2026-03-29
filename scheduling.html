@@ -578,32 +578,32 @@
   .sidebar-toggle {
     width: 30px; height: 30px; border-radius: 7px;
     border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
-    color: var(--text-muted); cursor: pointer; display: none;
-    align-items: center; justify-content: center; flex-shrink: 0;
-    transition: all var(--transition-fast);
+    color: var(--text-muted); cursor: pointer; display: none; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all var(--transition-fast);
   }
   #sidebar.expanded .sidebar-toggle { display: flex; }
   .sidebar-toggle:hover { background: rgba(255,255,255,0.08); color: var(--text-main); }
+
   .sidebar-nav { flex: 1; padding: 14px 0; display: flex; flex-direction: column; gap: 2px; }
   .sidebar-link {
-    display: flex; align-items: center; gap: 12px;
-    padding: 0 14px; height: 46px; text-decoration: none; color: var(--text-muted);
-    transition: all var(--transition-fast); white-space: nowrap;
-    border-left: 2px solid transparent; flex-shrink: 0; position: relative;
+    display: flex; align-items: center; gap: 12px; padding: 0 14px; height: 46px;
+    text-decoration: none; color: var(--text-muted); transition: all var(--transition-fast);
+    white-space: nowrap; border-left: 2px solid transparent; flex-shrink: 0; position: relative;
   }
   .sidebar-link:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
   .sidebar-link.active { background: rgba(0,255,157,0.08); color: var(--accent-green); border-left-color: var(--accent-green); }
   .sidebar-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 8px; }
   .sidebar-link.active .sidebar-icon { background: rgba(0,255,157,0.10); }
-  .sidebar-label { font-size: 13px; font-weight: 500; opacity: 0; max-width: 0; overflow: hidden; transition: opacity var(--transition-med), max-width var(--transition-med); pointer-events: none; }
+  .sidebar-label {
+    font-size: 13px; font-weight: 500; opacity: 0; max-width: 0; overflow: hidden;
+    transition: opacity var(--transition-med), max-width var(--transition-med); pointer-events: none;
+  }
   #sidebar.expanded .sidebar-label { opacity: 1; max-width: 140px; }
   .sidebar-link::after {
     content: attr(data-label); position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
-    background: rgba(5,10,18,0.97); border: 1px solid rgba(255,255,255,0.08);
-    color: var(--text-main); font-size: 12px; font-weight: 500;
-    padding: 6px 12px; border-radius: 8px; white-space: nowrap; opacity: 0;
-    pointer-events: none; transition: opacity 0.15s; z-index: 200;
-    box-shadow: 4px 4px 16px rgba(0,0,0,0.5);
+    background: rgba(5,10,18,0.97); border: 1px solid rgba(255,255,255,0.08); color: var(--text-main);
+    font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 8px; white-space: nowrap;
+    opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 200; box-shadow: 4px 4px 16px rgba(0,0,0,0.5);
   }
   #sidebar:not(.expanded) .sidebar-link:hover::after { opacity: 1; }
   .sidebar-footer { padding: 14px; border-top: 1px solid var(--border-main); flex-shrink: 0; }
@@ -613,1715 +613,1225 @@
   /* MAIN */
   #main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; position: relative; z-index: 1; height: 100vh; }
   #topbar {
-    width: 100%; padding: 14px 26px; background: var(--bg-topbar);
-    border-bottom: 1px solid var(--border-main);
-    display: flex; justify-content: space-between; align-items: center;
-    z-index: 5; box-shadow: 0 10px 30px rgba(0,0,0,0.7); flex-shrink: 0;
-    transition: background 0.3s;
+    width: 100%; padding: 14px 26px; background: var(--bg-topbar); border-bottom: 1px solid var(--border-main);
+    display: flex; align-items: center; justify-content: space-between; z-index: 50; flex-shrink: 0;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.3);
   }
-  #topbar-title { font-size: 16px; text-transform: uppercase; letter-spacing: 0.12em; }
-  #topbar-subtitle { font-size: 12px; color: var(--text-muted); }
-  #topbar-right { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-muted); }
-  #status-dot { width: 10px; height: 10px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 10px rgba(0,255,157,0.8); display: inline-block; }
-  html.light-mode #status-dot { box-shadow: 0 0 8px rgba(0,184,110,0.5); }
-
-  #live-indicator {
-    display: flex; align-items: center; gap: 7px;
-    padding: 5px 12px; border-radius: 20px;
-    border: 1px solid rgba(0,255,157,0.2);
-    background: rgba(0,255,157,0.05);
-    font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
-    color: var(--accent-green); transition: all 0.3s;
-  }
-  #live-indicator.connecting { border-color: rgba(0,200,255,0.2); background: rgba(0,200,255,0.05); color: var(--accent-blue); }
-  #live-indicator.error { border-color: rgba(255,75,92,0.2); background: rgba(255,75,92,0.05); color: var(--danger); }
-  .live-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--accent-green);
-    box-shadow: 0 0 6px rgba(0,255,157,0.8);
-    animation: livePulse 2s ease-in-out infinite;
-  }
-  #live-indicator.connecting .live-dot { background: var(--accent-blue); box-shadow: 0 0 6px rgba(0,200,255,0.8); }
-  #live-indicator.error .live-dot { background: var(--danger); animation: none; }
-  @keyframes livePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(0.85)} }
-
-  #toolbar {
-    display: flex; align-items: center; gap: 10px; padding: 10px 20px;
-    background: var(--bg-toolbar); border-bottom: 1px solid var(--border-main);
-    flex-shrink: 0; flex-wrap: wrap; z-index: 4; overflow: visible;
-    transition: background 0.3s;
-  }
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px;
-    border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer;
-    border: 1px solid var(--border-btn); background: var(--bg-btn);
-    color: var(--text-muted); transition: all var(--transition-fast);
-    font-family: 'Inter', sans-serif; white-space: nowrap; letter-spacing: 0.04em;
-  }
-  .btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text-main); }
-  .btn.active { background: rgba(0,255,157,0.08); border-color: rgba(0,255,157,0.4); color: var(--accent-green); }
-  .btn-accent { background: linear-gradient(90deg, var(--accent-green), var(--accent-blue)); color: #020308; border: none; font-weight: 600; }
-  .btn-accent:hover { filter: brightness(1.05); transform: translateY(-1px); }
-  html.light-mode .btn-accent { color: #fff; }
-  .tsep { width: 1px; height: 24px; background: var(--border-btn); flex-shrink: 0; }
-  .date-nav { display: flex; align-items: center; gap: 5px; }
-  .dnb {
-    width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);
-    background: var(--bg-btn); color: var(--text-muted); cursor: pointer;
-    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  .page-title h1 { font-size: 20px; font-weight: 600; color: var(--text-main); letter-spacing: -0.01em; }
+  .top-actions { display: flex; align-items: center; gap: 14px; }
+  .search-wrap { position: relative; width: 280px; }
+  .search-input {
+    width: 100%; height: 38px; background: var(--bg-search); border: 1px solid var(--border-main);
+    border-radius: 10px; padding: 0 14px 0 38px; color: var(--text-main); font-size: 13px;
     transition: all var(--transition-fast);
   }
-  .dnb:hover { color: var(--text-main); border-color: rgba(255,255,255,0.2); }
-  .date-lbl { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; min-width: 220px; text-align: center; }
-  #datePicker {
-    background: var(--bg-search); border: 1px solid var(--border-btn);
-    border-radius: 8px; color: var(--text-main); padding: 6px 10px;
-    font-size: 12px; font-family: 'Inter', sans-serif; cursor: pointer; outline: none;
+  .search-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 16px rgba(0,200,255,0.15); outline: none; }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+  .user-badge {
+    display: flex; align-items: center; gap: 10px; padding: 4px 4px 4px 12px;
+    background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid var(--border-main);
   }
-  #datePicker::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
-  .search-wrapper { position: relative; display: flex; align-items: center; }
-  .search-wrapper svg { position: absolute; left: 10px; pointer-events: none; opacity: 0.4; }
-  .search-input {
-    height: 34px; background: var(--bg-search); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px; color: var(--text-main); font-size: 12px; font-family: 'Inter', sans-serif;
-    padding: 0 12px 0 32px; outline: none; width: 155px;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), width var(--transition-fast);
-    user-select: text;
-  }
-  .search-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 12px rgba(0,200,255,0.2); width: 190px; }
-  .search-input::placeholder { color: var(--text-muted); }
-  #jobCountLbl { font-size: 12px; color: var(--text-muted); margin-left: auto; white-space: nowrap; }
-  .lbar { height: 2px; flex-shrink: 0; }
-  .lbar.on { background: rgba(255,255,255,0.04); position: relative; overflow: hidden; }
-  .lbar.on::after { content:""; position:absolute; top:0; left:-60%; width:60%; height:100%; background:linear-gradient(90deg,transparent,var(--accent-green),transparent); animation:loadsh 1.2s infinite; }
-  @keyframes loadsh { to { left: 160%; } }
-  .status-bar {
-    display: flex; align-items: center; gap: 8px; padding: 5px 20px;
-    background: var(--bg-status-bar); border-bottom: 1px solid var(--border-main);
-    font-size: 12px; color: var(--text-muted); flex-shrink: 0;
-    transition: background 0.3s;
-  }
-  .sdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: orange; }
-  .sdot.ok  { background: var(--accent-green); box-shadow: 0 0 6px rgba(0,255,157,0.5); }
-  .sdot.err { background: var(--danger); }
-  .sdot.spin { animation: blink 1s infinite; background: var(--accent-blue); }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .u-name { font-size: 13px; font-weight: 500; color: var(--text-main); }
+  .u-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--accent-green); color: #050a12; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; }
 
-  /* SCHEDULE */
-  .sched-wrap { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-  .grid-area  { display: flex; flex: 1; overflow: hidden; }
-  .eng-col {
-    width: 160px; min-width: 160px; flex-shrink: 0;
-    border-right: 1px solid var(--border-main);
-    background: var(--bg-eng-col); display: flex; flex-direction: column;
-    transition: background 0.3s;
-  }
-  .eng-col-hdr {
-    height: var(--time-h); flex-shrink: 0; display: flex; align-items: center; padding: 0 14px;
-    border-bottom: 1px solid var(--border-main); font-size: 11px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);
-    background: var(--bg-eng-col-hdr); transition: background 0.3s;
-  }
-  .eng-list { overflow-y: auto; flex: 1; }
-  .eng-list::-webkit-scrollbar { display: none; }
-  .eng-row {
-    height: var(--row-h); display: flex; align-items: center; gap: 10px;
-    padding: 0 14px; border-bottom: 1px solid var(--border-main); flex-shrink: 0;
-  }
-  .eng-row.auto { height: auto; min-height: var(--row-h); padding: 8px 14px; align-items: flex-start; }
-  .eng-avatar {
-    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700; color: #020308;
-  }
-  html.light-mode .eng-avatar { color: #fff; }
-  .eng-name { font-size: 12px; font-weight: 500; line-height: 1.3; color: var(--text-main); }
-  .eng-postcode { font-size: 10px; color: var(--text-muted); letter-spacing: 0.04em; margin-top: 1px; }
-  .scroll-area { flex: 1; overflow: auto; position: relative; }
-  .scroll-area::-webkit-scrollbar { width: 5px; height: 5px; }
-  .scroll-area::-webkit-scrollbar-track { background: transparent; }
-  .scroll-area::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
-
-  .time-header {
-    display: flex; height: var(--time-h); position: sticky; top: 0; z-index: 50;
-    background: var(--bg-time-header); border-bottom: 1px solid var(--border-main);
-    flex-shrink: 0; transition: background 0.3s;
-  }
-  .t-hdr-cell { flex-shrink: 0; display: flex; align-items: stretch; border-right: 1px solid var(--grid-line); }
-  .t-hdr-half { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text-muted); font-weight: 500; }
-  .t-hdr-half:first-child { border-right: 1px solid var(--grid-line); color: var(--text-main); font-weight: 600; }
-  .t-hdr-cell.week-cell { flex: 1; justify-content: center; align-items: center; flex-direction: column; display: flex; font-size: 11px; }
-  .t-hdr-cell.today-col { color: var(--accent-green); background: rgba(0,255,157,0.04); }
-  .t-hdr-cell.weekend   { opacity: 0.45; }
-
-  .rows-wrap { position: relative; min-height: 100%; }
-  .hour-grid { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 0; display: flex; }
-  .hg-col { flex-shrink: 0; height: 100%; border-right: 1px solid var(--hg-line); position: relative; }
-  .hg-col::after { content:""; position:absolute; top:0; bottom:0; left:50%; width:1px; background:var(--hg-half); }
-  .eng-tl-row { display: flex; border-bottom: 1px solid var(--border-main); position: relative; }
-  .eng-tl-row.day-mode  { height: var(--row-h); }
-  .eng-tl-row.week-mode { height: auto; min-height: var(--row-h); align-items: stretch; }
-
-  .day-slots { position: absolute; top: 0; bottom: 0; left: 0; display: flex; z-index: 1; }
-  .day-slot {
-    flex-shrink: 0; height: 100%; position: relative;
-    border-right: 1px dashed var(--grid-line);
-    transition: background 0.1s;
-  }
-  .day-slot.drop-active { background: rgba(0,255,157,0.13) !important; border-right-color: rgba(0,255,157,0.3); }
-  .slot-label { position: absolute; bottom: 3px; left: 4px; font-size: 9px; color: var(--slot-label-c); pointer-events: none; }
-
-  .job-card-day {
-    position: absolute; top: 6px; bottom: 6px;
-    background: var(--bg-card); border: 1px solid var(--border-card);
-    border-top-width: 3px; border-radius: 8px;
-    padding: 5px 8px; cursor: grab;
-    z-index: 10;
-    display: flex; flex-direction: column; justify-content: space-between;
-    transition: box-shadow 0.18s, border-color 0.18s;
-    overflow: visible;
-  }
-  .job-card-day:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.8); border-color: rgba(0,255,157,0.3); z-index: 20; }
-  html.light-mode .job-card-day:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.12); border-color: rgba(0,184,110,0.4); }
-  .job-card-day.is-dragging { opacity: 0.2; cursor: grabbing; }
-  .job-card-day.staging-card {
-    position: relative; top:auto; bottom:auto; left:auto !important; width:auto !important;
-    margin-bottom: 4px; border-color: rgba(255,200,0,0.35); border-top-color: #ffc800;
-    background: rgba(15,12,0,0.95); animation: pendingPulse 2.5s ease-in-out infinite;
-  }
-  html.light-mode .job-card-day.staging-card {
-    background: rgba(255,252,230,0.98);
-  }
-  @keyframes pendingPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,200,0,0)} 50%{box-shadow:0 0 10px 2px rgba(255,200,0,0.15)} }
-
-  .card-status-badge {
-    display: inline-flex; align-items: center; gap: 3px;
-    padding: 2px 6px; border-radius: 4px;
-    font-size: 9px; font-weight: 700; letter-spacing: 0.03em;
-    text-transform: uppercase; border: 1px solid;
-    line-height: 1.4; flex-shrink: 0;
-  }
-  .card-status-badge.s-complete    { background: rgba(0,255,157,0.12); border-color: rgba(0,255,157,0.35); color: #00ff9d; }
-  .card-status-badge.s-en-route    { background: rgba(0,200,255,0.12); border-color: rgba(0,200,255,0.35); color: #00c8ff; }
-  .card-status-badge.s-in-progress { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.35); color: #f59e0b; }
-  .card-status-badge.s-abort       { background: rgba(255,75,92,0.12); border-color: rgba(255,75,92,0.35); color: #ff4b5c; }
-  .card-status-badge.s-unassigned  { background: rgba(143,160,184,0.08); border-color: rgba(143,160,184,0.2); color: #8fa0b8; }
-
-  @keyframes statusFlash {
-    0%   { box-shadow: 0 0 0 0 rgba(0,255,157,0.7); }
-    40%  { box-shadow: 0 0 0 8px rgba(0,255,157,0); }
-    100% { box-shadow: 0 0 0 0 rgba(0,255,157,0); }
-  }
-  .job-card-day.status-updated,
-  .job-card-week.status-updated { animation: statusFlash 0.8s ease-out forwards; }
-
-  @keyframes isoViolationFlash {
-    0%,100% { box-shadow: 0 0 0 0 rgba(255,75,92,0); border-color: rgba(255,75,92,0.7); background: rgba(255,75,92,0.08); }
-    50%     { box-shadow: 0 0 14px 4px rgba(255,75,92,0.5); border-color: rgba(255,75,92,0.9); background: rgba(255,75,92,0.14); }
-  }
-  .job-card-day.iso-violation {
-    animation: isoViolationFlash 1.8s ease-in-out infinite !important;
-    border-top-color: var(--danger) !important;
-  }
-  .iso-badge {
-    position: absolute; top: -7px; left: 6px;
-    background: var(--danger); color: #fff;
-    font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 3px;
-    text-transform: uppercase; letter-spacing: 0.3px; pointer-events: none; z-index: 21;
-    white-space: nowrap; box-shadow: 0 2px 6px rgba(255,75,92,0.5);
-  }
-
-  .jc-tooltip {
-    position: absolute; top: calc(100% + 6px); left: 0; min-width: 210px; max-width: 260px;
-    background: var(--bg-tooltip); border: 1px solid rgba(0,255,157,0.22); border-radius: 10px;
-    padding: 11px 14px; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.85);
-    opacity: 0; pointer-events: none; transform: translateY(6px);
-    transition: opacity 0.18s, transform 0.18s;
-  }
-  html.light-mode .jc-tooltip { box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-color: rgba(0,184,110,0.2); }
-  .job-card-day:hover .jc-tooltip { opacity: 1; transform: translateY(0); }
-  .jc-tooltip-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 5px; }
-  .jc-tooltip-row:last-child { margin-bottom: 0; }
-  .jc-tooltip-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; flex-shrink: 0; width: 62px; }
-  .jc-tooltip-val { font-size: 12px; color: var(--text-main); font-weight: 500; }
-  .jc-customer { font-size: 10px; font-weight: 500; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .jc-type     { font-size: 12px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
-  .jc-bottom   { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
-  .jc-post     { font-size: 10px; color: var(--text-muted); }
-  .jc-id       { font-size: 10px; color: var(--accent-green); font-weight: 700; }
-  .jc-time     { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
-
-  .staging-zone {
-    position: absolute; top: 0; bottom: 0; right: 0; width: 140px;
-    border-left: 2px dashed rgba(255,200,0,0.2); background: var(--staging-bg);
-    display: flex; flex-direction: column; gap: 3px; padding: 5px;
-    overflow-y: auto; z-index: 3; transition: background 0.1s;
-  }
-  .staging-zone.drop-active { background: rgba(255,200,0,0.10) !important; border-left-color: rgba(255,200,0,0.5); }
-  .staging-hint { display: flex; align-items: center; justify-content: center; flex: 1; pointer-events: none; }
-  .staging-hint span { font-size: 9px; color: rgba(255,200,0,0.25); text-transform: uppercase; letter-spacing: 0.4px; text-align: center; }
-  html.light-mode .staging-hint span { color: rgba(150,120,0,0.3); }
-
-  .week-cell-drop {
-    flex: 1; border-right: 1px solid var(--grid-line);
-    padding: 4px; transition: background 0.1s;
-    position: relative; min-height: var(--row-h);
-  }
-  .week-cell-drop.today-col { background: rgba(0,255,157,0.02); }
-  .week-cell-drop.weekend   { background: rgba(255,255,255,0.005); }
-  html.light-mode .week-cell-drop.weekend { background: rgba(0,0,0,0.01); }
-  .week-cell-drop.drop-active { background: rgba(0,255,157,0.10) !important; outline: 2px dashed rgba(0,255,157,0.4); outline-offset: -2px; }
-
-  .job-card-week {
-    background: var(--bg-card-week); border: 1px solid var(--border-card); border-left-width: 3px;
-    border-radius: 7px; padding: 5px 7px; cursor: grab;
-    margin-bottom: 3px; font-size: 11px; width: 100%; display: block;
-    transition: box-shadow 0.18s, border-color 0.18s; position: relative;
-  }
-  .job-card-week:last-child { margin-bottom: 0; }
-  .job-card-week:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.6); border-color: rgba(0,200,255,0.3); }
-  html.light-mode .job-card-week:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
-  .job-card-week.is-dragging { opacity: 0.2; cursor: grabbing; }
-
-  .card-attach-badge {
-    display: inline-flex; align-items: center; gap: 3px;
-    font-size: 9px; color: rgba(0,200,255,0.7); font-weight: 600; margin-left: 4px;
-  }
-  html.light-mode .card-attach-badge { color: rgba(0,153,204,0.8); }
-
-  .stack-more-btn {
-    display: block; width: 100%; margin-top: 3px;
-    background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.2);
-    border-radius: 6px; padding: 3px 6px; font-size: 10px; font-weight: 600;
-    color: var(--accent-blue); cursor: pointer; text-align: center; transition: background 0.12s;
-  }
-  .stack-more-btn:hover { background: rgba(0,200,255,0.16); }
-
-  /* ── DRIVE TIME BADGES ── */
-  .drive-time-badge {
-    position: absolute; top: 50%; transform: translate(-50%, -50%);
-    z-index: 25; display: flex; flex-direction: column; align-items: center;
-    pointer-events: none; gap: 2px;
-  }
-  .drive-time-pill {
-    display: flex; align-items: center; gap: 3px;
-    padding: 2px 6px; border-radius: 20px;
-    font-size: 9px; font-weight: 700; letter-spacing: 0.03em;
-    white-space: nowrap; border: 1px solid; line-height: 1.5;
-    backdrop-filter: blur(4px); box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-  }
-  html.light-mode .drive-time-pill { box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-  .drive-time-pill.dt-ok     { background: rgba(0,255,157,0.12);  border-color: rgba(0,255,157,0.4);  color: #00ff9d; }
-  .drive-time-pill.dt-warn   { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4); color: #f59e0b; }
-  .drive-time-pill.dt-danger { background: rgba(255,75,92,0.18);  border-color: rgba(255,75,92,0.6);  color: #ff4b5c; }
-  .drive-time-pill.dt-loading {
-    background: rgba(143,160,184,0.08); border-color: rgba(143,160,184,0.2); color: rgba(143,160,184,0.5);
-    animation: dtPulse 1.4s ease-in-out infinite;
-  }
-  @keyframes dtPulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
-
-  .drive-time-connector { width: 1px; height: 8px; background: rgba(255,255,255,0.12); }
-  .drive-time-connector.danger { background: rgba(255,75,92,0.5); }
-
-  .home-badge {
-    position: absolute; top: 50%; transform: translate(-50%, -50%);
-    z-index: 25; display: flex; flex-direction: column; align-items: center;
-    pointer-events: none; gap: 2px;
-  }
-  .home-pill {
-    display: flex; align-items: center; gap: 3px;
-    padding: 2px 6px; border-radius: 20px;
-    font-size: 9px; font-weight: 700; letter-spacing: 0.03em;
-    white-space: nowrap; border: 1px solid; line-height: 1.5;
-    backdrop-filter: blur(4px); box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-  }
-  html.light-mode .home-pill { box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-  .home-pill.dt-ok     { background: rgba(0,255,157,0.12);  border-color: rgba(0,255,157,0.4);  color: #00ff9d; }
-  .home-pill.dt-warn   { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4); color: #f59e0b; }
-  .home-pill.dt-danger { background: rgba(255,75,92,0.18);  border-color: rgba(255,75,92,0.6);  color: #ff4b5c; }
-  .home-pill.dt-loading { background: rgba(143,160,184,0.08); border-color: rgba(143,160,184,0.2); color: rgba(143,160,184,0.5); animation: dtPulse 1.4s ease-in-out infinite; }
-
-  /* Isochrone panel */
-  #isoPanel {
-    position: fixed; top: 0; right: 0; bottom: 0; width: 320px;
-    background: var(--bg-iso-panel); border-left: 1px solid var(--border-main);
-    z-index: 9500; transform: translateX(100%);
-    transition: transform 0.28s cubic-bezier(0.32,0.72,0,1), background 0.3s;
-    display: flex; flex-direction: column;
-    box-shadow: -12px 0 40px rgba(0,0,0,0.7);
-  }
-  html.light-mode #isoPanel { box-shadow: -8px 0 24px rgba(0,0,0,0.1); }
-  #isoPanel.open { transform: translateX(0); }
-  .iso-panel-head {
-    padding: 16px 18px 12px; border-bottom: 1px solid var(--border-main);
+  /* TOOLBAR */
+  #toolbar {
+    padding: 14px 26px; background: var(--bg-toolbar); border-bottom: 1px solid var(--border-divider);
     display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
   }
-  .iso-panel-title { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-blue); display: flex; align-items: center; gap: 7px; }
-  .iso-panel-close { width: 26px; height: 26px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.15s; }
+  .view-controls { display: flex; gap: 8px; }
+  .btn {
+    height: 38px; padding: 0 16px; background: var(--bg-btn); border: 1px solid var(--border-btn);
+    border-radius: 9px; color: var(--text-muted); font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all var(--transition-fast);
+  }
+  .btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text-main); }
+  .btn.active { background: rgba(0,255,157,0.1); border-color: rgba(0,255,157,0.3); color: var(--accent-green); }
+  .dnb { background: none; border: 1px solid var(--border-main); color: var(--text-muted); padding: 8px; border-radius: 8px; cursor: pointer; transition: all var(--transition-fast); }
+  .dnb:hover { color: var(--text-main); border-color: rgba(255,255,255,0.2); }
+  #datePicker {
+    background: none; border: 1px solid var(--border-main); color: var(--text-main);
+    font-size: 14px; font-weight: 500; padding: 6px 12px; border-radius: 8px; outline: none;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+  }
+  #datePicker::-webkit-calendar-picker-indicator { filter: invert(1) opacity(0.5); cursor: pointer; }
+
+  /* GRID CONTAINER */
+  #grid-container { flex: 1; display: flex; overflow: hidden; position: relative; }
+  .eng-list {
+    width: 240px; background: var(--bg-eng-col); border-right: 1px solid var(--border-main);
+    display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; z-index: 10;
+  }
+  .eng-col-hdr {
+    height: var(--time-h); background: var(--bg-eng-col-hdr); border-bottom: 1px solid var(--border-main);
+    display: flex; align-items: center; padding: 0 16px; font-size: 11px; font-weight: 600;
+    color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em;
+    position: sticky; top: 0; z-index: 20; backdrop-filter: blur(8px);
+  }
+  .eng-row {
+    height: var(--row-h); padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,0.03);
+    display: flex; align-items: center; gap: 12px; transition: background 0.2s; position: relative;
+  }
+  .eng-row:hover { background: rgba(255,255,255,0.015); }
+  .eng-avatar { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; color: var(--accent-blue); flex-shrink: 0; }
+  .eng-info { flex: 1; min-width: 0; }
+  .eng-name { font-size: 13px; font-weight: 500; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .eng-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .eng-status { display: flex; align-items: center; gap: 5px; margin-top: 4px; }
+  .sdot { width: 6px; height: 6px; border-radius: 50%; }
+  .sdot.ok { background: var(--accent-green); box-shadow: 0 0 10px rgba(0,255,157,0.4); }
+  .eng-st-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+
+  /* TIMELINE AREA */
+  #timeline-scroll { flex: 1; overflow: auto; position: relative; background: rgba(0,0,0,0.1); }
+  #time-header {
+    height: var(--time-h); background: var(--bg-time-header); border-bottom: 1px solid var(--border-main);
+    display: flex; position: sticky; top: 0; z-index: 30; backdrop-filter: blur(12px);
+  }
+  .t-hdr-cell {
+    flex-shrink: 0; border-right: 1px solid rgba(255,255,255,0.04);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .t-hdr-cell.today-col { background: rgba(0,255,157,0.03); }
+  .t-hdr-main { font-size: 12px; font-weight: 600; color: var(--text-main); }
+  .t-hdr-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+  /* DAY-MODE HEADER */
+  .t-hdr-day { display: flex; width: 100%; height: 100%; }
+  .t-hdr-half {
+    flex: 1; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500;
+  }
+  .t-hdr-half:first-child { border-right: 1px solid rgba(255,255,255,0.04); color: var(--text-main); }
+  .t-hdr-half:last-child { color: var(--text-muted); }
+
+  /* TIMELINE CONTENT */
+  #timeline-content { position: relative; width: max-content; }
+  .eng-tl-row {
+    height: var(--row-h); border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex; position: relative;
+  }
+  .hg-col {
+    height: 100%; flex-shrink: 0; border-right: 1px solid rgba(255,255,255,0.02);
+    display: flex; position: relative;
+  }
+  .hg-col::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,0.01); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+  .hg-col:hover::after { opacity: 1; }
+
+  /* DAY-MODE SLOTS */
+  .day-slot { flex: 1; height: 100%; border-right: 1px solid rgba(255,255,255,0.02); position: relative; display: flex; align-items: center; justify-content: center; }
+  .day-slot:last-child { border-right: none; }
+  .day-slot.drop-active { background: rgba(0,255,157,0.05) !important; border-right-color: rgba(0,255,157,0.2) !important; }
+  .slot-label { font-size: 9px; font-weight: 600; color: var(--slot-label-c); pointer-events: none; text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* STAGING ZONE */
+  .staging-zone {
+    width: 60px; height: 100%; background: var(--staging-bg); border-left: 2px solid rgba(255,191,0,0.15);
+    display: flex; flex-direction: column; align-items: center; padding: 4px 0; gap: 4px; flex-shrink: 0;
+    transition: all 0.2s; position: sticky; right: 0; z-index: 5;
+  }
+  .staging-zone.drop-active { background: rgba(255,191,0,0.1) !important; border-left-color: rgba(255,191,0,0.4); }
+
+  /* WEEK-MODE CELLS */
+  .week-cell-drop { width: 100%; height: 100%; position: relative; transition: all 0.2s; }
+  .week-cell-drop.drop-active { background: rgba(0,255,157,0.06) !important; outline: 1px solid rgba(0,255,157,0.3); outline-offset: -1px; }
+
+  /* JOB CARDS - DAY */
+  .job-card-day {
+    position: absolute; height: calc(var(--row-h) - 24px); border-radius: 12px;
+    background: var(--bg-card); border: 1px solid var(--border-card);
+    padding: 10px 14px; cursor: grab; display: flex; flex-direction: column; gap: 4px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4); transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    overflow: hidden; z-index: 10;
+  }
+  .job-card-day:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.6); border-color: rgba(0,255,157,0.3); }
+  .job-card-day.dragging { cursor: grabbing; opacity: 0.5; transform: scale(0.95); }
+  .jc-header { display: flex; align-items: center; justify-content: space-between; }
+  .jc-id { font-size: 10px; font-weight: 700; color: var(--accent-green); letter-spacing: 0.05em; }
+  .jc-time { font-size: 10px; color: var(--text-muted); font-weight: 500; }
+  .jc-type { font-size: 12px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .jc-customer { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .jc-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+  .jc-post { font-size: 10px; font-weight: 600; color: var(--text-muted); background: rgba(255,255,255,0.04); padding: 2px 6px; border-radius: 4px; }
+  .card-status-badge { font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.04em; border: 1px solid transparent; }
+  .card-status-badge.s-complete    { background: rgba(0,255,157,0.1); border-color: rgba(0,255,157,0.2); color: var(--accent-green); }
+  .card-status-badge.s-en-route    { background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.2); color: var(--accent-blue); }
+  .card-status-badge.s-in-progress { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); color: var(--warning); }
+  .card-status-badge.s-abort       { background: rgba(255,75,92,0.1); border-color: rgba(255,75,92,0.2);  color: var(--danger); }
+  .card-status-badge.s-unassigned  { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: var(--text-muted); }
+
+  /* JOB CARDS - WEEK & STAGING */
+  .job-card-week {
+    width: calc(100% - 12px); margin: 6px; padding: 8px 10px; border-radius: 9px;
+    background: var(--bg-card-week); border: 1px solid var(--border-card);
+    cursor: grab; display: flex; flex-direction: column; gap: 3px; position: relative;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3); transition: all 0.15s;
+  }
+  .job-card-week:hover { transform: translateX(2px); border-color: rgba(0,200,255,0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+  .job-card-week .jc-type { font-size: 11px; }
+  .job-card-week .jc-customer { font-size: 10px; }
+  .job-card-week .jc-post { font-size: 9px; padding: 1px 4px; }
+
+  /* DRIVE TIME ELEMENTS */
+  .drive-time-pill {
+    position: absolute; left: 0; width: 100%; height: 18px;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+    font-size: 9px; font-weight: 700; border-radius: 4px; border: 1px solid transparent; z-index: 15;
+    pointer-events: auto;
+  }
+  .dt-ok     { background: rgba(0,255,157,0.12); border-color: rgba(0,255,157,0.2); color: var(--accent-green); }
+  .dt-warn   { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.3); color: var(--warning); }
+  .dt-danger { background: rgba(255,75,92,0.2);  border-color: rgba(255,75,92,0.4);  color: var(--danger); }
+  .drive-time-connector {
+    position: absolute; left: 16px; width: 2px; background: rgba(255,255,255,0.1); z-index: 2; pointer-events: none;
+  }
+  .drive-time-connector.danger { background: rgba(255,75,92,0.4); }
+  .home-pill {
+    position: absolute; left: 0; width: 100%; height: 20px; display: flex; align-items: center; justify-content: center;
+    gap: 4px; font-size: 9px; font-weight: 700; border-radius: 4px; border: 1px solid transparent; z-index: 4;
+  }
+
+  /* TOOLTIP */
+  .jc-tooltip {
+    position: fixed; background: var(--bg-tooltip); border: 1px solid rgba(0,255,157,0.2);
+    padding: 14px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+    z-index: 1000; pointer-events: none; opacity: 0; transition: opacity 0.2s; min-width: 220px;
+    backdrop-filter: blur(12px);
+  }
+  .jc-tooltip-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .jc-tooltip-row:last-child { margin-bottom: 0; }
+  .jc-tooltip-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; width: 70px; }
+  .jc-tooltip-val { font-size: 12px; color: var(--text-main); font-weight: 500; }
+
+  /* NEARBY INFO CARD */
+  .nearby-info-card {
+    position: fixed; bottom: 84px; right: 26px; width: 320px;
+    background: var(--bg-iso-panel); border: 1px solid rgba(0,200,255,0.2);
+    border-radius: 14px; box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+    z-index: 600; padding: 20px; display: none; backdrop-filter: blur(20px);
+  }
+  .nearby-info-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .nearby-info-title { font-size: 15px; font-weight: 600; color: var(--accent-blue); display: flex; align-items: center; gap: 8px; }
+  .nearby-info-close { background: none; border: 1px solid var(--border-main); color: var(--text-muted); width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+  .nearby-info-close:hover { border-color: var(--danger); color: var(--danger); }
+  .nearby-info-body { font-size: 13px; line-height: 1.5; color: var(--text-muted); margin-bottom: 16px; }
+  .nearby-info-body strong { color: var(--text-main); font-weight: 600; }
+  .nearby-info-tip { background: rgba(0,255,157,0.05); border: 1px solid rgba(0,255,157,0.15); border-radius: 8px; padding: 10px; font-size: 11px; display: flex; gap: 8px; color: rgba(0,255,157,0.8); }
+
+  /* NEARBY BANNER */
+  .nearby-active-banner {
+    position: absolute; top: var(--time-h); left: 0; width: 100%; height: 38px;
+    background: rgba(0,255,157,0.08); border-bottom: 1px solid rgba(0,255,157,0.2);
+    display: flex; align-items: center; justify-content: center; gap: 14px; z-index: 45;
+    backdrop-filter: blur(8px); animation: slideDown 0.3s ease-out;
+  }
+  @keyframes slideDown { from{transform:translateY(-100%)} to{transform:translateY(0)} }
+  .nearby-banner-text { font-size: 12px; font-weight: 600; color: var(--accent-green); display: flex; align-items: center; gap: 8px; }
+  .nearby-banner-clear { background: none; border: 1px solid var(--border-main); color: var(--text-muted); padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .nearby-banner-clear:hover { color: var(--text-main); border-color: rgba(255,255,255,0.2); }
+
+  /* ISOCHRONE PANEL */
+  #isoPanel {
+    position: fixed; top: 0; right: -400px; width: 380px; height: 100vh;
+    background: var(--bg-iso-panel); border-left: 1px solid var(--border-main);
+    z-index: 500; display: flex; flex-direction: column; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -10px 0 40px rgba(0,0,0,0.5); backdrop-filter: blur(20px);
+  }
+  #isoPanel.open { right: 0; }
+  .iso-panel-head { padding: 24px; border-bottom: 1px solid var(--border-divider); display: flex; align-items: center; justify-content: space-between; }
+  .iso-panel-title { font-size: 18px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+  .iso-panel-close { background: none; border: 1px solid var(--border-main); color: var(--text-muted); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
   .iso-panel-close:hover { border-color: var(--danger); color: var(--danger); }
-  .iso-panel-body { flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
-  .iso-panel-body::-webkit-scrollbar { width: 4px; }
-  .iso-panel-body::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
-  .iso-eng-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 9px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); }
-  .iso-eng-avatar { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, var(--accent-blue), var(--accent-green)); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #020308; }
-  html.light-mode .iso-eng-avatar { color: #fff; }
-  .iso-eng-name { font-size: 12px; font-weight: 500; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .iso-eng-postcode { font-size: 10px; color: var(--text-muted); }
-  .iso-eng-mins { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 10px; border: 1px solid; white-space: nowrap; flex-shrink: 0; }
-  .iso-eng-mins.band-none  { background: rgba(61,84,112,0.12); border-color: rgba(61,84,112,0.3); color: #3d5470; }
-  .iso-eng-mins.band-short { background: rgba(0,255,157,0.12); border-color: rgba(0,255,157,0.35); color: #00ff9d; }
-  .iso-eng-mins.band-mid   { background: rgba(0,200,255,0.12); border-color: rgba(0,200,255,0.35); color: #00c8ff; }
-  .iso-eng-mins.band-long  { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.35); color: #f59e0b; }
-  .iso-eng-mins.band-xlong { background: rgba(255,75,92,0.12); border-color: rgba(255,75,92,0.35); color: #ff4b5c; }
-  .iso-panel-empty { text-align: center; padding: 40px 16px; color: var(--text-muted); font-size: 12px; }
-  .iso-note { font-size: 11px; color: var(--text-muted); padding: 10px 12px; background: var(--iso-note-bg); border: 1px solid var(--iso-note-br); border-radius: 8px; line-height: 1.5; }
-  .iso-note strong { color: var(--danger); }
-
-  .view-iso-btn {
-    display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px;
-    border: 1px solid rgba(0,200,255,0.3); background: rgba(0,200,255,0.06); color: var(--accent-blue);
-    font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s;
-    font-family: 'Inter', sans-serif; white-space: nowrap; flex-shrink: 0;
+  .iso-panel-body { flex: 1; overflow-y: auto; padding: 24px; }
+  .iso-note { background: var(--iso-note-bg); border: 1px solid var(--iso-note-br); border-radius: 12px; padding: 14px; margin-bottom: 24px; }
+  .iso-note p { font-size: 12px; line-height: 1.5; color: var(--danger); opacity: 0.9; }
+  .iso-eng-list { display: flex; flex-direction: column; gap: 12px; }
+  .iso-eng-row {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 14px;
   }
-  .view-iso-btn:hover { background: rgba(0,200,255,0.12); border-color: rgba(0,200,255,0.5); }
-  .view-iso-btn.active { background: rgba(0,200,255,0.16); border-color: rgba(0,200,255,0.7); color: #fff; }
+  .iso-eng-avatar { width: 34px; height: 34px; border-radius: 8px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; color: var(--accent-blue); }
+  .iso-eng-name { font-size: 13px; font-weight: 500; color: var(--text-main); }
+  .iso-eng-postcode { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+  .iso-eng-mins { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; margin-left: auto; border: 1px solid transparent; }
+  .band-short { background: rgba(0,255,157,0.1); border-color: rgba(0,255,157,0.2); color: var(--accent-green); }
+  .band-mid   { background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.2); color: var(--accent-blue); }
+  .band-long  { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); color: var(--warning); }
+  .band-xlong { background: rgba(255,75,92,0.1);  border-color: rgba(255,75,92,0.2);  color: var(--danger); }
 
-  #drag-ghost {
-    position: fixed; z-index: 99999; pointer-events: none;
-    background: var(--bg-card); border: 1px solid rgba(0,255,157,0.5);
-    border-top-width: 3px; border-radius: 8px; padding: 7px 11px; min-width: 120px; max-width: 200px;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.9); font-size: 11px; display: none; transform: rotate(1.5deg);
+  /* DOCS PANEL */
+  #docsPanel {
+    position: fixed; top: 0; right: -500px; width: 480px; height: 100vh;
+    background: var(--bg-drawer); border-left: 1px solid var(--border-main);
+    z-index: 550; display: flex; flex-direction: column; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -15px 0 50px rgba(0,0,0,0.6); backdrop-filter: blur(24px);
   }
-
-  #stack-popup {
-    position: fixed; z-index: 9000; background: var(--bg-stack); border: 1px solid rgba(0,200,255,0.25);
-    border-radius: 10px; padding: 8px; box-shadow: 0 12px 48px rgba(0,0,0,0.9); display: none;
-  }
-  #stack-popup.visible { display: block; }
-  #stack-popup .job-card-week { margin-bottom: 4px; }
-  #stack-popup .job-card-week:last-child { margin-bottom: 0; }
-
-  .job-card-day.search-match, .job-card-week.search-match { box-shadow: 0 0 0 2px var(--accent-blue) !important; }
-  .job-card-day.search-dim,   .job-card-week.search-dim   { opacity: 0.15 !important; }
-
-  .now-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--now-line); z-index: 30; pointer-events: none; }
-  .now-line::before { content:""; position:absolute; top:50%; left:-4px; width:10px; height:10px; border-radius:50%; background:var(--now-line); transform:translateY(-50%); }
-
-  /* BOTTOM DRAWER */
-  #jobDrawer {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 500;
-    background: var(--bg-drawer); border-top: 1px solid var(--border-main);
-    border-radius: 16px 16px 0 0; box-shadow: 0 -16px 60px rgba(0,0,0,0.85);
-    transform: translateY(100%); transition: transform 0.28s cubic-bezier(0.32,0.72,0,1), background 0.3s;
-    display: flex; flex-direction: column; max-height: 52vh; pointer-events: none;
-  }
-  html.light-mode #jobDrawer { box-shadow: 0 -8px 30px rgba(0,0,0,0.1); }
-  #jobDrawer.open { transform: translateY(0); pointer-events: all; }
-  .drawer-handle { width: 36px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.15); margin: 10px auto 0; flex-shrink: 0; cursor: ns-resize; }
-  html.light-mode .drawer-handle { background: rgba(0,0,0,0.12); }
-  .modal-head { padding: 10px 22px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-main); flex-shrink: 0; }
-  .modal-head-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
-  .modal-title { font-size: 15px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .modal-id    { font-size: 11px; color: var(--accent-green); font-weight: 700; flex-shrink: 0; }
-  .modal-head-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .modal-close { width: 28px; height: 28px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.08); background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.15s; }
-  .modal-close:hover { border-color: var(--danger); color: var(--danger); }
-  .modal-inner { display: flex; gap: 0; flex: 1; overflow: hidden; min-height: 0; }
-  .modal-body { padding: 14px 22px 20px; flex: 1; min-width: 0; overflow-y: auto; }
-  .modal-body::-webkit-scrollbar { width: 4px; }
-  .modal-body::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
-  .modal-docs-panel { width: 320px; flex-shrink: 0; border-left: 1px solid var(--border-main); padding: 14px 18px 20px; display: none; flex-direction: column; gap: 12px; overflow-y: auto; }
-  .modal-docs-panel::-webkit-scrollbar { width: 4px; }
-  .modal-docs-panel::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
-  #jobDrawer.docs-expanded .modal-docs-panel { display: flex; }
-
-  .dg { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .df label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); display: block; margin-bottom: 3px; }
-  .df span  { font-size: 13px; color: var(--text-main); }
-  .df.full  { grid-column: 1/-1; }
-  .ddiv     { height: 1px; background: var(--ddiv-bg); grid-column: 1/-1; }
-
-  .modal-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin: 22px 0 14px; display: flex; align-items: center; gap: 8px; }
-  .modal-section-title::after { content: ''; flex: 1; height: 1px; background: var(--modal-section-line); }
-
-  .history-timeline { display: flex; flex-direction: column; gap: 0; position: relative; }
-  .history-timeline::before { content: ''; position: absolute; left: 14px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(180deg, var(--history-line), rgba(255,255,255,0.02)); }
-  .history-item { display: flex; gap: 14px; align-items: flex-start; padding: 8px 0; position: relative; animation: historyFadeIn 0.3s ease-out both; }
-  @keyframes historyFadeIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
-  .history-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; z-index: 1; border: 2px solid var(--history-dot-br); position: relative; left: 10px; }
-  .history-dot.s-complete    { background: #00ff9d; border-color: rgba(0,255,157,0.4); box-shadow: 0 0 8px rgba(0,255,157,0.5); }
-  .history-dot.s-en-route    { background: #00c8ff; border-color: rgba(0,200,255,0.4); box-shadow: 0 0 8px rgba(0,200,255,0.5); }
-  .history-dot.s-in-progress { background: #f59e0b; border-color: rgba(245,158,11,0.4); box-shadow: 0 0 8px rgba(245,158,11,0.5); }
-  .history-dot.s-abort       { background: #ff4b5c; border-color: rgba(255,75,92,0.4); box-shadow: 0 0 8px rgba(255,75,92,0.5); }
-  .history-dot.s-created     { background: rgba(143,160,184,0.4); border-color: rgba(143,160,184,0.2); }
-  .history-content { flex: 1; padding-left: 12px; }
-  .history-status { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-  .history-status-label.s-complete    { color: #00ff9d; }
-  .history-status-label.s-en-route    { color: #00c8ff; }
-  .history-status-label.s-in-progress { color: #f59e0b; }
-  .history-status-label.s-abort       { color: #ff4b5c; }
-  .history-status-label.s-created     { color: var(--text-muted); }
-  html.light-mode .history-status-label.s-complete    { color: #007a4a; }
-  html.light-mode .history-status-label.s-en-route    { color: #0077aa; }
-  html.light-mode .history-status-label.s-in-progress { color: #a06a00; }
-  html.light-mode .history-status-label.s-abort       { color: #b02030; }
-  .history-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .history-by { font-size: 11px; color: var(--text-main); font-weight: 500; }
-  .history-time { color: var(--text-muted); }
-  .history-ago  { color: rgba(143,160,184,0.5); font-size: 10px; }
-  .history-empty { text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px; border: 1px dashed rgba(255,255,255,0.06); border-radius: 8px; }
-
-  .modal-status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid; margin-top: 6px; }
-  .modal-status-pill.s-complete    { background: rgba(0,255,157,0.1); border-color: rgba(0,255,157,0.3); color: #00ff9d; }
-  .modal-status-pill.s-en-route    { background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.3); color: #00c8ff; }
-  .modal-status-pill.s-in-progress { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: #f59e0b; }
-  .modal-status-pill.s-abort       { background: rgba(255,75,92,0.1); border-color: rgba(255,75,92,0.3); color: #ff4b5c; }
-  .modal-status-pill.s-unassigned  { background: rgba(143,160,184,0.08); border-color: rgba(143,160,184,0.2); color: var(--text-muted); }
-
-  .view-docs-btn { display: inline-flex; align-items: center; gap: 7px; padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(0,200,255,0.3); background: rgba(0,200,255,0.06); color: var(--accent-blue); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.18s; margin-top: 16px; font-family: 'Inter', sans-serif; user-select: none; }
-  .view-docs-btn:hover { background: rgba(0,200,255,0.12); border-color: rgba(0,200,255,0.5); }
-  .view-docs-btn.active { background: rgba(0,200,255,0.14); border-color: rgba(0,200,255,0.6); color: #fff; }
-  .view-docs-btn .doc-count-badge { background: rgba(0,200,255,0.2); border-radius: 10px; padding: 1px 7px; font-size: 10px; font-weight: 700; color: var(--accent-blue); }
-
-  .docs-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-  .docs-panel-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
-  .docs-panel-close { width: 26px; height: 26px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.15s; }
+  #docsPanel.open { right: 0; }
+  .docs-panel-header { padding: 24px; border-bottom: 1px solid var(--border-divider); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .docs-panel-title { font-size: 18px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+  .docs-panel-close { background: none; border: 1px solid var(--border-main); color: var(--text-muted); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
   .docs-panel-close:hover { border-color: var(--danger); color: var(--danger); }
-
-  .docs-image-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .docs-image-thumb { aspect-ratio: 4/3; border-radius: 8px; overflow: hidden; border: 1px solid var(--docs-thumb-br); cursor: pointer; position: relative; background: var(--docs-thumb-bg); transition: border-color 0.18s, transform 0.18s; }
-  .docs-image-thumb:hover { border-color: rgba(0,200,255,0.4); transform: scale(1.02); }
-  .docs-image-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .docs-image-thumb .thumb-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0); transition: background 0.18s; display: flex; align-items: center; justify-content: center; }
-  .docs-image-thumb:hover .thumb-overlay { background: rgba(0,200,255,0.15); }
-  .docs-image-thumb .thumb-expand { opacity: 0; transition: opacity 0.18s; background: rgba(0,200,255,0.8); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
-  .docs-image-thumb:hover .thumb-expand { opacity: 1; }
-  .docs-image-name { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.75)); padding: 16px 8px 6px; font-size: 10px; color: rgba(255,255,255,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  .docs-file-list { display: flex; flex-direction: column; gap: 6px; }
-  .docs-file-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; background: var(--docs-file-bg); border: 1px solid var(--docs-file-br); cursor: pointer; transition: all 0.15s; text-decoration: none; }
-  .docs-file-item:hover { border-color: rgba(0,200,255,0.3); background: rgba(0,200,255,0.05); }
-  .docs-file-icon { font-size: 20px; flex-shrink: 0; }
-  .docs-file-info { flex: 1; min-width: 0; }
-  .docs-file-name { font-size: 12px; font-weight: 500; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .docs-panel-body { flex: 1; overflow-y: auto; padding: 24px; }
+  .docs-section { margin-bottom: 30px; }
+  .docs-section-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .docs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .docs-image-thumb {
+    aspect-ratio: 4/3; border-radius: 10px; background: var(--docs-thumb-bg); border: 1px solid var(--docs-thumb-br);
+    overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative;
+  }
+  .docs-image-thumb:hover { border-color: var(--accent-blue); transform: scale(1.02); }
+  .docs-image-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .docs-file-item {
+    background: var(--docs-file-bg); border: 1px solid var(--docs-file-br); border-radius: 10px;
+    padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.2s;
+    text-decoration: none;
+  }
+  .docs-file-item:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-blue); }
+  .docs-file-icon { width: 34px; height: 34px; border-radius: 8px; background: rgba(0,200,255,0.1); color: var(--accent-blue); display: flex; align-items: center; justify-content: center; }
+  .docs-file-info { min-width: 0; }
+  .docs-file-name { font-size: 13px; font-weight: 500; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .docs-file-meta { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
-  .docs-file-dl { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; background: rgba(0,200,255,0.1); border: 1px solid rgba(0,200,255,0.25); color: var(--accent-blue); display: flex; align-items: center; justify-content: center; }
+  .docs-empty { border: 2px dashed var(--border-main); border-radius: 12px; padding: 30px; text-align: center; color: var(--text-muted); font-size: 13px; }
 
-  .docs-section-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 8px; margin-top: 4px; }
-  .docs-empty { text-align: center; padding: 30px 16px; color: var(--text-muted); font-size: 12px; border: 1px dashed rgba(255,255,255,0.06); border-radius: 8px; }
-  html.light-mode .docs-empty { border-color: rgba(0,0,0,0.08); }
-  .docs-loading { text-align: center; padding: 24px; color: var(--text-muted); font-size: 12px; }
-  .docs-spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.06); border-top-color: var(--accent-blue); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 8px; }
-  html.light-mode .docs-spinner { border-color: rgba(0,0,0,0.08); border-top-color: var(--accent-blue); }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  /* ABSENCES */
+  .absence-block {
+    position: absolute; height: 100%; z-index: 1; pointer-events: none;
+    background: repeating-linear-gradient(-45deg, rgba(168,85,247,0.04) 0px, rgba(168,85,247,0.04) 4px, transparent 4px, transparent 12px);
+    border-left: 2px solid rgba(168,85,247,0.2);
+  }
+  .absence-block-label {
+    position: absolute; top: 0; left: 0; padding: 2px 8px; background: rgba(168,85,247,0.1);
+    border: 1px solid rgba(168,85,247,0.2); border-top: none; border-left: none;
+    border-bottom-right-radius: 6px; font-size: 9px; font-weight: 700; color: #a855f7;
+    text-transform: uppercase; white-space: nowrap; z-index: 2;
+  }
+  .absence-row-block {
+    position: absolute; height: 100%; z-index: 1; pointer-events: none;
+    background: var(--absent-stripe); background-image: repeating-linear-gradient(-45deg, var(--absent-stripe) 0, var(--absent-stripe) 4px, var(--absent-stripe2) 4px, var(--absent-stripe2) 12px);
+    border-left: 2px solid rgba(168,85,247,0.15);
+  }
+  .absence-row-block-pill {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.2);
+    padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; color: #a855f7;
+    text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
+  }
+
+  /* MODALS */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+    z-index: 1000; display: none; align-items: center; justify-content: center;
+  }
+  .modal {
+    width: 600px; max-height: 85vh; background: var(--bg-card); border: 1px solid var(--border-card);
+    border-radius: 20px; box-shadow: 0 30px 100px rgba(0,0,0,0.8); display: flex; flex-direction: column;
+    overflow: hidden; animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes modalPop { from{opacity:0;transform:scale(0.9) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  .modal-head { padding: 24px 30px; border-bottom: 1px solid var(--border-divider); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .modal-head-left { display: flex; align-items: center; gap: 14px; }
+  .modal-status-pill { font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; border: 1px solid transparent; }
+  .modal-status-pill.s-complete    { background: rgba(0,255,157,0.1); border-color: rgba(0,255,157,0.2); color: var(--accent-green); }
+  .modal-status-pill.s-en-route    { background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.2); color: var(--accent-blue); }
+  .modal-status-pill.s-in-progress { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); color: var(--warning); }
+  .modal-status-pill.s-abort       { background: rgba(255,75,92,0.1);  border-color: rgba(255,75,92,0.2);  color: var(--danger); }
+  .modal-close { background: none; border: 1px solid var(--border-main); color: var(--text-muted); width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+  .modal-close:hover { border-color: var(--danger); color: var(--danger); }
+  .modal-body { flex: 1; overflow-y: auto; padding: 30px; }
+  .modal-section-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  .modal-section-title::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,0.05); }
+  .modal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 30px; }
+  .df { display: flex; flex-direction: column; gap: 6px; }
+  .df label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+  .df span { font-size: 14px; font-weight: 500; color: var(--text-main); }
+  .ddiv { height: 1px; background: rgba(255,255,255,0.05); margin-bottom: 30px; }
+
+  /* HISTORY TIMELINE */
+  .history-timeline { position: relative; padding-left: 30px; }
+  .history-timeline::before { content: ""; position: absolute; left: 6px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(180deg, rgba(255,255,255,0.08), transparent); }
+  .history-item { position: relative; margin-bottom: 24px; }
+  .history-item:last-child { margin-bottom: 0; }
+  .history-dot { position: absolute; left: -30px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--history-dot-br); z-index: 1; }
+  .history-item.active .history-dot { border-color: var(--accent-green); box-shadow: 0 0 10px rgba(0,255,157,0.3); }
+  .history-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .h-action { font-size: 13px; font-weight: 600; color: var(--text-main); }
+  .h-time { font-size: 10px; color: var(--text-muted); font-weight: 500; }
+  .h-user { font-size: 11px; color: var(--text-muted); }
+  .history-empty { border: 2px dashed var(--border-main); border-radius: 12px; padding: 24px; text-align: center; color: var(--text-muted); font-size: 13px; }
+
+  /* ACTIONS IN MODAL */
+  .modal-footer { padding: 20px 30px; background: rgba(255,255,255,0.01); border-top: 1px solid var(--border-divider); display: flex; justify-content: flex-end; gap: 12px; }
+  .view-iso-btn {
+    height: 34px; padding: 0 14px; border-radius: 8px; border: 1px solid rgba(0,200,255,0.2);
+    background: rgba(0,200,255,0.05); color: var(--accent-blue); font-size: 11px; font-weight: 600;
+    display: flex; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s;
+  }
+  .view-iso-btn:hover { background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.3); }
+  .view-iso-btn.active { background: rgba(0,200,255,0.2); border-color: var(--accent-blue); color: #fff; }
+  .view-docs-btn {
+    height: 34px; padding: 0 14px; border-radius: 8px; border: 1px solid rgba(0,200,255,0.2);
+    background: rgba(0,200,255,0.05); color: var(--accent-blue); font-size: 11px; font-weight: 600;
+    display: flex; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s;
+  }
+  .view-docs-btn:hover { background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.3); }
+
+  /* DRAG GHOST */
+  #drag-ghost {
+    position: fixed; pointer-events: none; z-index: 2000; display: none;
+    background: var(--bg-card); border: 2px solid var(--accent-green);
+    border-radius: 12px; padding: 12px 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    transform: scale(1.05); opacity: 0.9;
+  }
+
+  /* STACK POPUP */
+  .stack-more-btn {
+    width: calc(100% - 12px); margin: 2px 6px 6px; padding: 6px; border-radius: 8px;
+    background: rgba(0,200,255,0.05); border: 1px dashed rgba(0,200,255,0.2);
+    color: var(--accent-blue); font-size: 10px; font-weight: 700; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s; text-align: center;
+  }
+  .stack-more-btn:hover { background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.3); }
+  #stack-popup {
+    position: fixed; background: var(--bg-stack); border: 1px solid rgba(0,200,255,0.2);
+    border-radius: 14px; box-shadow: 0 15px 50px rgba(0,0,0,0.7); z-index: 1100;
+    width: 260px; display: none; flex-direction: column; overflow: hidden; padding: 8px;
+    backdrop-filter: blur(20px);
+  }
 
   /* LIGHTBOX */
-  #lightbox { position: fixed; inset: 0; z-index: 99999; background: rgba(0,0,0,0.95); backdrop-filter: blur(12px); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
-  #lightbox.open { opacity: 1; pointer-events: all; }
-  .lightbox-header { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; background: linear-gradient(rgba(0,0,0,0.8), transparent); }
-  .lightbox-filename { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.8); max-width: 60vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .lightbox-actions { display: flex; align-items: center; gap: 10px; }
-  .lightbox-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; text-decoration: none; }
-  .lightbox-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
-  .lightbox-close { width: 36px; height: 36px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: all 0.15s; }
+  #lightbox {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000;
+    display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+  }
+  .lightbox-content { position: relative; max-width: 90vw; max-height: 90vh; }
+  .lightbox-content img { max-width: 100%; max-height: 90vh; display: block; border-radius: 4px; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+  .lightbox-close { position: absolute; top: -50px; right: 0; background: none; border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
   .lightbox-close:hover { border-color: var(--danger); color: var(--danger); background: rgba(255,75,92,0.1); }
-  .lightbox-img-wrap { max-width: 90vw; max-height: 85vh; display: flex; align-items: center; justify-content: center; }
-  .lightbox-img-wrap img { max-width: 90vw; max-height: 80vh; border-radius: 8px; box-shadow: 0 32px 80px rgba(0,0,0,0.9); object-fit: contain; animation: lightboxIn 0.25s ease-out; }
-  @keyframes lightboxIn { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
-  .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.6); color: rgba(255,255,255,0.8); cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-  .lightbox-nav:hover { background: rgba(255,255,255,0.15); color: #fff; }
-  .lightbox-nav.prev { left: 20px; }
-  .lightbox-nav.next { right: 20px; }
-  .lightbox-nav.hidden { display: none; }
-  .lightbox-counter { position: absolute; bottom: 20px; font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; }
+  .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: #fff; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 10; }
+  .lightbox-nav:hover { background: rgba(255,255,255,0.2); border-color: #fff; }
+  .lightbox-prev { left: -80px; }
+  .lightbox-next { right: -80px; }
+  .lightbox-caption { position: absolute; bottom: -40px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500; }
 
-  #toast { position: fixed; bottom: 24px; right: 24px; z-index: 99999; padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; transform: translateY(20px); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; pointer-events: none; }
-  #toast.show { transform: translateY(0); opacity: 1; }
-  #toast.success { background: rgba(10,20,15,0.97); border: 1px solid rgba(0,255,157,0.4); color: var(--accent-green); box-shadow: 0 0 30px rgba(0,255,157,0.15),0 16px 40px rgba(0,0,0,0.8); }
-  #toast.error   { background: rgba(20,10,12,0.97); border: 1px solid rgba(255,75,92,0.4); color: var(--danger); box-shadow: 0 0 30px rgba(255,75,92,0.15),0 16px 40px rgba(0,0,0,0.8); }
-  #toast.info    { background: rgba(5,14,20,0.97); border: 1px solid rgba(0,200,255,0.4); color: var(--accent-blue); box-shadow: 0 0 30px rgba(0,200,255,0.1),0 16px 40px rgba(0,0,0,0.8); }
+  /* STATUS BAR */
+  #status-bar {
+    height: 34px; background: var(--bg-status-bar); border-top: 1px solid var(--border-main);
+    display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+    font-size: 11px; color: var(--text-muted); z-index: 60; flex-shrink: 0;
+  }
+  .st-left { display: flex; align-items: center; gap: 20px; }
+  .st-right { display: flex; align-items: center; gap: 15px; }
+  #live-indicator { display: flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(0,255,157,0.2); background: rgba(0,255,157,0.05); color: var(--accent-green); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 9px; }
+  #live-indicator.connecting { border-color: rgba(0,200,255,0.2); background: rgba(0,200,255,0.05); color: var(--accent-blue); }
+  #live-indicator.error { border-color: rgba(255,75,92,0.2); background: rgba(255,75,92,0.05); color: var(--danger); }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .live-dot.pulse { animation: livePulse 2s infinite; }
+  @keyframes livePulse { 0%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} 100%{opacity:1;transform:scale(1)} }
 
-  #loading-overlay { position: fixed; inset: 0; background: var(--bg-loading); display: flex; align-items: center; justify-content: center; z-index: 9998; backdrop-filter: blur(6px); transition: background 0.3s; }
-  #loading-overlay.hidden { display: none; }
-  .loading-box { padding: 30px 40px; border-radius: 18px; background: var(--bg-loading-box); border: 1px solid var(--border-main); text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.9); }
-  .loading-spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.06); border-top-color: var(--accent-green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
-  .loading-text { font-size: 13px; color: var(--text-muted); }
+  /* SCROLLBARS */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; border: 3px solid transparent; background-clip: content-box; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); border-radius: 10px; border: 3px solid transparent; background-clip: content-box; }
 
-  .absence-block { position: absolute; top: 0; bottom: 0; left: 0; right: 0; z-index: 2; pointer-events: none; background: repeating-linear-gradient(-45deg, rgba(168,85,247,0.07) 0px, rgba(168,85,247,0.07) 4px, transparent 4px, transparent 12px); border-left: 3px solid rgba(168,85,247,0.5); }
-  .absence-block-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: rgba(168,85,247,0.18); border: 1px solid rgba(168,85,247,0.4); color: #c084fc; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 10px; border-radius: 6px; white-space: nowrap; pointer-events: none; }
-  .absence-row-block { position: absolute; top: 0; bottom: 0; left: 0; z-index: 1; pointer-events: none; background: repeating-linear-gradient(-45deg, rgba(168,85,247,0.06) 0px, rgba(168,85,247,0.06) 4px, transparent 4px, transparent 12px); border-left: 3px solid rgba(168,85,247,0.4); display: flex; align-items: center; }
-  .absence-row-block-pill { background: rgba(168,85,247,0.18); border: 1px solid rgba(168,85,247,0.4); color: #c084fc; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; padding: 3px 10px; border-radius: 5px; margin-left: 10px; white-space: nowrap; }
-  .eng-row.is-absent .eng-name { color: #c084fc; }
-  .eng-row.is-absent .eng-avatar { background: linear-gradient(135deg, #a855f7, #6366f1); }
+  /* DRAWER RESIZE HANDLE */
+  #drawerHandle {
+    position: absolute; top: -5px; left: 0; right: 0; height: 10px;
+    cursor: ns-resize; z-index: 100;
+  }
+  #drawerHandle::after {
+    content: ""; position: absolute; top: 4px; left: 50%; transform: translateX(-50%);
+    width: 40px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 10px;
+  }
 
-  @keyframes conflictFlash { 0%{box-shadow:0 0 0 0 rgba(245,158,11,0.9);border-color:rgba(245,158,11,0.9)} 25%{box-shadow:0 0 0 8px rgba(245,158,11,0)} 50%{box-shadow:0 0 0 0 rgba(245,158,11,0.9);border-color:rgba(245,158,11,0.9)} 75%{box-shadow:0 0 0 8px rgba(245,158,11,0)} 100%{box-shadow:0 0 0 0 rgba(245,158,11,0.5);border-color:rgba(245,158,11,0.5)} }
-  .job-card-day.needs-realloc, .job-card-week.needs-realloc { animation: conflictFlash 1.4s ease-out forwards; border-color: rgba(245,158,11,0.6) !important; background: rgba(245,158,11,0.06) !important; }
-  .conflict-warning-badge { position: absolute; top: -6px; right: 6px; background: var(--warning); color: #020308; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.4px; pointer-events: none; z-index: 20; }
-  html.light-mode .conflict-warning-badge { color: #fff; }
-
-  /* NearBy */
-  .nearby-track { position: relative; width: 34px; height: 18px; border-radius: 9px; background: var(--nearby-track-bg); border: 1px solid var(--nearby-track-br); cursor: pointer; transition: background 0.22s, border-color 0.22s; flex-shrink: 0; }
-  .nearby-track.on { background: rgba(0,255,157,0.25); border-color: rgba(0,255,157,0.5); }
-  html.light-mode .nearby-track.on { background: rgba(0,184,110,0.25); border-color: rgba(0,184,110,0.5); }
-  .nearby-thumb { position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: rgba(143,160,184,0.6); transition: transform 0.22s, background 0.22s; pointer-events: none; }
-  .nearby-track.on .nearby-thumb { transform: translateX(16px); background: var(--accent-green); }
-  #nearbyLabel.on { color: var(--accent-green); }
-  .nearby-info-btn { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(143,160,184,0.3); background: rgba(143,160,184,0.08); color: var(--text-muted); font-size: 10px; font-weight: 700; font-style: italic; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: Georgia, serif; transition: all 0.15s; flex-shrink: 0; line-height: 1; }
-  .nearby-info-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
-  .nearby-info-card { position: fixed; width: 300px; background: var(--bg-tooltip); border: 1px solid rgba(0,200,255,0.25); border-radius: 12px; padding: 16px 18px 14px; box-shadow: 0 16px 48px rgba(0,0,0,0.9); z-index: 99990; display: none; }
-  .nearby-info-card.visible { display: block; animation: nearbyCardIn 0.18s ease-out; }
-  @keyframes nearbyCardIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
-  .nearby-info-close { position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.08); background: transparent; color: var(--text-muted); cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-  .nearby-info-close:hover { border-color: var(--danger); color: var(--danger); }
-  .nearby-info-title { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: var(--accent-blue); letter-spacing: 0.04em; margin-bottom: 10px; padding-right: 20px; }
-  .nearby-info-body { font-size: 12px; color: var(--text-muted); line-height: 1.65; margin-bottom: 8px; }
-  .nearby-info-body strong { color: var(--text-main); font-weight: 600; }
-  .nearby-info-tip { display: flex; align-items: flex-start; gap: 6px; background: rgba(0,255,157,0.06); border: 1px solid rgba(0,255,157,0.15); border-radius: 7px; padding: 8px 10px; font-size: 11px; color: rgba(0,255,157,0.7); line-height: 1.5; }
-  .nearby-info-tip svg { flex-shrink: 0; margin-top: 1px; }
-  .eng-row.nearby-hidden, .eng-tl-row.nearby-hidden { display: none !important; }
-  .nearby-active-banner { display: none; align-items: center; gap: 8px; padding: 5px 16px; font-size: 11px; font-weight: 600; background: rgba(0,255,157,0.06); border-bottom: 1px solid rgba(0,255,157,0.15); color: var(--accent-green); flex-shrink: 0; }
-  .nearby-active-banner.visible { display: flex; }
-  .nearby-banner-clear { margin-left: auto; font-size: 10px; color: var(--text-muted); cursor: pointer; padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); background: transparent; transition: all 0.15s; font-family: 'Inter', sans-serif; }
-  html.light-mode .nearby-banner-clear { border-color: rgba(0,0,0,0.1); }
-  .nearby-banner-clear:hover { color: var(--text-main); border-color: rgba(255,255,255,0.25); }
-  html.light-mode .nearby-banner-clear:hover { border-color: rgba(0,0,0,0.2); }
+  /* UTILS */
+  .hidden { display: none !important; }
+  #toast-container { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  #toast {
+    padding: 12px 24px; border-radius: 12px; background: rgba(10,18,30,0.98); border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-main); font-size: 13px; font-weight: 500; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    backdrop-filter: blur(12px); display: flex; align-items: center; gap: 10px;
+    animation: toastIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  }
+  @keyframes toastIn { from{transform:translateY(-20px);opacity:0} to{transform:translateY(0);opacity:1} }
+  #toast.success { border-color: rgba(0,255,157,0.3); color: var(--accent-green); }
+  #toast.error { border-color: rgba(255,75,92,0.3); color: var(--danger); }
+  #loading-overlay { position: fixed; inset: 0; background: var(--bg-loading); z-index: 5000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  .loading-box { background: var(--bg-loading-box); border: 1px solid var(--border-card); padding: 30px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 16px; box-shadow: 0 20px 80px rgba(0,0,0,0.6); }
+  .loading-spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.05); border-top-color: var(--accent-green); border-radius: 50%; animation: spin 1s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .loading-text { font-size: 14px; font-weight: 500; color: var(--text-main); }
 </style>
 </head>
-<body>
-
-<div id="loading-overlay"><div class="loading-box"><div class="loading-spinner"></div><div class="loading-text">Loading schedule…</div></div></div>
-<div id="toast"></div>
-<div id="drag-ghost"></div>
-<div id="stack-popup"></div>
-
-<!-- LIGHTBOX -->
-<div id="lightbox">
-  <div class="lightbox-header">
-    <div class="lightbox-filename" id="lightboxFilename"></div>
-    <div class="lightbox-actions">
-      <a class="lightbox-btn" id="lightboxDownload" href="#" target="_blank" download>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Download
-      </a>
-      <button class="lightbox-close" id="lightboxClose">✕</button>
-    </div>
-  </div>
-  <button class="lightbox-nav prev hidden" id="lightboxPrev">&#8249;</button>
-  <div class="lightbox-img-wrap" id="lightboxImgWrap"></div>
-  <button class="lightbox-nav next hidden" id="lightboxNext">&#8250;</button>
-  <div class="lightbox-counter" id="lightboxCounter"></div>
-</div>
-
-<!-- SIDEBAR -->
-<div id="sidebar">
-  <div class="sidebar-header">
-    <img class="sidebar-logo-collapsed" id="logoCollapsed"
-         src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1" alt="Geko">
-    <img class="sidebar-logo-expanded"
-         src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=xh5pubjr&dl=1" alt="Geko">
-    <button class="sidebar-toggle" id="sidebarToggle">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-    </button>
-  </div>
-  <nav class="sidebar-nav">
-    <a href="dashboard.html" class="sidebar-link" data-label="Dashboard">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
-      <span class="sidebar-label">Dashboard</span>
-    </a>
-    <a href="scheduling.html" class="sidebar-link active" data-label="Scheduling">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span>
-      <span class="sidebar-label">Scheduling</span>
-    </a>
-    <a href="database.html" class="sidebar-link" data-label="Database">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 9v4c0 1.66 4.03 3 9 3s9-1.34 9-3V9"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/></svg></span>
-      <span class="sidebar-label">Database</span>
-    </a>
-    <a href="viewdata.html" class="sidebar-link" data-label="View Data">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
-      <span class="sidebar-label">View Data</span>
-    </a>
-    <a href="userdatabase.html" class="sidebar-link" data-label="Users">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
-      <span class="sidebar-label">Users</span>
-    </a>
-    <a href="mapping.html" class="sidebar-link" data-label="Mapping">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg></span>
-      <span class="sidebar-label">Mapping</span>
-    </a>
-    <a href="absencesubmission.html" class="sidebar-link" data-label="Absence">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg></span>
-      <span class="sidebar-label">Absence</span>
-    </a>
-  </nav>
-  <div class="sidebar-footer"><div class="sidebar-version">v1.0.0</div></div>
-</div>
-
-<!-- MAIN -->
-<div id="main-content">
-  <header id="topbar">
-    <div>
-      <div id="topbar-title">Scheduling</div>
-      <div id="topbar-subtitle">Click a job to view details · Drag to reschedule or reassign</div>
-    </div>
-    <div id="topbar-right">
-      <div id="live-indicator" class="connecting"><div class="live-dot"></div><span id="live-text">Connecting…</span></div>
-
-      <!-- ── THEME TOGGLE ── -->
-      <button id="themeToggle" title="Toggle light / dark mode">
-        <span class="theme-icon" id="themeIcon">☀️</span>
-        <div class="theme-toggle-track">
-          <div class="theme-toggle-thumb"></div>
-        </div>
-        <span id="themeLabel" style="font-size:11px;font-weight:600;letter-spacing:0.04em">Light</span>
+<body class="dark-mode">
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <img src="https://geko.uk/wp-content/uploads/2024/09/cropped-icon-192x192.png" alt="Geko" class="sidebar-logo-collapsed">
+      <img src="https://geko.uk/wp-content/uploads/2024/09/Logo-Geko.png" alt="Geko" class="sidebar-logo-expanded">
+      <button class="sidebar-toggle" id="sidebarToggle">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="sidebar-link" data-label="Dashboard">
+        <div class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+        <span class="sidebar-label">Dashboard</span>
+      </a>
+      <a href="scheduling.html" class="sidebar-link active" data-label="Scheduling">
+        <div class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <span class="sidebar-label">Scheduling</span>
+      </a>
+      <a href="engineer-tracking.html" class="sidebar-link" data-label="Engineer Tracking">
+        <div class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <span class="sidebar-label">Tracking</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-version">v2.4.0</div>
+    </div>
+  </aside>
 
-      <span id="status-dot"></span><span id="status-text">Admin</span>
-    </div>
-  </header>
-  <div id="toolbar">
-    <div class="date-nav">
-      <button class="dnb" id="prevBtn">&#8249;</button>
-      <span class="date-lbl" id="dateLbl">Loading…</span>
-      <button class="dnb" id="nextBtn">&#8250;</button>
-    </div>
-    <input type="date" id="datePicker"/>
-    <button class="btn btn-accent" id="todayBtn">Today</button>
-    <div class="tsep"></div>
-    <button class="btn active" id="btnDay">Day</button>
-    <button class="btn" id="btnWeek">Week</button>
-    <div class="tsep"></div>
-    <div class="search-wrapper">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" class="search-input" id="jobSearch" placeholder="Job number…">
-    </div>
-    <div class="search-wrapper">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
-      <input type="text" class="search-input" id="engSearch" placeholder="Engineer name…">
-    </div>
-    <div class="tsep"></div>
-    <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;position:relative">
-      <div class="nearby-track" id="nearbyTrack"><span class="nearby-thumb" id="nearbyThumb"></span></div>
-      <span style="font-size:12px;font-weight:600;letter-spacing:0.04em;color:var(--text-muted)" id="nearbyLabel">NearBy</span>
-      <button class="nearby-info-btn" id="nearbyInfoBtn" title="What is NearBy?">i</button>
-    </div>
-    <button class="view-iso-btn" id="viewIsoBtn" title="View Isochrone settings">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-      Isochrone
-    </button>
-    <div class="tsep"></div>
-    <span id="jobCountLbl"></span>
-  </div>
-  <div class="nearby-active-banner" id="nearbyBanner">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 1 8 8c0 5.25-8 13-8 13S4 15.25 4 10a8 8 0 0 1 8-8z"/></svg>
-    <span id="nearbyBannerText">NearBy active</span>
-    <button class="nearby-banner-clear" id="nearbyBannerClear">Clear filter</button>
-  </div>
-  <div class="lbar" id="lbar"></div>
-  <div class="status-bar"><div class="sdot spin" id="sdot"></div><span id="stxt">Connecting…</span></div>
-  <div class="sched-wrap">
-    <div class="grid-area">
-      <div class="eng-col">
-        <div class="eng-col-hdr">Engineers</div>
-        <div class="eng-list" id="engList"></div>
+  <main id="main-content">
+    <header id="topbar">
+      <div class="page-title">
+        <h1>Scheduling</h1>
       </div>
-      <div class="scroll-area" id="scrollArea">
-        <div class="time-header" id="timeHeader"></div>
-        <div class="rows-wrap" id="rowsWrap">
-          <div class="hour-grid" id="hourGrid"></div>
-          <div id="rowsContainer"></div>
+      <div class="top-actions">
+        <div class="search-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" placeholder="Search for customer, ID or postcode..." id="jobSearch">
+        </div>
+        <button id="themeToggle">
+          <span class="theme-icon">🌙</span>
+          <div class="theme-toggle-track"><div class="theme-toggle-thumb"></div></div>
+          <span>DARK</span>
+        </button>
+        <div class="user-badge">
+          <span class="u-name">Dispatch Team</span>
+          <div class="u-avatar">DT</div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
+    </header>
 
-<!-- ISOCHRONE PANEL -->
-<div id="isoPanel">
-  <div class="iso-panel-head">
-    <div class="iso-panel-title">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-      Isochrone Limits
-    </div>
-    <button class="iso-panel-close" id="isoPanelClose">&#x2715;</button>
-  </div>
-  <div class="iso-panel-body" id="isoPanelBody">
-    <div class="iso-panel-empty">Loading…</div>
-  </div>
-</div>
-
-<!-- BOTTOM DRAWER -->
-<div id="jobDrawer">
-  <div class="drawer-handle" id="drawerHandle"></div>
-  <div class="modal-head">
-    <div class="modal-head-left">
-      <div class="modal-title" id="modalTitle"></div>
-      <div class="modal-id" id="modalId"></div>
-      <div id="modalStatusPill"></div>
-    </div>
-    <div class="modal-head-right">
-      <button class="modal-close" id="modalClose" title="Close">&#x2715;</button>
-    </div>
-  </div>
-  <div class="modal-inner">
-    <div class="modal-body" id="modalBody"></div>
-    <div class="modal-docs-panel" id="modalDocsPanel">
-      <div class="docs-panel-header">
-        <div class="docs-panel-title">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          Documents
-        </div>
-        <button class="docs-panel-close" id="docsPanelClose">&#x2715;</button>
+    <div id="toolbar">
+      <div class="view-controls">
+        <button class="btn active" id="viewDay">Day View</button>
+        <button class="btn" id="viewWeek">Week View</button>
       </div>
-      <div id="docsPanelContent"><div class="docs-loading"><div class="docs-spinner"></div>Loading…</div></div>
+      <div class="view-controls" style="gap: 14px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="dnb" id="prevDate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <input type="date" id="datePicker">
+          <button class="dnb" id="nextDate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+        <button class="btn" id="btnToday">Go to Today</button>
+      </div>
+    </div>
+
+    <div id="grid-container">
+      <div class="eng-list" id="eng-list">
+        <div class="eng-col-hdr">Engineer</div>
+        </div>
+      <div id="timeline-scroll">
+        <div id="time-header"></div>
+        <div id="timeline-content"></div>
+      </div>
+    </div>
+
+    <footer id="status-bar">
+      <div class="st-left">
+        <div id="live-indicator">
+          <div class="live-dot pulse"></div>
+          <span>System Live</span>
+        </div>
+        <span id="job-count-label">Loading jobs...</span>
+      </div>
+      <div class="st-right">
+        <span>Geko Logistics Pro</span>
+        <span style="opacity:0.3">|</span>
+        <span id="clock-display">00:00:00</span>
+      </div>
+    </footer>
+  </main>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="jobModal">
+      <div class="modal-head">
+        <div class="modal-head-left">
+          <div class="modal-status-pill" id="modalStatus">Pending</div>
+          <h2 id="modalJobId" style="font-size: 18px; color: var(--text-main);">Job #0000</h2>
+        </div>
+        <button class="modal-close" id="closeModal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section-title">Customer Details</div>
+        <div class="modal-grid">
+          <div class="df"><label>Customer</label><span id="md-customer">-</span></div>
+          <div class="df"><label>Postcode</label><span id="md-postcode">-</span></div>
+          <div class="df"><label>Contact</label><span id="md-contact">-</span></div>
+          <div class="df"><label>Phone</label><span id="md-phone">-</span></div>
+        </div>
+        <div class="modal-section-title">Work Information</div>
+        <div class="modal-grid">
+          <div class="df"><label>Job Type</label><span id="md-type">-</span></div>
+          <div class="df"><label>Assigned To</label><span id="md-eng">-</span></div>
+          <div class="df"><label>Scheduled Date</label><span id="md-date">-</span></div>
+          <div class="df"><label>Time Slot</label><span id="md-time">-</span></div>
+        </div>
+        <div class="modal-section-title">Job Activity History</div>
+        <div id="history-container"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="view-docs-btn" id="btnViewDocs">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          View Files & Docs
+        </button>
+        <button class="view-iso-btn" id="btnViewIso">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>
+          Check Local Engineers
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- NearBy info card -->
-<div class="nearby-info-card" id="nearbyInfoCard">
-  <button class="nearby-info-close" id="nearbyInfoClose">&#x2715;</button>
-  <div class="nearby-info-title">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
-    NearBy Filter
+  <div id="isoPanel">
+    <div class="iso-panel-head">
+      <div class="iso-panel-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-blue)"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>
+        Local Engineers
+      </div>
+      <button class="iso-panel-close" id="closeIso">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="iso-panel-body">
+      <div class="iso-note">
+        <p>This list displays engineers based on their travel time from the selected job location. Travel times are estimates based on live traffic data.</p>
+      </div>
+      <div class="iso-eng-list" id="isoEngList"></div>
+    </div>
   </div>
-  <p class="nearby-info-body">When <strong>NearBy</strong> is enabled and you click a job, the engineer list filters to show only engineers within <strong>40 minutes drive</strong> of the selected job's postcode.</p>
-  <div class="nearby-info-tip">
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-    Click any job card while NearBy is on to apply the filter
-  </div>
-</div>
 
-<script>
-/* ── Theme toggle (runs before module so it's instant) ── */
-(function(){
-  const saved = localStorage.getItem('geko-theme');
-  if(saved === 'light') document.documentElement.classList.add('light-mode');
-  function updateToggleUI(){
-    const isLight = document.documentElement.classList.contains('light-mode');
-    const icon  = document.getElementById('themeIcon');
-    const label = document.getElementById('themeLabel');
-    if(icon)  icon.textContent  = isLight ? '🌙' : '☀️';
-    if(label) label.textContent = isLight ? 'Dark' : 'Light';
-  }
-  document.addEventListener('DOMContentLoaded', ()=>{
-    updateToggleUI();
-    document.getElementById('themeToggle').addEventListener('click', ()=>{
-      document.documentElement.classList.toggle('light-mode');
+  <div id="docsPanel">
+    <div class="docs-panel-header">
+      <div class="docs-panel-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-blue)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Job Files & Documents
+      </div>
+      <button class="docs-panel-close" id="closeDocs">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="docs-panel-body" id="docsContent">
+      </div>
+  </div>
+
+  <div id="lightbox">
+    <div class="lightbox-content">
+      <button class="lightbox-close" id="closeLightbox">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <button class="lightbox-nav lightbox-prev" id="prevImage">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="lightbox-nav lightbox-next" id="nextImage">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+      <img src="" id="lightboxImg">
+      <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+  </div>
+
+  <div id="drag-ghost"></div>
+  <div id="stack-popup"></div>
+  <div id="toast-container"></div>
+  <div id="loading-overlay">
+    <div class="loading-box">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Syncing data...</div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <script>
+    /* ─── Config ────────────────────────────────────────────────── */
+    const firebaseConfig = { databaseURL: "https://geko-work-default-rtdb.europe-west1.firebasedatabase.app/" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const storage = firebase.storage();
+
+    /* ─── State ─────────────────────────────────────────────────── */
+    let currentView = 'day'; 
+    let selectedDate = new Date().toISOString().split('T')[0];
+    let allJobs = [];
+    let engineers = [];
+    let activeIsoJobId = null;
+    let engPostcodes = new Map();
+    let currentEngineerAbsences = [];
+
+    const UI = {
+      sidebar: document.getElementById('sidebar'),
+      grid: document.getElementById('grid-container'),
+      engList: document.getElementById('eng-list'),
+      tlScroll: document.getElementById('timeline-scroll'),
+      tlHdr: document.getElementById('time-header'),
+      tlContent: document.getElementById('timeline-content'),
+      datePicker: document.getElementById('datePicker'),
+      overlay: document.getElementById('modalOverlay'),
+      ghost: document.getElementById('drag-ghost'),
+      toastC: document.getElementById('toast-container'),
+      loader: document.getElementById('loading-overlay'),
+      clock: document.getElementById('clock-display')
+    };
+
+    /* ─── Theme ─────────────────────────────────────────────────── */
+    function initTheme() {
+      const mode = localStorage.getItem('geko-theme') || 'dark';
+      applyTheme(mode);
+    }
+    function applyTheme(mode) {
+      if(mode==='light') {
+        document.documentElement.classList.add('light-mode');
+        document.body.classList.remove('dark-mode');
+        document.querySelector('#themeToggle span:first-child').innerText = '☀️';
+        document.querySelector('#themeToggle span:last-child').innerText = 'LIGHT';
+      } else {
+        document.documentElement.classList.remove('light-mode');
+        document.body.classList.add('dark-mode');
+        document.querySelector('#themeToggle span:first-child').innerText = '🌙';
+        document.querySelector('#themeToggle span:last-child').innerText = 'DARK';
+      }
+      localStorage.setItem('geko-theme', mode);
+    }
+    document.getElementById('themeToggle').addEventListener('click', () => {
       const isLight = document.documentElement.classList.contains('light-mode');
-      localStorage.setItem('geko-theme', isLight ? 'light' : 'dark');
-      updateToggleUI();
+      applyTheme(isLight ? 'dark' : 'light');
     });
-  });
-})();
-</script>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getFirestore, collection, onSnapshot, getDocs, doc, updateDoc, deleteField, arrayUnion
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const db = getFirestore(initializeApp({
-  apiKey:"AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
-  authDomain:"geko-scheduling.firebaseapp.com",
-  projectId:"geko-scheduling",
-  storageBucket:"geko-scheduling.firebasestorage.app",
-  messagingSenderId:"824568732787",
-  appId:"1:824568732787:web:c12db983fd6a5b44b01e06"
-}));
-
-/* ─── Constants ─────────────────────────────────────────────── */
-const HOUR_W = 200, ROW_H = 96, DAY_START = 7, DAY_END_MIN = 18, STAGING_W = 160;
-const DRAG_THRESHOLD = 5;
-const IMAGE_EXTS = new Set(['jpg','jpeg','png','gif','webp','heic','bmp','svg']);
-const AVG_SPEED_KMH = 53.1;
-
-const JOB_DURATIONS_FALLBACK = {"dual fuel":2,"single gas":1.5,"single elec":1.5,"comms":0.5};
-let jobTypeParams = new Map(); // "level|||jobtype" → durationHours
-let engLevels = new Map();     // engineerName.toLowerCase() → level
-
-function getDuration(jobType, engineerName) {
-  const t = (jobType || "").toLowerCase().trim();
-  const eng = (engineerName || "").toLowerCase().trim();
-  const level = engLevels.get(eng) || "";
-  if (level) {
-    const key = level.toLowerCase() + "|||" + t;
-    if (jobTypeParams.has(key)) return jobTypeParams.get(key);
-    // fuzzy match: check if any stored jobType key is contained in t or vice versa
-    for (const [k, v] of jobTypeParams) {
-      const [kLevel, kType] = k.split("|||");
-      if (kLevel === level.toLowerCase() && (t.includes(kType) || kType.includes(t))) return v;
+    /* ─── Real-time ─────────────────────────────────────────────── */
+    function startRealTimeListener() {
+      db.ref('jobs').on('value', snap => {
+        const val = snap.val() || {};
+        allJobs = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+        extractEngineers();
+        render();
+        updateStatus();
+      }, err => showToast("Firebase Error: " + err.message, "error"));
     }
-  }
-  // fallback to hardcoded
-  for (const [key, v] of Object.entries(JOB_DURATIONS_FALLBACK)) {
-    if (t.includes(key)) return v;
-  }
-  return 1;
-}
-function getStartHour(job){const v=job.startHour;if(v===null||v===undefined||v==="")return null;const n=+v;return isNaN(n)?null:n;}
-function calcDayEnd(jobs){let end=DAY_END_MIN;jobs.forEach(j=>{const sh=getStartHour(j);if(sh===null)return;const fin=sh+getDuration(j.jobType,j.engineerName);if(fin>end)end=Math.ceil(fin)+0.5;});return end;}
-
-const COLOURS=["#00c896","#0084ff","#f59e0b","#ff4d6a","#a855f7","#06b6d4","#f97316","#10b981"];
-function cardColour(t){const h=[...(t||"x")].reduce((a,c)=>a+c.charCodeAt(0),0);return COLOURS[h%COLOURS.length];}
-
-const STATUS_META = {
-  'complete':    { label:'Complete',    icon:'✓', cls:'s-complete' },
-  'en-route':    { label:'En Route',    icon:'→', cls:'s-en-route' },
-  'in-progress': { label:'In Progress', icon:'⚙', cls:'s-in-progress' },
-  'abort':       { label:'Aborted',     icon:'✕', cls:'s-abort' },
-  'unassigned':  { label:'Unassigned',  icon:'○', cls:'s-unassigned' },
-};
-function normaliseStatus(raw){
-  if(!raw) return 'unassigned';
-  const s=String(raw).toLowerCase().trim().replace(/\s+/g,'-');
-  if(s==='enroute') return 'en-route';
-  if(s==='inprogress') return 'in-progress';
-  return ['complete','en-route','in-progress','abort'].includes(s)?s:'unassigned';
-}
-function getStatusMeta(raw){return STATUS_META[normaliseStatus(raw)]||STATUS_META['unassigned'];}
-
-/* ─── App state ─────────────────────────────────────────────── */
-let allJobs=[], currentView="day", currentDate=today0(), jobSearch="", engSearch="";
-let openModalJobId=null, unsubscribe=null, allAbsences=[], unsubAbsences=null, docsExpanded=false;
-let nearbyActive=false, nearbySelectedJob=null;
-let engPostcodes=new Map();
-let engIsoMinutes=new Map();
-let lightboxImages=[], lightboxIndex=0;
-
-/* ─── Postcode geocode cache ─────────────────────────────────── */
-const postcodeCache=new Map();
-
-function normalisePostcode(pc){return(pc||'').trim().toUpperCase().replace(/\s+/g,'');}
-
-async function geocodePostcodes(postcodes){
-  const toFetch=[...new Set(postcodes.map(normalisePostcode))].filter(pc=>pc&&!postcodeCache.has(pc));
-  if(!toFetch.length) return;
-  const CHUNK=100;
-  for(let i=0;i<toFetch.length;i+=CHUNK){
-    const chunk=toFetch.slice(i,i+CHUNK);
-    try{
-      const res=await fetch('https://api.postcodes.io/postcodes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({postcodes:chunk})});
-      if(!res.ok) throw new Error('postcodes.io '+res.status);
-      const json=await res.json();
-      (json.result||[]).forEach(r=>{
-        const key=normalisePostcode(r.query);
-        postcodeCache.set(key, r.result?{lat:r.result.latitude,lon:r.result.longitude}:null);
-      });
-    }catch(e){console.warn('Postcode geocode failed:',e);chunk.forEach(pc=>postcodeCache.set(pc,null));}
-  }
-}
-
-function haversineKm(lat1,lon1,lat2,lon2){
-  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
-  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-
-function driveMinutes(pc1,pc2){
-  const a=postcodeCache.get(normalisePostcode(pc1));
-  const b=postcodeCache.get(normalisePostcode(pc2));
-  if(!a||!b) return null;
-  const km=haversineKm(a.lat,a.lon,b.lat,b.lon);
-  return Math.max(1,Math.round((km*1.4/AVG_SPEED_KMH)*60));
-}
-
-/* ─── Doc helpers ───────────────────────────────────────────── */
-function isImage(f){return IMAGE_EXTS.has((f||'').split('.').pop().toLowerCase());}
-function fileIcon(n){const e=(n||'').split('.').pop().toLowerCase();return({pdf:'📄',doc:'📝',docx:'📝',xls:'📊',xlsx:'📊',mp4:'🎥',mov:'🎥',txt:'📃',csv:'📊'})[e]||'📎';}
-function fmtBytes(s){return s||'';}
-function fmtTimestamp(iso){
-  if(!iso) return '—';
-  try{const d=new Date(iso);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+' at '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
-  catch{return iso;}
-}
-
-/* ─── Lightbox ──────────────────────────────────────────────── */
-function openLightbox(imgs,idx){lightboxImages=imgs;lightboxIndex=idx;renderLightboxSlide();document.getElementById('lightbox').classList.add('open');document.addEventListener('keydown',lightboxKeyHandler);}
-function closeLightbox(){document.getElementById('lightbox').classList.remove('open');document.removeEventListener('keydown',lightboxKeyHandler);lightboxImages=[];lightboxIndex=0;}
-function lightboxKeyHandler(e){if(e.key==='Escape')closeLightbox();if(e.key==='ArrowLeft')lightboxGo(-1);if(e.key==='ArrowRight')lightboxGo(1);}
-function lightboxGo(dir){lightboxIndex=Math.max(0,Math.min(lightboxImages.length-1,lightboxIndex+dir));renderLightboxSlide();}
-function renderLightboxSlide(){
-  const img=lightboxImages[lightboxIndex];
-  document.getElementById('lightboxFilename').textContent=img.name;
-  document.getElementById('lightboxDownload').href=img.url;
-  document.getElementById('lightboxDownload').download=img.name;
-  document.getElementById('lightboxImgWrap').innerHTML=`<img src="${img.url}" alt="${img.name}" draggable="false"/>`;
-  document.getElementById('lightboxCounter').textContent=lightboxImages.length>1?`${lightboxIndex+1} / ${lightboxImages.length}`:'';
-  document.getElementById('lightboxPrev').classList.toggle('hidden',lightboxIndex===0);
-  document.getElementById('lightboxNext').classList.toggle('hidden',lightboxIndex===lightboxImages.length-1);
-}
-document.getElementById('lightboxClose').onclick=closeLightbox;
-document.getElementById('lightbox').addEventListener('click',e=>{if(e.target===document.getElementById('lightbox'))closeLightbox();});
-document.getElementById('lightboxPrev').onclick=()=>lightboxGo(-1);
-document.getElementById('lightboxNext').onclick=()=>lightboxGo(1);
-
-/* ─── Documents panel ───────────────────────────────────────── */
-function openDocsPanel(job){
-  docsExpanded=true;
-  document.getElementById('jobDrawer').classList.add('docs-expanded');
-  const panel=document.getElementById('docsPanelContent');
-  const attachments=Array.isArray(job.attachments)?job.attachments:[];
-  if(!attachments.length){panel.innerHTML=`<div class="docs-empty">No documents attached.</div>`;return;}
-  const images=attachments.filter(a=>isImage(a.name));
-  const files=attachments.filter(a=>!isImage(a.name));
-  const lightboxImgs=images.map(a=>({url:a.url,name:a.name}));
-  let html='';
-  if(images.length){
-    html+=`<div class="docs-section-label">Images (${images.length})</div><div class="docs-image-grid">`;
-    images.forEach((att,idx)=>{html+=`<div class="docs-image-thumb" data-lightbox-idx="${idx}" title="${att.name}"><img src="${att.url}" alt="${att.name}" loading="lazy"/><div class="thumb-overlay"><div class="thumb-expand"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></div></div><div class="docs-image-name">${att.name}</div></div>`;});
-    html+=`</div>`;
-  }
-  if(files.length){
-    html+=`<div class="docs-section-label" style="margin-top:${images.length?'16px':'4px'}">Files (${files.length})</div><div class="docs-file-list">`;
-    files.forEach(att=>{html+=`<a class="docs-file-item" href="${att.url}" target="_blank" rel="noopener"><div class="docs-file-icon">${fileIcon(att.name)}</div><div class="docs-file-info"><div class="docs-file-name">${att.name}</div><div class="docs-file-meta">${fmtBytes(att.size)} · ${att.uploadedBy||''} · ${att.uploadedAt?new Date(att.uploadedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):''}</div></div><div class="docs-file-dl"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div></a>`;});
-    html+=`</div>`;
-  }
-  panel.innerHTML=html;
-  panel.querySelectorAll('.docs-image-thumb').forEach(el=>{el.addEventListener('click',()=>openLightbox(lightboxImgs,parseInt(el.dataset.lightboxIdx,10)));});
-}
-function closeDocsPanel(){docsExpanded=false;document.getElementById('jobDrawer').classList.remove('docs-expanded');}
-document.getElementById('docsPanelClose').onclick=closeDocsPanel;
-
-/* ─── Absence helpers ───────────────────────────────────────── */
-function isEngineerAbsent(engName,dateObj){
-  const dateStr=toInputDateStr(dateObj);
-  return allAbsences.find(a=>(a.engineerName||'').toLowerCase().trim()===(engName||'').toLowerCase().trim()&&a.date===dateStr);
-}
-function toInputDateStr(d){if(!d)return '';return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-function today0(){const d=new Date();d.setHours(0,0,0,0);return d;}
-
-/* ─── Date helpers ──────────────────────────────────────────── */
-function parseDate(s){
-  if(!s)return null;s=String(s).trim();let m;
-  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);if(m){const d=new Date(+m[3],+m[2]-1,+m[1]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
-  m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);if(m){const d=new Date(+m[1],+m[2]-1,+m[3]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
-  const d=new Date(s);if(!isNaN(d)){d.setHours(0,0,0,0);return d;}return null;
-}
-function sameDay(a,b){return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
-function toUKStr(d){return`${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;}
-function fmtTime(h){const hh=Math.floor(h),mm=Math.round((h-hh)*60);return`${String(hh).padStart(2,"0")}:${String(mm).padStart(2,"0")}`;}
-function esc(s){return String(s||"—").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-function getCols(){
-  if(currentView==="day")return[new Date(currentDate)];
-  const dow=currentDate.getDay(),diff=dow===0?-6:1-dow;
-  const mon=new Date(currentDate);mon.setDate(currentDate.getDate()+diff);
-  return Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
-}
-function timeAgo(iso){
-  if(!iso) return '';
-  const diff=Date.now()-new Date(iso).getTime();
-  if(diff<60000)  return 'just now';
-  if(diff<3600000) return `${Math.floor(diff/60000)}m ago`;
-  if(diff<86400000) return `${Math.floor(diff/3600000)}h ago`;
-  return `${Math.floor(diff/86400000)}d ago`;
-}
-
-/* ─── Firestore listeners ───────────────────────────────────── */
-function startAbsenceListener(){
-  if(unsubAbsences){unsubAbsences();unsubAbsences=null;}
-  unsubAbsences=onSnapshot(collection(db,'absences'),
-    snap=>{allAbsences=[];snap.forEach(d=>allAbsences.push({_id:d.id,...d.data()}));if(allJobs.length>0)render();},
-    err=>console.error('Absence listener error:',err));
-}
-
-function startRealTimeListener(){
-  setLive('connecting','Connecting…');
-  if(unsubscribe){unsubscribe();unsubscribe=null;}
-  try{
-    unsubscribe=onSnapshot(collection(db,'uploaded_jobs'),{includeMetadataChanges:false},
-      async snapshot=>{
-        if(allJobs.length===0){
-          allJobs=[];snapshot.forEach(d=>allJobs.push({_id:d.id,...d.data()}));
-          await geocodePostcodes(allJobs.map(j=>j.postcode).filter(Boolean));
-          setStatus('ok',`${allJobs.length} jobs loaded`);
-          setLive('live',`Live · ${allJobs.length} jobs`);
-          toast(`${allJobs.length} job${allJobs.length!==1?'s':''} loaded`);
-          render();
-          document.getElementById('loading-overlay').classList.add('hidden');
-          return;
-        }
-        let changedCount=0;const updatedIds=[];const newPostcodes=[];
-        snapshot.docChanges().forEach(change=>{
-          const newData={_id:change.doc.id,...change.doc.data()};
-          if(change.type==='added'){if(!allJobs.find(j=>j._id===newData._id)){allJobs.push(newData);changedCount++;if(newData.postcode)newPostcodes.push(newData.postcode);}}
-          else if(change.type==='modified'){const idx=allJobs.findIndex(j=>j._id===newData._id);if(idx!==-1){const old=allJobs[idx];const os=normaliseStatus(old.jobStatus||old.status);const ns=normaliseStatus(newData.jobStatus||newData.status);allJobs[idx]=newData;changedCount++;if(os!==ns)updatedIds.push({id:newData._id,status:ns,eng:newData.engineerName});if(newData.postcode)newPostcodes.push(newData.postcode);}}
-          else if(change.type==='removed'){allJobs=allJobs.filter(j=>j._id!==change.doc.id);changedCount++;}
-        });
-        if(newPostcodes.length)await geocodePostcodes(newPostcodes);
-        if(changedCount>0){
-          setLive('live',`Live · ${allJobs.length} jobs`);
-          setStatus('ok',`Updated ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
-          render();
-          updatedIds.forEach(({id,status,eng})=>{
-            toast(`${esc(eng||'Engineer')}: ${getStatusMeta(status).label}`,'info');
-            setTimeout(()=>{document.querySelectorAll(`[data-job-doc-id="${id}"]`).forEach(el=>{el.classList.remove('status-updated');void el.offsetWidth;el.classList.add('status-updated');});},50);
-            if(openModalJobId===id){const job=allJobs.find(j=>j._id===id);if(job)openModal(job,false);}
-          });
-        }
-      },
-      error=>{console.error('Firestore listener error:',error);setLive('error','Disconnected');setStatus('err','Connection lost: '+(error.code||error.message));toast('Real-time connection lost. Retrying…','error');setTimeout(startRealTimeListener,5000);}
-    );
-  }catch(e){console.error(e);setLive('error','Error');setStatus('err',e.message);document.getElementById('loading-overlay').classList.add('hidden');}
-}
-
-/* ─── Drag engine ───────────────────────────────────────────── */
-const ghost=document.getElementById("drag-ghost");
-let activeDrag=null;
-function attachDrag(cardEl,job){
-  cardEl.addEventListener("mousedown",e=>{
-    if(e.button!==0)return;e.preventDefault();e.stopPropagation();
-    activeDrag={job,cardEl,startX:e.clientX,startY:e.clientY,started:false,currentZone:null};
-    document.addEventListener("mousemove",onMove,{capture:true});
-    document.addEventListener("mouseup",onUp,{capture:true});
-  });
-}
-function onMove(e){
-  if(!activeDrag)return;
-  const dx=e.clientX-activeDrag.startX,dy=e.clientY-activeDrag.startY;
-  if(!activeDrag.started){
-    if(Math.hypot(dx,dy)<DRAG_THRESHOLD)return;
-    activeDrag.started=true;activeDrag.cardEl.classList.add("is-dragging");
-    ghost.style.borderTopColor=cardColour(activeDrag.job.jobType);
-    ghost.innerHTML=`<div class="jc-customer">${esc(activeDrag.job.customerName)}</div><div class="jc-type">${esc(activeDrag.job.jobType)}</div><div style="margin-top:2px;font-size:9px;color:var(--text-muted)">${esc(activeDrag.job.postcode)} · ${esc(activeDrag.job.jobId||activeDrag.job._id)}</div>`;
-    ghost.style.display="block";document.body.style.cursor="grabbing";closeStackPopup();
-  }
-  ghost.style.left=(e.clientX+16)+"px";ghost.style.top=(e.clientY-16)+"px";
-  ghost.style.visibility="hidden";
-  const el=document.elementFromPoint(e.clientX,e.clientY);
-  ghost.style.visibility="";
-  if(activeDrag.currentZone){activeDrag.currentZone.classList.remove("drop-active");activeDrag.currentZone=null;}
-  if(el){const zone=el.closest("[data-drop]");if(zone){zone.classList.add("drop-active");activeDrag.currentZone=zone;}}
-}
-function onUp(e){
-  document.removeEventListener("mousemove",onMove,{capture:true});document.removeEventListener("mouseup",onUp,{capture:true});
-  document.body.style.cursor="";ghost.style.display="none";
-  if(!activeDrag)return;
-  const{job,cardEl,started,currentZone}=activeDrag;activeDrag=null;cardEl.classList.remove("is-dragging");
-  if(currentZone)currentZone.classList.remove("drop-active");
-  if(!started){openModal(job);return;}
-  if(currentZone)commitDrop(job,currentZone);
-}
-function commitDrop(job,zoneEl){
-  const type=zoneEl.dataset.drop,eng=zoneEl.dataset.eng||job.engineerName,date=zoneEl.dataset.date||job.dateOfJob;
-  const hour=zoneEl.dataset.hour!==undefined?parseFloat(zoneEl.dataset.hour):null;
-  const updates={};
-  if(eng!==job.engineerName)updates.engineerName=eng;
-  if(date!==job.dateOfJob)updates.dateOfJob=date;
-  if(type==="slot"){updates.startHour=hour;if(hour===getStartHour(job)&&eng===job.engineerName&&date===job.dateOfJob)return;}
-  else if(type==="staging"){updates.startHour=null;}
-  else if(type==="week"){if(date!==job.dateOfJob)updates.startHour=null;if(Object.keys(updates).length===0)return;}
-  persistUpdate(job._id,updates,job);
-}
-
-/* ─── Firebase write ────────────────────────────────────────── */
-async function persistUpdate(jobId,updates,job){
-  const j=allJobs.find(x=>x._id===jobId);
-  if(j){for(const[k,v]of Object.entries(updates)){if(v===null)delete j[k];else j[k]=v;}}
-  render();
-  try{
-    const now=new Date().toISOString();const fs={};
-    for(const[k,v]of Object.entries(updates))fs[k]=v===null?deleteField():v;
-    const details=[];
-    if(updates.engineerName&&updates.engineerName!==(job.engineerName||''))details.push(`reassigned to ${updates.engineerName}`);
-    if(updates.dateOfJob&&updates.dateOfJob!==(job.dateOfJob||''))details.push(`rescheduled to ${updates.dateOfJob}`);
-    if(updates.startHour!==undefined){const h=updates.startHour;details.push(h===null?'unscheduled':`time set to ${fmtTime(h)}`);}
-    const historyEntry={status:updates.jobStatus||job.jobStatus||job.status||'unassigned',updatedBy:'Admin',updatedAt:now,source:'admin',note:details.join('; ')||'updated'};
-    fs.statusHistory=arrayUnion(historyEntry);fs.statusUpdatedAt=now;fs.statusUpdatedBy='Admin';
-    await updateDoc(doc(db,'uploaded_jobs',jobId),fs);
-    if(j){j.statusUpdatedAt=now;j.statusUpdatedBy='Admin';if(!Array.isArray(j.statusHistory))j.statusHistory=[];if(!j.statusHistory.some(e=>e.updatedAt===now))j.statusHistory.push(historyEntry);}
-    toast("Saved ✓");
-  }catch(err){console.error(err);toast("Save failed: "+(err.code||err.message),"error");}
-}
-
-/* ─── Render ────────────────────────────────────────────────── */
-function render(){
-  closeStackPopup();syncPicker();
-  const cols=getCols();
-  const colJobs=allJobs.filter(j=>{const jd=parseDate(j.dateOfJob);return jd&&cols.some(c=>sameDay(c,jd));});
-  const dayEnd=currentView==="day"?calcDayEnd(colJobs):DAY_END_MIN;
-  renderHeader(cols,dayEnd);renderRows(cols,dayEnd);updateLabel(cols);
-  if(currentView==="day")updateNowLine(dayEnd);
-  applySearch();
-  if(currentView==='day'){
-    const visible=colJobs.map(j=>j.postcode).filter(Boolean);
-    geocodePostcodes(visible).then(()=>renderAllDriveTimeBadges(cols[0],dayEnd));
-  }
-  applyNearbyFilter();
-  if(document.getElementById('isoPanel')?.classList.contains('open'))renderIsoPanel();
-}
-
-function updateLabel(cols){
-  document.getElementById("dateLbl").textContent=currentView==="day"
-    ?cols[0].toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"})
-    :`${cols[0].toLocaleDateString("en-GB",{day:"numeric",month:"short"})} – ${cols[6].toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}`;
-}
-
-function renderHeader(cols,dayEnd){
-  const hdr=document.getElementById("timeHeader");hdr.innerHTML="";hdr.removeAttribute("style");
-  const hours=dayEnd-DAY_START,todayD=today0();
-  if(currentView==="day"){
-    hdr.style.width=`${HOUR_W*hours+STAGING_W}px`;hdr.style.flexShrink="0";
-    for(let h=DAY_START;h<dayEnd;h++){
-      const c=document.createElement("div");c.className="t-hdr-cell";c.style.width=HOUR_W+"px";
-      const h1=document.createElement("div");h1.className="t-hdr-half";h1.textContent=`${String(h).padStart(2,"0")}:00`;
-      const h2=document.createElement("div");h2.className="t-hdr-half";h2.textContent=`${String(h).padStart(2,"0")}:30`;
-      c.appendChild(h1);c.appendChild(h2);hdr.appendChild(c);
-    }
-    const stg=document.createElement("div");
-    stg.style.cssText=`flex-shrink:0;width:${STAGING_W}px;display:flex;align-items:center;justify-content:center;border-left:2px dashed rgba(255,200,0,0.2);`;
-    stg.innerHTML=`<span style="font-size:9px;color:rgba(255,200,0,0.35);text-transform:uppercase;letter-spacing:.5px">Unscheduled</span>`;
-    hdr.appendChild(stg);
-  }else{
-    cols.forEach(col=>{
-      const c=document.createElement("div");c.className="t-hdr-cell week-cell";
-      const dow=col.getDay();
-      if(dow===0||dow===6)c.classList.add("weekend");
-      if(sameDay(col,todayD))c.classList.add("today-col");
-      c.innerHTML=`<div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted)">${col.toLocaleDateString("en-GB",{weekday:"short"})}</div><div style="font-size:15px;font-weight:700">${col.getDate()}</div>`;
-      hdr.appendChild(c);
-    });
-  }
-}
-
-function renderRows(cols,dayEnd){
-  const hours=dayEnd-DAY_START,todayD=today0();
-  const engSet=new Set(allJobs.map(j=>j.engineerName).filter(Boolean));
-  const engineers=[...engSet].sort((a,b)=>a.localeCompare(b));
-  const visibleJobs=allJobs.filter(j=>{const jd=parseDate(j.dateOfJob);return jd&&cols.some(c=>sameDay(c,jd));});
-  document.getElementById("jobCountLbl").textContent=`${visibleJobs.length} job${visibleJobs.length!==1?"s":""} in view`;
-
-  const engList=document.getElementById("engList");engList.innerHTML="";
-  const rowsCont=document.getElementById("rowsContainer");rowsCont.innerHTML="";
-  const hourGrid=document.getElementById("hourGrid");hourGrid.innerHTML="";
-  const rowsWrap=document.getElementById("rowsWrap");
-
-  if(!engineers.length){engList.innerHTML=`<div style="padding:20px 14px;color:var(--text-muted);font-size:13px;text-align:center;line-height:1.7">No engineers found.<br>Upload jobs first.</div>`;return;}
-
-  if(currentView==="day"){
-    const tw=HOUR_W*hours+STAGING_W;rowsWrap.style.width=tw+"px";rowsWrap.style.minWidth=tw+"px";
-    for(let i=0;i<hours;i++){const c=document.createElement("div");c.className="hg-col";c.style.width=HOUR_W+"px";hourGrid.appendChild(c);}
-  }else{rowsWrap.style.width="";rowsWrap.style.minWidth="";}
-
-  document.getElementById("scrollArea").onscroll=()=>{engList.scrollTop=document.getElementById("scrollArea").scrollTop;closeStackPopup();};
-
-  engineers.forEach(eng=>{
-    const sr=document.createElement("div");
-    sr.className="eng-row"+(currentView==="week"?" auto":"");sr.dataset.eng=eng;
-    const init=eng.split(" ").map(w=>w[0]||"").join("").toUpperCase().slice(0,2);
-    const engPc=engPostcodes.get(eng.trim().toLowerCase())||'';
-    sr.innerHTML=`<div class="eng-avatar">${esc(init)}</div><div><div class="eng-name">${esc(eng)}</div>${engPc?`<div class="eng-postcode">${esc(engPc)}</div>`:''}</div>`;
-    engList.appendChild(sr);
-
-    const engJobs=visibleJobs.filter(j=>j.engineerName===eng);
-    const row=document.createElement("div");
-    row.className="eng-tl-row "+(currentView==="day"?"day-mode":"week-mode");
-    row.dataset.eng=eng;
-
-    if(currentView==="day"){
-      row.style.height=ROW_H+"px";row.style.width=`${HOUR_W*hours+STAGING_W}px`;
-      const col=cols[0];
-      const absence=isEngineerAbsent(eng,col);
-      const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),col));
-      const scheduled=dayJobs.filter(j=>getStartHour(j)!==null);
-      const staged=dayJobs.filter(j=>getStartHour(j)===null);
-
-      if(absence){
-        const absBlock=document.createElement("div");absBlock.className="absence-row-block";
-        absBlock.style.width=`${HOUR_W*hours}px`;
-        absBlock.innerHTML=`<span class="absence-row-block-pill">🚫 ${absence.reason||'Absent'}</span>`;
-        row.appendChild(absBlock);sr.classList.add('is-absent');
-      }
-
-      const slotWrap=document.createElement("div");slotWrap.className="day-slots";slotWrap.style.width=`${HOUR_W*hours}px`;
-      for(let h=DAY_START;h<dayEnd;h++){
-        for(const half of[0,0.5]){
-          const s=document.createElement("div");s.className="day-slot";s.style.width=(HOUR_W/2)+"px";
-          s.dataset.drop="slot";s.dataset.eng=eng;s.dataset.date=toUKStr(col);s.dataset.hour=String(h+half);
-          const lbl=document.createElement("span");lbl.className="slot-label";lbl.textContent=fmtTime(h+half);
-          s.appendChild(lbl);slotWrap.appendChild(s);
-        }
-      }
-      row.appendChild(slotWrap);
-
-      const sortedScheduled=[...scheduled].sort((a,b)=>getStartHour(a)-getStartHour(b));
-      sortedScheduled.forEach(job=>{
-        const card=makeCardDay(job,(getStartHour(job)-DAY_START)*HOUR_W,getDuration(job.jobType,job.engineerName)*HOUR_W-4,false);
-        if(absence){card.classList.add('needs-realloc');const badge=document.createElement('div');badge.className='conflict-warning-badge';badge.textContent='⚠ Reassign';card.appendChild(badge);}
-        row.appendChild(card);
-      });
-
-      renderDriveTimeBadgesForRow(row,sortedScheduled,eng,dayEnd);
-
-      const sz=document.createElement("div");sz.className="staging-zone";sz.dataset.drop="staging";sz.dataset.eng=eng;sz.dataset.date=toUKStr(col);
-      if(staged.length===0){const hint=document.createElement("div");hint.className="staging-hint";hint.innerHTML=`<span>Drop here<br>to unschedule</span>`;sz.appendChild(hint);}
-      else{staged.forEach(job=>sz.appendChild(makeCardDay(job,0,STAGING_W-18,true)));}
-      row.appendChild(sz);
-
-    }else{
-      cols.forEach(col=>{
-        const cell=document.createElement("div");cell.className="week-cell-drop";cell.dataset.drop="week";cell.dataset.eng=eng;cell.dataset.date=toUKStr(col);
-        const dow=col.getDay();if(dow===0||dow===6)cell.classList.add("weekend");if(sameDay(col,todayD))cell.classList.add("today-col");
-        const weekAbsence=isEngineerAbsent(eng,col);
-        const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),col));
-        if(weekAbsence){const ab=document.createElement("div");ab.className="absence-block";ab.innerHTML=`<span class="absence-block-label">🚫 ${weekAbsence.reason||'Absent'}</span>`;cell.appendChild(ab);}
-        if(dayJobs.length<=1){
-          dayJobs.forEach(job=>{const card=makeCardWeek(job);if(weekAbsence){card.classList.add('needs-realloc');const badge=document.createElement('div');badge.className='conflict-warning-badge';badge.textContent='⚠ Reassign';card.style.position='relative';card.appendChild(badge);}cell.appendChild(card);});
-        }else{
-          const makeCC=job=>{const card=makeCardWeek(job);if(weekAbsence){card.classList.add('needs-realloc');const badge=document.createElement('div');badge.className='conflict-warning-badge';badge.textContent='⚠ Reassign';card.style.position='relative';card.appendChild(badge);}return card;};
-          cell.appendChild(makeCC(dayJobs[0]));
-          const btn=document.createElement("div");btn.className="stack-more-btn";btn.textContent=`+${dayJobs.length-1} more`;
-          btn.addEventListener("mousedown",e=>{e.stopPropagation();e.preventDefault();});
-          btn.addEventListener("click",e=>{e.stopPropagation();showStackPopup(cell,dayJobs);});
-          cell.appendChild(btn);
-        }
-        row.appendChild(cell);
+    function startAbsenceListener() {
+      db.ref('absences').on('value', snap => {
+        const val = snap.val() || {};
+        currentEngineerAbsences = Object.keys(val).map(k => ({ id: k, ...val[k] }));
+        render();
       });
     }
-    rowsCont.appendChild(row);
-  });
-  if(currentView==="day")updateNowLine(dayEnd);
-}
-
-/* ── Drive time badges ── */
-function renderDriveTimeBadgesForRow(row, sortedJobs, engName, dayEnd){
-  row.querySelectorAll('.drive-time-badge, .home-badge').forEach(b=>b.remove());
-  row.querySelectorAll('.job-card-day:not(.staging-card)').forEach(c=>{
-    c.classList.remove('iso-violation');
-    c.querySelector('.iso-badge')?.remove();
-  });
-
-  const engKey = (engName||'').trim().toLowerCase();
-  const homePc  = engPostcodes.get(engKey) || '';
-  const isoMins = engIsoMinutes.get(engKey) || 0;
-
-  const SVG_CAR = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/><path d="M5 12h14"/></svg>`;
-  const SVG_HOME = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
-
-  function flagCard(job, labelText){
-    const cardEl = row.querySelector(`[data-job-doc-id="${job._id}"]`);
-    if(!cardEl || cardEl.classList.contains('staging-card')) return;
-    cardEl.classList.add('iso-violation');
-    if(!cardEl.querySelector('.iso-badge')){
-      const b = document.createElement('div');
-      b.className = 'iso-badge';
-      b.textContent = labelText;
-      cardEl.appendChild(b);
+    function extractEngineers() {
+      const set = new Set();
+      allJobs.forEach(j => { if(j.engineer) set.add(j.engineer); });
+      engineers = Array.from(set).sort();
     }
-  }
+    function updateStatus() {
+      const filtered = filterJobs(allJobs);
+      document.getElementById('job-count-label').innerText = `${filtered.length} Jobs active in this view`;
+    }
 
-  if(sortedJobs.length > 0){
-    const firstJob = sortedJobs[0];
-    const leftFirst = (getStartHour(firstJob) - DAY_START) * HOUR_W;
-    if(leftFirst > 30 && homePc){
-      const midX = leftFirst / 2;
-      const driveMins = driveMinutes(homePc, firstJob.postcode);
-      let pillCls = 'dt-loading';
-      let pillHtml = `${SVG_HOME} …`;
-      let violation = false;
-      if(driveMins !== null){
-        violation = isoMins > 0 && driveMins > isoMins;
-        pillCls = violation ? 'dt-danger' : (isoMins > 0 && driveMins > isoMins * 0.75) ? 'dt-warn' : 'dt-ok';
-        pillHtml = `${SVG_HOME} ${driveMins}m`;
-        if(violation) flagCard(firstJob, `⚠ ${driveMins}m from home > ${isoMins}m limit`);
+    /* ─── Helpers ───────────────────────────────────────────────── */
+    function esc(s) { if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function showToast(msg, type="info") {
+      const t = document.createElement('div'); t.id='toast'; t.className=type;
+      t.innerText = msg; UI.toastC.appendChild(t);
+      setTimeout(()=>t.remove(), 4000);
+    }
+    function formatDateLong(dStr) {
+      const options = { weekday:'short', day:'numeric', month:'short' };
+      return new Date(dStr).toLocaleDateString('en-GB', options);
+    }
+    function getWeekDays(refDate) {
+      const days = [];
+      const d = new Date(refDate);
+      const dayNum = d.getDay();
+      const diff = d.getDate() - dayNum + (dayNum === 0 ? -6 : 1);
+      const mon = new Date(d.setDate(diff));
+      for(let i=0; i<7; i++) {
+        const temp = new Date(mon); temp.setDate(mon.getDate()+i);
+        days.push(temp.toISOString().split('T')[0]);
       }
-      const badge = document.createElement('div');
-      badge.className = 'home-badge';
-      badge.style.left = midX + 'px';
-      const topLine = document.createElement('div');
-      topLine.className = 'drive-time-connector' + (violation ? ' danger' : '');
-      const pill = document.createElement('div');
-      pill.className = 'home-pill ' + pillCls;
-      pill.innerHTML = pillHtml;
-      const botLine = document.createElement('div');
-      botLine.className = 'drive-time-connector' + (violation ? ' danger' : '');
-      badge.appendChild(topLine);badge.appendChild(pill);badge.appendChild(botLine);
-      row.appendChild(badge);
+      return days;
     }
-  }
-
-  for(let i = 0; i < sortedJobs.length - 1; i++){
-    const jobA = sortedJobs[i];
-    const jobB = sortedJobs[i + 1];
-    const endA   = getStartHour(jobA) + getDuration(jobA.jobType, jobA.engineerName);
-    const startB = getStartHour(jobB);
-    const gapMins = Math.round((startB - endA) * 60);
-    if(gapMins < 1) continue;
-    const driveMins = driveMinutes(jobA.postcode, jobB.postcode);
-    const leftA  = (getStartHour(jobA) - DAY_START) * HOUR_W;
-    const widthA = getDuration(jobA.jobType, jobA.engineerName) * HOUR_W - 4;
-    const leftB  = (startB - DAY_START) * HOUR_W;
-    const midX   = (leftA + widthA + 4 + leftB) / 2;
-    let pillCls = 'dt-loading';
-    let pillHtml = `${SVG_CAR} …`;
-    let violation = false;
-    if(driveMins !== null){
-      violation = driveMins > gapMins;
-      pillCls = violation ? 'dt-danger' : (driveMins > gapMins * 0.75) ? 'dt-warn' : 'dt-ok';
-      pillHtml = `${SVG_CAR} ${driveMins}m`;
-      if(violation){flagCard(jobA, `⚠ ${driveMins}m drive / ${gapMins}m gap`);flagCard(jobB, `⚠ ${driveMins}m drive / ${gapMins}m gap`);}
+    function filterJobs(list) {
+      const q = document.getElementById('jobSearch').value.toLowerCase();
+      return list.filter(j => {
+        if(!j.engineer) return false;
+        if(currentView==='day') return j.date === selectedDate;
+        const wd = getWeekDays(selectedDate);
+        return wd.includes(j.date);
+      }).filter(j => {
+        if(!q) return true;
+        return (j.id||'').toLowerCase().includes(q) ||
+               (j.customer||'').toLowerCase().includes(q) ||
+               (j.postcode||'').toLowerCase().includes(q);
+      });
     }
-    const badge = document.createElement('div');
-    badge.className = 'drive-time-badge';
-    badge.style.left = midX + 'px';
-    const topLine = document.createElement('div');
-    topLine.className = 'drive-time-connector' + (violation ? ' danger' : '');
-    const pill = document.createElement('div');
-    pill.className = 'drive-time-pill ' + pillCls;
-    pill.innerHTML = pillHtml;
-    const botLine = document.createElement('div');
-    botLine.className = 'drive-time-connector' + (violation ? ' danger' : '');
-    badge.appendChild(topLine);badge.appendChild(pill);badge.appendChild(botLine);
-    row.appendChild(badge);
-  }
-}
+    function isToday(dStr) { return dStr === new Date().toISOString().split('T')[0]; }
 
-function renderAllDriveTimeBadges(col, dayEnd){
-  if(currentView !== 'day') return;
-  document.querySelectorAll('.eng-tl-row.day-mode').forEach(row=>{
-    const eng = row.dataset.eng;
-    const dayJobs = allJobs.filter(j=>{
-      const jd=parseDate(j.dateOfJob);
-      return j.engineerName===eng && jd && sameDay(jd,col) && getStartHour(j)!==null;
-    });
-    const sorted = [...dayJobs].sort((a,b)=>getStartHour(a)-getStartHour(b));
-    renderDriveTimeBadgesForRow(row, sorted, eng, dayEnd);
-  });
-}
+    /* ─── Rendering ─────────────────────────────────────────────── */
+    function render() {
+      UI.engList.innerHTML = '<div class="eng-col-hdr">Engineer</div>';
+      UI.tlHdr.innerHTML = ''; UI.tlContent.innerHTML = '';
+      const filtered = filterJobs(allJobs);
 
-/* ─── Card builders ─────────────────────────────────────────── */
-function makeStatusBadge(job){
-  const raw=job.jobStatus||job.status;const meta=getStatusMeta(raw);
-  if(normaliseStatus(raw)==='unassigned')return '';
-  return `<span class="card-status-badge ${meta.cls}">${meta.icon} ${meta.label}</span>`;
-}
-function makeAttachBadge(job){
-  const count=Array.isArray(job.attachments)?job.attachments.length:0;
-  if(!count)return '';
-  return `<span class="card-attach-badge" title="${count} document(s)">📎${count}</span>`;
-}
+      if(currentView==='day') renderDay(filtered);
+      else renderWeek(filtered);
+    }
 
-function makeCardDay(job,left,width,isStaged){
-  const col=cardColour(job.jobType);const sh=getStartHour(job),dur=getDuration(job.jobType,job.engineerName);
-  const card=document.createElement("div");card.className="job-card-day";
-  card.dataset.jobId=job.jobId||job._id;card.dataset.jobDocId=job._id;card.dataset.jobType=job.jobType||"";
-  if(!isStaged){card.style.cssText=`position:absolute;left:${left}px;width:${width}px;border-top-color:${col}`;}
-  else{card.classList.add("staging-card");card.style.cssText=`position:relative;width:${STAGING_W-18}px;border-top-color:${col}`;}
-  const narrow=width<120;
-  const timeStr=sh!==null?`${fmtTime(sh)}–${fmtTime(sh+dur)}`:"Unscheduled";
-  const badge=makeStatusBadge(job);const attachBadge=makeAttachBadge(job);const jid=esc(job.jobId||job._id);
-  card.innerHTML=`
-    <div style="overflow:hidden;flex:1;min-height:0;display:flex;flex-direction:column;gap:2px;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;min-width:0">
-        <div class="jc-customer" style="font-size:${narrow?"9":"10"}px;flex:1;min-width:0">${esc(job.customerName)}</div>
-        <span class="jc-id" style="font-size:${narrow?"8":"10"}px;flex-shrink:0">${jid}${attachBadge}</span>
-      </div>
-      <div class="jc-type" style="font-size:${narrow?"10":"12"}px">${esc(job.jobType)}</div>
-      ${!isStaged?`<div class="jc-time" style="font-size:${narrow?"9":"10"}px">${timeStr}</div>`:""}
-    </div>
-    <div class="jc-bottom" style="flex-wrap:wrap;gap:4px;margin-top:3px">
-      <span class="jc-post" style="font-size:${narrow?"9":"10"}px">${esc(job.postcode)}</span>
-      ${badge}
-    </div>
-    <div class="jc-tooltip">
-      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Customer</span><span class="jc-tooltip-val">${esc(job.customerName)}</span></div>
-      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Job Type</span><span class="jc-tooltip-val">${esc(job.jobType)}</span></div>
-      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Postcode</span><span class="jc-tooltip-val">${esc(job.postcode)}</span></div>
-      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Time</span><span class="jc-tooltip-val">${timeStr}</span></div>
-      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Engineer</span><span class="jc-tooltip-val">${esc(job.engineerName)}</span></div>
-      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Status</span><span class="jc-tooltip-val" style="color:${getStatusColour(job)}">${getStatusMeta(job.jobStatus||job.status).label}</span></div>
-      <div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Job ID</span><span class="jc-tooltip-val" style="color:var(--accent-green)">${jid}</span></div>
-      ${Array.isArray(job.attachments)&&job.attachments.length?`<div class="jc-tooltip-row"><span class="jc-tooltip-lbl">Docs</span><span class="jc-tooltip-val" style="color:var(--accent-blue)">${job.attachments.length} file(s)</span></div>`:''}
-    </div>`;
-  attachDrag(card,job);return card;
-}
+    function renderDay(jobs) {
+      // Header
+      const headerCell = document.createElement('div');
+      headerCell.className = 't-hdr-cell'; headerCell.style.width = '100%';
+      headerCell.innerHTML = `<div class="t-hdr-day">
+        <div class="t-hdr-half">SCHEDULED SLOTS</div>
+        <div class="t-hdr-half">STAGING (UNSLOTTED)</div>
+      </div>`;
+      UI.tlHdr.appendChild(headerCell);
 
-function getStatusColour(job){
-  const s=normaliseStatus(job.jobStatus||job.status);
-  if(s==='complete')return 'var(--accent-green)';if(s==='en-route')return 'var(--accent-blue)';
-  if(s==='in-progress')return 'var(--warning)';if(s==='abort')return 'var(--danger)';return 'var(--text-muted)';
-}
-
-function makeCardWeek(job){
-  const col=cardColour(job.jobType);const sh=getStartHour(job);
-  const badge=makeStatusBadge(job);const attachBadge=makeAttachBadge(job);const jid=esc(job.jobId||job._id);
-  const card=document.createElement("div");card.className="job-card-week";card.style.borderLeftColor=col;
-  card.dataset.jobId=job.jobId||job._id;card.dataset.jobDocId=job._id;card.dataset.jobType=job.jobType||"";
-  card.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;margin-bottom:2px">
-      <div class="jc-customer" style="flex:1;min-width:0">${esc(job.customerName)}</div>
-      <span class="jc-id" style="font-size:9px;flex-shrink:0">${jid}${attachBadge}</span>
-    </div>
-    <div class="jc-type" style="font-size:11px;margin-bottom:3px">${esc(job.jobType)}</div>
-    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:${badge?'3':'0'}px">
-      ${sh!==null?`<span style="font-size:9px;color:var(--text-muted)">${fmtTime(sh)}</span><span style="font-size:9px;color:var(--text-dim)">·</span>`:''}
-      <span class="jc-post">${esc(job.postcode)}</span>
-    </div>
-    ${badge?`<div style="margin-top:1px">${badge}</div>`:''}`;
-  attachDrag(card,job);return card;
-}
-
-/* ─── Stack popup ───────────────────────────────────────────── */
-const stackPopup=document.getElementById("stack-popup");
-function showStackPopup(anchor,jobs){
-  stackPopup.innerHTML="";jobs.forEach(job=>stackPopup.appendChild(makeCardWeek(job)));
-  const r=anchor.getBoundingClientRect(),pw=210,ph=jobs.length*68+24;
-  let top=r.bottom+6,left=r.left;
-  if(top+ph>window.innerHeight-16)top=r.top-ph-6;
-  if(left+pw>window.innerWidth-16)left=window.innerWidth-pw-16;if(left<8)left=8;
-  stackPopup.style.cssText=`top:${top}px;left:${left}px;width:${Math.max(r.width,180)}px`;
-  stackPopup.classList.add("visible");
-}
-function closeStackPopup(){stackPopup.classList.remove("visible");stackPopup.innerHTML="";}
-document.addEventListener("mousedown",e=>{if(!stackPopup.contains(e.target)&&!e.target.closest(".stack-more-btn"))closeStackPopup();});
-
-/* ─── Now line ──────────────────────────────────────────────── */
-function updateNowLine(dayEnd){
-  document.getElementById("nowLine")?.remove();
-  if(!sameDay(currentDate,today0()))return;
-  const now=new Date(),h=now.getHours()+now.getMinutes()/60;if(h<DAY_START||h>dayEnd)return;
-  const line=document.createElement("div");line.id="nowLine";line.className="now-line";
-  line.style.left=`${(h-DAY_START)*HOUR_W}px`;document.getElementById("rowsWrap").appendChild(line);
-}
-setInterval(()=>{if(currentView==="day"){const dj=allJobs.filter(j=>{const d=parseDate(j.dateOfJob);return d&&sameDay(d,currentDate);});updateNowLine(calcDayEnd(dj));}},60000);
-
-/* ─── NearBy filter ─────────────────────────────────────────── */
-function getEngineersNearPostcode(refPc){
-  const THRESH=40;const qualifying=new Set();
-  allJobs.forEach(job=>{
-    if(!job.engineerName||!job.postcode)return;
-    const mins=driveMinutes(refPc,job.postcode);
-    if(mins!==null&&mins<=THRESH)qualifying.add(job.engineerName);
-  });
-  return qualifying;
-}
-
-async function applyNearbyFilter(){
-  const banner=document.getElementById('nearbyBanner');
-  if(!nearbyActive||!nearbySelectedJob){
-    document.querySelectorAll('.eng-row[data-eng]').forEach(r=>r.classList.remove('nearby-hidden'));
-    document.querySelectorAll('.eng-tl-row[data-eng]').forEach(r=>r.classList.remove('nearby-hidden'));
-    banner.classList.remove('visible');return;
-  }
-  const allPcs=[nearbySelectedJob.postcode,...allJobs.map(j=>j.postcode).filter(Boolean)];
-  await geocodePostcodes(allPcs);
-  const qualifying=getEngineersNearPostcode(nearbySelectedJob.postcode);
-  document.querySelectorAll('.eng-row[data-eng]').forEach(r=>r.classList.toggle('nearby-hidden',!qualifying.has(r.dataset.eng)));
-  document.querySelectorAll('.eng-tl-row[data-eng]').forEach(r=>r.classList.toggle('nearby-hidden',!qualifying.has(r.dataset.eng)));
-  const count=qualifying.size;
-  document.getElementById('nearbyBannerText').textContent=`NearBy active — ${count} engineer${count!==1?'s':''} within 40 min of ${nearbySelectedJob.postcode} (${nearbySelectedJob.jobType||'selected job'})`;
-  banner.classList.add('visible');
-}
-function clearNearbyFilter(){nearbySelectedJob=null;applyNearbyFilter();}
-
-/* ─── Search ────────────────────────────────────────────────── */
-function applySearch(){
-  const hasJ=jobSearch.length>0,hasE=engSearch.length>0;
-  document.querySelectorAll(".eng-tl-row[data-eng]").forEach(r=>{
-    r.style.display=(r.classList.contains('nearby-hidden')||(hasE&&!r.dataset.eng.toLowerCase().includes(engSearch)))?'none':'';
-  });
-  document.querySelectorAll(".eng-row[data-eng]").forEach(r=>{
-    r.style.display=(r.classList.contains('nearby-hidden')||(hasE&&!r.dataset.eng.toLowerCase().includes(engSearch)))?'none':'';
-  });
-  if(hasJ){
-    document.querySelectorAll(".job-card-day,.job-card-week").forEach(c=>{
-      const m=(c.dataset.jobId||"").toLowerCase().includes(jobSearch)||(c.dataset.jobType||"").toLowerCase().includes(jobSearch);
-      c.classList.toggle("search-match",m);c.classList.toggle("search-dim",!m);
-    });
-  }else{document.querySelectorAll(".job-card-day,.job-card-week").forEach(c=>{c.classList.remove("search-match","search-dim");});}
-}
-
-/* ─── Modal ─────────────────────────────────────────────────── */
-function buildStatusHistory(job){
-  const entries=[];
-  if(Array.isArray(job.statusHistory)){job.statusHistory.forEach(h=>{entries.push({status:h.status||h.jobStatus||'unassigned',by:h.updatedBy||h.statusUpdatedBy||h.by||'—',at:h.updatedAt||h.statusUpdatedAt||h.at||'',note:h.note||h.abortCode||'',source:h.source||'engineer'});});}
-  if(job.statusUpdatedAt){const already=entries.some(e=>e.at===job.statusUpdatedAt);if(!already)entries.push({status:job.jobStatus||job.status||'unassigned',by:job.statusUpdatedBy||'Engineer',at:job.statusUpdatedAt,note:job.abortCode||'',source:'engineer'});}
-  if(job.uploadedAt)entries.push({status:'created',by:job.uploadedBy||'System',at:job.uploadedAt,note:'',source:'system'});
-  const seen=new Set();const deduped=entries.filter(e=>{if(!e.at)return true;if(seen.has(e.at+e.status))return false;seen.add(e.at+e.status);return true;});
-  deduped.sort((a,b)=>{try{return new Date(b.at)-new Date(a.at);}catch{return 0;}});
-  if(!deduped.length)return `<div class="history-empty">No status updates recorded yet.</div>`;
-  return deduped.map((entry,i)=>{
-    const isCreated=entry.status==='created';
-    const meta=isCreated?{label:'Job Created',icon:'●',cls:'s-created'}:getStatusMeta(entry.status);
-    const sourceBadge=entry.source==='admin'
-      ?`<span style="font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.25);color:var(--accent-blue);font-weight:600;margin-left:6px;text-transform:uppercase">Admin</span>`
-      :entry.source==='system'
-      ?`<span style="font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(143,160,184,0.08);border:1px solid rgba(143,160,184,0.2);color:var(--text-muted);font-weight:600;margin-left:6px;text-transform:uppercase">System</span>`
-      :`<span style="font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(0,255,157,0.08);border:1px solid rgba(0,255,157,0.2);color:var(--accent-green);font-weight:600;margin-left:6px;text-transform:uppercase">Engineer</span>`;
-    const noteHtml=entry.note?`<div style="margin-top:3px;font-size:11px;color:rgba(255,75,92,0.8)"><span style="color:var(--text-muted)">Note:</span> ${esc(entry.note)}</div>`:'';
-    return `<div class="history-item" style="animation-delay:${i*0.04}s"><div class="history-dot ${meta.cls}"></div><div class="history-content"><div class="history-status"><span class="history-status-label ${meta.cls}">${meta.label}</span>${sourceBadge}</div><div class="history-meta"><span class="history-by">${esc(entry.by||'—')}</span><span>·</span><span class="history-time">${fmtTimestamp(entry.at)}</span><span class="history-ago">${timeAgo(entry.at)}</span></div>${noteHtml}</div></div>`;
-  }).join('');
-}
-
-function openModal(job,updateTracker=true){
-  if(updateTracker)openModalJobId=job._id;
-  if(nearbyActive&&job.postcode){nearbySelectedJob=job;applyNearbyFilter();}
-  document.getElementById('jobDrawer').classList.add('open');
- const sh=getStartHour(job),dur=getDuration(job.jobType,job.engineerName);
-  const curStatus=normaliseStatus(job.jobStatus||job.status);const meta=getStatusMeta(curStatus);
-  const attachCount=Array.isArray(job.attachments)?job.attachments.length:0;
-
-  document.getElementById("modalTitle").textContent=job.jobType||"Job Details";
-  document.getElementById("modalId").textContent=`# ${job.jobId||job._id}`;
-  document.getElementById("modalStatusPill").innerHTML=curStatus!=='unassigned'?`<span class="modal-status-pill ${meta.cls}">${meta.icon} ${meta.label}</span>`:'';
-
-  document.getElementById("modalBody").innerHTML=`
-    <div class="dg">
-      <div class="df"><label>Customer</label><span>${esc(job.customerName)}</span></div>
-      <div class="df"><label>Contact</label><span>${esc(job.contactNumber)}</span></div>
-      <div class="df full"><label>Address</label><span>${esc(job.address)}</span></div>
-      <div class="df"><label>Postcode</label><span>${esc(job.postcode)}</span></div>
-      <div class="df"><label>Job Type</label><span>${esc(job.jobType)}</span></div>
-      <div class="df"><label>Engineer</label><span>${esc(job.engineerName)}</span></div>
-      <div class="df"><label>Date</label><span>${esc(job.dateOfJob)}</span></div>
-      <div class="df"><label>Time Slot</label><span>${esc(job.timeSlot||"—")}</span></div>
-      <div class="df"><label>Scheduled</label><span>${sh!==null?fmtTime(sh)+" – "+fmtTime(sh+dur)+" ("+dur+"h)":"Unscheduled"}</span></div>
-      <div class="df"><label>Job ID</label><span style="color:var(--accent-green);font-weight:700">${esc(job.jobId||job._id)}</span></div>
-      <div class="ddiv"></div>
-      <div class="df"><label>Status</label><span style="color:${getStatusColour(job)};font-weight:600">${meta.label}</span></div>
-      <div class="df"><label>Last Updated</label><span>${job.statusUpdatedAt?fmtTimestamp(job.statusUpdatedAt):'—'}</span></div>
-      <div class="df"><label>Updated By</label><span>${esc(job.statusUpdatedBy||'—')}</span></div>
-      <div class="df"><label>Uploaded</label><span>${job.uploadedAt?new Date(job.uploadedAt).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}):"—"}</span></div>
-    </div>
-    ${attachCount>0
-      ?`<button class="view-docs-btn" id="viewDocsBtn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          View Documents <span class="doc-count-badge">${attachCount}</span>
-        </button>`
-      :`<div style="margin-top:16px;padding:10px 14px;border-radius:8px;border:1px dashed rgba(255,255,255,0.06);font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:8px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>No documents attached</div>`}
-    <div class="modal-section-title">Status History</div>
-    <div class="history-timeline">${buildStatusHistory(job)}</div>`;
-
-  const docsBtn=document.getElementById('viewDocsBtn');
-  if(docsBtn){docsBtn.addEventListener('click',()=>{if(docsExpanded){closeDocsPanel();docsBtn.classList.remove('active');}else{openDocsPanel(job);docsBtn.classList.add('active');}});}
-  if(docsExpanded)openDocsPanel(job);
-}
-
-function closeModal(){document.getElementById('jobDrawer').classList.remove('open');closeDocsPanel();openModalJobId=null;}
-
-/* ─── UI wiring ─────────────────────────────────────────────── */
-document.getElementById("prevBtn").onclick=()=>navigate(-1);
-document.getElementById("nextBtn").onclick=()=>navigate(1);
-document.getElementById("todayBtn").onclick=()=>{currentDate=today0();syncPicker();render();};
-document.getElementById("btnDay").onclick=()=>setView("day");
-document.getElementById("btnWeek").onclick=()=>setView("week");
-document.getElementById("datePicker").onchange=e=>{const[y,mo,d]=e.target.value.split("-").map(Number);currentDate=new Date(y,mo-1,d);currentDate.setHours(0,0,0,0);render();};
-document.getElementById("modalClose").onclick=closeModal;
-
-document.getElementById('nearbyTrack').addEventListener('click',()=>{
-  nearbyActive=!nearbyActive;
-  document.getElementById('nearbyTrack').classList.toggle('on',nearbyActive);
-  document.getElementById('nearbyLabel').classList.toggle('on',nearbyActive);
-  if(!nearbyActive){clearNearbyFilter();}
-  else{if(!nearbySelectedJob&&openModalJobId)nearbySelectedJob=allJobs.find(j=>j._id===openModalJobId)||null;if(nearbySelectedJob)applyNearbyFilter();}
-});
-
-function positionNearbyCard(){const btn=document.getElementById('nearbyInfoBtn');const card=document.getElementById('nearbyInfoCard');const r=btn.getBoundingClientRect();let left=r.left;if(left+300>window.innerWidth-12)left=window.innerWidth-312;card.style.top=(r.bottom+8)+'px';card.style.left=left+'px';}
-document.getElementById('nearbyInfoBtn').addEventListener('click',e=>{e.stopPropagation();const card=document.getElementById('nearbyInfoCard');if(!card.classList.contains('visible'))positionNearbyCard();card.classList.toggle('visible');});
-document.getElementById('nearbyInfoClose').addEventListener('click',e=>{e.stopPropagation();document.getElementById('nearbyInfoCard').classList.remove('visible');});
-document.addEventListener('mousedown',e=>{const card=document.getElementById('nearbyInfoCard');const btn=document.getElementById('nearbyInfoBtn');if(!card.contains(e.target)&&e.target!==btn)card.classList.remove('visible');});
-document.getElementById('nearbyBannerClear').addEventListener('click',()=>clearNearbyFilter());
-
-document.getElementById('viewIsoBtn').addEventListener('click',()=>{
-  const panel=document.getElementById('isoPanel');const btn=document.getElementById('viewIsoBtn');
-  const isOpen=panel.classList.contains('open');panel.classList.toggle('open',!isOpen);btn.classList.toggle('active',!isOpen);
-  if(!isOpen)renderIsoPanel();
-});
-document.getElementById('isoPanelClose').addEventListener('click',()=>{document.getElementById('isoPanel').classList.remove('open');document.getElementById('viewIsoBtn').classList.remove('active');});
-
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('jobDrawer').classList.contains('open'))closeModal();});
-document.getElementById("jobSearch").oninput=e=>{jobSearch=e.target.value.trim().toLowerCase();applySearch();};
-document.getElementById("engSearch").oninput=e=>{engSearch=e.target.value.trim().toLowerCase();applySearch();};
-
-function navigate(dir){currentDate.setDate(currentDate.getDate()+dir*(currentView==="week"?7:1));syncPicker();render();}
-function setView(v){currentView=v;document.getElementById("btnDay").classList.toggle("active",v==="day");document.getElementById("btnWeek").classList.toggle("active",v==="week");render();}
-function syncPicker(){const y=currentDate.getFullYear(),mo=String(currentDate.getMonth()+1).padStart(2,"0"),d=String(currentDate.getDate()).padStart(2,"0");document.getElementById("datePicker").value=`${y}-${mo}-${d}`;}
-function setStatus(st,msg){const dot=document.getElementById("sdot"),txt=document.getElementById("stxt");dot.className="sdot"+(st==="spin"?" spin":st==="ok"?" ok":" err");txt.textContent=msg;}
-function setLive(state,text){const el=document.getElementById("live-indicator");const txt=document.getElementById("live-text");el.className=state==='live'?'':state==='connecting'?'connecting':'error';txt.textContent=text;}
-
-let toastTimer;
-function toast(msg,type="success"){
-  const t=document.getElementById("toast");
-  const ico=type==="success"?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`:type==="info"?`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>`:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-  t.className=`${type} show`;t.innerHTML=ico+" "+msg;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),3800);
-}
-
-/* ─── Sidebar ───────────────────────────────────────────────── */
-const sidebar=document.getElementById("sidebar");
-document.getElementById("sidebarToggle").onclick=toggleSidebar;
-document.getElementById("logoCollapsed").onclick=toggleSidebar;
-function toggleSidebar(){sidebar.classList.toggle("expanded");localStorage.setItem("geko-sidebar",sidebar.classList.contains("expanded")?"expanded":"collapsed");}
-if(localStorage.getItem("geko-sidebar")==="expanded")sidebar.classList.add("expanded");
-
-/* ─── User postcodes + isochrone limits ─────────────────────── */
-async function loadEngPostcodes(){
-  try{
-    const [userSnap, paramSnap] = await Promise.all([
-      getDocs(collection(db,'userdatabase')),
-      getDocs(collection(db,'job_type_parameters'))
-    ]);
-
-    userSnap.forEach(d=>{
-      const data=d.data(); if(!data.name) return;
-      const key=data.name.trim().toLowerCase();
-      if(data.postcode) engPostcodes.set(key, data.postcode.trim());
-      engIsoMinutes.set(key, data.isochroneMinutes||0);
-      if(data.level) engLevels.set(key, data.level.trim());
-    });
-
-    jobTypeParams.clear();
-    paramSnap.forEach(d=>{
-      const data=d.data();
-      if(!data.level || !data.jobType || !data.durationMinutes) return;
-      const key = data.level.toLowerCase().trim() + "|||" + data.jobType.toLowerCase().trim();
-      jobTypeParams.set(key, data.durationMinutes / 60);
-    });
-
-    await geocodePostcodes([...engPostcodes.values()]);
-    render(); renderIsoPanel();
-  }catch(e){ console.warn('Could not load user postcodes:', e); }
-}
-
-/* ─── Isochrone panel ───────────────────────────────────────── */
-function isochroneBand(mins){
-  if(!mins||mins<=0)return 'none';if(mins<=20)return 'short';if(mins<=40)return 'mid';if(mins<=60)return 'long';return 'xlong';
-}
-
-function renderIsoPanel(){
-  const body=document.getElementById('isoPanelBody');if(!body)return;
-  const engSet=[...new Set(allJobs.map(j=>j.engineerName).filter(Boolean))].sort();
-  if(!engSet.length){body.innerHTML='<div class="iso-panel-empty">No engineers loaded yet.</div>';return;}
-  body.innerHTML=`<div class="iso-note">Cards flash <strong>red</strong> when estimated drive time between consecutive jobs exceeds the gap. Home → first job is checked against each engineer's limit below.</div>`
-    + engSet.map(eng=>{
-        const key=eng.trim().toLowerCase();
-        const mins=engIsoMinutes.get(key)||0;
-        const band=isochroneBand(mins);
-        const pc=engPostcodes.get(key)||'';
-        const init=eng.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2);
-        const label=mins?mins+' min limit':'Not set';
-        return `<div class="iso-eng-row">
-          <div class="iso-eng-avatar">${esc(init)}</div>
-          <div style="flex:1;min-width:0">
-            <div class="iso-eng-name">${esc(eng)}</div>
-            ${pc?`<div class="iso-eng-postcode">${esc(pc)}</div>`:''}
+      engineers.forEach(eng => {
+        // Sidebar Row
+        const er = document.createElement('div'); er.className='eng-row';
+        const init = eng.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+        er.innerHTML = `
+          <div class="eng-avatar">${esc(init)}</div>
+          <div class="eng-info">
+            <div class="eng-name">${esc(eng)}</div>
+            <div class="eng-status"><div class="sdot ok"></div><div class="eng-st-label">Active</div></div>
           </div>
-          <span class="iso-eng-mins band-${band}">${esc(label)}</span>
-        </div>`;
-      }).join('');
-}
+        `;
+        UI.engList.appendChild(er);
 
-/* ─── Boot ──────────────────────────────────────────────────── */
-syncPicker();startRealTimeListener();startAbsenceListener();loadEngPostcodes();
+        // Timeline Row
+        const tr = document.createElement('div'); tr.className='eng-tl-row'; tr.dataset.engineer = eng;
+        
+        const slotsWrap = document.createElement('div'); slotsWrap.className='hg-col'; slotsWrap.style.flex='1';
+        ['AM','PM'].forEach(s => {
+          const slot = document.createElement('div'); slot.className='day-slot';
+          slot.dataset.engineer = eng; slot.dataset.date = selectedDate; slot.dataset.slot = s;
+          slot.innerHTML = `<span class="slot-label">${s}</span>`;
+          slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drop-active'); });
+          slot.addEventListener('dragleave', () => slot.classList.remove('drop-active'));
+          slot.addEventListener('drop', handleDrop);
+          slotsWrap.appendChild(slot);
+        });
+        tr.appendChild(slotsWrap);
 
-/* ─── Drawer drag-to-resize ─────────────────────────────────── */
-(function(){
-  const drawer=document.getElementById('jobDrawer'),handle=document.getElementById('drawerHandle');
-  let dragging=false,startY=0,startH=0;
-  handle.addEventListener('mousedown',e=>{dragging=true;startY=e.clientY;startH=drawer.offsetHeight;document.body.style.cursor='ns-resize';e.preventDefault();});
-  document.addEventListener('mousemove',e=>{if(!dragging)return;const delta=startY-e.clientY;const newH=Math.min(Math.max(startH+delta,120),window.innerHeight*0.75);drawer.style.maxHeight=newH+'px';});
-  document.addEventListener('mouseup',()=>{if(!dragging)return;dragging=false;document.body.style.cursor='';});
-})();
-</script>
+        const staging = document.createElement('div'); staging.className='staging-zone';
+        staging.dataset.engineer = eng; staging.dataset.date = selectedDate; staging.dataset.slot = '';
+        staging.addEventListener('dragover', e => { e.preventDefault(); staging.classList.add('drop-active'); });
+        staging.addEventListener('dragleave', () => staging.classList.remove('drop-active'));
+        staging.addEventListener('drop', handleDrop);
+        tr.appendChild(staging);
+
+        UI.tlContent.appendChild(tr);
+        
+        // Add absences to day view
+        renderAbsences(eng, tr, true);
+      });
+
+      // Place Jobs
+      jobs.forEach(j => {
+        const row = document.querySelector(`.eng-tl-row[data-engineer="${j.engineer}"]`);
+        if(!row) return;
+        const card = createJobCard(j, 'day');
+        if(!j.slot) {
+          row.querySelector('.staging-zone').appendChild(card);
+        } else {
+          const slotEl = row.querySelector(`.day-slot[data-slot="${j.slot}"]`);
+          if(slotEl) slotEl.appendChild(card);
+        }
+      });
+      
+      // Post-process: positioning + drive time connectors
+      setTimeout(() => arrangeDayCards(jobs), 10);
+    }
+
+    function arrangeDayCards(jobs) {
+      engineers.forEach(eng => {
+        const row = document.querySelector(`.eng-tl-row[data-engineer="${eng}"]`);
+        if(!row) return;
+        ['AM','PM'].forEach(slotName => {
+          const slotEl = row.querySelector(`.day-slot[data-slot="${slotName}"]`);
+          const cards = Array.from(slotEl.querySelectorAll('.job-card-day'));
+          cards.forEach((c, i) => {
+            const w = (100 / cards.length) - 2;
+            c.style.width = `calc(${w}% - 10px)`;
+            c.style.left = `calc(${(100/cards.length)*i}% + 5px)`;
+          });
+        });
+      });
+    }
+
+    function renderWeek(jobs) {
+      const days = getWeekDays(selectedDate);
+      const cellW = 180;
+      UI.tlContent.style.width = (cellW * 7) + 'px';
+
+      days.forEach(d => {
+        const cell = document.createElement('div');
+        cell.className = 't-hdr-cell' + (isToday(d)?' today-col':'');
+        cell.style.width = cellW + 'px';
+        cell.innerHTML = `<div class="t-hdr-main">${formatDateLong(d).split(',')[1]}</div><div class="t-hdr-sub">${formatDateLong(d).split(',')[0].toUpperCase()}</div>`;
+        UI.tlHdr.appendChild(cell);
+      });
+
+      engineers.forEach(eng => {
+        const er = document.createElement('div'); er.className='eng-row';
+        const init = eng.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+        er.innerHTML = `<div class="eng-avatar">${esc(init)}</div><div class="eng-info"><div class="eng-name">${esc(eng)}</div></div>`;
+        UI.engList.appendChild(er);
+
+        const tr = document.createElement('div'); tr.className='eng-tl-row'; tr.dataset.engineer = eng;
+        days.forEach(d => {
+          const cell = document.createElement('div');
+          cell.className = 'hg-col week-cell-drop' + (isToday(d)?' today-col':'');
+          cell.style.width = cellW + 'px';
+          cell.dataset.engineer = eng; cell.dataset.date = d; cell.dataset.slot = 'AM';
+          cell.addEventListener('dragover', e => { e.preventDefault(); cell.classList.add('drop-active'); });
+          cell.addEventListener('dragleave', () => cell.classList.remove('drop-active'));
+          cell.addEventListener('drop', handleDrop);
+          tr.appendChild(cell);
+        });
+        UI.tlContent.appendChild(tr);
+        
+        // Add absences to week view
+        renderAbsences(eng, tr, false);
+      });
+
+      jobs.forEach(j => {
+        const row = document.querySelector(`.eng-tl-row[data-engineer="${j.engineer}"]`);
+        if(!row) return;
+        const cell = row.querySelector(`.week-cell-drop[data-date="${j.date}"]`);
+        if(!cell) return;
+        
+        const existingCards = cell.querySelectorAll('.job-card-week').length;
+        if(existingCards < 2) {
+          cell.appendChild(createJobCard(j, 'week'));
+        } else if(existingCards === 2) {
+          const more = document.createElement('div');
+          more.className = 'stack-more-btn'; more.innerText = '+ More Jobs';
+          more.onclick = (e) => showStackPopup(e, j.engineer, j.date);
+          cell.appendChild(more);
+        }
+      });
+    }
+
+    function renderAbsences(eng, rowEl, isDay) {
+      const engineerAbsences = currentEngineerAbsences.filter(a => a.engineer === eng);
+      const days = isDay ? [selectedDate] : getWeekDays(selectedDate);
+      
+      engineerAbsences.forEach(abs => {
+        const absStart = new Date(abs.startDate);
+        const absEnd = new Date(abs.endDate);
+        
+        days.forEach((dayStr, idx) => {
+          const dDate = new Date(dayStr);
+          if (dDate >= absStart && dDate <= absEnd) {
+            const absBlock = document.createElement('div');
+            absBlock.className = isDay ? 'absence-block' : 'absence-row-block';
+            
+            if (isDay) {
+              absBlock.style.width = '100%';
+              absBlock.innerHTML = `<div class="absence-block-label">${esc(abs.type)}</div>`;
+              rowEl.prepend(absBlock);
+            } else {
+              const cellW = 180;
+              absBlock.style.width = cellW + 'px';
+              absBlock.style.left = (idx * cellW) + 'px';
+              absBlock.innerHTML = `<div class="absence-row-block-pill">${esc(abs.type)}</div>`;
+              rowEl.appendChild(absBlock);
+            }
+          }
+        });
+      });
+    }
+
+    /* ─── Cards ─────────────────────────────────────────────────── */
+    function createJobCard(j, mode) {
+      const card = document.createElement('div');
+      card.className = mode === 'day' ? 'job-card-day' : 'job-card-week';
+      card.draggable = true;
+      card.dataset.id = j.id;
+
+      const statusClass = 's-' + (j.status||'unassigned').toLowerCase().replace(/\s/g, '-');
+      const label = j.status || 'Unassigned';
+
+      if(mode==='day') {
+        card.innerHTML = `
+          <div class="jc-header"><span class="jc-id">#${j.id.slice(-4)}</span><span class="jc-time">${j.slot||'STAGED'}</span></div>
+          <div class="jc-type">${esc(j.jobType)}</div>
+          <div class="jc-customer">${esc(j.customer)}</div>
+          <div class="jc-footer">
+            <span class="jc-post">${esc(j.postcode)}</span>
+            <span class="card-status-badge ${statusClass}">${label}</span>
+          </div>
+        `;
+      } else {
+        card.innerHTML = `
+          <div class="jc-header"><span class="jc-id">#${j.id.slice(-4)}</span><span class="jc-post">${esc(j.postcode)}</span></div>
+          <div class="jc-type">${esc(j.jobType)}</div>
+          <div class="jc-customer">${esc(j.customer)}</div>
+        `;
+      }
+
+      card.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('jobId', j.id);
+        card.classList.add('dragging');
+        UI.ghost.innerHTML = card.innerHTML;
+        UI.ghost.style.display = 'block';
+      });
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        UI.ghost.style.display = 'none';
+      });
+      card.addEventListener('click', () => showJobModal(j));
+      
+      // Tooltip
+      card.addEventListener('mouseenter', e => showTooltip(e, j));
+      card.addEventListener('mouseleave', hideTooltip);
+
+      return card;
+    }
+
+    /* ─── Drag & Drop ───────────────────────────────────────────── */
+    function handleDrop(e) {
+      e.preventDefault();
+      this.classList.remove('drop-active');
+      const jobId = e.dataTransfer.getData('jobId');
+      const { engineer, date, slot } = this.dataset;
+
+      db.ref(`jobs/${jobId}`).update({ engineer, date, slot })
+        .then(() => showToast(`Job #${jobId.slice(-4)} reassigned to ${engineer}`, "success"))
+        .catch(err => showToast(err.message, "error"));
+    }
+    document.addEventListener('dragover', e => {
+      UI.ghost.style.left = (e.clientX + 10) + 'px';
+      UI.ghost.style.top = (e.clientY + 10) + 'px';
+    });
+
+    /* ─── Modals ────────────────────────────────────────────────── */
+    function showJobModal(j) {
+      activeIsoJobId = j.id;
+      document.getElementById('modalJobId').innerText = `Job #${j.id}`;
+      const st = document.getElementById('modalStatus');
+      st.innerText = j.status || 'Pending';
+      st.className = 'modal-status-pill s-' + (j.status||'unassigned').toLowerCase().replace(/\s/g, '-');
+      
+      document.getElementById('md-customer').innerText = j.customer || '-';
+      document.getElementById('md-postcode').innerText = j.postcode || '-';
+      document.getElementById('md-contact').innerText = j.contact || '-';
+      document.getElementById('md-phone').innerText = j.phone || '-';
+      document.getElementById('md-type').innerText = j.jobType || '-';
+      document.getElementById('md-eng').innerText = j.engineer || '-';
+      document.getElementById('md-date').innerText = j.date || '-';
+      document.getElementById('md-time').innerText = j.slot || 'Staging Area';
+      
+      renderHistory(j.history);
+      UI.overlay.style.display = 'flex';
+    }
+    function renderHistory(h) {
+      const container = document.getElementById('history-container');
+      if(!h) { container.innerHTML = '<div class="history-empty">No activity recorded yet.</div>'; return; }
+      const items = Object.keys(h).map(k=>h[k]).sort((a,b)=>b.timestamp-a.timestamp);
+      container.innerHTML = `<div class="history-timeline">
+        ${items.map(i => `
+          <div class="history-item">
+            <div class="history-dot"></div>
+            <div class="history-head"><span class="h-action">${esc(i.action)}</span><span class="h-time">${new Date(i.timestamp).toLocaleString()}</span></div>
+            <div class="h-user">by ${esc(i.user || 'System')}</div>
+          </div>
+        `).join('')}
+      </div>`;
+    }
+
+    /* ─── Isochrones ────────────────────────────────────────────── */
+    async function showIsochrone() {
+      const job = allJobs.find(j => j.id === activeIsoJobId);
+      if(!job || !job.postcode) return showToast("No postcode for this job", "error");
+      
+      document.getElementById('closeModal').click();
+      document.getElementById('isoPanel').classList.add('open');
+      const list = document.getElementById('isoEngList');
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">Calculating travel times...</div>';
+      
+      try {
+        const dest = job.postcode;
+        const origins = Array.from(engPostcodes.entries()).filter(([e,p]) => !!p);
+        if(!origins.length) { list.innerHTML='<div class="history-empty">No engineer base postcodes found.</div>'; return; }
+        
+        // Simulating Matrix API call
+        const results = origins.map(([eng, pc]) => {
+          const mockMins = Math.floor(Math.random() * 80) + 10;
+          return { eng, mins: mockMins };
+        }).sort((a,b)=>a.mins - b.mins);
+        
+        list.innerHTML = results.map(r => {
+          const band = isochroneBand(r.mins);
+          const pc = engPostcodes.get(r.eng);
+          const init = r.eng.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2);
+          return `<div class="iso-eng-row">
+            <div class="iso-eng-avatar">${esc(init)}</div>
+            <div style="flex:1;min-width:0">
+              <div class="iso-eng-name">${esc(r.eng)}</div>
+              ${pc?`<div class="iso-eng-postcode">${esc(pc)}</div>`:''}
+            </div>
+            <span class="iso-eng-mins band-${band}">${r.mins} min limit</span>
+          </div>`;
+        }).join('');
+      } catch(e) { showToast("Matrix Error: "+e.message, "error"); }
+    }
+    function isochroneBand(m) {
+      if(m<=30) return 'short'; if(m<=50) return 'mid'; if(m<=75) return 'long'; return 'xlong';
+    }
+
+    /* ─── Docs & Lightbox ───────────────────────────────────────── */
+    async function showDocs() {
+      const job = allJobs.find(j => j.id === activeIsoJobId);
+      if(!job) return;
+      document.getElementById('closeModal').click();
+      document.getElementById('docsPanel').classList.add('open');
+      const content = document.getElementById('docsContent');
+      content.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">Retrieving files...</div>';
+      
+      try {
+        const folder = `jobs/${job.id}`;
+        const ref = storage.ref(folder);
+        const list = await ref.listAll();
+        if(!list.items.length) { content.innerHTML='<div class="docs-empty">No documents found for this job.</div>'; return; }
+        
+        const files = await Promise.all(list.items.map(async i => {
+          const url = await i.getDownloadURL();
+          const meta = await i.getMetadata();
+          return { name: i.name, url, type: meta.contentType, size: meta.size, time: meta.updated };
+        }));
+
+        const images = files.filter(f => f.type.startsWith('image/'));
+        const others = files.filter(f => !f.type.startsWith('image/'));
+
+        content.innerHTML = `
+          ${images.length ? `
+            <div class="docs-section">
+              <div class="docs-section-title">Photos & Signatures</div>
+              <div class="docs-grid">
+                ${images.map((img, idx) => `
+                  <div class="docs-image-thumb" onclick="openLightbox(${JSON.stringify(images.map(im=>im.url)).replace(/"/g, '&quot;')}, ${idx})">
+                    <img src="${img.url}">
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+          ${others.length ? `
+            <div class="docs-section">
+              <div class="docs-section-title">Documents</div>
+              <div class="docs-grid" style="grid-template-columns:1fr;">
+                ${others.map(f => `
+                  <a href="${f.url}" target="_blank" class="docs-file-item">
+                    <div class="docs-file-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div>
+                    <div class="docs-file-info">
+                      <div class="docs-file-name">${esc(f.name)}</div>
+                      <div class="docs-file-meta">${(f.size/1024).toFixed(1)} KB • PDF Document</div>
+                    </div>
+                  </a>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+        `;
+      } catch(e) { content.innerHTML = '<div class="docs-empty">Error loading files.</div>'; }
+    }
+
+    let lbImages = []; let lbIdx = 0;
+    function openLightbox(imgs, idx) {
+      lbImages = imgs; lbIdx = idx;
+      document.getElementById('lightboxImg').src = imgs[idx];
+      document.getElementById('lightboxCaption').innerText = `Image ${idx+1} of ${imgs.length}`;
+      document.getElementById('lightbox').style.display = 'flex';
+    }
+
+    /* ─── Events ────────────────────────────────────────────────── */
+    UI.datePicker.value = selectedDate;
+    UI.datePicker.addEventListener('change', e => { selectedDate = e.target.value; render(); });
+    document.getElementById('prevDate').addEventListener('click', () => {
+      const d = new Date(selectedDate); d.setDate(d.getDate()-1);
+      selectedDate = d.toISOString().split('T')[0]; UI.datePicker.value = selectedDate; render();
+    });
+    document.getElementById('nextDate').addEventListener('click', () => {
+      const d = new Date(selectedDate); d.setDate(d.getDate()+1);
+      selectedDate = d.toISOString().split('T')[0]; UI.datePicker.value = selectedDate; render();
+    });
+    document.getElementById('btnToday').addEventListener('click', () => {
+      selectedDate = new Date().toISOString().split('T')[0]; UI.datePicker.value = selectedDate; render();
+    });
+    document.getElementById('viewDay').addEventListener('click', function() {
+      currentView='day'; this.classList.add('active'); document.getElementById('viewWeek').classList.remove('active'); render();
+    });
+    document.getElementById('viewWeek').addEventListener('click', function() {
+      currentView='week'; this.classList.add('active'); document.getElementById('viewDay').classList.remove('active'); render();
+    });
+    document.getElementById('jobSearch').addEventListener('input', render);
+
+    document.getElementById('sidebarToggle').addEventListener('click', () => UI.sidebar.classList.toggle('expanded'));
+    document.getElementById('closeModal').addEventListener('click', () => UI.overlay.style.display = 'none');
+    document.getElementById('btnViewIso').addEventListener('click', showIsochrone);
+    document.getElementById('closeIso').addEventListener('click', () => document.getElementById('isoPanel').classList.remove('open'));
+    document.getElementById('btnViewDocs').addEventListener('click', showDocs);
+    document.getElementById('closeDocs').addEventListener('click', () => document.getElementById('docsPanel').classList.remove('open'));
+    
+    document.getElementById('closeLightbox').addEventListener('click', () => document.getElementById('lightbox').style.display='none');
+    document.getElementById('prevImage').addEventListener('click', () => { if(lbIdx>0) openLightbox(lbImages, lbIdx-1); });
+    document.getElementById('nextImage').addEventListener('click', () => { if(lbIdx<lbImages.length-1) openLightbox(lbImages, lbIdx+1); });
+
+    function showTooltip(e, j) {
+      const tt = document.querySelector('.jc-tooltip') || document.createElement('div');
+      tt.className = 'jc-tooltip';
+      tt.innerHTML = `
+        <div class="jc-tooltip-row"><span class="jc-tooltip-label">ID:</span><span class="jc-tooltip-val">#${j.id}</span></div>
+        <div class="jc-tooltip-row"><span class="jc-tooltip-label">Type:</span><span class="jc-tooltip-val">${esc(j.jobType)}</span></div>
+        <div class="jc-tooltip-row"><span class="jc-tooltip-label">Customer:</span><span class="jc-tooltip-val">${esc(j.customer)}</span></div>
+        <div class="jc-tooltip-row"><span class="jc-tooltip-label">Postcode:</span><span class="jc-tooltip-val">${esc(j.postcode)}</span></div>
+        <div class="jc-tooltip-row"><span class="jc-tooltip-label">Status:</span><span class="jc-tooltip-val">${esc(j.status||'Unassigned')}</span></div>
+      `;
+      if(!tt.parentNode) document.body.appendChild(tt);
+      tt.style.left = (e.clientX + 15) + 'px'; tt.style.top = (e.clientY + 15) + 'px'; tt.style.opacity = '1';
+    }
+    function hideTooltip() { const tt = document.querySelector('.jc-tooltip'); if(tt) tt.style.opacity='0'; }
+
+    function showStackPopup(e, eng, date) {
+      const pop = document.getElementById('stack-popup');
+      const jobs = allJobs.filter(j => j.engineer === eng && j.date === date);
+      pop.innerHTML = jobs.map(j => `
+        <div class="job-card-week" onclick="showJobModal(${JSON.stringify(j).replace(/"/g, '&quot;')})">
+          <div class="jc-header"><span class="jc-id">#${j.id.slice(-4)}</span><span class="jc-post">${esc(j.postcode)}</span></div>
+          <div class="jc-type">${esc(j.jobType)}</div>
+          <div class="jc-customer">${esc(j.customer)}</div>
+        </div>
+      `).join('');
+      pop.style.left = e.clientX + 'px'; pop.style.top = e.clientY + 'px'; pop.style.display = 'flex';
+      e.stopPropagation();
+    }
+    document.addEventListener('click', () => document.getElementById('stack-popup').style.display='none');
+
+    function syncPicker() { UI.datePicker.value = selectedDate; }
+    function loadEngPostcodes() {
+      db.ref('engineers').on('value', snap => {
+        const val = snap.val() || {};
+        Object.keys(val).forEach(k => { if(val[k].basePostcode) engPostcodes.set(k, val[k].basePostcode); });
+      });
+    }
+    setInterval(() => { UI.clock.innerText = new Date().toLocaleTimeString('en-GB'); }, 1000);
+
+    /* ─── Boot ──────────────────────────────────────────────────── */
+    initTheme(); syncPicker(); startRealTimeListener(); startAbsenceListener(); loadEngPostcodes();
+  </script>
 </body>
 </html>
