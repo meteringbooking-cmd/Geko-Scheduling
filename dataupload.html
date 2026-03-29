@@ -682,7 +682,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
@@ -696,71 +696,67 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ── ALL possible fields (must match mapping.html CATEGORIES) ──────────────────
-// key → { label, required, category }
+// ── ALL possible fields ───────────────────────────────────────────────────────
 const ALL_FIELDS = [
-    // Unique Identifiers
-    { key: 'ID',               label: 'ID',               required: false, cat: 'identifiers' },
-    { key: 'Record_ID',        label: 'Record ID',        required: false, cat: 'identifiers' },
-    { key: 'Customer_ID',      label: 'Customer ID',      required: false, cat: 'identifiers' },
-    { key: 'Job_ID',           label: 'Job ID',           required: false, cat: 'identifiers' },
-    { key: 'Employee_ID',      label: 'Employee ID',      required: false, cat: 'identifiers' },
-    { key: 'Reference_Number', label: 'Reference Number', required: false, cat: 'identifiers' },
-    // Personal / Customer
-    { key: 'Title',            label: 'Title',            required: false, cat: 'personal' },
-    { key: 'First_Name',       label: 'First Name',       required: false, cat: 'personal' },
-    { key: 'Last_Name',        label: 'Last Name',        required: false, cat: 'personal' },
-    { key: 'Full_Name',        label: 'Full Name',        required: false, cat: 'personal' },
-    { key: 'Company_Name',     label: 'Company Name',     required: false, cat: 'personal' },
-    // Address
-    { key: 'Address_Line1',    label: 'Address Line 1',   required: false, cat: 'address' },
-    { key: 'Address_Line2',    label: 'Address Line 2',   required: false, cat: 'address' },
-    { key: 'City_Town',        label: 'City / Town',      required: false, cat: 'address' },
-    { key: 'County',           label: 'County',           required: false, cat: 'address' },
-    { key: 'Postcode',         label: 'Postcode',         required: true,  cat: 'address' },
-    { key: 'Country',          label: 'Country',          required: false, cat: 'address' },
-    // Contact
-    { key: 'Phone',            label: 'Phone',            required: false, cat: 'contact' },
-    { key: 'Mobile',           label: 'Mobile',           required: false, cat: 'contact' },
-    { key: 'Email',            label: 'Email',            required: false, cat: 'contact' },
+    { key: 'ID',                  label: 'ID',                  required: false, cat: 'identifiers' },
+    { key: 'Record_ID',           label: 'Record ID',           required: false, cat: 'identifiers' },
+    { key: 'Customer_ID',         label: 'Customer ID',         required: false, cat: 'identifiers' },
+    { key: 'Job_ID',              label: 'Job ID',              required: false, cat: 'identifiers' },
+    { key: 'Employee_ID',         label: 'Employee ID',         required: false, cat: 'identifiers' },
+    { key: 'Reference_Number',    label: 'Reference Number',    required: false, cat: 'identifiers' },
+    { key: 'Title',               label: 'Title',               required: false, cat: 'personal' },
+    { key: 'First_Name',          label: 'First Name',          required: false, cat: 'personal' },
+    { key: 'Last_Name',           label: 'Last Name',           required: false, cat: 'personal' },
+    { key: 'Full_Name',           label: 'Full Name',           required: false, cat: 'personal' },
+    { key: 'Company_Name',        label: 'Company Name',        required: false, cat: 'personal' },
+    { key: 'Address_Line1',       label: 'Address Line 1',      required: false, cat: 'address' },
+    { key: 'Address_Line2',       label: 'Address Line 2',      required: false, cat: 'address' },
+    { key: 'City_Town',           label: 'City / Town',         required: false, cat: 'address' },
+    { key: 'County',              label: 'County',              required: false, cat: 'address' },
+    { key: 'Postcode',            label: 'Postcode',            required: true,  cat: 'address' },
+    { key: 'Country',             label: 'Country',             required: false, cat: 'address' },
+    { key: 'Phone',               label: 'Phone',               required: false, cat: 'contact' },
+    { key: 'Mobile',              label: 'Mobile',              required: false, cat: 'contact' },
+    { key: 'Email',               label: 'Email',               required: false, cat: 'contact' },
     { key: 'Alternative_Contact', label: 'Alternative Contact', required: false, cat: 'contact' },
-    // Date & Time
-    { key: 'Date',             label: 'Date',             required: false, cat: 'datetime' },
-    { key: 'Appointment_Date', label: 'Appointment Date', required: false, cat: 'datetime' },
-    { key: 'Appointment_Time', label: 'Appointment Time', required: false, cat: 'datetime' },
-    { key: 'Created_Date',     label: 'Created Date',     required: false, cat: 'datetime' },
-    { key: 'Updated_Date',     label: 'Updated Date',     required: false, cat: 'datetime' },
-    { key: 'Completed_Date',   label: 'Completed Date',   required: false, cat: 'datetime' },
-    // Job / Service
-    { key: 'Job_Type',         label: 'Job Type',         required: true,  cat: 'job' },
-    { key: 'Job_Description',  label: 'Job Description',  required: false, cat: 'job' },
-    { key: 'Service_Type',     label: 'Service Type',     required: false, cat: 'job' },
-    { key: 'Priority',         label: 'Priority',         required: false, cat: 'job' },
-    { key: 'Duration',         label: 'Duration',         required: false, cat: 'job' },
-    { key: 'Notes',            label: 'Notes',            required: false, cat: 'job' },
-    // Assignment / Staff
-    { key: 'Engineer',         label: 'Engineer',         required: false, cat: 'assignment' },
-    { key: 'Assigned_To',      label: 'Assigned To',      required: false, cat: 'assignment' },
-    { key: 'Team',             label: 'Team',             required: false, cat: 'assignment' },
-    { key: 'Starting_Postcode',label: 'Starting Postcode',required: false, cat: 'assignment' },
-    { key: 'Vehicle_ID',       label: 'Vehicle ID',       required: false, cat: 'assignment' },
-    // Status
-    { key: 'Status',           label: 'Status',           required: false, cat: 'status' },
-    { key: 'Progress',         label: 'Progress',         required: false, cat: 'status' },
-    { key: 'Stage',            label: 'Stage',            required: false, cat: 'status' },
+    { key: 'Date',                label: 'Date',                required: false, cat: 'datetime' },
+    { key: 'Appointment_Date',    label: 'Appointment Date',    required: false, cat: 'datetime' },
+    { key: 'Appointment_Time',    label: 'Appointment Time',    required: false, cat: 'datetime' },
+    { key: 'Created_Date',        label: 'Created Date',        required: false, cat: 'datetime' },
+    { key: 'Updated_Date',        label: 'Updated Date',        required: false, cat: 'datetime' },
+    { key: 'Completed_Date',      label: 'Completed Date',      required: false, cat: 'datetime' },
+    { key: 'Job_Type',            label: 'Job Type',            required: true,  cat: 'job' },
+    { key: 'Job_Description',     label: 'Job Description',     required: false, cat: 'job' },
+    { key: 'Service_Type',        label: 'Service Type',        required: false, cat: 'job' },
+    { key: 'Priority',            label: 'Priority',            required: false, cat: 'job' },
+    { key: 'Duration',            label: 'Duration',            required: false, cat: 'job' },
+    { key: 'Notes',               label: 'Notes',               required: false, cat: 'job' },
+    { key: 'Engineer',            label: 'Engineer',            required: false, cat: 'assignment' },
+    { key: 'Assigned_To',         label: 'Assigned To',         required: false, cat: 'assignment' },
+    { key: 'Team',                label: 'Team',                required: false, cat: 'assignment' },
+    { key: 'Starting_Postcode',   label: 'Starting Postcode',   required: false, cat: 'assignment' },
+    { key: 'Vehicle_ID',          label: 'Vehicle ID',          required: false, cat: 'assignment' },
+    { key: 'Status',              label: 'Status',              required: false, cat: 'status' },
+    { key: 'Progress',            label: 'Progress',            required: false, cat: 'status' },
+    { key: 'Stage',               label: 'Stage',               required: false, cat: 'status' },
     { key: 'Cancellation_Reason', label: 'Cancellation Reason', required: false, cat: 'status' },
-    // Financial
-    { key: 'Price',            label: 'Price',            required: false, cat: 'financial' },
-    { key: 'Cost',             label: 'Cost',             required: false, cat: 'financial' },
-    { key: 'Invoice_Number',   label: 'Invoice Number',   required: false, cat: 'financial' },
-    { key: 'Payment_Status',   label: 'Payment Status',   required: false, cat: 'financial' },
-    { key: 'Discount',         label: 'Discount',         required: false, cat: 'financial' },
-    { key: 'VAT',              label: 'VAT',              required: false, cat: 'financial' },
+    { key: 'Price',               label: 'Price',               required: false, cat: 'financial' },
+    { key: 'Cost',                label: 'Cost',                required: false, cat: 'financial' },
+    { key: 'Invoice_Number',      label: 'Invoice Number',      required: false, cat: 'financial' },
+    { key: 'Payment_Status',      label: 'Payment Status',      required: false, cat: 'financial' },
+    { key: 'Discount',            label: 'Discount',            required: false, cat: 'financial' },
+    { key: 'VAT',                 label: 'VAT',                 required: false, cat: 'financial' },
 ];
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let rawData = [], headers = [], mappedData = [];
-let activeFields = []; // fields enabled in mapping.html
+let rawData = [];
+// headerMap: column name (trimmed) → original index in rawData[0]
+// This is the KEY fix — we preserve original indices so column lookups are accurate
+let headerMap = {};
+// displayHeaders: trimmed, non-empty header names (for the dropdowns)
+let displayHeaders = [];
+let mappedData = [];
+let activeFields = [];
 
 // ── Firebase status ───────────────────────────────────────────────────────────
 function setFbDot(id, state) {
@@ -792,18 +788,12 @@ getDocs(collection(db, 'uploaded_jobs')).then(() => {
 // ── Load mapping config from Firebase ────────────────────────────────────────
 async function loadMappingConfig() {
     try {
-        const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
         const snap = await getDoc(doc(db, 'mapping', 'config'));
         if (snap.exists()) {
             const config = snap.data();
-            // Only include fields that are enabled (true) in mapping config
             activeFields = ALL_FIELDS.filter(f => config[f.key] === true);
-            if (activeFields.length === 0) {
-                // If nothing is configured, fall back to all fields
-                activeFields = ALL_FIELDS;
-            }
+            if (activeFields.length === 0) activeFields = ALL_FIELDS;
         } else {
-            // No config saved — use all fields
             activeFields = ALL_FIELDS;
         }
     } catch(err) {
@@ -825,8 +815,6 @@ fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.
 async function handleFile(file) {
     if (!file) return;
     showToast('Reading file…', 'success');
-
-    // Load mapping config before building the mapping UI
     await loadMappingConfig();
 
     const reader = new FileReader();
@@ -836,11 +824,27 @@ async function handleFile(file) {
             const wb = XLSX.read(e.target.result, { type: 'binary', cellDates: true });
             const ws = wb.Sheets[wb.SheetNames[0]];
             rawData = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, dateNF: 'dd/mm/yyyy' });
+
             if (rawData.length < 2) {
                 showToast('File appears empty — needs at least a header row and one data row.', 'error');
                 return;
             }
-            headers = rawData[0].map(h => String(h || '').trim()).filter(h => h);
+
+            // ── FIX: build headerMap preserving original column indices ──────
+            // rawData[0] is the raw header row. We map each non-empty header
+            // name to its ORIGINAL index so that data lookups are always correct,
+            // even when the spreadsheet has blank columns in the middle.
+            headerMap = {};
+            displayHeaders = [];
+            rawData[0].forEach((h, idx) => {
+                const name = String(h || '').trim();
+                if (name && !(name in headerMap)) {
+                    // Only store the first occurrence of a duplicate header name
+                    headerMap[name] = idx;
+                    displayHeaders.push(name);
+                }
+            });
+
             buildMappingSection(file.name, rawData.length - 1);
         } catch(err) {
             showToast('Failed to parse file: ' + err.message, 'error');
@@ -859,13 +863,12 @@ function buildMappingSection(fileName, rowCount) {
             <span style="font-size:22px;">📄</span>
             <div>
                 <div class="file-info-name">${fileName}</div>
-                <div class="file-info-meta">${rowCount} data rows &bull; ${headers.length} columns: ${headers.join(', ')}</div>
+                <div class="file-info-meta">${rowCount} data rows &bull; ${displayHeaders.length} columns: ${displayHeaders.join(', ')}</div>
             </div>
             <span class="chip chip-success" style="margin-left:auto">✓ Loaded</span>
         </div>
     `;
 
-    // Show notice about how many fields are active
     const notice = document.getElementById('mappingNotice');
     const noticeText = document.getElementById('mappingNoticeText');
     noticeText.textContent = `${activeFields.length} fields are currently enabled in your Mapping configuration. Visit Mapping to add or remove fields.`;
@@ -892,11 +895,11 @@ function buildMappingSection(fileName, rowCount) {
         blank.textContent = '— Select column —';
         sel.appendChild(blank);
 
-        headers.forEach(h => {
+        displayHeaders.forEach(h => {
             const opt = document.createElement('option');
             opt.value = h;
             opt.textContent = h;
-            // Auto-match: compare normalised strings
+            // Auto-match by normalised string comparison
             const hN = h.toLowerCase().replace(/[\s_\-\/]/g, '');
             const kN = f.key.toLowerCase().replace(/[\s_\-\/]/g, '');
             const lN = f.label.toLowerCase().replace(/[\s_\-\/]/g, '');
@@ -924,31 +927,41 @@ document.getElementById('backBtn').addEventListener('click', () => {
 document.getElementById('uploadBtn').addEventListener('click', startUpload);
 
 function buildPreview() {
-    const mapping = {};
+    // Build a mapping of fieldKey → chosen spreadsheet column name
+    const fieldToColumn = {};
     let valid = true;
 
     activeFields.forEach(f => {
         const sel = document.getElementById(`map_${f.key}`);
-        if (f.required && (!sel || !sel.value)) {
+        const chosen = sel ? sel.value : '';
+        if (f.required && !chosen) {
             showToast(`Please map the required field: ${f.label}`, 'error');
             valid = false;
         }
-        mapping[f.key] = sel ? sel.value : '';
+        fieldToColumn[f.key] = chosen; // may be '' if not mapped
     });
 
     if (!valid) return;
 
+    // ── FIX: use headerMap to get the correct original column index ──────────
+    // Previously: headers.indexOf(mapping[f.key]) — this was wrong when blank
+    // columns existed because `headers` was filtered but rawData[0] was not.
+    // Now: headerMap[columnName] gives the exact original index directly.
     mappedData = rawData.slice(1)
         .filter(row => row.some(c => c !== '' && c != null))
         .map(row => {
             const obj = {};
             activeFields.forEach(f => {
-                const idx = headers.indexOf(mapping[f.key]);
-                let val = idx >= 0 ? String(row[idx] ?? '').trim() : '';
-                // normalise date-like fields
+                const colName = fieldToColumn[f.key];
+                // Look up original index via headerMap; -1 / undefined = not mapped
+                const idx = colName ? headerMap[colName] : undefined;
+                let val = (idx !== undefined && idx >= 0) ? String(row[idx] ?? '').trim() : '';
+
+                // Normalise date fields
                 if (f.key.toLowerCase().includes('date')) val = toUKDate(val);
-                // normalise AM/PM slot fields
+                // Normalise AM/PM slot
                 if (f.key === 'Appointment_Time') val = normaliseSlot(val);
+
                 obj[f.key] = val;
             });
             return obj;
@@ -958,7 +971,6 @@ function buildPreview() {
     document.getElementById('section-map').classList.add('hidden');
     document.getElementById('section-preview').classList.remove('hidden');
 
-    // Build preview table header from active field labels
     const cols = ['#', ...activeFields.map(f => f.label), 'Job ID'];
     const tbl = document.getElementById('previewTable');
     tbl.innerHTML = `
@@ -983,7 +995,7 @@ function buildPreview() {
 }
 
 async function startUpload() {
-    const btn = document.getElementById('uploadBtn');
+    const btn           = document.getElementById('uploadBtn');
     const progressWrap  = document.getElementById('progressWrap');
     const progressBar   = document.getElementById('progressBar');
     const progressLabel = document.getElementById('progressLabel');
@@ -1072,7 +1084,7 @@ function resetAll() {
     document.getElementById('section-preview').classList.add('hidden');
     document.getElementById('section-upload').classList.remove('hidden');
     document.getElementById('fileInput').value = '';
-    rawData = []; headers = []; mappedData = []; activeFields = [];
+    rawData = []; headerMap = {}; displayHeaders = []; mappedData = []; activeFields = [];
 }
 
 function setStep(n) {
@@ -1084,7 +1096,6 @@ function setStep(n) {
     });
 }
 
-// Date conversion
 function toUKDate(val) {
     if (!val) return '';
     const s = String(val).trim();
@@ -1116,7 +1127,6 @@ function esc(s) {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') || '—';
 }
 
-// Toast
 let toastTimer;
 function showToast(msg, type = 'success') {
     const t = document.getElementById('toast');
@@ -1127,8 +1137,8 @@ function showToast(msg, type = 'success') {
 }
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
-const sidebar = document.getElementById('sidebar');
-const toggleBtn = document.getElementById('sidebarToggle');
+const sidebar     = document.getElementById('sidebar');
+const toggleBtn   = document.getElementById('sidebarToggle');
 const logoCollapsed = document.getElementById('logoCollapsed');
 
 function toggleSidebar() {
