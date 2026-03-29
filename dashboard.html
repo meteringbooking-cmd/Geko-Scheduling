@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  /* ══ DARK MODE (default) ══ */
   :root {
     --accent-green: #00ff9d;
     --accent-blue:  #00c8ff;
@@ -18,7 +17,6 @@
     --transition-med:  0.28s ease-out;
     --sidebar-w-collapsed: 64px;
     --sidebar-w-expanded:  210px;
-
     --bg-body:         #05070b;
     --bg-body-radial:  radial-gradient(circle at top left, #101525 0, #05070b 45%, #020308 100%);
     --bg-sidebar:      rgba(5,10,18,0.95);
@@ -36,7 +34,6 @@
     --now-line:       #ff4b5c;
     --chart-track:    rgba(255,255,255,0.04);
   }
-
   html.light-mode {
     --accent-green: #00b86e;
     --accent-blue:  #0099cc;
@@ -44,7 +41,6 @@
     --text-muted:   #6b7f96;
     --danger:       #d93545;
     --warning:      #c2820a;
-
     --bg-body:         #f0f4f8;
     --bg-body-radial:  linear-gradient(135deg, #e8eef5 0%, #f0f4f8 50%, #e4ecf5 100%);
     --bg-sidebar:      rgba(255,255,255,0.98);
@@ -62,7 +58,6 @@
     --now-line:       #d93545;
     --chart-track:    rgba(0,0,0,0.06);
   }
-
   html.light-mode body::before { background-image: linear-gradient(rgba(0,0,0,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.04) 1px,transparent 1px); opacity:0.5; }
   html.light-mode #sidebar { box-shadow:4px 0 20px rgba(0,0,0,0.1); }
   html.light-mode #topbar  { box-shadow:0 4px 20px rgba(0,0,0,0.08); }
@@ -75,11 +70,7 @@
   html.light-mode .sidebar-link::after { background:rgba(255,255,255,0.99); border-color:rgba(0,0,0,0.1); color:var(--text-main); box-shadow:4px 4px 16px rgba(0,0,0,0.1); }
   html.light-mode .stat-card { box-shadow:0 2px 12px rgba(0,0,0,0.07); }
   html.light-mode .stat-card:hover { box-shadow:0 8px 28px rgba(0,0,0,0.12); }
-  html.light-mode .chart-bar-track { background:rgba(0,0,0,0.06); }
   html.light-mode .section-title { color:var(--text-muted); }
-  html.light-mode .eng-row-dash { border-color:rgba(0,0,0,0.07); }
-  html.light-mode .eng-row-dash:hover { background:rgba(0,0,0,0.03); }
-  html.light-mode .outcome-bar-bg { background:rgba(0,0,0,0.06); }
   html.light-mode #themeToggle { border-color:rgba(0,0,0,0.12); background:rgba(0,0,0,0.04); color:var(--text-muted); }
   html.light-mode #themeToggle:hover { border-color:rgba(0,0,0,0.2); background:rgba(0,0,0,0.07); color:var(--text-main); }
   html.light-mode .theme-toggle-track { background:rgba(0,0,0,0.1); border-color:rgba(0,0,0,0.15); }
@@ -91,8 +82,9 @@
   html.light-mode .scrollbar-area::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.12); }
   html.light-mode .status-bar { background:rgba(248,250,253,0.97); }
   html.light-mode #live-indicator { border-color:rgba(0,184,110,0.25); background:rgba(0,184,110,0.07); }
+  html.light-mode .tt-card { background:rgba(0,0,0,0.02); }
+  html.light-mode .tt-card:hover { background:rgba(0,0,0,0.04); }
 
-  /* ── Theme Toggle ── */
   #themeToggle { display:inline-flex;align-items:center;gap:7px;padding:5px 12px 5px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:var(--text-muted);font-size:11px;font-weight:600;letter-spacing:.04em;cursor:pointer;transition:all .22s ease;font-family:'Inter',sans-serif;white-space:nowrap;user-select:none;flex-shrink:0; }
   #themeToggle:hover { border-color:rgba(255,255,255,0.22);background:rgba(255,255,255,0.09);color:var(--text-main); }
   .theme-toggle-track { width:30px;height:16px;border-radius:8px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);position:relative;flex-shrink:0;transition:background .22s,border-color .22s; }
@@ -105,7 +97,6 @@
   body::before { content:"";position:fixed;inset:0;background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:40px 40px;opacity:.35;pointer-events:none;animation:gridMove 40s linear infinite;z-index:0; }
   @keyframes gridMove { from{transform:translate3d(0,0,0)} to{transform:translate3d(-40px,-40px,0)} }
 
-  /* SIDEBAR */
   #sidebar { width:var(--sidebar-w-collapsed);min-height:100vh;background:var(--bg-sidebar);border-right:1px solid var(--border-main);display:flex;flex-direction:column;flex-shrink:0;transition:width var(--transition-med),background .3s;overflow:hidden;position:relative;z-index:100;box-shadow:4px 0 30px rgba(0,0,0,0.6); }
   #sidebar.expanded { width:var(--sidebar-w-expanded); }
   .sidebar-header { height:70px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border-main);flex-shrink:0;padding:0;overflow:hidden; }
@@ -134,7 +125,6 @@
   .sidebar-version { font-size:10px;color:rgba(143,160,184,0.35);text-align:center;letter-spacing:.5px;opacity:0;transition:opacity var(--transition-med); }
   #sidebar.expanded .sidebar-version { opacity:1; }
 
-  /* MAIN */
   #main-content { flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;position:relative;z-index:1;height:100vh; }
   #topbar { width:100%;padding:14px 26px;background:var(--bg-topbar);border-bottom:1px solid var(--border-main);display:flex;justify-content:space-between;align-items:center;z-index:5;box-shadow:0 10px 30px rgba(0,0,0,0.7);flex-shrink:0;transition:background .3s; }
   #topbar-right { display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-muted); }
@@ -148,7 +138,6 @@
   #live-indicator.error .live-dot { background:var(--danger);animation:none; }
   @keyframes livePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.85)} }
 
-  /* TOOLBAR */
   #toolbar { display:flex;align-items:center;gap:10px;padding:10px 20px;background:rgba(5,10,18,0.9);border-bottom:1px solid var(--border-main);flex-shrink:0;flex-wrap:wrap;z-index:4;transition:background .3s; }
   html.light-mode #toolbar { background:rgba(255,255,255,0.95); }
   .filter-btn { display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border-btn);background:var(--bg-btn);color:var(--text-muted);transition:all var(--transition-fast);font-family:'Inter',sans-serif;white-space:nowrap;letter-spacing:.04em; }
@@ -166,7 +155,6 @@
   html.light-mode #datePicker { border-color:rgba(0,0,0,0.12);color:var(--text-main); }
   html.light-mode #datePicker::-webkit-calendar-picker-indicator { filter:none;opacity:.5; }
 
-  /* STATUS BAR */
   .status-bar { display:flex;align-items:center;gap:8px;padding:5px 20px;background:rgba(5,10,18,0.9);border-bottom:1px solid var(--border-main);font-size:12px;color:var(--text-muted);flex-shrink:0;transition:background .3s; }
   .sdot { width:7px;height:7px;border-radius:50%;flex-shrink:0;background:orange; }
   .sdot.ok  { background:var(--accent-green);box-shadow:0 0 6px rgba(0,255,157,0.5); }
@@ -174,18 +162,14 @@
   .sdot.spin { animation:blink 1s infinite;background:var(--accent-blue); }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-  /* SCROLL CANVAS */
   #dashCanvas { flex:1;overflow-y:auto;overflow-x:hidden;padding:24px;display:flex;flex-direction:column;gap:24px; }
   #dashCanvas::-webkit-scrollbar { width:5px; }
   #dashCanvas::-webkit-scrollbar-thumb { background:var(--scrollbar-thumb);border-radius:3px; }
 
-  /* SECTION TITLES */
   .section-title { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:8px; }
   .section-title::after { content:'';flex:1;height:1px;background:var(--border-main); }
 
-  /* STAT CARDS GRID */
   .stats-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px; }
-
   .stat-card { background:var(--bg-card);border:1px solid var(--border-card);border-radius:14px;padding:20px 22px;transition:transform .2s,box-shadow .2s,background .2s;position:relative;overflow:hidden;cursor:default; }
   .stat-card::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:14px 14px 0 0; }
   .stat-card.green::before { background:linear-gradient(90deg,var(--accent-green),transparent); }
@@ -198,22 +182,14 @@
   .stat-label { font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px; }
   .stat-value { font-family:'JetBrains Mono',monospace;font-size:34px;font-weight:600;letter-spacing:-.02em;line-height:1; }
   .stat-sub   { font-size:11px;color:var(--text-muted);margin-top:6px;display:flex;align-items:center;gap:5px; }
-  .stat-delta { display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px; }
-  .stat-delta.up   { background:rgba(0,255,157,0.1);color:var(--accent-green); }
-  .stat-delta.down { background:rgba(255,75,92,0.1);color:var(--danger); }
-  .stat-delta.neu  { background:rgba(143,160,184,0.1);color:var(--text-muted); }
   .stat-icon { position:absolute;top:18px;right:18px;opacity:.12;font-size:28px;pointer-events:none; }
 
-  /* CHART ROWS */
   .charts-row { display:grid;grid-template-columns:1fr 1fr;gap:14px; }
-  .charts-row.triple { grid-template-columns:1fr 1fr 1fr; }
-  @media(max-width:900px){ .charts-row,.charts-row.triple { grid-template-columns:1fr; } }
-
+  @media(max-width:900px){ .charts-row { grid-template-columns:1fr; } }
   .chart-card { background:var(--bg-card);border:1px solid var(--border-card);border-radius:14px;padding:20px 22px; }
   .chart-title { font-size:12px;font-weight:600;margin-bottom:4px; }
   .chart-sub   { font-size:11px;color:var(--text-muted);margin-bottom:16px; }
 
-  /* Outcome donut */
   .donut-wrap { display:flex;align-items:center;gap:24px; }
   .donut-svg  { flex-shrink:0; }
   .donut-legend { display:flex;flex-direction:column;gap:8px;flex:1; }
@@ -223,7 +199,7 @@
   .legend-count { font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600; }
   .legend-pct   { font-size:10px;color:var(--text-muted);min-width:34px;text-align:right; }
 
-  /* Horizontal bar chart */
+  /* Engineer bar chart */
   .bar-row { display:flex;align-items:center;gap:10px;margin-bottom:8px; }
   .bar-row:last-child { margin-bottom:0; }
   .bar-label { font-size:11px;color:var(--text-muted);width:90px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
@@ -231,19 +207,21 @@
   .bar-fill  { height:100%;border-radius:4px;transition:width .6s cubic-bezier(.22,.61,.36,1); }
   .bar-val   { font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;width:36px;text-align:right;flex-shrink:0; }
 
-  /* Travel time list */
-  .tt-row { display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border-main);font-size:12px; }
-  .tt-row:last-child { border-bottom:none; }
-  .tt-eng  { display:flex;align-items:center;gap:8px; }
+  /* Travel time — 3-column card grid */
+  .tt-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:8px; }
+  @media(max-width:1100px){ .tt-grid { grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:600px)  { .tt-grid { grid-template-columns:1fr; } }
+  .tt-card { display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:10px;border:1px solid var(--border-card);background:rgba(255,255,255,0.02);transition:background .15s;gap:6px; }
+  .tt-card:hover { background:rgba(255,255,255,0.04); }
+  .tt-eng  { display:flex;align-items:center;gap:7px;min-width:0;flex:1; }
   .tt-avatar { width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent-blue),var(--accent-green));display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#020308;flex-shrink:0; }
   html.light-mode .tt-avatar { color:#fff; }
-  .tt-name { color:var(--text-main);font-weight:500; }
-  .tt-pill { font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;border:1px solid; }
+  .tt-name { color:var(--text-main);font-weight:500;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+  .tt-pill { font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;border:1px solid;flex-shrink:0; }
   .tt-pill.ok   { background:rgba(0,255,157,0.08);border-color:rgba(0,255,157,0.3);color:var(--accent-green); }
   .tt-pill.warn { background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.3);color:var(--warning); }
   .tt-pill.bad  { background:rgba(255,75,92,0.08);border-color:rgba(255,75,92,0.3);color:var(--danger); }
 
-  /* Job type breakdown */
   .type-dot-row { display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;cursor:default;transition:background .15s; }
   .type-dot-row:hover { background:rgba(255,255,255,0.03); }
   .type-color-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
@@ -253,15 +231,12 @@
   .type-mini-bar { width:60px;height:4px;border-radius:2px;background:var(--chart-track);overflow:hidden; }
   .type-mini-fill{ height:100%;border-radius:2px; }
 
-  /* Weekly trend sparkline */
   .spark-wrap { position:relative;height:80px;margin-top:8px; }
   .spark-svg  { width:100%;height:100%; }
 
-  /* Empty state */
   .empty-state { text-align:center;padding:40px 20px;color:var(--text-muted);font-size:12px;border:1px dashed rgba(255,255,255,0.06);border-radius:12px; }
   html.light-mode .empty-state { border-color:rgba(0,0,0,0.08); }
 
-  /* Eng table */
   .eng-table { width:100%;border-collapse:collapse; }
   .eng-table th { font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--text-muted);padding:0 10px 10px;text-align:left; }
   .eng-table th:not(:first-child) { text-align:right; }
@@ -273,12 +248,6 @@
   .eng-av-sm { width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--accent-blue),var(--accent-green));display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#020308;flex-shrink:0; }
   html.light-mode .eng-av-sm { color:#fff; }
 
-  /* Loading shimmer */
-  .shimmer { background:linear-gradient(90deg,rgba(255,255,255,0.03) 25%,rgba(255,255,255,0.07) 50%,rgba(255,255,255,0.03) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:20px; }
-  html.light-mode .shimmer { background:linear-gradient(90deg,rgba(0,0,0,0.04) 25%,rgba(0,0,0,0.08) 50%,rgba(0,0,0,0.04) 75%);background-size:200% 100%; }
-  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-
-  /* Toast */
   #toast { position:fixed;bottom:24px;right:24px;z-index:99999;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;transform:translateY(20px);opacity:0;transition:transform .3s ease,opacity .3s ease;pointer-events:none; }
   #toast.show { transform:translateY(0);opacity:1; }
   #toast.success { background:rgba(10,20,15,0.97);border:1px solid rgba(0,255,157,0.4);color:var(--accent-green);box-shadow:0 0 30px rgba(0,255,157,0.15),0 16px 40px rgba(0,0,0,0.8); }
@@ -288,75 +257,45 @@
   html.light-mode #toast.error   { background:rgba(255,240,242,0.99);border-color:rgba(217,53,69,0.4);color:#b02030;box-shadow:0 8px 24px rgba(0,0,0,0.1); }
   html.light-mode #toast.info    { background:rgba(240,248,255,0.99);border-color:rgba(0,153,204,0.4);color:#0077aa;box-shadow:0 8px 24px rgba(0,0,0,0.1); }
 
-  /* Scrollbar for table areas */
   .scrollbar-area { overflow-y:auto;max-height:320px; }
   .scrollbar-area::-webkit-scrollbar { width:4px; }
   .scrollbar-area::-webkit-scrollbar-thumb { background:var(--scrollbar-thumb);border-radius:2px; }
 
-  /* Number counter animation */
   @keyframes countUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
   .stat-value { animation:countUp .4s ease-out; }
 </style>
 </head>
 <body>
-
 <div id="toast"></div>
 
-<!-- SIDEBAR -->
 <div id="sidebar">
   <div class="sidebar-header">
-    <img class="sidebar-logo-collapsed" id="logoCollapsed"
-         src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1" alt="Geko">
-    <img class="sidebar-logo-expanded"
-         src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=xh5pubjr&dl=1" alt="Geko">
-    <button class="sidebar-toggle" id="sidebarToggle">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-    </button>
+    <img class="sidebar-logo-collapsed" id="logoCollapsed" src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1" alt="Geko">
+    <img class="sidebar-logo-expanded" src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=xh5pubjr&dl=1" alt="Geko">
+    <button class="sidebar-toggle" id="sidebarToggle"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
   </div>
   <nav class="sidebar-nav">
-    <a href="dashboard.html" class="sidebar-link active" data-label="Dashboard">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
-      <span class="sidebar-label">Dashboard</span>
-    </a>
-    <a href="scheduling.html" class="sidebar-link" data-label="Scheduling">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span>
-      <span class="sidebar-label">Scheduling</span>
-    </a>
-    <a href="database.html" class="sidebar-link" data-label="Database">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 9v4c0 1.66 4.03 3 9 3s9-1.34 9-3V9"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/></svg></span>
-      <span class="sidebar-label">Database</span>
-    </a>
-    <a href="viewdata.html" class="sidebar-link" data-label="View Data">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
-      <span class="sidebar-label">View Data</span>
-    </a>
-    <a href="userdatabase.html" class="sidebar-link" data-label="Users">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
-      <span class="sidebar-label">Users</span>
-    </a>
-    <a href="mapping.html" class="sidebar-link" data-label="Mapping">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg></span>
-      <span class="sidebar-label">Mapping</span>
-    </a>
-    <a href="absencesubmission.html" class="sidebar-link" data-label="Absence">
-      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg></span>
-      <span class="sidebar-label">Absence</span>
-    </a>
+    <a href="dashboard.html" class="sidebar-link active" data-label="Dashboard"><span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="sidebar-label">Dashboard</span></a>
+    <a href="scheduling.html" class="sidebar-link" data-label="Scheduling"><span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span><span class="sidebar-label">Scheduling</span></a>
+    <a href="database.html" class="sidebar-link" data-label="Database"><span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 9v4c0 1.66 4.03 3 9 3s9-1.34 9-3V9"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/></svg></span><span class="sidebar-label">Database</span></a>
+    <a href="viewdata.html" class="sidebar-link" data-label="View Data"><span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span><span class="sidebar-label">View Data</span></a>
+    <a href="userdatabase.html" class="sidebar-link" data-label="Users"><span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87"/></svg></span><span class="sidebar-label">Users</span></a>
+    <a href="mapping.html" class="sidebar-link" data-label="Mapping"><span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg></span><span class="sidebar-label">Mapping</span></a>
+    <a href="absencesubmission.html" class="sidebar-link" data-label="Absence"><span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg></span><span class="sidebar-label">Absence</span></a>
   </nav>
   <div class="sidebar-footer"><div class="sidebar-version">v1.0.0</div></div>
 </div>
 
-<!-- MAIN -->
 <div id="main-content">
   <header id="topbar">
     <div>
       <div style="font-size:16px;text-transform:uppercase;letter-spacing:.12em">Dashboard</div>
-      <div style="font-size:12px;color:var(--text-muted)" id="topbar-subtitle">Loading analytics…</div>
+      <div style="font-size:12px;color:var(--text-muted)" id="topbar-subtitle">Loading analytics...</div>
     </div>
     <div id="topbar-right">
-      <div id="live-indicator" class="connecting"><div class="live-dot"></div><span id="live-text">Connecting…</span></div>
+      <div id="live-indicator" class="connecting"><div class="live-dot"></div><span id="live-text">Connecting...</span></div>
       <button id="themeToggle" title="Toggle light / dark mode">
-        <span class="theme-icon" id="themeIcon">☀️</span>
+        <span class="theme-icon" id="themeIcon">&#9728;&#65039;</span>
         <div class="theme-toggle-track"><div class="theme-toggle-thumb"></div></div>
         <span id="themeLabel" style="font-size:11px;font-weight:600;letter-spacing:.04em">Light</span>
       </button>
@@ -364,11 +303,10 @@
     </div>
   </header>
 
-  <!-- TOOLBAR -->
   <div id="toolbar">
     <div class="date-nav">
       <button class="dnb" id="prevBtn">&#8249;</button>
-      <span class="date-lbl" id="dateLbl">—</span>
+      <span class="date-lbl" id="dateLbl">-</span>
       <button class="dnb" id="nextBtn">&#8250;</button>
     </div>
     <input type="date" id="datePicker"/>
@@ -379,89 +317,72 @@
     <button class="filter-btn" id="btnMonth">Month</button>
   </div>
 
-  <div class="status-bar"><div class="sdot spin" id="sdot"></div><span id="stxt">Connecting…</span></div>
+  <div class="status-bar"><div class="sdot spin" id="sdot"></div><span id="stxt">Connecting...</span></div>
 
-  <!-- DASHBOARD CANVAS -->
   <div id="dashCanvas">
-
-    <!-- KPI CARDS -->
     <div>
       <div class="section-title">Overview</div>
       <div class="stats-grid" id="kpiGrid">
-        <div class="stat-card green"><div class="stat-icon">📋</div><div class="stat-label">Total Jobs</div><div class="stat-value" id="kpi-total">—</div><div class="stat-sub" id="kpi-total-sub">in selected period</div></div>
-        <div class="stat-card blue"><div class="stat-icon">✅</div><div class="stat-label">Completed</div><div class="stat-value" id="kpi-complete">—</div><div class="stat-sub" id="kpi-complete-sub">—</div></div>
-        <div class="stat-card yellow"><div class="stat-icon">⚙️</div><div class="stat-label">In Progress</div><div class="stat-value" id="kpi-progress">—</div><div class="stat-sub" id="kpi-progress-sub">—</div></div>
-        <div class="stat-card teal"><div class="stat-icon">🚗</div><div class="stat-label">En Route</div><div class="stat-value" id="kpi-enroute">—</div><div class="stat-sub" id="kpi-enroute-sub">—</div></div>
-        <div class="stat-card red"><div class="stat-icon">⛔</div><div class="stat-label">Aborted</div><div class="stat-value" id="kpi-abort">—</div><div class="stat-sub" id="kpi-abort-sub">—</div></div>
-        <div class="stat-card purple"><div class="stat-icon">⏱️</div><div class="stat-label">Avg Duration</div><div class="stat-value" id="kpi-duration">—</div><div class="stat-sub">hours per job</div></div>
-        <div class="stat-card blue"><div class="stat-icon">🗺️</div><div class="stat-label">Avg Travel</div><div class="stat-value" id="kpi-travel">—</div><div class="stat-sub">minutes between jobs</div></div>
-        <div class="stat-card green"><div class="stat-icon">📅</div><div class="stat-label">Unscheduled</div><div class="stat-value" id="kpi-unscheduled">—</div><div class="stat-sub">no time slot assigned</div></div>
+        <div class="stat-card green"><div class="stat-icon">&#128203;</div><div class="stat-label">Total Jobs</div><div class="stat-value" id="kpi-total">-</div><div class="stat-sub" id="kpi-total-sub">in selected period</div></div>
+        <div class="stat-card blue"><div class="stat-icon">&#9989;</div><div class="stat-label">Completed</div><div class="stat-value" id="kpi-complete">-</div><div class="stat-sub" id="kpi-complete-sub">-</div></div>
+        <div class="stat-card yellow"><div class="stat-icon">&#9881;&#65039;</div><div class="stat-label">In Progress</div><div class="stat-value" id="kpi-progress">-</div><div class="stat-sub" id="kpi-progress-sub">-</div></div>
+        <div class="stat-card teal"><div class="stat-icon">&#128663;</div><div class="stat-label">En Route</div><div class="stat-value" id="kpi-enroute">-</div><div class="stat-sub" id="kpi-enroute-sub">-</div></div>
+        <div class="stat-card red"><div class="stat-icon">&#9940;</div><div class="stat-label">Aborted</div><div class="stat-value" id="kpi-abort">-</div><div class="stat-sub" id="kpi-abort-sub">-</div></div>
+        <div class="stat-card purple"><div class="stat-icon">&#9200;&#65039;</div><div class="stat-label">Avg Duration</div><div class="stat-value" id="kpi-duration">-</div><div class="stat-sub">hours per job</div></div>
+        <div class="stat-card blue"><div class="stat-icon">&#128506;&#65039;</div><div class="stat-label">Avg Travel</div><div class="stat-value" id="kpi-travel">-</div><div class="stat-sub">minutes between jobs</div></div>
+        <div class="stat-card green"><div class="stat-icon">&#128197;</div><div class="stat-label">Unscheduled</div><div class="stat-value" id="kpi-unscheduled">-</div><div class="stat-sub">no time slot assigned</div></div>
       </div>
     </div>
 
-    <!-- CHARTS ROW 1: Outcomes + Job Types -->
     <div class="charts-row">
-      <!-- Outcomes donut -->
       <div class="chart-card">
         <div class="chart-title">Job Outcomes</div>
         <div class="chart-sub">Status breakdown for selected period</div>
-        <div class="donut-wrap" id="donutWrap">
-          <div class="empty-state" style="flex:1">Loading…</div>
-        </div>
+        <div class="donut-wrap" id="donutWrap"><div class="empty-state" style="flex:1">Loading...</div></div>
       </div>
-
-      <!-- Job type breakdown -->
       <div class="chart-card">
         <div class="chart-title">Job Type Breakdown</div>
         <div class="chart-sub">Volume by type</div>
-        <div id="typeBreakdown"><div class="empty-state">Loading…</div></div>
+        <div id="typeBreakdown"><div class="empty-state">Loading...</div></div>
       </div>
     </div>
 
-    <!-- CHARTS ROW 2: Engineer performance + Travel times -->
     <div class="charts-row">
-      <!-- Engineer job counts -->
       <div class="chart-card">
         <div class="chart-title">Jobs per Engineer</div>
         <div class="chart-sub">Workload distribution</div>
-        <div id="engBarsWrap"><div class="empty-state">Loading…</div></div>
+        <div id="engBarsWrap"><div class="empty-state">Loading...</div></div>
       </div>
-
-      <!-- Average travel times per engineer -->
       <div class="chart-card">
         <div class="chart-title">Avg Travel Time per Engineer</div>
-        <div class="chart-sub">Estimated drive time between consecutive jobs</div>
-        <div class="scrollbar-area" id="travelTimesWrap"><div class="empty-state">Loading…</div></div>
+        <div class="chart-sub">Drive time between jobs &mdash; longest to shortest</div>
+        <div id="travelTimesWrap"><div class="empty-state">Loading...</div></div>
       </div>
     </div>
 
-    <!-- FULL-WIDTH: Engineer summary table -->
     <div class="chart-card">
       <div class="chart-title">Engineer Summary</div>
       <div class="chart-sub">Detailed breakdown by engineer for selected period</div>
-      <div class="scrollbar-area" id="engTableWrap"><div class="empty-state">Loading…</div></div>
+      <div class="scrollbar-area" id="engTableWrap"><div class="empty-state">Loading...</div></div>
     </div>
 
-    <!-- CHARTS ROW 3: Weekly trend sparkline -->
     <div class="chart-card">
       <div class="chart-title">Daily Job Volume</div>
       <div class="chart-sub" id="sparkSub">Jobs per day</div>
       <div class="spark-wrap"><svg class="spark-svg" id="sparkSvg" viewBox="0 0 800 80" preserveAspectRatio="none"></svg></div>
       <div id="sparkLabels" style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--text-muted)"></div>
     </div>
-
-  </div><!-- /dashCanvas -->
-</div><!-- /main-content -->
+  </div>
+</div>
 
 <script>
-/* ── Theme toggle ── */
 (function(){
   const saved=localStorage.getItem('geko-theme');
   if(saved==='light')document.documentElement.classList.add('light-mode');
   function updateUI(){
     const isLight=document.documentElement.classList.contains('light-mode');
     const icon=document.getElementById('themeIcon'),label=document.getElementById('themeLabel');
-    if(icon)  icon.textContent =isLight?'🌙':'☀️';
+    if(icon) icon.textContent=isLight?'🌙':'☀️';
     if(label) label.textContent=isLight?'Dark':'Light';
   }
   document.addEventListener('DOMContentLoaded',()=>{
@@ -488,19 +409,16 @@ const db = getFirestore(initializeApp({
   appId:"1:824568732787:web:c12db983fd6a5b44b01e06"
 }));
 
-/* ─── Constants ─────────────────────────────────────────────── */
 const AVG_SPEED_KMH = 53.1;
 const JOB_DURATIONS_FALLBACK = {"dual fuel":2,"single gas":1.5,"single elec":1.5,"comms":0.5};
 const COLOURS = ["#00ff9d","#00c8ff","#f59e0b","#ff4b5c","#a855f7","#06b6d4","#f97316","#10b981","#e879f9","#fb923c"];
 const STATUS_COLORS = { complete:'#00ff9d', 'en-route':'#00c8ff', 'in-progress':'#f59e0b', abort:'#ff4b5c', unassigned:'#8fa0b8' };
 
-/* ─── State ─────────────────────────────────────────────────── */
 let allJobs = [];
 let currentView = 'day';
 let currentDate = today0();
 const postcodeCache = new Map();
 
-/* ─── Date helpers ──────────────────────────────────────────── */
 function today0(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
 function toInputDateStr(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function parseDate(s){
@@ -510,46 +428,37 @@ function parseDate(s){
   const d=new Date(s);if(!isNaN(d)){d.setHours(0,0,0,0);return d;}return null;
 }
 function sameDay(a,b){ return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
-function toUKStr(d){ return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
-function fmtTime(h){ const hh=Math.floor(h),mm=Math.round((h-hh)*60); return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`; }
 function esc(s){ return String(s||'—').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function getDateRange(){
-  const d0 = new Date(currentDate); d0.setHours(0,0,0,0);
-  if(currentView==='day') return [d0, d0];
+  const d0=new Date(currentDate); d0.setHours(0,0,0,0);
+  if(currentView==='day') return [d0,d0];
   if(currentView==='week'){
-    const dow=d0.getDay(), diff=dow===0?-6:1-dow;
+    const dow=d0.getDay(),diff=dow===0?-6:1-dow;
     const mon=new Date(d0); mon.setDate(d0.getDate()+diff);
     const sun=new Date(mon); sun.setDate(mon.getDate()+6);
-    return [mon, sun];
+    return [mon,sun];
   }
-  if(currentView==='month'){
-    const start=new Date(d0.getFullYear(),d0.getMonth(),1);
-    const end  =new Date(d0.getFullYear(),d0.getMonth()+1,0);
-    return [start, end];
-  }
+  const start=new Date(d0.getFullYear(),d0.getMonth(),1);
+  const end=new Date(d0.getFullYear(),d0.getMonth()+1,0);
+  return [start,end];
 }
 
 function jobsInRange(){
-  const [start, end] = getDateRange();
-  return allJobs.filter(j=>{
-    const jd=parseDate(j.dateOfJob);
-    if(!jd) return false;
-    return jd >= start && jd <= end;
-  });
+  const [start,end]=getDateRange();
+  return allJobs.filter(j=>{ const jd=parseDate(j.dateOfJob); return jd&&jd>=start&&jd<=end; });
 }
 
 function updateDateLabel(){
-  const [start, end] = getDateRange();
+  const [start,end]=getDateRange();
   let lbl;
   if(currentView==='day') lbl=start.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  else if(currentView==='week') lbl=`${start.toLocaleDateString('en-GB',{day:'numeric',month:'short'})} – ${end.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
+  else if(currentView==='week') lbl=`${start.toLocaleDateString('en-GB',{day:'numeric',month:'short'})} - ${end.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
   else lbl=start.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
-  document.getElementById('dateLbl').textContent = lbl;
-  document.getElementById('topbar-subtitle').textContent = `Analytics · ${lbl}`;
+  document.getElementById('dateLbl').textContent=lbl;
+  document.getElementById('topbar-subtitle').textContent=`Analytics · ${lbl}`;
 }
 
-/* ─── Postcode / travel helpers ─────────────────────────────── */
 function normalisePC(pc){ return (pc||'').trim().toUpperCase().replace(/\s+/g,''); }
 
 async function geocodePostcodes(postcodes){
@@ -562,9 +471,7 @@ async function geocodePostcodes(postcodes){
       const res=await fetch('https://api.postcodes.io/postcodes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({postcodes:chunk})});
       if(!res.ok) throw new Error('postcodes.io '+res.status);
       const json=await res.json();
-      (json.result||[]).forEach(r=>{
-        postcodeCache.set(normalisePC(r.query), r.result?{lat:r.result.latitude,lon:r.result.longitude}:null);
-      });
+      (json.result||[]).forEach(r=>{ postcodeCache.set(normalisePC(r.query),r.result?{lat:r.result.latitude,lon:r.result.longitude}:null); });
     }catch(e){ chunk.forEach(pc=>postcodeCache.set(pc,null)); }
   }
 }
@@ -576,7 +483,7 @@ function haversineKm(lat1,lon1,lat2,lon2){
 }
 
 function driveMinutes(pc1,pc2){
-  const a=postcodeCache.get(normalisePC(pc1)), b=postcodeCache.get(normalisePC(pc2));
+  const a=postcodeCache.get(normalisePC(pc1)),b=postcodeCache.get(normalisePC(pc2));
   if(!a||!b) return null;
   return Math.max(1,Math.round((haversineKm(a.lat,a.lon,b.lat,b.lon)*1.4/AVG_SPEED_KMH)*60));
 }
@@ -597,30 +504,44 @@ function normaliseStatus(raw){
   return ['complete','en-route','in-progress','abort'].includes(s)?s:'unassigned';
 }
 
-/* ─── Compute travel stats ──────────────────────────────────── */
+// ── Name helpers ─────────────────────────────────────────────
+// Format as "I. Surname" e.g. "John Smith" -> "J. Smith"
+function fmtEngName(fullName){
+  if(!fullName) return '—';
+  const parts=fullName.trim().split(/\s+/).filter(Boolean);
+  if(parts.length===1) return parts[0];
+  return parts[0][0].toUpperCase()+'. '+parts[parts.length-1];
+}
+
+// Initials for avatar (up to 2 chars, first + last word)
+function engInitials(fullName){
+  if(!fullName) return '?';
+  const parts=fullName.trim().split(/\s+/).filter(Boolean);
+  if(parts.length===1) return parts[0][0].toUpperCase();
+  return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
+}
+
 function computeTravelStats(jobs){
-  // group by engineer × date, sort by startHour, compute gaps
-  const byEngDate = {};
+  const byEngDate={};
   jobs.forEach(j=>{
     const sh=getStartHour(j); if(sh===null||!j.engineerName||!j.postcode) return;
     const key=j.engineerName+'__'+j.dateOfJob;
     if(!byEngDate[key]) byEngDate[key]=[];
     byEngDate[key].push(j);
   });
-  const engTravelMins = {}; // eng → [minutes]
-  for(const [key, jArr] of Object.entries(byEngDate)){
+  const engTravelMins={};
+  for(const [,jArr] of Object.entries(byEngDate)){
     const sorted=[...jArr].sort((a,b)=>getStartHour(a)-getStartHour(b));
     const eng=sorted[0].engineerName;
     if(!engTravelMins[eng]) engTravelMins[eng]=[];
     for(let i=0;i<sorted.length-1;i++){
-      const mins=driveMinutes(sorted[i].postcode, sorted[i+1].postcode);
+      const mins=driveMinutes(sorted[i].postcode,sorted[i+1].postcode);
       if(mins!==null) engTravelMins[eng].push(mins);
     }
   }
-  return engTravelMins; // eng → [mins]
+  return engTravelMins;
 }
 
-/* ─── Render ─────────────────────────────────────────────────── */
 function render(){
   updateDateLabel();
   const jobs=jobsInRange();
@@ -633,41 +554,27 @@ function render(){
   renderSparkline();
 }
 
-/* KPIs */
 function renderKPIs(jobs){
   const total=jobs.length;
-  const statusCounts={complete:0,'en-route':0,'in-progress':0,abort:0,unassigned:0};
-  jobs.forEach(j=>{ const s=normaliseStatus(j.jobStatus||j.status); statusCounts[s]=(statusCounts[s]||0)+1; });
+  const sc={complete:0,'en-route':0,'in-progress':0,abort:0,unassigned:0};
+  jobs.forEach(j=>{ const s=normaliseStatus(j.jobStatus||j.status); sc[s]=(sc[s]||0)+1; });
   const unscheduled=jobs.filter(j=>getStartHour(j)===null).length;
-
-  // avg duration
-  let totalDurHrs=0;
-  jobs.forEach(j=>{ totalDurHrs+=getDuration(j.jobType); });
+  let totalDurHrs=0; jobs.forEach(j=>{ totalDurHrs+=getDuration(j.jobType); });
   const avgDur=total?totalDurHrs/total:0;
-
-  // avg travel (across all pairs with known postcodes)
   const travelMap=computeTravelStats(jobs);
   const allMins=[].concat(...Object.values(travelMap));
   const avgTravel=allMins.length?Math.round(allMins.reduce((a,b)=>a+b,0)/allMins.length):0;
-
-  const pct=(n)=>total?Math.round(n/total*100)+'%':'—';
-
-  set('kpi-total', total.toString());
-  set('kpi-total-sub', `${currentView} view`);
-  set('kpi-complete', statusCounts.complete.toString());
-  set('kpi-complete-sub', `${pct(statusCounts.complete)} of total`);
-  set('kpi-progress', statusCounts['in-progress'].toString());
-  set('kpi-progress-sub', `${pct(statusCounts['in-progress'])} of total`);
-  set('kpi-enroute', statusCounts['en-route'].toString());
-  set('kpi-enroute-sub', `${pct(statusCounts['en-route'])} of total`);
-  set('kpi-abort', statusCounts.abort.toString());
-  set('kpi-abort-sub', `${pct(statusCounts.abort)} of total`);
-  set('kpi-duration', avgDur>0?avgDur.toFixed(1):'—');
-  set('kpi-travel', avgTravel>0?avgTravel.toString():'—');
-  set('kpi-unscheduled', unscheduled.toString());
+  const pct=n=>total?Math.round(n/total*100)+'%':'—';
+  set('kpi-total',total.toString()); set('kpi-total-sub',`${currentView} view`);
+  set('kpi-complete',sc.complete.toString()); set('kpi-complete-sub',`${pct(sc.complete)} of total`);
+  set('kpi-progress',sc['in-progress'].toString()); set('kpi-progress-sub',`${pct(sc['in-progress'])} of total`);
+  set('kpi-enroute',sc['en-route'].toString()); set('kpi-enroute-sub',`${pct(sc['en-route'])} of total`);
+  set('kpi-abort',sc.abort.toString()); set('kpi-abort-sub',`${pct(sc.abort)} of total`);
+  set('kpi-duration',avgDur>0?avgDur.toFixed(1):'—');
+  set('kpi-travel',avgTravel>0?avgTravel.toString():'—');
+  set('kpi-unscheduled',unscheduled.toString());
 }
 
-/* Outcomes donut */
 function renderOutcomes(jobs){
   const statusOrder=['complete','en-route','in-progress','abort','unassigned'];
   const labels={'complete':'Complete','en-route':'En Route','in-progress':'In Progress','abort':'Aborted','unassigned':'Unassigned'};
@@ -676,39 +583,17 @@ function renderOutcomes(jobs){
   const total=jobs.length;
   const wrap=document.getElementById('donutWrap');
   if(!total){ wrap.innerHTML='<div class="empty-state" style="flex:1">No jobs in this period.</div>'; return; }
-
-  const R=52, CX=60, CY=60, STROKE=22;
-  const circumference=2*Math.PI*R;
+  const R=52,CX=60,CY=60,STROKE=22,circumference=2*Math.PI*R;
   let offset=0;
   const slices=statusOrder.filter(s=>counts[s]>0).map(s=>{
-    const pct=counts[s]/total;
-    const dash=pct*circumference;
-    const slice={s,count:counts[s],pct,dash,offset};
-    offset+=dash;
-    return slice;
+    const pct=counts[s]/total,dash=pct*circumference,slice={s,count:counts[s],pct,dash,offset};
+    offset+=dash; return slice;
   });
-
   const svgSlices=slices.map(sl=>`<circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="${STATUS_COLORS[sl.s]}" stroke-width="${STROKE}" stroke-dasharray="${sl.dash} ${circumference-sl.dash}" stroke-dashoffset="${-(sl.offset-(circumference/4))}" opacity="0.85"/>`).join('');
-
-  const legendHtml=statusOrder.filter(s=>counts[s]>0).map(s=>`
-    <div class="legend-item">
-      <div class="legend-dot" style="background:${STATUS_COLORS[s]}"></div>
-      <span class="legend-label">${labels[s]}</span>
-      <span class="legend-count">${counts[s]}</span>
-      <span class="legend-pct">${Math.round(counts[s]/total*100)}%</span>
-    </div>`).join('');
-
-  wrap.innerHTML=`
-    <svg class="donut-svg" width="120" height="120" viewBox="0 0 120 120">
-      <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="var(--chart-track)" stroke-width="${STROKE}"/>
-      ${svgSlices}
-      <text x="${CX}" y="${CY}" text-anchor="middle" dominant-baseline="middle" font-size="16" font-weight="700" font-family="JetBrains Mono,monospace" fill="var(--text-main)">${total}</text>
-      <text x="${CX}" y="${CY+16}" text-anchor="middle" font-size="8" fill="var(--text-muted)" font-family="Inter,sans-serif">TOTAL</text>
-    </svg>
-    <div class="donut-legend">${legendHtml}</div>`;
+  const legendHtml=statusOrder.filter(s=>counts[s]>0).map(s=>`<div class="legend-item"><div class="legend-dot" style="background:${STATUS_COLORS[s]}"></div><span class="legend-label">${labels[s]}</span><span class="legend-count">${counts[s]}</span><span class="legend-pct">${Math.round(counts[s]/total*100)}%</span></div>`).join('');
+  wrap.innerHTML=`<svg class="donut-svg" width="120" height="120" viewBox="0 0 120 120"><circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="var(--chart-track)" stroke-width="${STROKE}"/>${svgSlices}<text x="${CX}" y="${CY}" text-anchor="middle" dominant-baseline="middle" font-size="16" font-weight="700" font-family="JetBrains Mono,monospace" fill="var(--text-main)">${total}</text><text x="${CX}" y="${CY+16}" text-anchor="middle" font-size="8" fill="var(--text-muted)" font-family="Inter,sans-serif">TOTAL</text></svg><div class="donut-legend">${legendHtml}</div>`;
 }
 
-/* Job type breakdown */
 function renderTypeBreakdown(jobs){
   const wrap=document.getElementById('typeBreakdown');
   if(!jobs.length){ wrap.innerHTML='<div class="empty-state">No jobs in this period.</div>'; return; }
@@ -717,20 +602,12 @@ function renderTypeBreakdown(jobs){
   const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
   const max=sorted[0][1];
   wrap.innerHTML=sorted.map(([type,count],i)=>{
-    const col=COLOURS[i%COLOURS.length];
-    const pct=Math.round(count/jobs.length*100);
-    const barW=Math.round(count/max*100);
-    return `<div class="type-dot-row">
-      <div class="type-color-dot" style="background:${col}"></div>
-      <div class="type-name" title="${esc(type)}">${esc(type)}</div>
-      <div class="type-mini-bar"><div class="type-mini-fill" style="width:${barW}%;background:${col}"></div></div>
-      <div class="type-count">${count}</div>
-      <div class="type-pct">${pct}%</div>
-    </div>`;
+    const col=COLOURS[i%COLOURS.length],pct=Math.round(count/jobs.length*100),barW=Math.round(count/max*100);
+    return `<div class="type-dot-row"><div class="type-color-dot" style="background:${col}"></div><div class="type-name" title="${esc(type)}">${esc(type)}</div><div class="type-mini-bar"><div class="type-mini-fill" style="width:${barW}%;background:${col}"></div></div><div class="type-count">${count}</div><div class="type-pct">${pct}%</div></div>`;
   }).join('');
 }
 
-/* Engineer bar chart */
+// Jobs per engineer — label as "I. Surname"
 function renderEngBars(jobs){
   const wrap=document.getElementById('engBarsWrap');
   if(!jobs.length){ wrap.innerHTML='<div class="empty-state">No jobs in this period.</div>'; return; }
@@ -738,36 +615,27 @@ function renderEngBars(jobs){
   jobs.forEach(j=>{ const e=j.engineerName||'Unassigned'; counts[e]=(counts[e]||0)+1; });
   const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
   const max=sorted[0][1];
-  wrap.innerHTML=sorted.map(([eng,count],i)=>
-    `<div class="bar-row">
-      <div class="bar-label" title="${esc(eng)}">${esc(eng.split(' ')[0])}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(count/max*100)}%;background:${COLOURS[i%COLOURS.length]}"></div></div>
-      <div class="bar-val" style="color:${COLOURS[i%COLOURS.length]}">${count}</div>
-    </div>`).join('');
+  wrap.innerHTML=sorted.map(([eng,count],i)=>{
+    const displayName=fmtEngName(eng); // "I. Surname"
+    return `<div class="bar-row"><div class="bar-label" title="${esc(eng)}">${esc(displayName)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(count/max*100)}%;background:${COLOURS[i%COLOURS.length]}"></div></div><div class="bar-val" style="color:${COLOURS[i%COLOURS.length]}">${count}</div></div>`;
+  }).join('');
 }
 
-/* Travel times per engineer */
+// Travel times — 3-column grid, sorted LONGEST to SHORTEST
 function renderTravelTimes(jobs){
   const wrap=document.getElementById('travelTimesWrap');
   const travelMap=computeTravelStats(jobs);
   const engs=Object.keys(travelMap).filter(e=>travelMap[e].length>0);
-  if(!engs.length){ wrap.innerHTML='<div class="empty-state">Not enough data to calculate travel times.<br>Jobs need postcodes & scheduled times.</div>'; return; }
+  if(!engs.length){ wrap.innerHTML='<div class="empty-state">Not enough data to calculate travel times.<br>Jobs need postcodes &amp; scheduled times.</div>'; return; }
   const rows=engs.map(eng=>{
     const mins=travelMap[eng];
     const avg=Math.round(mins.reduce((a,b)=>a+b,0)/mins.length);
     const cls=avg<=20?'ok':avg<=40?'warn':'bad';
-    const init=eng.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2);
-    return {eng,avg,cls,init};
-  }).sort((a,b)=>a.avg-b.avg);
-
-  wrap.innerHTML=rows.map(r=>`
-    <div class="tt-row">
-      <div class="tt-eng"><div class="tt-avatar">${esc(r.init)}</div><div class="tt-name">${esc(r.eng)}</div></div>
-      <span class="tt-pill ${r.cls}">${r.avg} min</span>
-    </div>`).join('');
+    return {eng,avg,cls,init:engInitials(eng)};
+  }).sort((a,b)=>b.avg-a.avg); // longest first
+  wrap.innerHTML=`<div class="tt-grid">${rows.map(r=>`<div class="tt-card"><div class="tt-eng"><div class="tt-avatar">${esc(r.init)}</div><div class="tt-name" title="${esc(r.eng)}">${esc(fmtEngName(r.eng))}</div></div><span class="tt-pill ${r.cls}">${r.avg}m</span></div>`).join('')}</div>`;
 }
 
-/* Engineer summary table */
 function renderEngTable(jobs){
   const wrap=document.getElementById('engTableWrap');
   if(!jobs.length){ wrap.innerHTML='<div class="empty-state">No jobs in this period.</div>'; return; }
@@ -776,42 +644,24 @@ function renderEngTable(jobs){
     const e=j.engineerName||'Unassigned';
     if(!engs[e]) engs[e]={total:0,complete:0,'en-route':0,'in-progress':0,abort:0,unassigned:0,durTotal:0};
     const s=normaliseStatus(j.jobStatus||j.status);
-    engs[e].total++;
-    engs[e][s]=(engs[e][s]||0)+1;
-    engs[e].durTotal+=getDuration(j.jobType);
+    engs[e].total++; engs[e][s]=(engs[e][s]||0)+1; engs[e].durTotal+=getDuration(j.jobType);
   });
   const travelMap=computeTravelStats(jobs);
-
   const sorted=Object.entries(engs).sort((a,b)=>b[1].total-a[1].total);
-  const thead=`<tr>
-    <th>Engineer</th><th>Total</th><th>Complete</th><th>Progress</th><th>Aborted</th><th>Avg Dur</th><th>Avg Travel</th>
-  </tr>`;
+  const thead=`<tr><th>Engineer</th><th>Total</th><th>Complete</th><th>Progress</th><th>Aborted</th><th>Avg Dur</th><th>Avg Travel</th></tr>`;
   const tbody=sorted.map(([eng,d])=>{
-    const init=eng.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2);
+    const init=engInitials(eng);
     const avgDur=(d.durTotal/d.total).toFixed(1)+'h';
     const tMins=travelMap[eng]||[];
     const avgTravel=tMins.length?Math.round(tMins.reduce((a,b)=>a+b,0)/tMins.length)+'m':'—';
-    const compRate=d.total?Math.round(d.complete/d.total*100):0;
-    const rateColor=compRate>=80?'var(--accent-green)':compRate>=50?'var(--warning)':'var(--danger)';
-    return `<tr>
-      <td><div class="eng-name-cell"><div class="eng-av-sm">${esc(init)}</div><span>${esc(eng)}</span></div></td>
-      <td style="font-weight:700">${d.total}</td>
-      <td style="color:var(--accent-green)">${d.complete}</td>
-      <td style="color:var(--warning)">${d['in-progress']}</td>
-      <td style="color:var(--danger)">${d.abort}</td>
-      <td style="color:var(--text-muted)">${avgDur}</td>
-      <td style="color:var(--accent-blue)">${avgTravel}</td>
-    </tr>`;
+    return `<tr><td><div class="eng-name-cell"><div class="eng-av-sm">${esc(init)}</div><span>${esc(eng)}</span></div></td><td style="font-weight:700">${d.total}</td><td style="color:var(--accent-green)">${d.complete}</td><td style="color:var(--warning)">${d['in-progress']}</td><td style="color:var(--danger)">${d.abort}</td><td style="color:var(--text-muted)">${avgDur}</td><td style="color:var(--accent-blue)">${avgTravel}</td></tr>`;
   }).join('');
-
   wrap.innerHTML=`<table class="eng-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
 }
 
-/* Sparkline — daily job volume covering a window */
 function renderSparkline(){
-  const [start, end]=getDateRange();
-  // build a date array — for day view show last 14 days, for week show 8 weeks, for month show 12 months
-  let dates=[], labels=[];
+  const [start,end]=getDateRange();
+  let dates=[],labels=[];
   if(currentView==='day'){
     for(let i=13;i>=0;i--){ const d=new Date(end); d.setDate(end.getDate()-i); dates.push(d); }
     labels=dates.map(d=>d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}));
@@ -825,74 +675,35 @@ function renderSparkline(){
     labels=dates.map(d=>d.toLocaleDateString('en-GB',{month:'short',year:'2-digit'}));
     document.getElementById('sparkSub').textContent='Monthly job volume — last 12 months';
   }
-
-  // count jobs per bucket
   const counts=dates.map(d=>{
-    if(currentView==='day') return allJobs.filter(j=>{const jd=parseDate(j.dateOfJob);return jd&&sameDay(jd,d);}).length;
-    if(currentView==='week'){
-      const wEnd=new Date(d); wEnd.setDate(d.getDate()+6);
-      return allJobs.filter(j=>{const jd=parseDate(j.dateOfJob);return jd&&jd>=d&&jd<=wEnd;}).length;
-    }
-    return allJobs.filter(j=>{const jd=parseDate(j.dateOfJob);return jd&&jd.getFullYear()===d.getFullYear()&&jd.getMonth()===d.getMonth();}).length;
+    if(currentView==='day') return allJobs.filter(j=>{ const jd=parseDate(j.dateOfJob); return jd&&sameDay(jd,d); }).length;
+    if(currentView==='week'){ const wEnd=new Date(d); wEnd.setDate(d.getDate()+6); return allJobs.filter(j=>{ const jd=parseDate(j.dateOfJob); return jd&&jd>=d&&jd<=wEnd; }).length; }
+    return allJobs.filter(j=>{ const jd=parseDate(j.dateOfJob); return jd&&jd.getFullYear()===d.getFullYear()&&jd.getMonth()===d.getMonth(); }).length;
   });
-
-  const svg=document.getElementById('sparkSvg');
-  const labWrap=document.getElementById('sparkLabels');
-  const W=800, H=80, PAD=8;
-  const max=Math.max(...counts,1);
-  const n=counts.length;
-
+  const svg=document.getElementById('sparkSvg'),labWrap=document.getElementById('sparkLabels');
+  const W=800,H=80,PAD=8,max=Math.max(...counts,1),n=counts.length;
   if(n<2){svg.innerHTML='';return;}
-
   const xs=counts.map((_,i)=>PAD+i*(W-PAD*2)/(n-1));
   const ys=counts.map(c=>H-PAD-(c/max)*(H-PAD*2));
-
   const path='M'+xs.map((x,i)=>`${x},${ys[i]}`).join(' L');
   const area='M'+xs[0]+','+H+' L'+xs.map((x,i)=>`${x},${ys[i]}`).join(' L')+' L'+xs[xs.length-1]+','+H+' Z';
-
   const isLight=document.documentElement.classList.contains('light-mode');
   const green=isLight?'#00b86e':'#00ff9d';
-  const blue =isLight?'#0099cc':'#00c8ff';
-
-  svg.innerHTML=`
-    <defs>
-      <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="${green}" stop-opacity="0.3"/>
-        <stop offset="100%" stop-color="${green}" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
-    <path d="${area}" fill="url(#sparkGrad)"/>
-    <path d="${path}" fill="none" stroke="${green}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-    ${xs.map((x,i)=>`<circle cx="${x}" cy="${ys[i]}" r="3" fill="${green}" opacity="${sameDay(dates[i],currentDate)?'1':'0.5'}"/>
-      <text x="${x}" y="${ys[i]-8}" text-anchor="middle" font-size="9" fill="${counts[i]>0?green:'var(--text-muted)'}" font-family="JetBrains Mono,monospace" font-weight="600">${counts[i]||''}</text>`).join('')}`;
-
-  // labels — show every 2nd or 3rd to avoid crowding
+  svg.innerHTML=`<defs><linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${green}" stop-opacity="0.3"/><stop offset="100%" stop-color="${green}" stop-opacity="0"/></linearGradient></defs><path d="${area}" fill="url(#sparkGrad)"/><path d="${path}" fill="none" stroke="${green}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>${xs.map((x,i)=>`<circle cx="${x}" cy="${ys[i]}" r="3" fill="${green}" opacity="${sameDay(dates[i],currentDate)?'1':'0.5'}"/><text x="${x}" y="${ys[i]-8}" text-anchor="middle" font-size="9" fill="${counts[i]>0?green:'var(--text-muted)'}" font-family="JetBrains Mono,monospace" font-weight="600">${counts[i]||''}</text>`).join('')}`;
   const step=n<=7?1:n<=14?2:3;
-  labWrap.innerHTML=dates.filter((_,i)=>i%step===0||i===n-1).map(d=>{
-    const idx=dates.indexOf(d);
-    return `<span>${labels[idx]}</span>`;
-  }).join('');
+  labWrap.innerHTML=dates.filter((_,i)=>i%step===0||i===n-1).map(d=>`<span>${labels[dates.indexOf(d)]}</span>`).join('');
 }
 
-/* ─── Utilities ─────────────────────────────────────────────── */
 function set(id,val){ const el=document.getElementById(id);if(el)el.textContent=val; }
-
 function setStatus(st,msg){ const dot=document.getElementById('sdot'),txt=document.getElementById('stxt'); dot.className='sdot'+(st==='spin'?' spin':st==='ok'?' ok':' err'); txt.textContent=msg; }
 function setLive(state,text){ const el=document.getElementById('live-indicator'),txt=document.getElementById('live-text'); el.className=state==='live'?'':state==='connecting'?'connecting':'error'; txt.textContent=text; }
-
 let toastTimer;
-function toast(msg,type='success'){
-  const t=document.getElementById('toast');
-  const ico=type==='success'?'✓':type==='info'?'ℹ':'✕';
-  t.className=`${type} show`; t.textContent=ico+' '+msg;
-  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3800);
-}
+function toast(msg,type='success'){ const t=document.getElementById('toast'),ico=type==='success'?'✓':type==='info'?'ℹ':'✕'; t.className=`${type} show`; t.textContent=ico+' '+msg; clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3800); }
 
-/* ─── Date picker + navigation ──────────────────────────────── */
 function syncPicker(){ document.getElementById('datePicker').value=toInputDateStr(currentDate); }
 function navigate(dir){
-  if(currentView==='day')  currentDate.setDate(currentDate.getDate()+dir);
-  else if(currentView==='week')  currentDate.setDate(currentDate.getDate()+dir*7);
+  if(currentView==='day') currentDate.setDate(currentDate.getDate()+dir);
+  else if(currentView==='week') currentDate.setDate(currentDate.getDate()+dir*7);
   else currentDate.setMonth(currentDate.getMonth()+dir);
   syncPicker(); render();
 }
@@ -906,33 +717,25 @@ function setView(v){
 document.getElementById('prevBtn').onclick=()=>navigate(-1);
 document.getElementById('nextBtn').onclick=()=>navigate(1);
 document.getElementById('btnToday').onclick=()=>{ currentDate=today0(); syncPicker(); render(); };
-document.getElementById('btnDay').onclick  =()=>setView('day');
-document.getElementById('btnWeek').onclick =()=>setView('week');
+document.getElementById('btnDay').onclick=()=>setView('day');
+document.getElementById('btnWeek').onclick=()=>setView('week');
 document.getElementById('btnMonth').onclick=()=>setView('month');
-document.getElementById('datePicker').onchange=e=>{
-  const[y,mo,d]=e.target.value.split('-').map(Number);
-  currentDate=new Date(y,mo-1,d); currentDate.setHours(0,0,0,0); render();
-};
+document.getElementById('datePicker').onchange=e=>{ const[y,mo,d]=e.target.value.split('-').map(Number); currentDate=new Date(y,mo-1,d); currentDate.setHours(0,0,0,0); render(); };
 
-/* ─── Sidebar ───────────────────────────────────────────────── */
 const sidebar=document.getElementById('sidebar');
 document.getElementById('sidebarToggle').onclick=toggleSidebar;
 document.getElementById('logoCollapsed').onclick=toggleSidebar;
 function toggleSidebar(){ sidebar.classList.toggle('expanded'); localStorage.setItem('geko-sidebar',sidebar.classList.contains('expanded')?'expanded':'collapsed'); }
 if(localStorage.getItem('geko-sidebar')==='expanded') sidebar.classList.add('expanded');
 
-/* ─── Firebase listener ─────────────────────────────────────── */
 syncPicker();
-setLive('connecting','Connecting…');
+setLive('connecting','Connecting...');
 
 onSnapshot(collection(db,'uploaded_jobs'),{includeMetadataChanges:false}, async snapshot=>{
   allJobs=[];
   snapshot.forEach(d=>allJobs.push({_id:d.id,...d.data()}));
-
-  // geocode all postcodes in the background
   const pcs=[...new Set(allJobs.map(j=>j.postcode).filter(Boolean))];
   await geocodePostcodes(pcs);
-
   setLive('live',`Live · ${allJobs.length} jobs`);
   setStatus('ok',`${allJobs.length} jobs loaded · ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`);
   render();
