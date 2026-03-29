@@ -1847,7 +1847,7 @@ function renderRows(cols,dayEnd){
 
       const sortedScheduled=[...scheduled].sort((a,b)=>getStartHour(a)-getStartHour(b));
       sortedScheduled.forEach(job=>{
-        const card=makeCardDay(job,(getStartHour(job)-DAY_START)*HOUR_W,getDuration(job.jobType)*HOUR_W-4,false);
+        const card=makeCardDay(job,(getStartHour(job)-DAY_START)*HOUR_W,getDuration(job.jobType,job.engineerName)*HOUR_W-4,false);
         if(absence){card.classList.add('needs-realloc');const badge=document.createElement('div');badge.className='conflict-warning-badge';badge.textContent='⚠ Reassign';card.appendChild(badge);}
         row.appendChild(card);
       });
@@ -2158,7 +2158,7 @@ function openModal(job,updateTracker=true){
   if(updateTracker)openModalJobId=job._id;
   if(nearbyActive&&job.postcode){nearbySelectedJob=job;applyNearbyFilter();}
   document.getElementById('jobDrawer').classList.add('open');
- const sh=getStartHour(job),dur=getDuration
+ const sh=getStartHour(job),dur=getDuration(job.jobType,job.engineerName);
   const curStatus=normaliseStatus(job.jobStatus||job.status);const meta=getStatusMeta(curStatus);
   const attachCount=Array.isArray(job.attachments)?job.attachments.length:0;
 
