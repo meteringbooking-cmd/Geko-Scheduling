@@ -1437,10 +1437,31 @@ const DRAG_THRESHOLD = 5;
 const IMAGE_EXTS = new Set(['jpg','jpeg','png','gif','webp','heic','bmp','svg']);
 const AVG_SPEED_KMH = 53.1;
 
-const JOB_DURATIONS = {"dual fuel":2,"single gas":1.5,"single elec":1.5,"comms":0.5};
-function getDuration(t){const k=(t||"").toLowerCase();for(const[key,v]of Object.entries(JOB_DURATIONS))if(k.includes(key))return v;return 1;}
+const JOB_DURATIONS_FALLBACK = {"dual fuel":2,"single gas":1.5,"single elec":1.5,"comms":0.5};
+let jobTypeParams = new Map(); // "level|||jobtype" → durationHours
+let engLevels = new Map();     // engineerName.toLowerCase() → level
+
+function getDuration(jobType, engineerName) {
+  const t = (jobType || "").toLowerCase().trim();
+  const eng = (engineerName || "").toLowerCase().trim();
+  const level = engLevels.get(eng) || "";
+  if (level) {
+    const key = level.toLowerCase() + "|||" + t;
+    if (jobTypeParams.has(key)) return jobTypeParams.get(key);
+    // fuzzy match: check if any stored jobType key is contained in t or vice versa
+    for (const [k, v] of jobTypeParams) {
+      const [kLevel, kType] = k.split("|||");
+      if (kLevel === level.toLowerCase() && (t.includes(kType) || kType.includes(t))) return v;
+    }
+  }
+  // fallback to hardcoded
+  for (const [key, v] of Object.entries(JOB_DURATIONS_FALLBACK)) {
+    if (t.includes(key)) return v;
+  }
+  return 1;
+}
 function getStartHour(job){const v=job.startHour;if(v===null||v===undefined||v==="")return null;const n=+v;return isNaN(n)?null:n;}
-function calcDayEnd(jobs){let end=DAY_END_MIN;jobs.forEach(j=>{const sh=getStartHour(j);if(sh===null)return;const fin=sh+getDuration(j.jobType);if(fin>end)end=Math.ceil(fin)+0.5;});return end;}
+function calcDayEnd(jobs){let end=DAY_END_MIN;jobs.forEach(j=>{const sh=getStartHour(j);if(sh===null)return;const fin=sh+getDuration(j.jobType,j.engineerName);if(fin>end)end=Math.ceil(fin)+0.5;});return end;}
 
 const COLOURS=["#00c896","#0084ff","#f59e0b","#ff4d6a","#a855f7","#06b6d4","#f97316","#10b981"];
 function cardColour(t){const h=[...(t||"x")].reduce((a,c)=>a+c.charCodeAt(0),0);return COLOURS[h%COLOURS.length];}
@@ -1923,13 +1944,13 @@ function renderDriveTimeBadgesForRow(row, sortedJobs, engName, dayEnd){
   for(let i = 0; i < sortedJobs.length - 1; i++){
     const jobA = sortedJobs[i];
     const jobB = sortedJobs[i + 1];
-    const endA   = getStartHour(jobA) + getDuration(jobA.jobType);
+    const endA   = getStartHour(jobA) + getDuration(jobA.jobType, jobA.engineerName);
     const startB = getStartHour(jobB);
     const gapMins = Math.round((startB - endA) * 60);
     if(gapMins < 1) continue;
     const driveMins = driveMinutes(jobA.postcode, jobB.postcode);
     const leftA  = (getStartHour(jobA) - DAY_START) * HOUR_W;
-    const widthA = getDuration(jobA.jobType) * HOUR_W - 4;
+    const widthA = getDuration(jobA.jobType, jobA.engineerName) * HOUR_W - 4;
     const leftB  = (startB - DAY_START) * HOUR_W;
     const midX   = (leftA + widthA + 4 + leftB) / 2;
     let pillCls = 'dt-loading';
@@ -1982,7 +2003,7 @@ function makeAttachBadge(job){
 }
 
 function makeCardDay(job,left,width,isStaged){
-  const col=cardColour(job.jobType);const sh=getStartHour(job),dur=getDuration(job.jobType);
+  const col=cardColour(job.jobType);const sh=getStartHour(job),dur=getDuration(job.jobType,job.engineerName);
   const card=document.createElement("div");card.className="job-card-day";
   card.dataset.jobId=job.jobId||job._id;card.dataset.jobDocId=job._id;card.dataset.jobType=job.jobType||"";
   if(!isStaged){card.style.cssText=`position:absolute;left:${left}px;width:${width}px;border-top-color:${col}`;}
@@ -2137,7 +2158,7 @@ function openModal(job,updateTracker=true){
   if(updateTracker)openModalJobId=job._id;
   if(nearbyActive&&job.postcode){nearbySelectedJob=job;applyNearbyFilter();}
   document.getElementById('jobDrawer').classList.add('open');
-  const sh=getStartHour(job),dur=getDuration(job.jobType);
+ const sh=getStartHour(job),dur=getDuration
   const curStatus=normaliseStatus(job.jobStatus||job.status);const meta=getStatusMeta(curStatus);
   const attachCount=Array.isArray(job.attachments)?job.attachments.length:0;
 
@@ -2236,16 +2257,30 @@ if(localStorage.getItem("geko-sidebar")==="expanded")sidebar.classList.add("expa
 /* ─── User postcodes + isochrone limits ─────────────────────── */
 async function loadEngPostcodes(){
   try{
-    const snap=await getDocs(collection(db,'userdatabase'));
-    snap.forEach(d=>{
-      const data=d.data();if(!data.name)return;
+    const [userSnap, paramSnap] = await Promise.all([
+      getDocs(collection(db,'userdatabase')),
+      getDocs(collection(db,'job_type_parameters'))
+    ]);
+
+    userSnap.forEach(d=>{
+      const data=d.data(); if(!data.name) return;
       const key=data.name.trim().toLowerCase();
-      if(data.postcode)engPostcodes.set(key,data.postcode.trim());
-      engIsoMinutes.set(key,data.isochroneMinutes||0);
+      if(data.postcode) engPostcodes.set(key, data.postcode.trim());
+      engIsoMinutes.set(key, data.isochroneMinutes||0);
+      if(data.level) engLevels.set(key, data.level.trim());
     });
+
+    jobTypeParams.clear();
+    paramSnap.forEach(d=>{
+      const data=d.data();
+      if(!data.level || !data.jobType || !data.durationMinutes) return;
+      const key = data.level.toLowerCase().trim() + "|||" + data.jobType.toLowerCase().trim();
+      jobTypeParams.set(key, data.durationMinutes / 60);
+    });
+
     await geocodePostcodes([...engPostcodes.values()]);
-    render();renderIsoPanel();
-  }catch(e){console.warn('Could not load user postcodes:',e);}
+    render(); renderIsoPanel();
+  }catch(e){ console.warn('Could not load user postcodes:', e); }
 }
 
 /* ─── Isochrone panel ───────────────────────────────────────── */
