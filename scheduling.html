@@ -798,7 +798,8 @@
     overflow: hidden;
   }
   html.light-mode .job-card-day:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.12); border-color: rgba(0,184,110,0.4); }
-  .job-card-day.is-dragging { opacity: 0.2; cursor: grabbing; }
+  /* pointer-events:none lets mouse events reach the slots UNDER a dragged card */
+  .job-card-day.is-dragging { opacity: 0.15; cursor: grabbing; pointer-events: none; }
   .job-card-day.staging-card {
     position: relative; top:auto; bottom:auto; left:auto !important; width:auto !important;
     margin-bottom: 4px; border-color: rgba(255,200,0,0.35); border-top-color: #ffc800;
@@ -1659,8 +1660,8 @@ function startRealTimeListener(){
           toast(`${allJobs.length} job${allJobs.length!==1?'s':''} loaded`);
           render();
           document.getElementById('loading-overlay').classList.add('hidden');
-          // Auto-route unscheduled jobs after postcodes + eng data have loaded
-          setTimeout(() => autoRouteUnscheduledJobs(true), 1800);
+          // Auto-assign engineers then route time slots after data + eng data have loaded
+          setTimeout(async () => { await autoAssignJobs(true); await autoRouteUnscheduledJobs(true); }, 1800);
           return;
         }
         let changedCount=0;const updatedIds=[];const newPostcodes=[];
@@ -2102,20 +2103,23 @@ function renderDriveTimeBadgesForRow(row, sortedJobs, engName, dayEnd){
     }
   }
 
-  if(sortedJobs.length > 0){
+  if(sortedJobs.length > 0 && homePc){
     const firstJob = sortedJobs[0];
+    // Always check the iso violation even if there's no space to render the pill
+    const driveMinsHome = driveMinutes(homePc, firstJob.postcode);
+    if(driveMinsHome !== null && isoMins > 0 && driveMinsHome > isoMins){
+      flagCard(firstJob, `⚠ ${driveMinsHome}m from home > ${isoMins}m limit`);
+    }
     const leftFirst = (getStartHour(firstJob) - DAY_START) * HOUR_W;
-    if(leftFirst > 30 && homePc){
+    if(leftFirst > 30){
       const midX = leftFirst / 2;
-      const driveMins = driveMinutes(homePc, firstJob.postcode);
-      let pillCls = 'dt-loading';
-      let pillHtml = `${SVG_HOME} …`;
+      const driveMins = driveMinsHome;
+      let pillCls = driveMins === null ? 'dt-loading' : 'dt-ok';
+      let pillHtml = driveMins === null ? `${SVG_HOME} …` : `${SVG_HOME} ${driveMins}m`;
       let violation = false;
       if(driveMins !== null){
         violation = isoMins > 0 && driveMins > isoMins;
         pillCls = violation ? 'dt-danger' : (isoMins > 0 && driveMins > isoMins * 0.75) ? 'dt-warn' : 'dt-ok';
-        pillHtml = `${SVG_HOME} ${driveMins}m`;
-        if(violation) flagCard(firstJob, `⚠ ${driveMins}m from home > ${isoMins}m limit`);
       }
       const badge = document.createElement('div');
       badge.className = 'home-badge';
@@ -2399,7 +2403,10 @@ document.getElementById("btnDay").onclick=()=>setView("day");
 document.getElementById("btnWeek").onclick=()=>setView("week");
 document.getElementById("datePicker").onchange=e=>{const[y,mo,d]=e.target.value.split("-").map(Number);currentDate=new Date(y,mo-1,d);currentDate.setHours(0,0,0,0);render();};
 document.getElementById("modalClose").onclick=closeModal;
-document.getElementById('btnAutoRoute').addEventListener('click', () => autoRouteUnscheduledJobs(false));
+document.getElementById('btnAutoRoute').addEventListener('click', async () => {
+  await autoAssignJobs(false);
+  await autoRouteUnscheduledJobs(false);
+});
 
 document.getElementById('nearbyTrack').addEventListener('click',()=>{
   nearbyActive=!nearbyActive;
@@ -2460,6 +2467,7 @@ async function loadEngPostcodes(){
       if(data.postcode) engPostcodes.set(key, data.postcode.trim());
       engIsoMinutes.set(key, data.isochroneMinutes||0);
       if(data.level) engLevels.set(key, data.level.trim());
+      engRealNames.set(key, data.name.trim()); // proper-cased name for auto-assign
     });
 
     jobTypeParams.clear();
