@@ -930,24 +930,20 @@ function renderGrid() {
         });
     });
 
-    // Field toggle
-    grid.querySelectorAll(".field-row").forEach(row => {
-        row.addEventListener("click", () => {
-            const field = row.dataset.field;
-            mapping[field] = !mapping[field];
-            updateFieldRow(row, field);
-            refreshCategoryCount(row.closest(".cat-card").dataset.catId);
-            updateCounts();
-        });
+    // Field toggles — driven by checkbox change only
+    CATEGORIES.forEach(cat => {
+        const container = document.getElementById(`fields-${cat.id}`);
+        if (container) attachFieldListeners(container, cat.id);
     });
 }
 
 function buildFieldRow(field) {
     const on = !!mapping[field];
     const displayName = field.replace(/_/g, " ");
+    // No onclick on the row — all toggling is driven by the checkbox change event
     return `
         <div class="field-row${on ? " active" : ""}" data-field="${field}">
-            <label class="toggle-switch" onclick="event.stopPropagation()">
+            <label class="toggle-switch">
                 <input type="checkbox" ${on ? "checked" : ""} data-field="${field}">
                 <span class="toggle-track"></span>
             </label>
@@ -964,6 +960,20 @@ function updateFieldRow(row, field) {
     if (cb) cb.checked = on;
 }
 
+// Attach checkbox change listeners to all field rows in a container
+function attachFieldListeners(container, catId) {
+    container.querySelectorAll("input[type=checkbox]").forEach(cb => {
+        cb.addEventListener("change", e => {
+            const field = e.target.dataset.field;
+            mapping[field] = e.target.checked;
+            const row = e.target.closest(".field-row");
+            if (row) row.classList.toggle("active", e.target.checked);
+            refreshCategoryCount(catId);
+            updateCounts();
+        });
+    });
+}
+
 function refreshCategory(catId) {
     const cat = CATEGORIES.find(c => c.id === catId);
     const container = document.getElementById(`fields-${catId}`);
@@ -971,16 +981,8 @@ function refreshCategory(catId) {
 
     container.innerHTML = cat.fields.map(f => buildFieldRow(f)).join("");
 
-    // Re-attach click listeners for this category
-    container.querySelectorAll(".field-row").forEach(row => {
-        row.addEventListener("click", () => {
-            const field = row.dataset.field;
-            mapping[field] = !mapping[field];
-            updateFieldRow(row, field);
-            refreshCategoryCount(catId);
-            updateCounts();
-        });
-    });
+    // Re-attach checkbox listeners for this category
+    attachFieldListeners(container, catId);
 
     refreshCategoryCount(catId);
 }
