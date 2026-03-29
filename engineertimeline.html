@@ -61,104 +61,115 @@ html.light-mode body::before {
     radial-gradient(ellipse 80% 50% at 20% 0%, rgba(0,184,110,0.04) 0%, transparent 60%),
     radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,153,204,0.04) 0%, transparent 60%);
 }
-
-html.light-mode .topbar {
-  border-bottom-color: rgba(0,0,0,0.08);
-  background: var(--topbar-bg);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-}
-
-html.light-mode .login-box {
-  box-shadow: 0 24px 60px rgba(0,0,0,0.12);
-}
-
-html.light-mode .dnb {
-  border-color: rgba(0,0,0,0.12);
-  background: #ffffff;
-  color: var(--text-muted);
-}
+html.light-mode .topbar { border-bottom-color: rgba(0,0,0,0.08); background: var(--topbar-bg); box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+html.light-mode .login-box { box-shadow: 0 24px 60px rgba(0,0,0,0.12); }
+html.light-mode .dnb { border-color: rgba(0,0,0,0.12); background: #ffffff; color: var(--text-muted); }
 html.light-mode .dnb:hover { border-color: rgba(0,0,0,0.2); color: var(--text); }
-
-html.light-mode .today-btn {
-  border-color: rgba(0,184,110,0.35);
-  background: rgba(0,184,110,0.08);
-}
-
+html.light-mode .today-btn { border-color: rgba(0,184,110,0.35); background: rgba(0,184,110,0.08); }
 html.light-mode .view-btn { color: var(--text-muted); }
 html.light-mode .view-btn.active { background: rgba(0,184,110,0.12); color: var(--accent); }
 html.light-mode .view-toggle { background: #ffffff; border-color: rgba(0,0,0,0.1); }
-
 html.light-mode .stat-pill { background: #ffffff; border-color: rgba(0,0,0,0.08); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-
 html.light-mode .tl-job-card { background: #ffffff; border-color: rgba(0,0,0,0.08); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 html.light-mode .tl-job-card.status-complete { background: rgba(0,184,110,0.04); }
 html.light-mode .tl-job-card.status-en-route { background: rgba(0,153,204,0.04); }
 html.light-mode .tl-job-card.status-in-progress { background: rgba(185,123,10,0.04); }
 html.light-mode .tl-job-card.status-abort { background: rgba(217,53,69,0.04); }
-
 html.light-mode .timeline-hour-row { border-top-color: rgba(0,0,0,0.06); }
 html.light-mode .timeline-gutter-label { color: rgba(107,127,150,0.6); }
-
 html.light-mode .job-card { background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 html.light-mode .job-card.status-complete    { background: rgba(0,184,110,0.03); }
 html.light-mode .job-card.status-en-route    { background: rgba(0,153,204,0.04); }
 html.light-mode .job-card.status-in-progress { background: rgba(185,123,10,0.04); }
 html.light-mode .job-card.status-abort       { background: rgba(217,53,69,0.04); }
-
 html.light-mode .modal-sheet { background: #ffffff; border-color: rgba(0,0,0,0.12); }
 html.light-mode .modal-overlay { background: var(--overlay-bg); }
-
 html.light-mode .status-option { background: #f8fafc; border-color: rgba(0,0,0,0.1); }
 html.light-mode .status-option.opt-enroute.selected    { border-color: var(--accent2); background: rgba(0,153,204,0.07); }
 html.light-mode .status-option.opt-inprogress.selected { border-color: var(--warning); background: rgba(185,123,10,0.07); }
 html.light-mode .status-option.opt-complete.selected   { border-color: var(--accent); background: rgba(0,184,110,0.07); }
 html.light-mode .status-option.opt-abort.selected      { border-color: var(--danger); background: rgba(217,53,69,0.07); }
-
 html.light-mode .modal-submit-btn { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
 html.light-mode .modal-cancel-btn { border-color: rgba(0,0,0,0.12); color: var(--text-muted); }
 html.light-mode .modal-cancel-btn:hover { border-color: rgba(0,0,0,0.2); color: var(--text); }
-
 html.light-mode .navigate-section { border-color: rgba(0,153,204,0.2); background: rgba(0,153,204,0.04); }
 html.light-mode .abort-input { background: #f8fafc; border-color: rgba(217,53,69,0.3); }
-
 html.light-mode .doc-upload-zone { border-color: rgba(0,153,204,0.2); background: rgba(0,153,204,0.02); }
-html.light-mode .doc-queue-item,
-html.light-mode .doc-progress-item,
-html.light-mode .doc-list-item { background: #f8fafc; border-color: rgba(0,0,0,0.08); }
+html.light-mode .doc-queue-item, html.light-mode .doc-progress-item, html.light-mode .doc-list-item { background: #f8fafc; border-color: rgba(0,0,0,0.08); }
 html.light-mode .doc-list-item:hover { border-color: rgba(0,153,204,0.3); }
 html.light-mode .doc-upload-btn { background: rgba(0,153,204,0.07); border-color: rgba(0,153,204,0.25); color: var(--accent2); }
-
 html.light-mode .note-textarea { background: #f8fafc; border-color: rgba(0,153,204,0.2); color: var(--text); }
 html.light-mode .note-textarea:focus { border-color: var(--accent2); }
 html.light-mode .note-textarea::placeholder { color: var(--text-dim); }
-
 html.light-mode .existing-note-box { background: rgba(0,153,204,0.04); border-color: rgba(0,153,204,0.18); }
-
 html.light-mode #toast.ok  { background: rgba(240,255,248,0.99); border-color: rgba(0,184,110,0.4); color: #007a4a; }
 html.light-mode #toast.err { background: rgba(255,240,242,0.99); border-color: rgba(217,53,69,0.4); color: #b02030; }
-
 html.light-mode .status-badge.complete    { background: rgba(0,184,110,0.1); border-color: rgba(0,184,110,0.3); color: #007a4a; }
 html.light-mode .status-badge.en-route    { background: rgba(0,153,204,0.1); border-color: rgba(0,153,204,0.3); color: #0077aa; }
 html.light-mode .status-badge.in-progress { background: rgba(185,123,10,0.1); border-color: rgba(185,123,10,0.3); color: #8a5a00; }
 html.light-mode .status-badge.abort       { background: rgba(217,53,69,0.1); border-color: rgba(217,53,69,0.3); color: #b02030; }
 html.light-mode .status-badge.unassigned  { background: rgba(107,127,150,0.08); border-color: rgba(107,127,150,0.15); color: #6b7f96; }
-
 html.light-mode .week-day-col { background: #ffffff; border-color: rgba(0,0,0,0.08); }
 html.light-mode .week-day-header { background: #f8fafc; border-bottom-color: rgba(0,0,0,0.07); }
 html.light-mode .week-day-name { color: var(--text-muted); }
 html.light-mode .week-job-card { background: #f8fafc; border-color: rgba(0,0,0,0.07); }
 html.light-mode .week-job-card:hover { box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
-
 html.light-mode .job-id { background: rgba(0,184,110,0.08); border-color: rgba(0,184,110,0.2); color: #007a4a; }
 html.light-mode .tl-id { color: #007a4a; }
-
 html.light-mode .unscheduled-label { color: #8a5a00; }
-
 html.light-mode .modal-info-grid { background: #f8fafc; border-color: rgba(0,0,0,0.08); }
 html.light-mode .modal-section-label { color: var(--text-muted); }
 html.light-mode .modal-drag-handle { background: rgba(0,0,0,0.15); }
-
 html.light-mode ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
+
+/* ── Drive-time badges (matching scheduling.html) ── */
+.dt-badge {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  gap: 2px;
+}
+.dt-pill {
+  display: flex; align-items: center; gap: 3px;
+  padding: 2px 7px; border-radius: 20px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.03em;
+  white-space: nowrap; border: 1px solid; line-height: 1.5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.55);
+}
+.dt-pill.dt-ok     { background: rgba(0,255,157,0.12);  border-color: rgba(0,255,157,0.4);  color: #00ff9d; }
+.dt-pill.dt-warn   { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4); color: #f59e0b; }
+.dt-pill.dt-danger { background: rgba(255,75,92,0.18);  border-color: rgba(255,75,92,0.6);  color: #ff4b5c; }
+.dt-pill.dt-loading { background: rgba(107,138,170,0.08); border-color: rgba(107,138,170,0.2); color: rgba(107,138,170,0.5); }
+html.light-mode .dt-pill.dt-ok     { background: rgba(0,184,110,0.1);  border-color: rgba(0,184,110,0.4);  color: #007a4a; }
+html.light-mode .dt-pill.dt-warn   { background: rgba(185,123,10,0.1); border-color: rgba(185,123,10,0.4); color: #8a5a00; }
+html.light-mode .dt-pill.dt-danger { background: rgba(217,53,69,0.12); border-color: rgba(217,53,69,0.5);  color: #b02030; }
+.dt-connector {
+  width: 1px; height: 8px;
+  background: rgba(255,255,255,0.13);
+}
+.dt-connector.danger { background: rgba(255,75,92,0.5); }
+html.light-mode .dt-connector { background: rgba(0,0,0,0.12); }
+html.light-mode .dt-connector.danger { background: rgba(217,53,69,0.5); }
+/* conflict highlight on TL cards */
+.tl-job-card.iso-violation {
+  animation: isoFlash 1.8s ease-in-out infinite !important;
+}
+@keyframes isoFlash {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,75,92,0); border-color: rgba(255,75,92,0.7); }
+  50%      { box-shadow: 0 0 14px 4px rgba(255,75,92,0.5); border-color: rgba(255,75,92,0.9); }
+}
+.iso-badge {
+  position: absolute; top: -7px; left: 6px;
+  background: var(--danger); color: #fff;
+  font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 3px;
+  text-transform: uppercase; letter-spacing: 0.3px; pointer-events: none; z-index: 21;
+  white-space: nowrap; box-shadow: 0 2px 6px rgba(255,75,92,0.5);
+}
 
 /* ── Theme toggle ── */
 #themeToggle {
@@ -174,7 +185,6 @@ html.light-mode ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
 #themeToggle:hover { border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.09); color: var(--text); }
 html.light-mode #themeToggle { border-color: rgba(0,0,0,0.12); background: rgba(0,0,0,0.04); color: var(--text-muted); }
 html.light-mode #themeToggle:hover { border-color: rgba(0,0,0,0.2); background: rgba(0,0,0,0.07); color: var(--text); }
-
 .theme-toggle-track {
   width: 30px; height: 16px; border-radius: 8px;
   background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18);
@@ -191,7 +201,6 @@ html.light-mode .theme-toggle-track { background: rgba(0,0,0,0.1); border-color:
 html.light-mode .theme-toggle-thumb { transform: translateX(14px); background: var(--accent2); }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 html, body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg);
@@ -201,7 +210,6 @@ html, body {
   -webkit-tap-highlight-color: transparent;
   transition: background 0.3s, color 0.3s;
 }
-
 body::before {
   content: "";
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
@@ -319,10 +327,9 @@ html.light-mode .timeline-hour-row::after { border-top-color: rgba(0,0,0,0.03); 
   border-left: 5px solid var(--accent);
   background: var(--surface); box-shadow: var(--card-shadow);
   padding: 0 12px;
-  overflow: hidden; cursor: pointer;
+  overflow: visible; cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background 0.3s;
   z-index: 2;
-  /* Always flex-row for single-line layout */
   display: flex; flex-direction: row; align-items: center; gap: 8px;
 }
 .tl-job-card:active { transform: scale(0.99); }
@@ -332,14 +339,11 @@ html.light-mode .timeline-hour-row::after { border-top-color: rgba(0,0,0,0.03); 
 }
 .tl-job-card::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(135deg, rgba(0,255,157,0.03) 0%, transparent 60%); }
 html.light-mode .tl-job-card::before { background: linear-gradient(135deg, rgba(0,184,110,0.02) 0%, transparent 60%); }
-
 .tl-job-card.status-complete    { border-left-color: var(--accent);   background: rgba(0,255,157,0.04); }
 .tl-job-card.status-en-route    { border-left-color: var(--accent2);  background: rgba(0,200,255,0.04); }
 .tl-job-card.status-in-progress { border-left-color: var(--warning);  background: rgba(245,158,11,0.04); }
 .tl-job-card.status-abort       { border-left-color: var(--danger);   background: rgba(255,75,92,0.04); }
 .tl-job-card.status-unassigned  { border-left-color: var(--text-dim); }
-
-/* Single-line card content — always on one row, clipped */
 .tl-card-inner {
   display: flex; align-items: center; gap: 8px;
   min-width: 0; flex: 1; overflow: hidden;
@@ -351,8 +355,6 @@ html.light-mode .tl-job-card::before { background: linear-gradient(135deg, rgba(
 .tl-postcode { font-size: 11px; font-weight: 600; color: var(--text); white-space: nowrap; flex-shrink: 0; }
 .tl-id { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent); white-space: nowrap; flex-shrink: 0; }
 .tl-note-icon { font-size: 11px; flex-shrink: 0; opacity: 0.8; }
-
-/* Status pill on card — only shown when there's room */
 .tl-status-pill {
   flex-shrink: 0; display: inline-flex; align-items: center;
   padding: 2px 8px; border-radius: 100px;
@@ -364,7 +366,7 @@ html.light-mode .tl-job-card::before { background: linear-gradient(135deg, rgba(
 .unscheduled-label { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--warning); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
 .unscheduled-label::after { content: ''; flex: 1; height: 1px; background: rgba(245,158,11,0.2); }
 
-/* ── JOB CARD (list view) ── */
+/* ── JOB CARD (list / unscheduled) ── */
 .job-card {
   background: var(--surface); border: 1px solid var(--border);
   border-left: 5px solid var(--accent);
@@ -490,8 +492,6 @@ html.light-mode .nav-btn-copy { background: rgba(0,0,0,0.04); border-color: rgba
 /* ── NOTES SECTION ── */
 .notes-section { margin-top: 18px; }
 .notes-section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.notes-section-icon { font-size: 14px; }
-.notes-section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); font-weight: 600; }
 .existing-note-box {
   background: var(--note-bg); border: 1px solid var(--note-border);
   border-radius: 10px; padding: 12px 14px; margin-bottom: 10px;
@@ -521,7 +521,6 @@ html.light-mode .nav-btn-copy { background: rgba(0,0,0,0.04); border-color: rgba
 .modal-submit-btn:active { transform: scale(0.99); }
 .modal-cancel-btn { height: 52px; padding: 0 22px; border-radius: 12px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); font-size: 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
 .modal-cancel-btn:hover { border-color: var(--border2); color: var(--text); }
-
 .modal-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; transition: background 0.3s, border-color 0.3s; }
 .modal-info-item { display: flex; flex-direction: column; gap: 3px; }
 .modal-info-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); }
@@ -631,7 +630,6 @@ html.light-mode .nav-btn-copy { background: rgba(0,0,0,0.04); border-color: rgba
     </div>
 
     <div class="topbar-right">
-      <!-- Theme toggle -->
       <button id="themeToggle" title="Toggle light / dark mode">
         <span id="themeIcon" style="font-size:12px">☀️</span>
         <div class="theme-toggle-track">
@@ -708,19 +706,17 @@ html.light-mode .nav-btn-copy { background: rgba(0,0,0,0.04); border-color: rgba
       </div>
     </div>
 
-    <!-- ── NOTES SECTION ── -->
+    <!-- NOTES -->
     <div class="notes-section">
       <div class="notes-section-header">
         <div class="modal-section-label" style="margin:0">📝 Job Notes</div>
       </div>
-      <!-- Existing notes display -->
       <div id="existingNotesContainer"></div>
-      <!-- New note input -->
       <textarea class="note-textarea" id="noteInput" placeholder="Add a note… (e.g. customer called ahead, no access, meter in unusual location)"></textarea>
       <div class="note-hint">Notes are saved alongside your status update and visible to the office team.</div>
     </div>
 
-    <!-- ── DOCUMENTS SECTION ── -->
+    <!-- DOCUMENTS -->
     <div class="doc-upload-section">
       <div class="modal-section-label">Documents</div>
       <div id="docListContainer">
@@ -761,7 +757,7 @@ html.light-mode .nav-btn-copy { background: rgba(0,0,0,0.04); border-color: rgba
 </div>
 
 <script>
-/* ── Theme toggle (runs before module) ── */
+/* ── Theme toggle ── */
 (function(){
   const saved = localStorage.getItem('geko-theme');
   if(saved === 'light') document.documentElement.classList.add('light-mode');
@@ -816,9 +812,82 @@ let activeJobAddress = '';
 let activeJobPostcode = '';
 let docQueue = [];
 
+/* ── Job type params (from Firestore, matching scheduling.html) ── */
+let jobTypeParams = new Map(); // "level|||jobtype" → durationHours
+let engLevels = new Map();     // engineerName.toLowerCase() → level
+let engPostcodes = new Map();  // engineerName.toLowerCase() → postcode
+let engIsoMinutes = new Map(); // engineerName.toLowerCase() → isochroneMinutes
+
+/* ── Hardcoded fallback durations ── */
+const JOB_DURATIONS_FALLBACK = {"dual fuel":2,"single gas":1.5,"single elec":1.5,"comms":0.5};
+
+function getDuration(jobType, engineerName) {
+  const t   = (jobType || '').toLowerCase().trim();
+  const eng = (engineerName || '').toLowerCase().trim();
+  const level = engLevels.get(eng) || '';
+  if (level) {
+    const key = level.toLowerCase() + '|||' + t;
+    if (jobTypeParams.has(key)) return jobTypeParams.get(key);
+    // fuzzy match
+    for (const [k, v] of jobTypeParams) {
+      const [kLevel, kType] = k.split('|||');
+      if (kLevel === level.toLowerCase() && (t.includes(kType) || kType.includes(t))) return v;
+    }
+  }
+  // fallback
+  for (const [key, v] of Object.entries(JOB_DURATIONS_FALLBACK)) {
+    if (t.includes(key)) return v;
+  }
+  return 1;
+}
+
+/* ── Postcode geocode cache & haversine (matching scheduling.html) ── */
+const postcodeCache = new Map();
+const AVG_SPEED_KMH = 53.1;
+
+function normalisePostcode(pc){ return (pc||'').trim().toUpperCase().replace(/\s+/g,''); }
+
+async function geocodePostcodes(postcodes){
+  const toFetch = [...new Set(postcodes.map(normalisePostcode))].filter(pc=>pc&&!postcodeCache.has(pc));
+  if(!toFetch.length) return;
+  const CHUNK = 100;
+  for(let i=0; i<toFetch.length; i+=CHUNK){
+    const chunk = toFetch.slice(i,i+CHUNK);
+    try{
+      const res = await fetch('https://api.postcodes.io/postcodes',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({postcodes: chunk})
+      });
+      if(!res.ok) throw new Error('postcodes.io '+res.status);
+      const json = await res.json();
+      (json.result||[]).forEach(r=>{
+        const key = normalisePostcode(r.query);
+        postcodeCache.set(key, r.result ? {lat:r.result.latitude, lon:r.result.longitude} : null);
+      });
+    } catch(e){
+      console.warn('Postcode geocode failed:',e);
+      chunk.forEach(pc=>postcodeCache.set(pc,null));
+    }
+  }
+}
+
+function haversineKm(lat1,lon1,lat2,lon2){
+  const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function driveMinutes(pc1,pc2){
+  const a = postcodeCache.get(normalisePostcode(pc1));
+  const b = postcodeCache.get(normalisePostcode(pc2));
+  if(!a||!b) return null;
+  const km = haversineKm(a.lat,a.lon,b.lat,b.lon);
+  return Math.max(1, Math.round((km*1.4/AVG_SPEED_KMH)*60));
+}
+
 /* ── Helpers ── */
 function today0() { const d = new Date(); d.setHours(0,0,0,0); return d; }
-function sameDay(a,b) { return a && b && a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+function sameDay(a,b) { return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
 function esc(s) { return String(s||'—').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function fmtTime(h) { const hh=Math.floor(h),mm=Math.round((h-hh)*60); return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`; }
 
@@ -831,28 +900,17 @@ function parseDate(s) {
   const d=new Date(s); if(!isNaN(d)){d.setHours(0,0,0,0);return d;} return null;
 }
 
-function getJobField(job, ...keys) {
-  for(const k of keys) { if(job[k]!==undefined && job[k]!=='') return job[k]; }
-  return '';
-}
-
-function getEngineerName(job) { return getJobField(job,'engineerName','Engineer','Assigned_To') || ''; }
-function getCustomerName(job) { return getJobField(job,'customerName','Full_Name','First_Name') || ''; }
-function getPostcode(job)     { return getJobField(job,'postcode','Postcode') || ''; }
-function getJobType(job)      { return getJobField(job,'jobType','Job_Type','Service_Type') || ''; }
-function getJobDate(job)      { return getJobField(job,'dateOfJob','Date','Appointment_Date') || ''; }
-function getJobStatus(job)    { return (getJobField(job,'jobStatus','status','Status') || 'unassigned').toLowerCase().replace(/\s+/g,'-'); }
-function getStartHour(job)    { const v=job.startHour; if(v===null||v===undefined||v==='')return null; const n=+v; return isNaN(n)?null:n; }
-function getAddress(job)      { return getJobField(job,'address','Address_Line1') || ''; }
-function getPhone(job)        { return getJobField(job,'contactNumber','Phone','Mobile') || ''; }
-function getNotes(job)        { return Array.isArray(job.notes) ? job.notes : []; }
-
-const JOB_DURATIONS = {"dual fuel":2,"single gas":1.5,"single elec":1.5,"comms":0.5};
-function getDuration(t) {
-  const k=(t||'').toLowerCase();
-  for(const[key,v] of Object.entries(JOB_DURATIONS)) if(k.includes(key)) return v;
-  return 1;
-}
+function getJobField(job,...keys){ for(const k of keys){if(job[k]!==undefined&&job[k]!=='')return job[k];} return ''; }
+function getEngineerName(job){ return getJobField(job,'engineerName','Engineer','Assigned_To')||''; }
+function getCustomerName(job){ return getJobField(job,'customerName','Full_Name','First_Name')||''; }
+function getPostcode(job)    { return getJobField(job,'postcode','Postcode')||''; }
+function getJobType(job)     { return getJobField(job,'jobType','Job_Type','Service_Type')||''; }
+function getJobDate(job)     { return getJobField(job,'dateOfJob','Date','Appointment_Date')||''; }
+function getJobStatus(job)   { return (getJobField(job,'jobStatus','status','Status')||'unassigned').toLowerCase().replace(/\s+/g,'-'); }
+function getStartHour(job)   { const v=job.startHour; if(v===null||v===undefined||v==='')return null; const n=+v; return isNaN(n)?null:n; }
+function getAddress(job)     { return getJobField(job,'address','Address_Line1')||''; }
+function getPhone(job)       { return getJobField(job,'contactNumber','Phone','Mobile')||''; }
+function getNotes(job)       { return Array.isArray(job.notes)?job.notes:[]; }
 
 function statusClass(s) {
   s=(s||'').toLowerCase();
@@ -881,20 +939,17 @@ function toast(msg, type='ok') {
 
 function fmtTimestamp(iso){
   if(!iso) return '';
-  try {
-    const d=new Date(iso);
-    return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})
-      +' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-  } catch { return ''; }
+  try{const d=new Date(iso);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
+  catch{return '';}
 }
 
-/* ── Notes helpers ── */
+/* ── Notes ── */
 function renderExistingNotes(job){
-  const notes = getNotes(job);
-  const container = document.getElementById('existingNotesContainer');
+  const notes=getNotes(job);
+  const container=document.getElementById('existingNotesContainer');
   if(!container) return;
-  if(!notes.length){ container.innerHTML=''; return; }
-  container.innerHTML = notes.slice().reverse().map(n=>`
+  if(!notes.length){container.innerHTML='';return;}
+  container.innerHTML=notes.slice().reverse().map(n=>`
     <div class="existing-note-box">
       ${esc(n.text||'')}
       <div class="existing-note-meta">
@@ -907,7 +962,7 @@ function renderExistingNotes(job){
 }
 
 /* ── Doc helpers ── */
-function fileIcon(name) {
+function fileIcon(name){
   const ext=(name||'').split('.').pop().toLowerCase();
   const icons={pdf:'📄',doc:'📝',docx:'📝',xls:'📊',xlsx:'📊',jpg:'🖼️',jpeg:'🖼️',png:'🖼️',gif:'🖼️',webp:'🖼️',heic:'🖼️',mp4:'🎥',mov:'🎥',txt:'📃',csv:'📊'};
   return icons[ext]||'📎';
@@ -922,7 +977,7 @@ function jobStoragePath(jobDocId){return `job_documents/${jobDocId}`;}
 async function loadJobDocs(jobDocId){
   const docListEl=document.getElementById('docList');
   const docEmptyEl=document.getElementById('docListEmpty');
-  if(!docListEl||!docEmptyEl)return;
+  if(!docListEl||!docEmptyEl) return;
   docListEl.innerHTML='<div class="doc-empty" style="color:var(--text-dim)">Loading documents…</div>';
   docEmptyEl.style.display='none';
   try{
@@ -951,11 +1006,11 @@ async function loadJobDocs(jobDocId){
 
 window.handleFileSelect=function(event){
   const files=Array.from(event.target.files||[]);
-  if(!files.length)return;
+  if(!files.length) return;
   const MAX_SIZE=50*1024*1024;
   files.forEach(file=>{
     if(file.size>MAX_SIZE){toast(`${file.name} exceeds 50 MB limit`,'err');return;}
-    if(docQueue.some(f=>f.name===file.name&&f.size===file.size))return;
+    if(docQueue.some(f=>f.name===file.name&&f.size===file.size)) return;
     docQueue.push(file);
   });
   event.target.value='';
@@ -965,7 +1020,7 @@ window.handleFileSelect=function(event){
 function renderDocQueue(){
   const qEl=document.getElementById('docQueue');
   const btnEl=document.getElementById('docUploadBtn');
-  if(!qEl||!btnEl)return;
+  if(!qEl||!btnEl) return;
   if(!docQueue.length){qEl.innerHTML='';btnEl.style.display='none';return;}
   qEl.innerHTML=docQueue.map((file,idx)=>`
     <div class="doc-queue-item">
@@ -986,11 +1041,10 @@ function renderDocQueue(){
     </svg>
     Upload ${docQueue.length} file${docQueue.length!==1?'s':''}`;
 }
-
 window.removeFromQueue=function(idx){docQueue.splice(idx,1);renderDocQueue();};
 
 window.uploadQueuedFiles=async function(){
-  if(!activeJobId||!docQueue.length)return;
+  if(!activeJobId||!docQueue.length) return;
   const uploadBtn=document.getElementById('docUploadBtn');
   const progressList=document.getElementById('docProgressList');
   const queueEl=document.getElementById('docQueue');
@@ -1059,7 +1113,7 @@ document.getElementById('docUploadZone').addEventListener('drop',e=>{
   const MAX_SIZE=50*1024*1024;
   files.forEach(file=>{
     if(file.size>MAX_SIZE){toast(`${file.name} exceeds 50 MB limit`,'err');return;}
-    if(docQueue.some(f=>f.name===file.name&&f.size===file.size))return;
+    if(docQueue.some(f=>f.name===file.name&&f.size===file.size)) return;
     docQueue.push(file);
   });
   renderDocQueue();
@@ -1126,16 +1180,51 @@ function startApp(){
   syncDatePicker();loadAndRender();
 }
 
-/* ── Data load ── */
+/* ── Data load – includes job_type_parameters + userdatabase ── */
 async function loadAndRender(){
   try{
-    const snap=await getDocs(collection(db,'uploaded_jobs'));
-    allJobs=[];snap.forEach(d=>allJobs.push({_id:d.id,...d.data()}));
+    // Load all three collections in parallel
+    const [jobSnap, paramSnap, userSnap] = await Promise.all([
+      getDocs(collection(db,'uploaded_jobs')),
+      getDocs(collection(db,'job_type_parameters')),
+      getDocs(collection(db,'userdatabase'))
+    ]);
+
+    allJobs=[];
+    jobSnap.forEach(d=>allJobs.push({_id:d.id,...d.data()}));
+
+    // Build jobTypeParams map (same logic as scheduling.html)
+    jobTypeParams.clear();
+    paramSnap.forEach(d=>{
+      const data=d.data();
+      if(!data.level||!data.jobType||!data.durationMinutes) return;
+      const key=data.level.toLowerCase().trim()+'|||'+data.jobType.toLowerCase().trim();
+      jobTypeParams.set(key, data.durationMinutes/60);
+    });
+
+    // Build engLevels, engPostcodes, engIsoMinutes maps
+    engLevels.clear(); engPostcodes.clear(); engIsoMinutes.clear();
+    userSnap.forEach(d=>{
+      const data=d.data();
+      if(!data.name) return;
+      const key=data.name.trim().toLowerCase();
+      if(data.level)    engLevels.set(key, data.level.trim());
+      if(data.postcode) engPostcodes.set(key, data.postcode.trim());
+      engIsoMinutes.set(key, data.isochroneMinutes||0);
+    });
+
+    // Geocode all postcodes upfront
+    const allPcs = [
+      ...allJobs.map(j=>getPostcode(j)),
+      ...[...engPostcodes.values()]
+    ].filter(Boolean);
+    await geocodePostcodes(allPcs);
+
     render();
   }catch(e){toast('Failed to load jobs: '+(e.code||e.message),'err');render();}
 }
 
-/* ── Filter jobs ── */
+/* ── Filter my jobs ── */
 function getMyJobs(){
   const name=(currentUser.name||currentUser.displayName||'').toLowerCase().trim();
   return allJobs.filter(j=>{
@@ -1148,7 +1237,7 @@ function getMyJobs(){
 /* ── Render ── */
 function render(){
   document.getElementById('loadingOverlay').classList.add('hidden');
-  if(currentView==='day')renderDay();else renderWeek();
+  if(currentView==='day') renderDay(); else renderWeek();
   updateDateLabel();
 }
 
@@ -1167,10 +1256,102 @@ function updateDateLabel(){
   }
 }
 
+/* ── Drive-time badge renderer (mirrors scheduling.html logic) ── */
+function renderDriveTimeBadges(gridEl, sortedJobs, HOUR_PX, engName){
+  // Remove any existing badges
+  gridEl.querySelectorAll('.dt-badge').forEach(b=>b.remove());
+  gridEl.querySelectorAll('.tl-job-card').forEach(c=>{
+    c.classList.remove('iso-violation');
+    c.querySelector('.iso-badge')?.remove();
+  });
+
+  const engKey   = (engName||'').trim().toLowerCase();
+  const homePc   = engPostcodes.get(engKey)||'';
+  const isoMins  = engIsoMinutes.get(engKey)||0;
+
+  const SVG_CAR  = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/><path d="M5 12h14"/></svg>`;
+  const SVG_HOME = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
+
+  function flagCard(job, labelText){
+    const cardEl = gridEl.querySelector(`[data-job-doc-id="${job._id}"]`);
+    if(!cardEl) return;
+    cardEl.classList.add('iso-violation');
+    if(!cardEl.querySelector('.iso-badge')){
+      const b=document.createElement('div');
+      b.className='iso-badge';
+      b.textContent=labelText;
+      cardEl.style.overflow='visible';
+      cardEl.appendChild(b);
+    }
+  }
+
+  function makeBadge(leftPx, driveMins, gapMins, svgIcon, isHomePill){
+    const violation = (driveMins !== null) && (isHomePill ? (isoMins>0 && driveMins>isoMins) : driveMins>gapMins);
+    const pillCls = driveMins===null ? 'dt-loading'
+      : violation ? 'dt-danger'
+      : (!isHomePill && driveMins > gapMins*0.75) ? 'dt-warn'
+      : (isHomePill && isoMins>0 && driveMins > isoMins*0.75) ? 'dt-warn'
+      : 'dt-ok';
+    const pillText = driveMins===null ? '…' : `${driveMins}m`;
+    const connCls = violation ? 'dt-connector danger' : 'dt-connector';
+
+    const badge = document.createElement('div');
+    badge.className = 'dt-badge';
+    badge.style.left = leftPx + 'px';
+    badge.innerHTML = `
+      <div class="${connCls}"></div>
+      <div class="dt-pill ${pillCls}">${svgIcon} ${pillText}</div>
+      <div class="${connCls}"></div>`;
+    gridEl.appendChild(badge);
+    return violation;
+  }
+
+  // Home → first job
+  if(sortedJobs.length>0 && homePc){
+    const firstJob = sortedJobs[0];
+    const sh = getStartHour(firstJob);
+    const leftFirst = (sh - DAY_START) * HOUR_PX;
+    if(leftFirst > 40){
+      const midX = leftFirst / 2;
+      const driveMins = driveMinutes(homePc, getPostcode(firstJob));
+      const violation = makeBadge(midX, driveMins, null, SVG_HOME, true);
+      if(violation && driveMins!==null) flagCard(firstJob, `⚠ ${driveMins}m from home > ${isoMins}m limit`);
+    }
+  }
+
+  // Between consecutive jobs
+  for(let i=0; i<sortedJobs.length-1; i++){
+    const jobA = sortedJobs[i];
+    const jobB = sortedJobs[i+1];
+    const shA  = getStartHour(jobA);
+    const durA = getDuration(getJobType(jobA), getEngineerName(jobA));
+    const endA = shA + durA;
+    const shB  = getStartHour(jobB);
+    const gapMins = Math.round((shB - endA) * 60);
+    if(gapMins < 1) continue;
+
+    const leftA = (shA - DAY_START) * HOUR_PX;
+    const widthA = durA * HOUR_PX - 4;
+    const leftB = (shB - DAY_START) * HOUR_PX;
+    const midX = (leftA + widthA + 4 + leftB) / 2;
+
+    const driveMins = driveMinutes(getPostcode(jobA), getPostcode(jobB));
+    const violation = makeBadge(midX, driveMins, gapMins, SVG_CAR, false);
+    if(violation && driveMins!==null){
+      flagCard(jobA, `⚠ ${driveMins}m drive / ${gapMins}m gap`);
+      flagCard(jobB, `⚠ ${driveMins}m drive / ${gapMins}m gap`);
+    }
+  }
+}
+
+/* ── Day view ── */
 function renderDay(){
   const HOUR_PX=100;
   const myJobs=getMyJobs().filter(j=>{const d=parseDate(getJobDate(j));return d&&sameDay(d,currentDate);});
-  myJobs.sort((a,b)=>{const sa=getStartHour(a),sb=getStartHour(b);if(sa===null&&sb===null)return 0;if(sa===null)return 1;if(sb===null)return -1;return sa-sb;});
+  myJobs.sort((a,b)=>{
+    const sa=getStartHour(a),sb=getStartHour(b);
+    if(sa===null&&sb===null)return 0;if(sa===null)return 1;if(sb===null)return -1;return sa-sb;
+  });
 
   const total=myJobs.length;
   const done=myJobs.filter(j=>getJobStatus(j)==='complete').length;
@@ -1192,8 +1373,12 @@ function renderDay(){
   const scheduled=myJobs.filter(j=>getStartHour(j)!==null);
   const unscheduled=myJobs.filter(j=>getStartHour(j)===null);
 
+  // Compute day end using smart getDuration
   let dayEnd=DAY_END_DEFAULT;
-  scheduled.forEach(j=>{const fin=getStartHour(j)+getDuration(getJobType(j));if(fin>dayEnd)dayEnd=fin;});
+  scheduled.forEach(j=>{
+    const fin=getStartHour(j)+getDuration(getJobType(j),getEngineerName(j));
+    if(fin>dayEnd)dayEnd=fin;
+  });
   dayEnd=Math.ceil(dayEnd)+0.5;
 
   const totalHours=dayEnd-DAY_START;
@@ -1213,7 +1398,7 @@ function renderDay(){
   let gutterHtml='',rowsHtml='';
   for(let h=DAY_START;h<=Math.ceil(dayEnd);h++){
     const top=Math.round((h-DAY_START)*HOUR_PX);
-    if(top>gridHeight)break;
+    if(top>gridHeight) break;
     gutterHtml+=`<div class="timeline-gutter-label" style="top:${top}px">${String(h).padStart(2,'0')}:00</div>`;
     rowsHtml+=`<div class="timeline-hour-row" style="top:${top}px;height:${HOUR_PX}px"></div>`;
   }
@@ -1221,9 +1406,8 @@ function renderDay(){
   let cardsHtml='';
   scheduled.forEach(job=>{
     const sh=getStartHour(job);
-    const dur=getDuration(getJobType(job));
+    const dur=getDuration(getJobType(job),getEngineerName(job)); // ← smart duration
     const top=Math.round((sh-DAY_START)*HOUR_PX);
-    // Minimum height 36px; always single-line (height is just for visual bar, text is one row)
     const height=Math.max(Math.round(dur*HOUR_PX)-6,36);
     const status=getJobStatus(job);
     const sc=statusClass(status);
@@ -1232,7 +1416,6 @@ function renderDay(){
     const hasAttachments=Array.isArray(job.attachments)&&job.attachments.length>0;
     const hasNotes=getNotes(job).length>0;
 
-    // Status pill colours inline
     const statusColours={
       'complete':'background:rgba(0,255,157,0.12);border-color:rgba(0,255,157,0.3);color:var(--accent)',
       'en-route':'background:rgba(0,200,255,0.12);border-color:rgba(0,200,255,0.3);color:var(--accent2)',
@@ -1242,7 +1425,8 @@ function renderDay(){
     const pillStyle=statusColours[sc]||'background:rgba(107,137,170,0.08);border-color:rgba(107,137,170,0.15);color:var(--text-muted)';
 
     cardsHtml+=`<div class="tl-job-card status-${sc}"
-        style="top:${top}px;height:${height}px"
+        style="top:${top}px;height:${height}px;overflow:visible"
+        data-job-doc-id="${job._id}"
         onclick="openJobModal('${job._id}')">
       <div class="tl-card-inner">
         <span class="tl-time">${timeStr}</span>
@@ -1264,7 +1448,7 @@ function renderDay(){
   html+=`<div class="timeline-scroll">
     <div class="timeline-wrap">
       <div class="timeline-gutter" style="height:${gridHeight}px">${gutterHtml}</div>
-      <div class="timeline-grid" style="height:${gridHeight}px">
+      <div class="timeline-grid" id="tlGrid" style="height:${gridHeight}px;position:relative">
         ${rowsHtml}
         ${nowLineHtml}
         ${cardsHtml}
@@ -1279,10 +1463,18 @@ function renderDay(){
   }
 
   document.getElementById('mainContent').innerHTML=html;
+
+  // Render drive-time badges after DOM is ready
+  const gridEl=document.getElementById('tlGrid');
+  if(gridEl&&scheduled.length>1){
+    const engName=(currentUser.displayName||currentUser.name||'');
+    renderDriveTimeBadges(gridEl, scheduled, HOUR_PX, engName);
+  }
 }
 
 function buildJobCardHTML(job,unscheduled=false){
-  const sh=getStartHour(job),dur=getDuration(getJobType(job));
+  const sh=getStartHour(job);
+  const dur=getDuration(getJobType(job),getEngineerName(job)); // ← smart duration
   const timeStr=sh!==null?`${fmtTime(sh)} – ${fmtTime(sh+dur)}`:'Time TBC';
   const status=getJobStatus(job),sc=statusClass(status);
   const jid=job.jobId||job._id;
@@ -1329,7 +1521,10 @@ function renderWeek(){
     const isToday=sameDay(col,todayD);
     const isWeekend=col.getDay()===0||col.getDay()===6;
     const dayJobs=myJobs.filter(j=>{const d=parseDate(getJobDate(j));return d&&sameDay(d,col);});
-    dayJobs.sort((a,b)=>{const sa=getStartHour(a),sb=getStartHour(b);if(sa===null&&sb===null)return 0;if(sa===null)return 1;if(sb===null)return -1;return sa-sb;});
+    dayJobs.sort((a,b)=>{
+      const sa=getStartHour(a),sb=getStartHour(b);
+      if(sa===null&&sb===null)return 0;if(sa===null)return 1;if(sb===null)return -1;return sa-sb;
+    });
 
     html+=`<div class="week-day-col${isToday?' is-today':''}${isWeekend?' weekend':''}">
       <div class="week-day-header">
@@ -1343,12 +1538,13 @@ function renderWeek(){
       dayJobs.forEach(job=>{
         const status=getJobStatus(job),sc=statusClass(status);
         const sh=getStartHour(job),jid=job.jobId||job._id;
+        const dur=getDuration(getJobType(job),getEngineerName(job)); // ← smart duration
         const hasNotes=getNotes(job).length>0;
         const hasAttachments=Array.isArray(job.attachments)&&job.attachments.length>0;
         html+=`<div class="week-job-card ${sc}" onclick="openJobModal('${job._id}')">
           <div class="week-job-type">${esc(getJobType(job)||'Job')}</div>
           <div class="week-job-post">${esc(getPostcode(job))}</div>
-          ${sh!==null?`<div class="week-job-time">${fmtTime(sh)}</div>`:''}
+          ${sh!==null?`<div class="week-job-time">${fmtTime(sh)} – ${fmtTime(sh+dur)}</div>`:''}
           <div style="display:flex;align-items:center;gap:6px;margin-top:2px">
             <span class="week-job-id">${esc(jid)}</span>
             ${hasNotes?`<span style="font-size:10px;color:var(--text-dim)">📝</span>`:''}
@@ -1366,7 +1562,7 @@ function renderWeek(){
 /* ── Job Modal ── */
 window.openJobModal=function(jobDocId){
   const job=allJobs.find(j=>j._id===jobDocId);
-  if(!job)return;
+  if(!job) return;
   activeJobId=jobDocId;selectedStatus=null;
   activeJobAddress=getAddress(job)||'';
   activeJobPostcode=getPostcode(job)||'';
@@ -1375,17 +1571,14 @@ window.openJobModal=function(jobDocId){
   const qEl=document.getElementById('docQueue');
   const progEl=document.getElementById('docProgressList');
   const uploadBtn=document.getElementById('docUploadBtn');
-  if(qEl)qEl.innerHTML='';
-  if(progEl)progEl.innerHTML='';
-  if(uploadBtn)uploadBtn.style.display='none';
+  if(qEl)qEl.innerHTML='';if(progEl)progEl.innerHTML='';if(uploadBtn)uploadBtn.style.display='none';
   const fileInput=document.getElementById('docFileInput');
   if(fileInput)fileInput.value='';
-
-  // Clear note textarea
   const noteInput=document.getElementById('noteInput');
   if(noteInput)noteInput.value='';
 
-  const sh=getStartHour(job),dur=getDuration(getJobType(job));
+  const sh=getStartHour(job);
+  const dur=getDuration(getJobType(job),getEngineerName(job)); // ← smart duration in modal too
   const timeStr=sh!==null?`${fmtTime(sh)} – ${fmtTime(sh+dur)}`:'Time TBC';
   const jid=job.jobId||job._id;
 
@@ -1410,7 +1603,7 @@ window.openJobModal=function(jobDocId){
   document.getElementById('navigateSection').classList.remove('show');
   document.getElementById('submitStatusBtn').disabled=false;
 
-  if(cur==='en-route')buildNavigateSection();
+  if(cur==='en-route') buildNavigateSection();
 
   renderExistingNotes(job);
   loadJobDocs(jobDocId);
@@ -1436,8 +1629,8 @@ window.selectStatus=function(el){
   selectedStatus=el.dataset.status;
   document.getElementById('submitStatusBtn').disabled=false;
   document.getElementById('abortSection').classList.toggle('show',selectedStatus==='abort');
-  if(selectedStatus!=='abort')document.getElementById('abortCode').value='';
-  if(selectedStatus==='en-route')buildNavigateSection();
+  if(selectedStatus!=='abort') document.getElementById('abortCode').value='';
+  if(selectedStatus==='en-route') buildNavigateSection();
   else document.getElementById('navigateSection').classList.remove('show');
 };
 
@@ -1454,7 +1647,6 @@ window.copyAddress=function(){
   if(navigator.clipboard?.writeText){navigator.clipboard.writeText(fullAddress).then(setCopied).catch(()=>legacyCopy(fullAddress,setCopied));}
   else legacyCopy(fullAddress,setCopied);
 };
-
 function legacyCopy(text,onSuccess){
   const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:-999px;opacity:0';
   document.body.appendChild(ta);ta.select();
@@ -1470,13 +1662,12 @@ window.closeModal=function(){
 
 /* ── Submit status + notes ── */
 window.submitStatus=async function(){
-  if(!selectedStatus&&!document.getElementById('noteInput').value.trim()&&!activeJobId)return;
+  if(!selectedStatus&&!document.getElementById('noteInput').value.trim()&&!activeJobId) return;
 
   const abortCode=selectedStatus==='abort'?document.getElementById('abortCode').value.trim():'';
   if(selectedStatus==='abort'&&!abortCode){toast('Please enter an authorisation code to abort.','err');return;}
 
   const noteText=document.getElementById('noteInput').value.trim();
-
   const btn=document.getElementById('submitStatusBtn');
   btn.disabled=true;btn.textContent='Saving…';
 
@@ -1487,7 +1678,7 @@ window.submitStatus=async function(){
     if(selectedStatus){
       const statusMap={'en-route':'en-route','in-progress':'in-progress','complete':'complete','abort':'abort'};
       const historyEntry={status:statusMap[selectedStatus],updatedBy:currentUser.displayName,updatedAt:now,source:'engineer'};
-      if(abortCode)historyEntry.note=abortCode;
+      if(abortCode) historyEntry.note=abortCode;
       updates.jobStatus=statusMap[selectedStatus];
       updates.status=statusMap[selectedStatus];
       updates.statusUpdatedAt=now;
@@ -1505,21 +1696,14 @@ window.submitStatus=async function(){
       await updateDoc(doc(db,'uploaded_jobs',activeJobId),updates);
       const j=allJobs.find(x=>x._id===activeJobId);
       if(j){
-        if(selectedStatus){
-          j.jobStatus=updates.jobStatus;j.status=updates.status;
-          j.statusUpdatedAt=now;j.statusUpdatedBy=currentUser.displayName;
-          if(!Array.isArray(j.statusHistory))j.statusHistory=[];
-        }
-        if(noteText){
-          if(!Array.isArray(j.notes))j.notes=[];
-          j.notes.push({text:noteText,addedBy:currentUser.displayName,addedAt:now});
-        }
+        if(selectedStatus){j.jobStatus=updates.jobStatus;j.status=updates.status;j.statusUpdatedAt=now;j.statusUpdatedBy=currentUser.displayName;if(!Array.isArray(j.statusHistory))j.statusHistory=[];}
+        if(noteText){if(!Array.isArray(j.notes))j.notes=[];j.notes.push({text:noteText,addedBy:currentUser.displayName,addedAt:now});}
       }
     }
 
     const msgs=[];
-    if(selectedStatus)msgs.push(`Status: ${statusLabel(selectedStatus)}`);
-    if(noteText)msgs.push('Note saved');
+    if(selectedStatus) msgs.push(`Status: ${statusLabel(selectedStatus)}`);
+    if(noteText) msgs.push('Note saved');
     toast((msgs.join(' · ')||'Saved')+' ✓','ok');
     closeModal();render();
   }catch(e){
@@ -1528,14 +1712,13 @@ window.submitStatus=async function(){
   }
 };
 
-// Allow saving note without changing status
 document.getElementById('noteInput').addEventListener('input',()=>{
   const hasNote=document.getElementById('noteInput').value.trim().length>0;
-  if(hasNote)document.getElementById('submitStatusBtn').disabled=false;
+  if(hasNote) document.getElementById('submitStatusBtn').disabled=false;
 });
 
 document.getElementById('modalOverlay').addEventListener('click',e=>{
-  if(e.target===document.getElementById('modalOverlay'))closeModal();
+  if(e.target===document.getElementById('modalOverlay')) closeModal();
 });
 
 /* ── Nav ── */
