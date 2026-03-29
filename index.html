@@ -287,39 +287,6 @@
     .legend-bar { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); }
     .legend-count { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; flex-shrink: 0; width: 28px; text-align: right; }
 
-    /* ── JOB FEED ── */
-    .feed-panel { border: 1px solid var(--border); border-radius: 16px; background: var(--card-bg); overflow: hidden; }
-    .feed-head {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 20px; border-bottom: 1px solid var(--border);
-    }
-    .feed-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--muted); }
-    .feed-count { font-size: 11px; color: var(--dim); }
-    .feed-body { max-height: 340px; overflow-y: auto; }
-    .feed-body::-webkit-scrollbar { width: 4px; }
-    .feed-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
-    .feed-item {
-      display: flex; align-items: center; gap: 14px; padding: 13px 20px;
-      border-bottom: 1px solid var(--border); transition: background 0.14s;
-    }
-    .feed-item:last-child { border-bottom: none; }
-    .feed-item:hover { background: rgba(255,255,255,0.02); }
-    .feed-status-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-    .feed-info { flex: 1; min-width: 0; }
-    .feed-job-type { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .feed-meta { font-size: 11px; color: var(--dim); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .feed-badge {
-      flex-shrink: 0; font-size: 10px; font-weight: 700;
-      padding: 3px 10px; border-radius: 10px; border: 1px solid; letter-spacing: 0.3px;
-      text-transform: capitalize;
-    }
-    .feed-badge.complete    { background: rgba(0,255,157,0.08);  border-color: rgba(0,255,157,0.2);  color: var(--accent); }
-    .feed-badge.en-route    { background: rgba(0,200,255,0.08);  border-color: rgba(0,200,255,0.2);  color: var(--accent2); }
-    .feed-badge.in-progress { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); color: var(--warning); }
-    .feed-badge.abort       { background: rgba(255,75,92,0.08);  border-color: rgba(255,75,92,0.2);  color: var(--danger); }
-    .feed-badge.unassigned  { background: rgba(107,138,170,0.08);border-color: rgba(107,138,170,0.15);color: var(--muted); }
-    .feed-empty { padding: 40px 20px; text-align: center; color: var(--dim); font-size: 13px; }
-
     footer { text-align: center; padding: 20px; border-top: 1px solid var(--border); font-size: 11px; color: var(--dim); }
   </style>
 </head>
@@ -423,9 +390,9 @@
           <div class="nav-row-body"><div class="nav-row-title">View Data</div><div class="nav-row-desc">Browse and filter all records</div></div>
           <div class="nav-row-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
-        <a href="database.html" class="nav-row blue">
-          <div class="nav-row-icon">🗄️</div>
-          <div class="nav-row-body"><div class="nav-row-title">Database</div><div class="nav-row-desc">Manage raw job records</div></div>
+        <a href="dashboard.html" class="nav-row green">
+          <div class="nav-row-icon">📊</div>
+          <div class="nav-row-body"><div class="nav-row-title">Dashboard</div><div class="nav-row-desc">Live stats and job overview</div></div>
           <div class="nav-row-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
       </div>
@@ -525,17 +492,6 @@
         </div>
       </div>
 
-      <!-- TODAY'S JOB FEED -->
-      <div class="feed-panel">
-        <div class="feed-head">
-          <div class="feed-title">Today's Jobs</div>
-          <div class="feed-count" id="feedCount">—</div>
-        </div>
-        <div class="feed-body" id="feedBody">
-          <div class="feed-empty">Connecting to live data…</div>
-        </div>
-      </div>
-
     </div><!-- /right-col -->
   </div><!-- /body -->
 
@@ -576,8 +532,6 @@
     if(s==='inprogress') return 'in-progress';
     return ['complete','en-route','in-progress','abort'].includes(s)?s:'unassigned';
   }
-  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
   function setN(id,val){
     const el=document.getElementById(id); if(!el) return;
     const v=String(val); if(el.textContent===v) return;
@@ -631,36 +585,6 @@
     }).join('');
   }
 
-  function updateFeed(todayJobs){
-    const feedEl=document.getElementById('feedBody');
-    document.getElementById('feedCount').textContent=`${todayJobs.length} job${todayJobs.length!==1?'s':''}`;
-    if(!todayJobs.length){ feedEl.innerHTML='<div class="feed-empty">No jobs scheduled for today</div>'; return; }
-    const order={'in-progress':0,'en-route':1,'unassigned':2,'complete':3,'abort':4};
-    const sorted=[...todayJobs].sort((a,b)=>{
-      const sa=order[normStatus(a.jobStatus||a.status||'')]??5;
-      const sb=order[normStatus(b.jobStatus||b.status||'')]??5;
-      return sa-sb;
-    });
-    feedEl.innerHTML=sorted.map(j=>{
-      const st=normStatus(j.jobStatus||j.status||'');
-      const col=STATUS_COLOURS[st]||'#3a5570';
-      const eng=j.engineerName||j.Engineer||'—';
-      const customer=j.customerName||j.Full_Name||'';
-      const postcode=j.postcode||j.Postcode||'';
-      const jobType=j.jobType||j.Job_Type||'Job';
-      const jobId=j.jobId||j._id||'';
-      const meta=[eng,customer,postcode].filter(Boolean).join(' · ');
-      return `<div class="feed-item">
-        <div class="feed-status-dot" style="background:${col}"></div>
-        <div class="feed-info">
-          <div class="feed-job-type">${esc(jobType)} <span style="font-size:10px;color:var(--dim);font-weight:400">#${esc(jobId)}</span></div>
-          <div class="feed-meta">${esc(meta)}</div>
-        </div>
-        <div class="feed-badge ${st}">${STATUS_LABELS[st]||st}</div>
-      </div>`;
-    }).join('');
-  }
-
   function compute(jobs){
     const t=today0(), {mon,sun}=weekBounds();
     const tj=jobs.filter(j=>{ const d=parseDate(j.dateOfJob||j.Date||j.Appointment_Date); return d&&sameDay(d,t); });
@@ -680,7 +604,6 @@
     STATUS_ORDER.forEach(s=>{ todayCounts[s]=cnt(tj,s); });
     updateDonut(todayCounts,tj.length);
     updateLegend(todayCounts,tj.length);
-    updateFeed(tj);
   }
 
   const connEl=document.getElementById('connLabel');
