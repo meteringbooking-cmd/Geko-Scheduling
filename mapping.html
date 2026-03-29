@@ -705,6 +705,10 @@
         <div class="page-header">
             <h1>Field Mapping Configuration</h1>
             <p>Toggle fields on or off. Only enabled fields will be matched when data is loaded or imported.</p>
+            <div style="margin-top:12px;display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:10px;background:rgba(0,255,157,0.05);border:1px solid rgba(0,255,157,0.18);font-size:12px;color:rgba(0,255,157,0.8);line-height:1.6">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+                <span>Each field shows the <strong>Firestore key</strong> it saves as (in italic). These match the keys <strong>scheduling.html</strong> reads — enabling a field here makes it available in the Data Upload column mapper.</span>
+            </div>
         </div>
 
         <!-- Summary + Actions -->
@@ -937,9 +941,32 @@ function renderGrid() {
     });
 }
 
+// Maps each field key to the camelCase Firestore key that scheduling.html reads
+const SCHEDULER_KEYS = {
+    ID:'jobId', Record_ID:'recordId', Customer_ID:'customerId', Job_ID:'jobId',
+    Employee_ID:'employeeId', Reference_Number:'referenceNumber',
+    Title:'title', First_Name:'firstName', Last_Name:'lastName',
+    Full_Name:'customerName', Company_Name:'companyName',
+    Address_Line1:'addressLine1', Address_Line2:'addressLine2',
+    City_Town:'cityTown', County:'county', Postcode:'postcode', Country:'country',
+    Phone:'contactNumber', Mobile:'mobile', Email:'email',
+    Alternative_Contact:'alternativeContact',
+    Date:'dateOfJob', Appointment_Date:'dateOfJob', Appointment_Time:'timeSlot',
+    Created_Date:'createdDate', Updated_Date:'updatedDate', Completed_Date:'completedDate',
+    Job_Type:'jobType', Job_Description:'jobDescription', Service_Type:'serviceType',
+    Priority:'priority', Duration:'duration', Notes:'notes',
+    Engineer:'engineerName', Assigned_To:'engineerName', Team:'team',
+    Starting_Postcode:'startingPostcode', Vehicle_ID:'vehicleId',
+    Status:'jobStatus', Progress:'progress', Stage:'stage',
+    Cancellation_Reason:'cancellationReason',
+    Price:'price', Cost:'cost', Invoice_Number:'invoiceNumber',
+    Payment_Status:'paymentStatus', Discount:'discount', VAT:'vat',
+};
+
 function buildFieldRow(field) {
     const on = !!mapping[field];
     const displayName = field.replace(/_/g, " ");
+    const schedulerKey = SCHEDULER_KEYS[field] || field.toLowerCase();
     // No onclick on the row — all toggling is driven by the checkbox change event
     return `
         <div class="field-row${on ? " active" : ""}" data-field="${field}">
@@ -947,7 +974,10 @@ function buildFieldRow(field) {
                 <input type="checkbox" ${on ? "checked" : ""} data-field="${field}">
                 <span class="toggle-track"></span>
             </label>
-            <span class="field-name">${displayName}</span>
+            <div style="flex:1;min-width:0">
+                <span class="field-name">${displayName}</span>
+                <div style="font-size:10px;color:var(--text-muted);opacity:0.6;margin-top:1px">→ <em>${schedulerKey}</em></div>
+            </div>
             <span class="field-tag">ON</span>
         </div>
     `;
