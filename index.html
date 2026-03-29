@@ -117,7 +117,6 @@
     .hero {
       padding: 52px 56px 44px;
       border-bottom: 1px solid var(--border);
-      position: relative;
       display: flex; align-items: center; justify-content: space-between; gap: 40px;
     }
     .hero-left { flex: 1; min-width: 0; }
@@ -138,33 +137,36 @@
     }
     .hero h1 {
       font-family: 'Syne', sans-serif;
-      font-size: clamp(28px, 3.2vw, 48px); font-weight: 800;
+      font-size: clamp(30px, 3.4vw, 52px); font-weight: 800;
       line-height: 1.08; letter-spacing: -0.5px; margin-bottom: 14px;
     }
     .hero h1 .grad {
       background: linear-gradient(100deg, var(--accent) 0%, var(--accent2) 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
-    .hero p { font-size: 14px; line-height: 1.7; color: var(--muted); font-weight: 300; max-width: 400px; }
+    .hero p { font-size: 15px; line-height: 1.75; color: var(--muted); font-weight: 300; max-width: 420px; }
 
-    /* Hero quick-access buttons */
     .hero-pill {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 8px; padding: 18px 22px; border-radius: 14px;
+      gap: 10px; padding: 22px 26px; border-radius: 16px;
       border: 1px solid var(--border); background: var(--card-bg);
       text-decoration: none; color: var(--muted);
-      transition: all 0.18s; min-width: 90px;
+      transition: all 0.18s; min-width: 100px;
     }
-    .hero-pill:hover { border-color: rgba(255,255,255,0.12); background: rgba(13,21,32,0.95); color: var(--text); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
-    .hero-pill-icon { font-size: 22px; }
-    .hero-pill-label { font-size: 11px; font-weight: 600; letter-spacing: 0.4px; white-space: nowrap; }
+    .hero-pill:hover {
+      border-color: rgba(255,255,255,0.14); background: rgba(13,21,32,0.95);
+      color: var(--text); transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+    }
+    .hero-pill-icon { font-size: 26px; }
+    .hero-pill-label { font-size: 12px; font-weight: 600; letter-spacing: 0.3px; white-space: nowrap; }
 
-    /* ── MAIN BODY ── */
+    /* ── BODY ── */
     .body {
       display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 28px;
-      padding: 36px 56px 52px;
+      grid-template-columns: 400px 1fr;
+      gap: 32px;
+      padding: 40px 56px 56px;
       align-items: start;
       flex: 1;
     }
@@ -175,24 +177,18 @@
       .hero-right { flex-wrap: wrap; }
     }
 
-    /* ── SECTION LABEL ── */
-    .section-label {
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 1.6px; color: var(--dim); margin-bottom: 10px;
-    }
-
     /* ══ NAV CARDS ══ */
     .nav-stack { display: flex; flex-direction: column; gap: 0; }
-    .nav-group { margin-bottom: 18px; }
+    .nav-group { margin-bottom: 22px; }
     .nav-group-label {
-      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px;
-      color: var(--dim); padding: 0 2px; margin-bottom: 6px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px;
+      color: var(--dim); padding: 0 2px; margin-bottom: 8px;
     }
     .nav-row {
-      display: flex; align-items: center; gap: 12px; padding: 11px 14px;
-      border-radius: 10px; border: 1px solid var(--border); background: var(--card-bg);
+      display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+      border-radius: 12px; border: 1px solid var(--border); background: var(--card-bg);
       text-decoration: none; color: var(--muted); transition: all 0.16s;
-      position: relative; overflow: hidden; margin-bottom: 5px;
+      position: relative; overflow: hidden; margin-bottom: 6px;
     }
     .nav-row::before {
       content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
@@ -202,57 +198,55 @@
     .nav-row.blue::before   { background: var(--accent2); }
     .nav-row.purple::before { background: var(--purple); }
     .nav-row.amber::before  { background: var(--warning); }
-    .nav-row:hover { background: rgba(13,21,32,0.95); border-color: rgba(255,255,255,0.1); color: var(--text); transform: translateX(4px); }
+    .nav-row:hover { background: rgba(13,21,32,0.95); border-color: rgba(255,255,255,0.11); color: var(--text); transform: translateX(5px); }
     .nav-row:hover::before { opacity: 1; }
-    .nav-row-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .nav-row-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
     .nav-row.green .nav-row-icon  { background: rgba(0,255,157,0.08); }
     .nav-row.blue .nav-row-icon   { background: rgba(0,200,255,0.08); }
     .nav-row.purple .nav-row-icon { background: rgba(168,85,247,0.08); }
     .nav-row.amber .nav-row-icon  { background: rgba(245,158,11,0.08); }
-    .nav-row-title { font-size: 13px; font-weight: 600; flex: 1; }
-    .nav-row-desc  { font-size: 11px; color: var(--dim); margin-top: 1px; }
+    .nav-row-body { flex: 1; min-width: 0; }
+    .nav-row-title { font-size: 14px; font-weight: 600; }
+    .nav-row-desc  { font-size: 12px; color: var(--dim); margin-top: 2px; }
     .nav-row:hover .nav-row-desc { color: var(--muted); }
     .nav-row-chevron { flex-shrink: 0; color: var(--dim); transition: transform 0.16s, color 0.16s; }
     .nav-row:hover .nav-row-chevron { transform: translateX(3px); color: var(--muted); }
 
-    /* ══ RIGHT COLUMN ══ */
-    .right-col { display: flex; flex-direction: column; gap: 20px; }
+    /* ══ RIGHT COL ══ */
+    .right-col { display: flex; flex-direction: column; gap: 22px; }
 
     /* ── STAT PANELS ── */
     .stats-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 12px;
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
     }
     .live-badge {
       display: flex; align-items: center; gap: 6px;
-      font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--dim);
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--dim);
     }
     .live-pip {
-      width: 5px; height: 5px; border-radius: 50%; background: var(--accent);
-      box-shadow: 0 0 5px rgba(0,255,157,0.8); animation: glow 2.2s ease-in-out infinite;
+      width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 6px rgba(0,255,157,0.8); animation: glow 2.2s ease-in-out infinite;
     }
     .conn-label { font-size: 11px; font-weight: 500; color: var(--dim); transition: color 0.3s; }
     .conn-label.ok  { color: var(--accent); }
     .conn-label.err { color: var(--danger); }
 
-    .stat-panels-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .stat-panels-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-    .stat-panel {
-      border: 1px solid var(--border); border-radius: 14px; background: var(--card-bg); overflow: hidden;
-    }
+    .stat-panel { border: 1px solid var(--border); border-radius: 16px; background: var(--card-bg); overflow: hidden; }
     .stat-panel-head {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 18px; border-bottom: 1px solid var(--border);
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
     }
-    .stat-panel-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.9px; color: var(--muted); }
-    .stat-panel-tag { font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 20px; }
+    .stat-panel-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--muted); }
+    .stat-panel-tag { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
     .stat-panel.today .stat-panel-tag { background: rgba(0,255,157,0.08); color: var(--accent); border: 1px solid rgba(0,255,157,0.15); }
     .stat-panel.week  .stat-panel-tag { background: rgba(0,200,255,0.08); color: var(--accent2); border: 1px solid rgba(0,200,255,0.15); }
-    .stat-panel-body { display: flex; padding: 16px 12px; flex-wrap: wrap; gap: 6px; }
-    .stat-col { flex: 1; min-width: 44px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 5px; padding: 4px 0; }
+    .stat-panel-body { display: flex; padding: 20px 14px; }
+    .stat-col { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; padding: 4px 0; }
     .stat-col + .stat-col { border-left: 1px solid var(--border); }
     .stat-n {
-      font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; line-height: 1;
+      font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; line-height: 1;
       transition: color 0.25s;
     }
     .n-white { color: var(--text); }
@@ -260,69 +254,63 @@
     .n-amber { color: var(--warning); }
     .n-blue  { color: var(--accent2); }
     .n-red   { color: var(--danger); }
-    .stat-l { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--dim); line-height: 1.3; }
+    .stat-l { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--dim); line-height: 1.3; }
     @keyframes pop { 0%{transform:scale(1.25)} 100%{transform:scale(1)} }
     .stat-n.pop { animation: pop 0.28s cubic-bezier(0.34,1.56,0.64,1) forwards; }
 
     /* ── STATUS BREAKDOWN ── */
-    .breakdown-panel {
-      border: 1px solid var(--border); border-radius: 14px; background: var(--card-bg); overflow: hidden;
-    }
+    .breakdown-panel { border: 1px solid var(--border); border-radius: 16px; background: var(--card-bg); overflow: hidden; }
     .breakdown-head {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 18px; border-bottom: 1px solid var(--border);
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
     }
-    .breakdown-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.9px; color: var(--muted); }
+    .breakdown-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--muted); }
     .breakdown-date-label { font-size: 11px; color: var(--dim); }
-    .breakdown-body { padding: 20px 20px 18px; display: flex; align-items: center; gap: 24px; }
+    .breakdown-body { padding: 24px 22px; display: flex; align-items: center; gap: 32px; }
 
-    /* Donut chart */
-    .donut-wrap { position: relative; flex-shrink: 0; width: 110px; height: 110px; }
-    .donut-svg { width: 110px; height: 110px; transform: rotate(-90deg); }
-    .donut-track { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 12; }
-    .donut-seg { fill: none; stroke-width: 12; stroke-linecap: round; transition: stroke-dasharray 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+    .donut-wrap { position: relative; flex-shrink: 0; width: 130px; height: 130px; }
+    .donut-svg { width: 130px; height: 130px; transform: rotate(-90deg); }
+    .donut-track { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 14; }
+    .donut-seg { fill: none; stroke-width: 14; stroke-linecap: round; transition: stroke-dasharray 0.6s cubic-bezier(0.34,1.56,0.64,1); }
     .donut-center {
       position: absolute; inset: 0; display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 2px;
     }
-    .donut-pct { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--accent); }
+    .donut-pct { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--accent); }
     .donut-sub { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--dim); }
 
-    /* Legend */
-    .legend { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .legend { flex: 1; display: flex; flex-direction: column; gap: 11px; min-width: 0; }
     .legend-row { display: flex; align-items: center; gap: 10px; }
-    .legend-bar-wrap { flex: 1; height: 5px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .legend-name { font-size: 12px; font-weight: 500; color: var(--muted); width: 90px; flex-shrink: 0; }
+    .legend-bar-wrap { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
     .legend-bar { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); }
-    .legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .legend-name { font-size: 11px; font-weight: 500; color: var(--muted); width: 72px; flex-shrink: 0; }
-    .legend-count { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; flex-shrink: 0; width: 26px; text-align: right; }
+    .legend-count { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; flex-shrink: 0; width: 28px; text-align: right; }
 
-    /* ── ACTIVITY FEED ── */
-    .feed-panel {
-      border: 1px solid var(--border); border-radius: 14px; background: var(--card-bg); overflow: hidden;
-    }
+    /* ── JOB FEED ── */
+    .feed-panel { border: 1px solid var(--border); border-radius: 16px; background: var(--card-bg); overflow: hidden; }
     .feed-head {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 18px; border-bottom: 1px solid var(--border);
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
     }
-    .feed-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.9px; color: var(--muted); }
+    .feed-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--muted); }
     .feed-count { font-size: 11px; color: var(--dim); }
-    .feed-body { padding: 0; max-height: 260px; overflow-y: auto; }
+    .feed-body { max-height: 340px; overflow-y: auto; }
     .feed-body::-webkit-scrollbar { width: 4px; }
     .feed-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
     .feed-item {
-      display: flex; align-items: center; gap: 12px; padding: 11px 18px;
+      display: flex; align-items: center; gap: 14px; padding: 13px 20px;
       border-bottom: 1px solid var(--border); transition: background 0.14s;
     }
     .feed-item:last-child { border-bottom: none; }
     .feed-item:hover { background: rgba(255,255,255,0.02); }
-    .feed-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .feed-status-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
     .feed-info { flex: 1; min-width: 0; }
-    .feed-job-type { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .feed-meta { font-size: 10px; color: var(--dim); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .feed-job-type { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .feed-meta { font-size: 11px; color: var(--dim); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .feed-badge {
-      flex-shrink: 0; font-size: 9px; font-weight: 700;
-      padding: 2px 8px; border-radius: 10px; border: 1px solid; letter-spacing: 0.3px;
+      flex-shrink: 0; font-size: 10px; font-weight: 700;
+      padding: 3px 10px; border-radius: 10px; border: 1px solid; letter-spacing: 0.3px;
       text-transform: capitalize;
     }
     .feed-badge.complete    { background: rgba(0,255,157,0.08);  border-color: rgba(0,255,157,0.2);  color: var(--accent); }
@@ -330,37 +318,9 @@
     .feed-badge.in-progress { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); color: var(--warning); }
     .feed-badge.abort       { background: rgba(255,75,92,0.08);  border-color: rgba(255,75,92,0.2);  color: var(--danger); }
     .feed-badge.unassigned  { background: rgba(107,138,170,0.08);border-color: rgba(107,138,170,0.15);color: var(--muted); }
-    .feed-empty { padding: 32px 18px; text-align: center; color: var(--dim); font-size: 12px; }
+    .feed-empty { padding: 40px 20px; text-align: center; color: var(--dim); font-size: 13px; }
 
-    /* ── ENGINEER GRID ── */
-    .eng-panel {
-      border: 1px solid var(--border); border-radius: 14px; background: var(--card-bg); overflow: hidden;
-    }
-    .eng-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-bottom: 1px solid var(--border); }
-    .eng-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.9px; color: var(--muted); }
-    .eng-body { padding: 16px 18px; display: flex; flex-wrap: wrap; gap: 10px; }
-    .eng-pill {
-      display: flex; align-items: center; gap: 9px;
-      padding: 9px 14px; border-radius: 10px;
-      border: 1px solid var(--border); background: rgba(255,255,255,0.02);
-      transition: all 0.15s;
-    }
-    .eng-pill:hover { border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); }
-    .eng-avatar {
-      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
-      background: linear-gradient(135deg, var(--accent2), var(--accent));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 700; color: #070a10;
-    }
-    .eng-name { font-size: 12px; font-weight: 500; color: var(--text); }
-    .eng-job-count {
-      font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
-      background: rgba(0,255,157,0.08); color: var(--accent);
-      padding: 1px 7px; border-radius: 8px; flex-shrink: 0;
-    }
-    .eng-empty { padding: 24px 18px; text-align: center; color: var(--dim); font-size: 12px; }
-
-    footer { text-align: center; padding: 18px; border-top: 1px solid var(--border); font-size: 11px; color: var(--dim); }
+    footer { text-align: center; padding: 20px; border-top: 1px solid var(--border); font-size: 11px; color: var(--dim); }
   </style>
 </head>
 <body>
@@ -431,17 +391,17 @@
         <div class="hero-pill-icon">📅</div>
         <div class="hero-pill-label">Schedule</div>
       </a>
-      <a href="dataupload.html" class="hero-pill">
-        <div class="hero-pill-icon">📤</div>
-        <div class="hero-pill-label">Upload</div>
+      <a href="userdatabase.html" class="hero-pill">
+        <div class="hero-pill-icon">👥</div>
+        <div class="hero-pill-label">Users</div>
       </a>
       <a href="viewdata.html" class="hero-pill">
         <div class="hero-pill-icon">🔍</div>
         <div class="hero-pill-label">View Data</div>
       </a>
-      <a href="engineertimeline.html" class="hero-pill">
-        <div class="hero-pill-icon">👷</div>
-        <div class="hero-pill-label">Engineer</div>
+      <a href="isochrone.html" class="hero-pill">
+        <div class="hero-pill-icon">🎯</div>
+        <div class="hero-pill-label">Isochrone</div>
       </a>
     </div>
   </section>
@@ -455,18 +415,18 @@
         <div class="nav-group-label">Data</div>
         <a href="dataupload.html" class="nav-row green">
           <div class="nav-row-icon">📤</div>
-          <div><div class="nav-row-title">Data Upload</div><div class="nav-row-desc">Import job records from Excel</div></div>
-          <div class="nav-row-chevron"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <div class="nav-row-body"><div class="nav-row-title">Data Upload</div><div class="nav-row-desc">Import job records from Excel</div></div>
+          <div class="nav-row-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
         <a href="viewdata.html" class="nav-row blue">
           <div class="nav-row-icon">🔍</div>
-          <div><div class="nav-row-title">View Data</div><div class="nav-row-desc">Browse and filter all records</div></div>
-          <div class="nav-row-chevron"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <div class="nav-row-body"><div class="nav-row-title">View Data</div><div class="nav-row-desc">Browse and filter all records</div></div>
+          <div class="nav-row-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
         <a href="database.html" class="nav-row blue">
           <div class="nav-row-icon">🗄️</div>
-          <div><div class="nav-row-title">Database</div><div class="nav-row-desc">Manage raw job records</div></div>
-          <div class="nav-row-chevron"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <div class="nav-row-body"><div class="nav-row-title">Database</div><div class="nav-row-desc">Manage raw job records</div></div>
+          <div class="nav-row-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
       </div>
 
@@ -474,23 +434,18 @@
         <div class="nav-group-label">Operations</div>
         <a href="scheduling.html" class="nav-row green">
           <div class="nav-row-icon">📅</div>
-          <div><div class="nav-row-title">Scheduling</div><div class="nav-row-desc">Drag &amp; drop engineer timeline</div></div>
-          <div class="nav-row-chevron"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-        </a>
-        <a href="engineertimeline.html" class="nav-row green">
-          <div class="nav-row-icon">👷</div>
-          <div><div class="nav-row-title">Engineer Portal</div><div class="nav-row-desc">Engineer's personal schedule</div></div>
-          <div class="nav-row-chevron"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <div class="nav-row-body"><div class="nav-row-title">Scheduling</div><div class="nav-row-desc">Drag &amp; drop engineer timeline</div></div>
+          <div class="nav-row-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
         <a href="userdatabase.html" class="nav-row purple">
           <div class="nav-row-icon">👥</div>
-          <div><div class="nav-row-title">User Database</div><div class="nav-row-desc">Manage engineers &amp; logins</div></div>
-          <div class="nav-row-chevron"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <div class="nav-row-body"><div class="nav-row-title">User Database</div><div class="nav-row-desc">Manage engineers &amp; logins</div></div>
+          <div class="nav-row-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
         <a href="absencesubmission.html" class="nav-row purple">
           <div class="nav-row-icon">📋</div>
-          <div><div class="nav-row-title">Absence</div><div class="nav-row-desc">Log and manage engineer leave</div></div>
-          <div class="nav-row-chevron"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <div class="nav-row-body"><div class="nav-row-title">Absence</div><div class="nav-row-desc">Log and manage engineer leave</div></div>
+          <div class="nav-row-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
       </div>
 
@@ -498,29 +453,27 @@
         <div class="nav-group-label">Config</div>
         <a href="mapping.html" class="nav-row amber">
           <div class="nav-row-icon">🗺️</div>
-          <div><div class="nav-row-title">Field Mapping</div><div class="nav-row-desc">Coverage areas and routes</div></div>
-          <div class="nav-row-chevron"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <div class="nav-row-body"><div class="nav-row-title">Field Mapping</div><div class="nav-row-desc">Coverage areas and routes</div></div>
+          <div class="nav-row-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
         <a href="isochrone.html" class="nav-row blue">
           <div class="nav-row-icon">🎯</div>
-          <div><div class="nav-row-title">Isochrone Settings</div><div class="nav-row-desc">Configure drive-time limits</div></div>
-          <div class="nav-row-chevron"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+          <div class="nav-row-body"><div class="nav-row-title">Isochrone Settings</div><div class="nav-row-desc">Configure drive-time limits</div></div>
+          <div class="nav-row-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         </a>
       </div>
     </div>
 
-    <!-- RIGHT: Live Stats + Charts + Feed -->
+    <!-- RIGHT: Stats + Breakdown + Feed -->
     <div class="right-col">
 
-      <!-- CONNECTION + DATE PANELS -->
+      <!-- STAT PANELS -->
       <div>
         <div class="stats-header">
           <div class="live-badge"><div class="live-pip"></div>Live Stats</div>
           <div class="conn-label" id="connLabel">Connecting…</div>
         </div>
-
         <div class="stat-panels-row">
-          <!-- TODAY -->
           <div class="stat-panel today">
             <div class="stat-panel-head">
               <div class="stat-panel-title">Today</div>
@@ -530,12 +483,9 @@
               <div class="stat-col"><div class="stat-n n-white" id="todayTotal">—</div><div class="stat-l">Total</div></div>
               <div class="stat-col"><div class="stat-n n-green" id="todayComplete">—</div><div class="stat-l">Done</div></div>
               <div class="stat-col"><div class="stat-n n-amber" id="todayInProgress">—</div><div class="stat-l">Active</div></div>
-              <div class="stat-col"><div class="stat-n n-blue" id="todayEnRoute">—</div><div class="stat-l">En Route</div></div>
               <div class="stat-col"><div class="stat-n n-red" id="todayAbort">—</div><div class="stat-l">Aborted</div></div>
             </div>
           </div>
-
-          <!-- THIS WEEK -->
           <div class="stat-panel week">
             <div class="stat-panel-head">
               <div class="stat-panel-title">This Week</div>
@@ -544,14 +494,13 @@
             <div class="stat-panel-body">
               <div class="stat-col"><div class="stat-n n-white" id="weekTotal">—</div><div class="stat-l">Total</div></div>
               <div class="stat-col"><div class="stat-n n-green" id="weekComplete">—</div><div class="stat-l">Done</div></div>
-              <div class="stat-col"><div class="stat-n n-amber" id="weekInProgress">—</div><div class="stat-l">Active</div></div>
               <div class="stat-col"><div class="stat-n n-red" id="weekAbort">—</div><div class="stat-l">Aborted</div></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- TODAY STATUS BREAKDOWN -->
+      <!-- STATUS BREAKDOWN (donut) -->
       <div class="breakdown-panel">
         <div class="breakdown-head">
           <div class="breakdown-title">Today's Status Breakdown</div>
@@ -561,21 +510,18 @@
           <div class="donut-wrap">
             <svg class="donut-svg" viewBox="0 0 110 110">
               <circle class="donut-track" cx="55" cy="55" r="40"/>
-              <!-- segments drawn by JS -->
-              <circle id="seg-complete"    class="donut-seg" cx="55" cy="55" r="40" stroke="#00ff9d" stroke-dasharray="0 252"/>
-              <circle id="seg-inprogress"  class="donut-seg" cx="55" cy="55" r="40" stroke="#f59e0b" stroke-dasharray="0 252"/>
-              <circle id="seg-enroute"     class="donut-seg" cx="55" cy="55" r="40" stroke="#00c8ff" stroke-dasharray="0 252"/>
-              <circle id="seg-abort"       class="donut-seg" cx="55" cy="55" r="40" stroke="#ff4b5c" stroke-dasharray="0 252"/>
-              <circle id="seg-unassigned"  class="donut-seg" cx="55" cy="55" r="40" stroke="#3a5570" stroke-dasharray="0 252"/>
+              <circle id="seg-complete"   class="donut-seg" cx="55" cy="55" r="40" stroke="#00ff9d" stroke-dasharray="0 252"/>
+              <circle id="seg-inprogress" class="donut-seg" cx="55" cy="55" r="40" stroke="#f59e0b" stroke-dasharray="0 252"/>
+              <circle id="seg-enroute"    class="donut-seg" cx="55" cy="55" r="40" stroke="#00c8ff" stroke-dasharray="0 252"/>
+              <circle id="seg-abort"      class="donut-seg" cx="55" cy="55" r="40" stroke="#ff4b5c" stroke-dasharray="0 252"/>
+              <circle id="seg-unassigned" class="donut-seg" cx="55" cy="55" r="40" stroke="#3a5570" stroke-dasharray="0 252"/>
             </svg>
             <div class="donut-center">
               <div class="donut-pct" id="donutPct">—</div>
               <div class="donut-sub">complete</div>
             </div>
           </div>
-          <div class="legend" id="statusLegend">
-            <!-- built by JS -->
-          </div>
+          <div class="legend" id="statusLegend"></div>
         </div>
       </div>
 
@@ -587,17 +533,6 @@
         </div>
         <div class="feed-body" id="feedBody">
           <div class="feed-empty">Connecting to live data…</div>
-        </div>
-      </div>
-
-      <!-- ENGINEER WORKLOAD -->
-      <div class="eng-panel">
-        <div class="eng-head">
-          <div class="eng-title">Engineer Workload Today</div>
-          <div style="font-size:11px;color:var(--dim)" id="engCount">—</div>
-        </div>
-        <div class="eng-body" id="engBody">
-          <div class="eng-empty" style="width:100%">Loading…</div>
         </div>
       </div>
 
@@ -620,8 +555,7 @@
     appId: "1:824568732787:web:c12db983fd6a5b44b01e06"
   }));
 
-  /* ── Helpers ── */
-  function today0() { const d = new Date(); d.setHours(0,0,0,0); return d; }
+  function today0(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
   function sameDay(a,b){ return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
   function weekBounds(){
     const n=today0(), dow=n.getDay(), diff=dow===0?-6:1-dow;
@@ -644,8 +578,7 @@
   }
   function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-  /* ── Stat counter with animation ── */
-  function setN(id, val){
+  function setN(id,val){
     const el=document.getElementById(id); if(!el) return;
     const v=String(val); if(el.textContent===v) return;
     el.textContent=v;
@@ -653,7 +586,6 @@
     el.addEventListener('animationend',()=>el.classList.remove('pop'),{once:true});
   }
 
-  /* ── Dates ── */
   function setDates(){
     const now=new Date();
     document.getElementById('todayDate').textContent=now.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
@@ -665,15 +597,14 @@
   }
   setDates();
 
-  /* ── Donut chart ── */
-  const CIRC = 2 * Math.PI * 40; // circumference ≈ 251.3
-  const STATUS_ORDER = ['complete','in-progress','en-route','abort','unassigned'];
-  const SEG_IDS = {'complete':'seg-complete','in-progress':'seg-inprogress','en-route':'seg-enroute','abort':'seg-abort','unassigned':'seg-unassigned'};
-  const STATUS_COLOURS = {'complete':'#00ff9d','in-progress':'#f59e0b','en-route':'#00c8ff','abort':'#ff4b5c','unassigned':'#3a5570'};
-  const STATUS_LABELS  = {'complete':'Complete','in-progress':'In Progress','en-route':'En Route','abort':'Aborted','unassigned':'Unscheduled'};
+  const CIRC=2*Math.PI*40;
+  const STATUS_ORDER=['complete','in-progress','en-route','abort','unassigned'];
+  const SEG_IDS={'complete':'seg-complete','in-progress':'seg-inprogress','en-route':'seg-enroute','abort':'seg-abort','unassigned':'seg-unassigned'};
+  const STATUS_COLOURS={'complete':'#00ff9d','in-progress':'#f59e0b','en-route':'#00c8ff','abort':'#ff4b5c','unassigned':'#3a5570'};
+  const STATUS_LABELS={'complete':'Complete','in-progress':'In Progress','en-route':'En Route','abort':'Aborted','unassigned':'Unscheduled'};
 
-  function updateDonut(counts, total){
-    let offset = 0;
+  function updateDonut(counts,total){
+    let offset=0;
     STATUS_ORDER.forEach(st=>{
       const el=document.getElementById(SEG_IDS[st]); if(!el) return;
       const n=counts[st]||0, frac=total>0?n/total:0;
@@ -682,11 +613,11 @@
       el.style.strokeDashoffset=`${-offset}`;
       offset+=dash;
     });
-    const completePct=total>0?Math.round((counts['complete']||0)/total*100):0;
-    document.getElementById('donutPct').textContent=total>0?`${completePct}%`:'—';
+    const pct=total>0?Math.round((counts['complete']||0)/total*100):0;
+    document.getElementById('donutPct').textContent=total>0?`${pct}%`:'—';
   }
 
-  function updateLegend(counts, total){
+  function updateLegend(counts,total){
     const el=document.getElementById('statusLegend'); if(!el) return;
     el.innerHTML=STATUS_ORDER.map(st=>{
       const n=counts[st]||0, pct=total>0?Math.round(n/total*100):0;
@@ -700,16 +631,14 @@
     }).join('');
   }
 
-  /* ── Job feed ── */
   function updateFeed(todayJobs){
     const feedEl=document.getElementById('feedBody');
     document.getElementById('feedCount').textContent=`${todayJobs.length} job${todayJobs.length!==1?'s':''}`;
-    if(!todayJobs.length){feedEl.innerHTML='<div class="feed-empty">No jobs scheduled for today</div>';return;}
-    // Sort: in-progress first, then en-route, then unassigned, then complete, abort last
+    if(!todayJobs.length){ feedEl.innerHTML='<div class="feed-empty">No jobs scheduled for today</div>'; return; }
     const order={'in-progress':0,'en-route':1,'unassigned':2,'complete':3,'abort':4};
     const sorted=[...todayJobs].sort((a,b)=>{
-      const sa=order[normStatus(a.jobStatus||a.status||'')] ?? 5;
-      const sb=order[normStatus(b.jobStatus||b.status||'')] ?? 5;
+      const sa=order[normStatus(a.jobStatus||a.status||'')]??5;
+      const sb=order[normStatus(b.jobStatus||b.status||'')]??5;
       return sa-sb;
     });
     feedEl.innerHTML=sorted.map(j=>{
@@ -724,7 +653,7 @@
       return `<div class="feed-item">
         <div class="feed-status-dot" style="background:${col}"></div>
         <div class="feed-info">
-          <div class="feed-job-type">${esc(jobType)} <span style="font-size:9px;color:var(--dim);font-weight:400">#${esc(jobId)}</span></div>
+          <div class="feed-job-type">${esc(jobType)} <span style="font-size:10px;color:var(--dim);font-weight:400">#${esc(jobId)}</span></div>
           <div class="feed-meta">${esc(meta)}</div>
         </div>
         <div class="feed-badge ${st}">${STATUS_LABELS[st]||st}</div>
@@ -732,81 +661,40 @@
     }).join('');
   }
 
-  /* ── Engineer workload ── */
-  function updateEngineers(todayJobs){
-    const engEl=document.getElementById('engBody');
-    const engMap={};
-    todayJobs.forEach(j=>{
-      const eng=j.engineerName||j.Engineer||'Unknown';
-      if(!engMap[eng]) engMap[eng]={total:0,complete:0};
-      engMap[eng].total++;
-      if(normStatus(j.jobStatus||j.status||'')==='complete') engMap[eng].complete++;
-    });
-    const engineers=Object.entries(engMap).sort((a,b)=>b[1].total-a[1].total);
-    document.getElementById('engCount').textContent=`${engineers.length} engineer${engineers.length!==1?'s':''}`;
-    if(!engineers.length){engEl.innerHTML='<div class="eng-empty" style="width:100%">No engineers scheduled today</div>';return;}
-    engEl.innerHTML=engineers.map(([name,data])=>{
-      const initials=name.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2);
-      return `<div class="eng-pill">
-        <div class="eng-avatar">${esc(initials)}</div>
-        <div class="eng-name">${esc(name)}</div>
-        <div class="eng-job-count">${data.total}</div>
-      </div>`;
-    }).join('');
-  }
-
-  /* ── Main compute ── */
   function compute(jobs){
     const t=today0(), {mon,sun}=weekBounds();
     const tj=jobs.filter(j=>{ const d=parseDate(j.dateOfJob||j.Date||j.Appointment_Date); return d&&sameDay(d,t); });
     const wj=jobs.filter(j=>{ const d=parseDate(j.dateOfJob||j.Date||j.Appointment_Date); return d&&d>=mon&&d<=sun; });
-    const cnt=(arr,st)=>arr.filter(j=>normStatus(j.jobStatus||j.status||j.Status||'')===(st)).length;
+    const cnt=(arr,st)=>arr.filter(j=>normStatus(j.jobStatus||j.status||j.Status||'')===st).length;
 
-    // Today stats
-    setN('todayTotal',    tj.length);
-    setN('todayComplete', cnt(tj,'complete'));
+    setN('todayTotal',     tj.length);
+    setN('todayComplete',  cnt(tj,'complete'));
     setN('todayInProgress',cnt(tj,'in-progress'));
-    setN('todayEnRoute',  cnt(tj,'en-route'));
-    setN('todayAbort',    cnt(tj,'abort'));
+    setN('todayAbort',     cnt(tj,'abort'));
 
-    // Week stats
-    setN('weekTotal',      wj.length);
-    setN('weekComplete',   cnt(wj,'complete'));
-    setN('weekInProgress', cnt(wj,'in-progress'));
-    setN('weekAbort',      cnt(wj,'abort'));
+    setN('weekTotal',    wj.length);
+    setN('weekComplete', cnt(wj,'complete'));
+    setN('weekAbort',    cnt(wj,'abort'));
 
-    // Donut breakdown — today
     const todayCounts={};
     STATUS_ORDER.forEach(s=>{ todayCounts[s]=cnt(tj,s); });
-    updateDonut(todayCounts, tj.length);
-    updateLegend(todayCounts, tj.length);
-
-    // Feed
+    updateDonut(todayCounts,tj.length);
+    updateLegend(todayCounts,tj.length);
     updateFeed(tj);
-
-    // Engineers
-    updateEngineers(tj);
   }
 
-  /* ── Firebase listener ── */
   const connEl=document.getElementById('connLabel');
   onSnapshot(collection(db,'uploaded_jobs'),{includeMetadataChanges:false},
-    snap=>{
-      const jobs=[]; snap.forEach(d=>jobs.push({_id:d.id,...d.data()}));
-      compute(jobs);
-      connEl.className='conn-label ok'; connEl.textContent='Connected';
-    },
-    err=>{console.error(err);connEl.className='conn-label err';connEl.textContent='Error';}
+    snap=>{ const jobs=[]; snap.forEach(d=>jobs.push({_id:d.id,...d.data()})); compute(jobs); connEl.className='conn-label ok'; connEl.textContent='Connected'; },
+    err=>{ console.error(err); connEl.className='conn-label err'; connEl.textContent='Error'; }
   );
 
-  /* ── Sidebar ── */
   const sidebar=document.getElementById('sidebar');
   if(localStorage.getItem('geko-sidebar')==='expanded') sidebar.classList.add('expanded');
-  const tog=()=>{sidebar.classList.toggle('expanded');localStorage.setItem('geko-sidebar',sidebar.classList.contains('expanded')?'expanded':'collapsed');};
+  const tog=()=>{ sidebar.classList.toggle('expanded'); localStorage.setItem('geko-sidebar',sidebar.classList.contains('expanded')?'expanded':'collapsed'); };
   document.getElementById('sidebarToggle').addEventListener('click',tog);
   document.getElementById('logoCollapsed').addEventListener('click',tog);
 
-  /* ── Midnight refresh ── */
   const msToMid=()=>{ const n=new Date(),m=new Date(n); m.setHours(24,0,0,0); return m-n; };
   setTimeout(()=>setDates(),msToMid());
 </script>
