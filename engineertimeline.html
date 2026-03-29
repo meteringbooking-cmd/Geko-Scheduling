@@ -122,17 +122,23 @@ html.light-mode .modal-section-label { color: var(--text-muted); }
 html.light-mode .modal-drag-handle { background: rgba(0,0,0,0.15); }
 html.light-mode ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
 
-/* ── Drive-time badges (matching scheduling.html) ── */
+/* ── Drive-time badges — VERTICAL layout ── */
+/*
+  Badges sit in the GUTTER column, centred vertically in the gap between two jobs.
+  They are absolutely positioned by `top` (px from grid top), not by `left`.
+*/
 .dt-badge {
   position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  /* horizontal: sit in the gutter strip to the left of the cards */
+  left: 0;
+  right: 0;
   z-index: 25;
   display: flex;
-  flex-direction: column;
+  flex-direction: column;   /* vertical stack: connector → pill → connector */
   align-items: center;
   pointer-events: none;
-  gap: 2px;
+  gap: 0;
+  transform: translateY(-50%); /* centre on the midpoint pixel */
 }
 .dt-pill {
   display: flex; align-items: center; gap: 3px;
@@ -155,6 +161,7 @@ html.light-mode .dt-pill.dt-danger { background: rgba(217,53,69,0.12); border-co
 .dt-connector.danger { background: rgba(255,75,92,0.5); }
 html.light-mode .dt-connector { background: rgba(0,0,0,0.12); }
 html.light-mode .dt-connector.danger { background: rgba(217,53,69,0.5); }
+
 /* conflict highlight on TL cards */
 .tl-job-card.iso-violation {
   animation: isoFlash 1.8s ease-in-out infinite !important;
@@ -309,10 +316,48 @@ body::before {
 
 /* ── DAY VIEW TIMELINE ── */
 .timeline-scroll { overflow-x: auto; overflow-y: visible; -webkit-overflow-scrolling: touch; }
-.timeline-wrap { display: flex; position: relative; min-height: 100px; }
-.timeline-gutter { width: 60px; flex-shrink: 0; position: relative; }
-.timeline-gutter-label { position: absolute; right: 10px; font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); transform: translateY(-50%); white-space: nowrap; user-select: none; pointer-events: none; transition: color 0.3s; }
-.timeline-grid { flex: 1; position: relative; min-width: 0; }
+
+/*
+  Layout: gutter (time labels) on the left, then a badge column, then the cards column.
+  The badge column is where drive-time pills live, vertically between job cards.
+*/
+.timeline-wrap {
+  display: flex;
+  position: relative;
+  min-height: 100px;
+}
+.timeline-gutter {
+  width: 52px;
+  flex-shrink: 0;
+  position: relative;
+}
+.timeline-gutter-label {
+  position: absolute;
+  right: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  transform: translateY(-50%);
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+  transition: color 0.3s;
+}
+
+/* Badge column — narrow strip where drive-time pills are placed vertically */
+.timeline-badge-col {
+  width: 80px;
+  flex-shrink: 0;
+  position: relative;
+  /* no overflow:hidden so pills can extend slightly outside */
+}
+
+/* Main card grid */
+.timeline-grid {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+}
 .timeline-hour-row { position: absolute; left: 0; right: 0; border-top: 1px solid var(--border); transition: border-color 0.3s; }
 .timeline-hour-row::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px dashed rgba(255,255,255,0.03); }
 html.light-mode .timeline-hour-row::after { border-top-color: rgba(0,0,0,0.03); }
@@ -812,11 +857,11 @@ let activeJobAddress = '';
 let activeJobPostcode = '';
 let docQueue = [];
 
-/* ── Job type params (from Firestore, matching scheduling.html) ── */
-let jobTypeParams = new Map(); // "level|||jobtype" → durationHours
-let engLevels = new Map();     // engineerName.toLowerCase() → level
-let engPostcodes = new Map();  // engineerName.toLowerCase() → postcode
-let engIsoMinutes = new Map(); // engineerName.toLowerCase() → isochroneMinutes
+/* ── Job type params ── */
+let jobTypeParams = new Map();
+let engLevels = new Map();
+let engPostcodes = new Map();
+let engIsoMinutes = new Map();
 
 /* ── Hardcoded fallback durations ── */
 const JOB_DURATIONS_FALLBACK = {"dual fuel":2,"single gas":1.5,"single elec":1.5,"comms":0.5};
@@ -828,20 +873,18 @@ function getDuration(jobType, engineerName) {
   if (level) {
     const key = level.toLowerCase() + '|||' + t;
     if (jobTypeParams.has(key)) return jobTypeParams.get(key);
-    // fuzzy match
     for (const [k, v] of jobTypeParams) {
       const [kLevel, kType] = k.split('|||');
       if (kLevel === level.toLowerCase() && (t.includes(kType) || kType.includes(t))) return v;
     }
   }
-  // fallback
   for (const [key, v] of Object.entries(JOB_DURATIONS_FALLBACK)) {
     if (t.includes(key)) return v;
   }
   return 1;
 }
 
-/* ── Postcode geocode cache & haversine (matching scheduling.html) ── */
+/* ── Postcode geocode cache & haversine ── */
 const postcodeCache = new Map();
 const AVG_SPEED_KMH = 53.1;
 
@@ -1180,10 +1223,9 @@ function startApp(){
   syncDatePicker();loadAndRender();
 }
 
-/* ── Data load – includes job_type_parameters + userdatabase ── */
+/* ── Data load ── */
 async function loadAndRender(){
   try{
-    // Load all three collections in parallel
     const [jobSnap, paramSnap, userSnap] = await Promise.all([
       getDocs(collection(db,'uploaded_jobs')),
       getDocs(collection(db,'job_type_parameters')),
@@ -1193,7 +1235,6 @@ async function loadAndRender(){
     allJobs=[];
     jobSnap.forEach(d=>allJobs.push({_id:d.id,...d.data()}));
 
-    // Build jobTypeParams map (same logic as scheduling.html)
     jobTypeParams.clear();
     paramSnap.forEach(d=>{
       const data=d.data();
@@ -1202,7 +1243,6 @@ async function loadAndRender(){
       jobTypeParams.set(key, data.durationMinutes/60);
     });
 
-    // Build engLevels, engPostcodes, engIsoMinutes maps
     engLevels.clear(); engPostcodes.clear(); engIsoMinutes.clear();
     userSnap.forEach(d=>{
       const data=d.data();
@@ -1213,7 +1253,6 @@ async function loadAndRender(){
       engIsoMinutes.set(key, data.isochroneMinutes||0);
     });
 
-    // Geocode all postcodes upfront
     const allPcs = [
       ...allJobs.map(j=>getPostcode(j)),
       ...[...engPostcodes.values()]
@@ -1256,10 +1295,19 @@ function updateDateLabel(){
   }
 }
 
-/* ── Drive-time badge renderer (mirrors scheduling.html logic) ── */
-function renderDriveTimeBadges(gridEl, sortedJobs, HOUR_PX, engName){
-  // Remove any existing badges
-  gridEl.querySelectorAll('.dt-badge').forEach(b=>b.remove());
+/* ══════════════════════════════════════════════════════
+   Drive-time badge renderer — VERTICAL timeline version
+   ══════════════════════════════════════════════════════
+   Badges are placed in the `.timeline-badge-col` element
+   which sits between the gutter and the card grid.
+   Position is controlled by `top` (px from grid top),
+   centred in the gap between two consecutive job cards.
+   `transform: translateY(-50%)` in CSS centres the pill
+   on that midpoint pixel.
+*/
+function renderDriveTimeBadges(badgeColEl, gridEl, sortedJobs, HOUR_PX, engName){
+  // Clear any previous badges and violation classes
+  badgeColEl.querySelectorAll('.dt-badge').forEach(b=>b.remove());
   gridEl.querySelectorAll('.tl-job-card').forEach(c=>{
     c.classList.remove('iso-violation');
     c.querySelector('.iso-badge')?.remove();
@@ -1277,67 +1325,82 @@ function renderDriveTimeBadges(gridEl, sortedJobs, HOUR_PX, engName){
     if(!cardEl) return;
     cardEl.classList.add('iso-violation');
     if(!cardEl.querySelector('.iso-badge')){
-      const b=document.createElement('div');
-      b.className='iso-badge';
-      b.textContent=labelText;
-      cardEl.style.overflow='visible';
+      const b = document.createElement('div');
+      b.className = 'iso-badge';
+      b.textContent = labelText;
+      cardEl.style.overflow = 'visible';
       cardEl.appendChild(b);
     }
   }
 
-  function makeBadge(leftPx, driveMins, gapMins, svgIcon, isHomePill){
-    const violation = (driveMins !== null) && (isHomePill ? (isoMins>0 && driveMins>isoMins) : driveMins>gapMins);
-    const pillCls = driveMins===null ? 'dt-loading'
+  /**
+   * Place a badge at `topPx` pixels from the top of the badge column.
+   * The CSS `transform: translateY(-50%)` centres the pill on that pixel.
+   */
+  function makeBadge(topPx, driveMins, gapMins, svgIcon, isHomePill){
+    const violation = (driveMins !== null) && (
+      isHomePill
+        ? (isoMins > 0 && driveMins > isoMins)
+        : driveMins > gapMins
+    );
+    const pillCls = driveMins === null ? 'dt-loading'
       : violation ? 'dt-danger'
-      : (!isHomePill && driveMins > gapMins*0.75) ? 'dt-warn'
-      : (isHomePill && isoMins>0 && driveMins > isoMins*0.75) ? 'dt-warn'
+      : (!isHomePill && driveMins > gapMins * 0.75) ? 'dt-warn'
+      : (isHomePill && isoMins > 0 && driveMins > isoMins * 0.75) ? 'dt-warn'
       : 'dt-ok';
-    const pillText = driveMins===null ? '…' : `${driveMins}m`;
-    const connCls = violation ? 'dt-connector danger' : 'dt-connector';
+    const pillText = driveMins === null ? '…' : `${driveMins}m`;
+    const connCls  = violation ? 'dt-connector danger' : 'dt-connector';
 
     const badge = document.createElement('div');
     badge.className = 'dt-badge';
-    badge.style.left = leftPx + 'px';
+    badge.style.top = topPx + 'px';   // ← vertical position
     badge.innerHTML = `
       <div class="${connCls}"></div>
       <div class="dt-pill ${pillCls}">${svgIcon} ${pillText}</div>
       <div class="${connCls}"></div>`;
-    gridEl.appendChild(badge);
+    badgeColEl.appendChild(badge);
     return violation;
   }
 
-  // Home → first job
-  if(sortedJobs.length>0 && homePc){
+  // ── Home → first job ──
+  if(sortedJobs.length > 0 && homePc){
     const firstJob = sortedJobs[0];
     const sh = getStartHour(firstJob);
-    const leftFirst = (sh - DAY_START) * HOUR_PX;
-    if(leftFirst > 40){
-      const midX = leftFirst / 2;
-      const driveMins = driveMinutes(homePc, getPostcode(firstJob));
-      const violation = makeBadge(midX, driveMins, null, SVG_HOME, true);
-      if(violation && driveMins!==null) flagCard(firstJob, `⚠ ${driveMins}m from home > ${isoMins}m limit`);
+    if(sh !== null){
+      // midpoint: halfway between DAY_START (top of grid) and the first job's top edge
+      const topFirst  = (sh - DAY_START) * HOUR_PX;
+      const midTopPx  = topFirst / 2;
+      if(midTopPx > 10){                          // only show if there's visible space
+        const driveMins = driveMinutes(homePc, getPostcode(firstJob));
+        const violation = makeBadge(midTopPx, driveMins, null, SVG_HOME, true);
+        if(violation && driveMins !== null){
+          flagCard(firstJob, `⚠ ${driveMins}m from home > ${isoMins}m limit`);
+        }
+      }
     }
   }
 
-  // Between consecutive jobs
-  for(let i=0; i<sortedJobs.length-1; i++){
+  // ── Between consecutive jobs ──
+  for(let i = 0; i < sortedJobs.length - 1; i++){
     const jobA = sortedJobs[i];
-    const jobB = sortedJobs[i+1];
+    const jobB = sortedJobs[i + 1];
     const shA  = getStartHour(jobA);
-    const durA = getDuration(getJobType(jobA), getEngineerName(jobA));
-    const endA = shA + durA;
     const shB  = getStartHour(jobB);
-    const gapMins = Math.round((shB - endA) * 60);
-    if(gapMins < 1) continue;
+    if(shA === null || shB === null) continue;
 
-    const leftA = (shA - DAY_START) * HOUR_PX;
-    const widthA = durA * HOUR_PX - 4;
-    const leftB = (shB - DAY_START) * HOUR_PX;
-    const midX = (leftA + widthA + 4 + leftB) / 2;
+    const durA    = getDuration(getJobType(jobA), getEngineerName(jobA));
+    const endA    = shA + durA;
+    const gapMins = Math.round((shB - endA) * 60);
+    if(gapMins < 1) continue;                     // jobs overlap or touch — skip
+
+    // Vertical midpoint: halfway between end of jobA and start of jobB (in px)
+    const topEndA  = (endA - DAY_START) * HOUR_PX;
+    const topStartB = (shB  - DAY_START) * HOUR_PX;
+    const midTopPx  = (topEndA + topStartB) / 2;
 
     const driveMins = driveMinutes(getPostcode(jobA), getPostcode(jobB));
-    const violation = makeBadge(midX, driveMins, gapMins, SVG_CAR, false);
-    if(violation && driveMins!==null){
+    const violation = makeBadge(midTopPx, driveMins, gapMins, SVG_CAR, false);
+    if(violation && driveMins !== null){
       flagCard(jobA, `⚠ ${driveMins}m drive / ${gapMins}m gap`);
       flagCard(jobB, `⚠ ${driveMins}m drive / ${gapMins}m gap`);
     }
@@ -1346,108 +1409,116 @@ function renderDriveTimeBadges(gridEl, sortedJobs, HOUR_PX, engName){
 
 /* ── Day view ── */
 function renderDay(){
-  const HOUR_PX=100;
-  const myJobs=getMyJobs().filter(j=>{const d=parseDate(getJobDate(j));return d&&sameDay(d,currentDate);});
+  const HOUR_PX = 100;
+  const myJobs  = getMyJobs().filter(j=>{const d=parseDate(getJobDate(j));return d&&sameDay(d,currentDate);});
   myJobs.sort((a,b)=>{
     const sa=getStartHour(a),sb=getStartHour(b);
     if(sa===null&&sb===null)return 0;if(sa===null)return 1;if(sb===null)return -1;return sa-sb;
   });
 
-  const total=myJobs.length;
-  const done=myJobs.filter(j=>getJobStatus(j)==='complete').length;
-  const enroute=myJobs.filter(j=>statusClass(getJobStatus(j))==='en-route').length;
-  const inprog=myJobs.filter(j=>statusClass(getJobStatus(j))==='in-progress').length;
+  const total   = myJobs.length;
+  const done    = myJobs.filter(j=>getJobStatus(j)==='complete').length;
+  const enroute = myJobs.filter(j=>statusClass(getJobStatus(j))==='en-route').length;
+  const inprog  = myJobs.filter(j=>statusClass(getJobStatus(j))==='in-progress').length;
 
-  let html=`<div class="stats-bar">
+  let html = `<div class="stats-bar">
     <div class="stat-pill"><div class="stat-dot" style="background:#6b8aaa"></div><div><div class="stat-num">${total}</div><div class="stat-lbl">Jobs</div></div></div>
     <div class="stat-pill"><div class="stat-dot" style="background:var(--accent)"></div><div><div class="stat-num">${done}</div><div class="stat-lbl">Done</div></div></div>
     <div class="stat-pill"><div class="stat-dot" style="background:var(--warning)"></div><div><div class="stat-num">${inprog}</div><div class="stat-lbl">Active</div></div></div>
     <div class="stat-pill"><div class="stat-dot" style="background:var(--accent2)"></div><div><div class="stat-num">${enroute}</div><div class="stat-lbl">En Route</div></div></div>
   </div>`;
 
-  if(total===0){
-    html+=`<div class="center-msg"><div class="big">📅</div><p>No jobs scheduled for today.<br><span style="font-size:13px;color:var(--text-dim)">Use the arrows above to check another day.</span></p></div>`;
-    document.getElementById('mainContent').innerHTML=html;return;
+  if(total === 0){
+    html += `<div class="center-msg"><div class="big">📅</div><p>No jobs scheduled for today.<br><span style="font-size:13px;color:var(--text-dim)">Use the arrows above to check another day.</span></p></div>`;
+    document.getElementById('mainContent').innerHTML = html;
+    return;
   }
 
-  const scheduled=myJobs.filter(j=>getStartHour(j)!==null);
-  const unscheduled=myJobs.filter(j=>getStartHour(j)===null);
+  const scheduled   = myJobs.filter(j=>getStartHour(j)!==null);
+  const unscheduled = myJobs.filter(j=>getStartHour(j)===null);
 
-  // Compute day end using smart getDuration
-  let dayEnd=DAY_END_DEFAULT;
+  // Compute day end
+  let dayEnd = DAY_END_DEFAULT;
   scheduled.forEach(j=>{
-    const fin=getStartHour(j)+getDuration(getJobType(j),getEngineerName(j));
-    if(fin>dayEnd)dayEnd=fin;
+    const fin = getStartHour(j) + getDuration(getJobType(j), getEngineerName(j));
+    if(fin > dayEnd) dayEnd = fin;
   });
-  dayEnd=Math.ceil(dayEnd)+0.5;
+  dayEnd = Math.ceil(dayEnd) + 0.5;
 
-  const totalHours=dayEnd-DAY_START;
-  const gridHeight=Math.round(totalHours*HOUR_PX);
+  const totalHours = dayEnd - DAY_START;
+  const gridHeight = Math.round(totalHours * HOUR_PX);
 
-  const now=new Date();
-  const isToday=sameDay(currentDate,today0());
-  const nowHour=now.getHours()+now.getMinutes()/60;
-  let nowLineHtml='';
-  if(isToday&&nowHour>=DAY_START&&nowHour<=dayEnd){
-    const top=Math.round((nowHour-DAY_START)*HOUR_PX);
-    nowLineHtml=`<div class="timeline-now-line" style="top:${top}px">
+  const now     = new Date();
+  const isToday = sameDay(currentDate, today0());
+  const nowHour = now.getHours() + now.getMinutes() / 60;
+  let nowLineHtml = '';
+  if(isToday && nowHour >= DAY_START && nowHour <= dayEnd){
+    const top = Math.round((nowHour - DAY_START) * HOUR_PX);
+    nowLineHtml = `<div class="timeline-now-line" style="top:${top}px">
       <span class="timeline-now-line-label">${fmtTime(nowHour)}</span>
     </div>`;
   }
 
-  let gutterHtml='',rowsHtml='';
-  for(let h=DAY_START;h<=Math.ceil(dayEnd);h++){
-    const top=Math.round((h-DAY_START)*HOUR_PX);
-    if(top>gridHeight) break;
-    gutterHtml+=`<div class="timeline-gutter-label" style="top:${top}px">${String(h).padStart(2,'0')}:00</div>`;
-    rowsHtml+=`<div class="timeline-hour-row" style="top:${top}px;height:${HOUR_PX}px"></div>`;
+  let gutterHtml = '', rowsHtml = '';
+  for(let h = DAY_START; h <= Math.ceil(dayEnd); h++){
+    const top = Math.round((h - DAY_START) * HOUR_PX);
+    if(top > gridHeight) break;
+    gutterHtml += `<div class="timeline-gutter-label" style="top:${top}px">${String(h).padStart(2,'0')}:00</div>`;
+    rowsHtml   += `<div class="timeline-hour-row" style="top:${top}px;height:${HOUR_PX}px"></div>`;
   }
 
-  let cardsHtml='';
+  let cardsHtml = '';
   scheduled.forEach(job=>{
-    const sh=getStartHour(job);
-    const dur=getDuration(getJobType(job),getEngineerName(job)); // ← smart duration
-    const top=Math.round((sh-DAY_START)*HOUR_PX);
-    const height=Math.max(Math.round(dur*HOUR_PX)-6,36);
-    const status=getJobStatus(job);
-    const sc=statusClass(status);
-    const timeStr=`${fmtTime(sh)}–${fmtTime(sh+dur)}`;
-    const jid=esc(job.jobId||job._id);
-    const hasAttachments=Array.isArray(job.attachments)&&job.attachments.length>0;
-    const hasNotes=getNotes(job).length>0;
+    const sh     = getStartHour(job);
+    const dur    = getDuration(getJobType(job), getEngineerName(job));
+    const top    = Math.round((sh - DAY_START) * HOUR_PX);
+    const height = Math.max(Math.round(dur * HOUR_PX) - 6, 36);
+    const status = getJobStatus(job);
+    const sc     = statusClass(status);
+    const timeStr= `${fmtTime(sh)}–${fmtTime(sh + dur)}`;
+    const jid    = esc(job.jobId || job._id);
+    const hasAttachments = Array.isArray(job.attachments) && job.attachments.length > 0;
+    const hasNotes = getNotes(job).length > 0;
 
-    const statusColours={
-      'complete':'background:rgba(0,255,157,0.12);border-color:rgba(0,255,157,0.3);color:var(--accent)',
-      'en-route':'background:rgba(0,200,255,0.12);border-color:rgba(0,200,255,0.3);color:var(--accent2)',
-      'in-progress':'background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.3);color:var(--warning)',
-      'abort':'background:rgba(255,75,92,0.12);border-color:rgba(255,75,92,0.3);color:var(--danger)',
+    const statusColours = {
+      'complete':    'background:rgba(0,255,157,0.12);border-color:rgba(0,255,157,0.3);color:var(--accent)',
+      'en-route':    'background:rgba(0,200,255,0.12);border-color:rgba(0,200,255,0.3);color:var(--accent2)',
+      'in-progress': 'background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.3);color:var(--warning)',
+      'abort':       'background:rgba(255,75,92,0.12);border-color:rgba(255,75,92,0.3);color:var(--danger)',
     };
-    const pillStyle=statusColours[sc]||'background:rgba(107,137,170,0.08);border-color:rgba(107,137,170,0.15);color:var(--text-muted)';
+    const pillStyle = statusColours[sc] || 'background:rgba(107,137,170,0.08);border-color:rgba(107,137,170,0.15);color:var(--text-muted)';
 
-    cardsHtml+=`<div class="tl-job-card status-${sc}"
+    cardsHtml += `<div class="tl-job-card status-${sc}"
         style="top:${top}px;height:${height}px;overflow:visible"
         data-job-doc-id="${job._id}"
         onclick="openJobModal('${job._id}')">
       <div class="tl-card-inner">
         <span class="tl-time">${timeStr}</span>
         <span class="tl-sep">·</span>
-        <span class="tl-type">${esc(getJobType(job)||'Job')}</span>
+        <span class="tl-type">${esc(getJobType(job) || 'Job')}</span>
         <span class="tl-sep">·</span>
         <span class="tl-customer">${esc(getCustomerName(job))}</span>
         <span class="tl-sep">·</span>
         <span class="tl-postcode">${esc(getPostcode(job))}</span>
         <span class="tl-sep">·</span>
         <span class="tl-id">${jid}</span>
-        ${hasNotes?`<span class="tl-note-icon" title="Has notes">📝</span>`:''}
-        ${hasAttachments?`<span class="tl-note-icon" title="${job.attachments.length} doc(s)">📎</span>`:''}
+        ${hasNotes ? `<span class="tl-note-icon" title="Has notes">📝</span>` : ''}
+        ${hasAttachments ? `<span class="tl-note-icon" title="${job.attachments.length} doc(s)">📎</span>` : ''}
       </div>
-      ${height>=50?`<span class="tl-status-pill" style="${pillStyle}">${statusLabel(status)}</span>`:''}
+      ${height >= 50 ? `<span class="tl-status-pill" style="${pillStyle}">${statusLabel(status)}</span>` : ''}
     </div>`;
   });
 
-  html+=`<div class="timeline-scroll">
+  /*
+    Timeline layout:
+      [gutter: time labels] [badge-col: drive-time pills] [grid: job cards]
+    The badge column is a separate absolutely-positioned strip so pills don't
+    overlap the card content. Both badge-col and grid share the same height.
+  */
+  html += `<div class="timeline-scroll">
     <div class="timeline-wrap">
       <div class="timeline-gutter" style="height:${gridHeight}px">${gutterHtml}</div>
+      <div class="timeline-badge-col" id="tlBadgeCol" style="height:${gridHeight}px;position:relative;overflow:visible"></div>
       <div class="timeline-grid" id="tlGrid" style="height:${gridHeight}px;position:relative">
         ${rowsHtml}
         ${nowLineHtml}
@@ -1456,39 +1527,40 @@ function renderDay(){
     </div>
   </div>`;
 
-  if(unscheduled.length>0){
-    html+=`<div class="unscheduled-section"><div class="unscheduled-label">⏳ Time not yet scheduled</div>`;
-    unscheduled.forEach(job=>{html+=buildJobCardHTML(job,true);});
-    html+=`</div>`;
+  if(unscheduled.length > 0){
+    html += `<div class="unscheduled-section"><div class="unscheduled-label">⏳ Time not yet scheduled</div>`;
+    unscheduled.forEach(job=>{ html += buildJobCardHTML(job, true); });
+    html += `</div>`;
   }
 
-  document.getElementById('mainContent').innerHTML=html;
+  document.getElementById('mainContent').innerHTML = html;
 
-  // Render drive-time badges after DOM is ready
-  const gridEl=document.getElementById('tlGrid');
-  if(gridEl&&scheduled.length>1){
-    const engName=(currentUser.displayName||currentUser.name||'');
-    renderDriveTimeBadges(gridEl, scheduled, HOUR_PX, engName);
+  // Render drive-time badges AFTER DOM is ready
+  const badgeColEl = document.getElementById('tlBadgeCol');
+  const gridEl     = document.getElementById('tlGrid');
+  if(badgeColEl && gridEl && scheduled.length > 0){
+    const engName = currentUser.displayName || currentUser.name || '';
+    renderDriveTimeBadges(badgeColEl, gridEl, scheduled, HOUR_PX, engName);
   }
 }
 
-function buildJobCardHTML(job,unscheduled=false){
-  const sh=getStartHour(job);
-  const dur=getDuration(getJobType(job),getEngineerName(job)); // ← smart duration
-  const timeStr=sh!==null?`${fmtTime(sh)} – ${fmtTime(sh+dur)}`:'Time TBC';
-  const status=getJobStatus(job),sc=statusClass(status);
-  const jid=job.jobId||job._id;
-  const timeStyle=unscheduled?` style="border-color:rgba(245,158,11,0.3);color:var(--warning)"`:'';
-  const timeIcon=unscheduled?'⏳ ':'⏰ ';
-  const hasAttachments=Array.isArray(job.attachments)&&job.attachments.length>0;
-  const notes=getNotes(job);
+function buildJobCardHTML(job, unscheduled=false){
+  const sh      = getStartHour(job);
+  const dur     = getDuration(getJobType(job), getEngineerName(job));
+  const timeStr = sh !== null ? `${fmtTime(sh)} – ${fmtTime(sh + dur)}` : 'Time TBC';
+  const status  = getJobStatus(job), sc = statusClass(status);
+  const jid     = job.jobId || job._id;
+  const timeStyle = unscheduled ? ` style="border-color:rgba(245,158,11,0.3);color:var(--warning)"` : '';
+  const timeIcon  = unscheduled ? '⏳ ' : '⏰ ';
+  const hasAttachments = Array.isArray(job.attachments) && job.attachments.length > 0;
+  const notes = getNotes(job);
 
   return `<div class="job-card status-${sc}" onclick="openJobModal('${job._id}')">
     <div class="job-card-top">
-      <div class="job-type">${esc(getJobType(job)||'Job')}</div>
+      <div class="job-type">${esc(getJobType(job) || 'Job')}</div>
       <div style="display:flex;align-items:center;gap:8px">
-        ${notes.length?`<span style="font-size:13px;color:var(--text-muted)" title="${notes.length} note(s)">📝 ${notes.length}</span>`:''}
-        ${hasAttachments?`<span style="font-size:13px;color:var(--text-muted)" title="${job.attachments.length} document(s)">📎 ${job.attachments.length}</span>`:''}
+        ${notes.length ? `<span style="font-size:13px;color:var(--text-muted)" title="${notes.length} note(s)">📝 ${notes.length}</span>` : ''}
+        ${hasAttachments ? `<span style="font-size:13px;color:var(--text-muted)" title="${job.attachments.length} document(s)">📎 ${job.attachments.length}</span>` : ''}
         <div class="job-id">${esc(jid)}</div>
       </div>
     </div>
@@ -1496,9 +1568,9 @@ function buildJobCardHTML(job,unscheduled=false){
     <div class="job-meta">
       <div class="job-meta-item"><div class="job-meta-lbl">Customer</div><div class="job-meta-val">${esc(getCustomerName(job))}</div></div>
       <div class="job-meta-item"><div class="job-meta-lbl">Postcode</div><div class="job-meta-val">${esc(getPostcode(job))}</div></div>
-      ${getAddress(job)?`<div class="job-meta-item" style="grid-column:1/-1"><div class="job-meta-lbl">Address</div><div class="job-meta-val">${esc(getAddress(job))}</div></div>`:''}
+      ${getAddress(job) ? `<div class="job-meta-item" style="grid-column:1/-1"><div class="job-meta-lbl">Address</div><div class="job-meta-val">${esc(getAddress(job))}</div></div>` : ''}
     </div>
-    ${notes.length?`<div style="margin-bottom:12px;padding:10px 12px;border-radius:8px;background:var(--note-bg);border:1px solid var(--note-border);font-size:13px;color:var(--text);line-height:1.5">${esc(notes[notes.length-1].text||'')}<div style="font-size:10px;color:var(--text-muted);margin-top:4px">${esc(notes[notes.length-1].addedBy||'')} · ${fmtTimestamp(notes[notes.length-1].addedAt)}</div></div>`:''}
+    ${notes.length ? `<div style="margin-bottom:12px;padding:10px 12px;border-radius:8px;background:var(--note-bg);border:1px solid var(--note-border);font-size:13px;color:var(--text);line-height:1.5">${esc(notes[notes.length-1].text||'')}<div style="font-size:10px;color:var(--text-muted);margin-top:4px">${esc(notes[notes.length-1].addedBy||'')} · ${fmtTimestamp(notes[notes.length-1].addedAt)}</div></div>` : ''}
     <div class="job-bottom">
       <span class="status-badge ${sc}">${statusLabel(status)}</span>
       <span class="tap-hint">
@@ -1510,100 +1582,102 @@ function buildJobCardHTML(job,unscheduled=false){
 }
 
 function renderWeek(){
-  const dow=currentDate.getDay(),diff=dow===0?-6:1-dow;
-  const mon=new Date(currentDate);mon.setDate(currentDate.getDate()+diff);
-  const cols=Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
-  const myJobs=getMyJobs();
-  const todayD=today0();
+  const dow  = currentDate.getDay(), diff = dow === 0 ? -6 : 1 - dow;
+  const mon  = new Date(currentDate); mon.setDate(currentDate.getDate() + diff);
+  const cols = Array.from({length:7}, (_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return d; });
+  const myJobs  = getMyJobs();
+  const todayD  = today0();
 
-  let html=`<div class="week-grid">`;
+  let html = `<div class="week-grid">`;
   cols.forEach(col=>{
-    const isToday=sameDay(col,todayD);
-    const isWeekend=col.getDay()===0||col.getDay()===6;
-    const dayJobs=myJobs.filter(j=>{const d=parseDate(getJobDate(j));return d&&sameDay(d,col);});
+    const isToday   = sameDay(col, todayD);
+    const isWeekend = col.getDay() === 0 || col.getDay() === 6;
+    const dayJobs   = myJobs.filter(j=>{ const d=parseDate(getJobDate(j)); return d&&sameDay(d,col); });
     dayJobs.sort((a,b)=>{
       const sa=getStartHour(a),sb=getStartHour(b);
       if(sa===null&&sb===null)return 0;if(sa===null)return 1;if(sb===null)return -1;return sa-sb;
     });
 
-    html+=`<div class="week-day-col${isToday?' is-today':''}${isWeekend?' weekend':''}">
+    html += `<div class="week-day-col${isToday?' is-today':''}${isWeekend?' weekend':''}">
       <div class="week-day-header">
         <div class="week-day-name">${col.toLocaleDateString('en-GB',{weekday:'short'})}</div>
         <div class="week-day-num">${col.getDate()}</div>
       </div>
       <div class="week-day-jobs">`;
 
-    if(!dayJobs.length){html+=`<div class="week-empty">—</div>`;}
+    if(!dayJobs.length){ html += `<div class="week-empty">—</div>`; }
     else{
       dayJobs.forEach(job=>{
-        const status=getJobStatus(job),sc=statusClass(status);
-        const sh=getStartHour(job),jid=job.jobId||job._id;
-        const dur=getDuration(getJobType(job),getEngineerName(job)); // ← smart duration
-        const hasNotes=getNotes(job).length>0;
-        const hasAttachments=Array.isArray(job.attachments)&&job.attachments.length>0;
-        html+=`<div class="week-job-card ${sc}" onclick="openJobModal('${job._id}')">
-          <div class="week-job-type">${esc(getJobType(job)||'Job')}</div>
+        const status = getJobStatus(job), sc = statusClass(status);
+        const sh     = getStartHour(job), jid = job.jobId || job._id;
+        const dur    = getDuration(getJobType(job), getEngineerName(job));
+        const hasNotes = getNotes(job).length > 0;
+        const hasAttachments = Array.isArray(job.attachments) && job.attachments.length > 0;
+        html += `<div class="week-job-card ${sc}" onclick="openJobModal('${job._id}')">
+          <div class="week-job-type">${esc(getJobType(job) || 'Job')}</div>
           <div class="week-job-post">${esc(getPostcode(job))}</div>
-          ${sh!==null?`<div class="week-job-time">${fmtTime(sh)} – ${fmtTime(sh+dur)}</div>`:''}
+          ${sh !== null ? `<div class="week-job-time">${fmtTime(sh)} – ${fmtTime(sh+dur)}</div>` : ''}
           <div style="display:flex;align-items:center;gap:6px;margin-top:2px">
             <span class="week-job-id">${esc(jid)}</span>
-            ${hasNotes?`<span style="font-size:10px;color:var(--text-dim)">📝</span>`:''}
-            ${hasAttachments?`<span style="font-size:10px;color:var(--text-dim)">📎</span>`:''}
+            ${hasNotes ? `<span style="font-size:10px;color:var(--text-dim)">📝</span>` : ''}
+            ${hasAttachments ? `<span style="font-size:10px;color:var(--text-dim)">📎</span>` : ''}
           </div>
         </div>`;
       });
     }
-    html+=`</div></div>`;
+    html += `</div></div>`;
   });
-  html+=`</div>`;
-  document.getElementById('mainContent').innerHTML=html;
+  html += `</div>`;
+  document.getElementById('mainContent').innerHTML = html;
 }
 
 /* ── Job Modal ── */
-window.openJobModal=function(jobDocId){
-  const job=allJobs.find(j=>j._id===jobDocId);
+window.openJobModal = function(jobDocId){
+  const job = allJobs.find(j=>j._id===jobDocId);
   if(!job) return;
-  activeJobId=jobDocId;selectedStatus=null;
-  activeJobAddress=getAddress(job)||'';
-  activeJobPostcode=getPostcode(job)||'';
+  activeJobId = jobDocId; selectedStatus = null;
+  activeJobAddress  = getAddress(job) || '';
+  activeJobPostcode = getPostcode(job) || '';
 
-  docQueue=[];
-  const qEl=document.getElementById('docQueue');
-  const progEl=document.getElementById('docProgressList');
-  const uploadBtn=document.getElementById('docUploadBtn');
-  if(qEl)qEl.innerHTML='';if(progEl)progEl.innerHTML='';if(uploadBtn)uploadBtn.style.display='none';
-  const fileInput=document.getElementById('docFileInput');
-  if(fileInput)fileInput.value='';
-  const noteInput=document.getElementById('noteInput');
-  if(noteInput)noteInput.value='';
+  docQueue = [];
+  const qEl      = document.getElementById('docQueue');
+  const progEl   = document.getElementById('docProgressList');
+  const uploadBtn= document.getElementById('docUploadBtn');
+  if(qEl) qEl.innerHTML = '';
+  if(progEl) progEl.innerHTML = '';
+  if(uploadBtn) uploadBtn.style.display = 'none';
+  const fileInput = document.getElementById('docFileInput');
+  if(fileInput) fileInput.value = '';
+  const noteInput = document.getElementById('noteInput');
+  if(noteInput) noteInput.value = '';
 
-  const sh=getStartHour(job);
-  const dur=getDuration(getJobType(job),getEngineerName(job)); // ← smart duration in modal too
-  const timeStr=sh!==null?`${fmtTime(sh)} – ${fmtTime(sh+dur)}`:'Time TBC';
-  const jid=job.jobId||job._id;
+  const sh     = getStartHour(job);
+  const dur    = getDuration(getJobType(job), getEngineerName(job));
+  const timeStr= sh !== null ? `${fmtTime(sh)} – ${fmtTime(sh + dur)}` : 'Time TBC';
+  const jid    = job.jobId || job._id;
 
-  document.getElementById('mJobId').textContent=`# ${jid}`;
-  document.getElementById('mJobTitle').textContent=getJobType(job)||'Job Details';
-  document.getElementById('mInfoGrid').innerHTML=`
+  document.getElementById('mJobId').textContent   = `# ${jid}`;
+  document.getElementById('mJobTitle').textContent = getJobType(job) || 'Job Details';
+  document.getElementById('mInfoGrid').innerHTML = `
     <div class="modal-info-item"><div class="modal-info-lbl">Customer</div><div class="modal-info-val">${esc(getCustomerName(job))}</div></div>
     <div class="modal-info-item"><div class="modal-info-lbl">Time</div><div class="modal-info-val">${timeStr}</div></div>
     <div class="modal-info-item"><div class="modal-info-lbl">Postcode</div><div class="modal-info-val">${esc(getPostcode(job))}</div></div>
-    <div class="modal-info-item"><div class="modal-info-lbl">Contact</div><div class="modal-info-val">${esc(getPhone(job)||'—')}</div></div>
-    ${activeJobAddress?`<div class="modal-info-item" style="grid-column:1/-1"><div class="modal-info-lbl">Address</div><div class="modal-info-val">${esc(activeJobAddress)}</div></div>`:''}
+    <div class="modal-info-item"><div class="modal-info-lbl">Contact</div><div class="modal-info-val">${esc(getPhone(job) || '—')}</div></div>
+    ${activeJobAddress ? `<div class="modal-info-item" style="grid-column:1/-1"><div class="modal-info-lbl">Address</div><div class="modal-info-val">${esc(activeJobAddress)}</div></div>` : ''}
   `;
 
-  const cur=getJobStatus(job);
+  const cur = getJobStatus(job);
   document.querySelectorAll('.status-option').forEach(el=>{
     el.classList.remove('selected');
-    if(statusClass(cur)===statusClass(el.dataset.status)){el.classList.add('selected');selectedStatus=el.dataset.status;}
+    if(statusClass(cur) === statusClass(el.dataset.status)){ el.classList.add('selected'); selectedStatus = el.dataset.status; }
   });
 
   document.getElementById('abortSection').classList.remove('show');
-  document.getElementById('abortCode').value='';
+  document.getElementById('abortCode').value = '';
   document.getElementById('navigateSection').classList.remove('show');
-  document.getElementById('submitStatusBtn').disabled=false;
+  document.getElementById('submitStatusBtn').disabled = false;
 
-  if(cur==='en-route') buildNavigateSection();
+  if(cur === 'en-route') buildNavigateSection();
 
   renderExistingNotes(job);
   loadJobDocs(jobDocId);
@@ -1611,141 +1685,141 @@ window.openJobModal=function(jobDocId){
 };
 
 function buildNavigateSection(){
-  const fullAddress=[activeJobAddress,activeJobPostcode].filter(Boolean).join(', ');
-  const queryStr=encodeURIComponent(fullAddress||activeJobPostcode);
-  const mapsUrl=`https://www.google.com/maps/dir/?api=1&destination=${queryStr}`;
-  document.getElementById('navigateAddress').textContent=fullAddress||activeJobPostcode||'No address available';
-  document.getElementById('mapsLink').href=mapsUrl;
+  const fullAddress = [activeJobAddress, activeJobPostcode].filter(Boolean).join(', ');
+  const queryStr    = encodeURIComponent(fullAddress || activeJobPostcode);
+  const mapsUrl     = `https://www.google.com/maps/dir/?api=1&destination=${queryStr}`;
+  document.getElementById('navigateAddress').textContent = fullAddress || activeJobPostcode || 'No address available';
+  document.getElementById('mapsLink').href = mapsUrl;
   document.getElementById('copyAddressBtn').classList.remove('copied');
-  document.getElementById('copyAddressBtn').innerHTML=`
+  document.getElementById('copyAddressBtn').innerHTML = `
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
     Copy Address`;
   document.getElementById('navigateSection').classList.add('show');
 }
 
-window.selectStatus=function(el){
+window.selectStatus = function(el){
   document.querySelectorAll('.status-option').forEach(e=>e.classList.remove('selected'));
   el.classList.add('selected');
-  selectedStatus=el.dataset.status;
-  document.getElementById('submitStatusBtn').disabled=false;
-  document.getElementById('abortSection').classList.toggle('show',selectedStatus==='abort');
-  if(selectedStatus!=='abort') document.getElementById('abortCode').value='';
-  if(selectedStatus==='en-route') buildNavigateSection();
+  selectedStatus = el.dataset.status;
+  document.getElementById('submitStatusBtn').disabled = false;
+  document.getElementById('abortSection').classList.toggle('show', selectedStatus === 'abort');
+  if(selectedStatus !== 'abort') document.getElementById('abortCode').value = '';
+  if(selectedStatus === 'en-route') buildNavigateSection();
   else document.getElementById('navigateSection').classList.remove('show');
 };
 
-window.copyAddress=function(){
-  const fullAddress=[activeJobAddress,activeJobPostcode].filter(Boolean).join(', ');
-  if(!fullAddress){toast('No address to copy','err');return;}
-  const btn=document.getElementById('copyAddressBtn');
-  const setCopied=()=>{
+window.copyAddress = function(){
+  const fullAddress = [activeJobAddress, activeJobPostcode].filter(Boolean).join(', ');
+  if(!fullAddress){ toast('No address to copy', 'err'); return; }
+  const btn = document.getElementById('copyAddressBtn');
+  const setCopied = () => {
     btn.classList.add('copied');
-    btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
-    toast('Address copied ✓','ok');
-    setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Address`;},2500);
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+    toast('Address copied ✓', 'ok');
+    setTimeout(()=>{ btn.classList.remove('copied'); btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Address`; }, 2500);
   };
-  if(navigator.clipboard?.writeText){navigator.clipboard.writeText(fullAddress).then(setCopied).catch(()=>legacyCopy(fullAddress,setCopied));}
-  else legacyCopy(fullAddress,setCopied);
+  if(navigator.clipboard?.writeText){ navigator.clipboard.writeText(fullAddress).then(setCopied).catch(()=>legacyCopy(fullAddress,setCopied)); }
+  else legacyCopy(fullAddress, setCopied);
 };
-function legacyCopy(text,onSuccess){
-  const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:-999px;opacity:0';
-  document.body.appendChild(ta);ta.select();
-  try{document.execCommand('copy');onSuccess();}catch(e){toast('Please copy manually: '+text,'err');}
+function legacyCopy(text, onSuccess){
+  const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;top:-999px;opacity:0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); onSuccess(); } catch(e){ toast('Please copy manually: '+text, 'err'); }
   document.body.removeChild(ta);
 }
 
-window.closeModal=function(){
+window.closeModal = function(){
   document.getElementById('modalOverlay').classList.remove('open');
-  activeJobId=null;selectedStatus=null;activeJobAddress='';activeJobPostcode='';
-  docQueue=[];
+  activeJobId = null; selectedStatus = null; activeJobAddress = ''; activeJobPostcode = '';
+  docQueue = [];
 };
 
 /* ── Submit status + notes ── */
-window.submitStatus=async function(){
-  if(!selectedStatus&&!document.getElementById('noteInput').value.trim()&&!activeJobId) return;
+window.submitStatus = async function(){
+  if(!selectedStatus && !document.getElementById('noteInput').value.trim() && !activeJobId) return;
 
-  const abortCode=selectedStatus==='abort'?document.getElementById('abortCode').value.trim():'';
-  if(selectedStatus==='abort'&&!abortCode){toast('Please enter an authorisation code to abort.','err');return;}
+  const abortCode = selectedStatus === 'abort' ? document.getElementById('abortCode').value.trim() : '';
+  if(selectedStatus === 'abort' && !abortCode){ toast('Please enter an authorisation code to abort.', 'err'); return; }
 
-  const noteText=document.getElementById('noteInput').value.trim();
-  const btn=document.getElementById('submitStatusBtn');
-  btn.disabled=true;btn.textContent='Saving…';
+  const noteText = document.getElementById('noteInput').value.trim();
+  const btn = document.getElementById('submitStatusBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
 
   try{
-    const now=new Date().toISOString();
-    const updates={};
+    const now = new Date().toISOString();
+    const updates = {};
 
     if(selectedStatus){
-      const statusMap={'en-route':'en-route','in-progress':'in-progress','complete':'complete','abort':'abort'};
-      const historyEntry={status:statusMap[selectedStatus],updatedBy:currentUser.displayName,updatedAt:now,source:'engineer'};
-      if(abortCode) historyEntry.note=abortCode;
-      updates.jobStatus=statusMap[selectedStatus];
-      updates.status=statusMap[selectedStatus];
-      updates.statusUpdatedAt=now;
-      updates.statusUpdatedBy=currentUser.displayName;
-      updates.statusHistory=arrayUnion(historyEntry);
-      if(abortCode){updates.abortCode=abortCode;updates.abortedAt=now;}
+      const statusMap = {'en-route':'en-route','in-progress':'in-progress','complete':'complete','abort':'abort'};
+      const historyEntry = {status:statusMap[selectedStatus], updatedBy:currentUser.displayName, updatedAt:now, source:'engineer'};
+      if(abortCode) historyEntry.note = abortCode;
+      updates.jobStatus        = statusMap[selectedStatus];
+      updates.status           = statusMap[selectedStatus];
+      updates.statusUpdatedAt  = now;
+      updates.statusUpdatedBy  = currentUser.displayName;
+      updates.statusHistory    = arrayUnion(historyEntry);
+      if(abortCode){ updates.abortCode = abortCode; updates.abortedAt = now; }
     }
 
     if(noteText){
-      const noteEntry={text:noteText,addedBy:currentUser.displayName,addedAt:now};
-      updates.notes=arrayUnion(noteEntry);
+      const noteEntry = {text:noteText, addedBy:currentUser.displayName, addedAt:now};
+      updates.notes = arrayUnion(noteEntry);
     }
 
-    if(Object.keys(updates).length>0){
-      await updateDoc(doc(db,'uploaded_jobs',activeJobId),updates);
-      const j=allJobs.find(x=>x._id===activeJobId);
+    if(Object.keys(updates).length > 0){
+      await updateDoc(doc(db,'uploaded_jobs',activeJobId), updates);
+      const j = allJobs.find(x=>x._id===activeJobId);
       if(j){
-        if(selectedStatus){j.jobStatus=updates.jobStatus;j.status=updates.status;j.statusUpdatedAt=now;j.statusUpdatedBy=currentUser.displayName;if(!Array.isArray(j.statusHistory))j.statusHistory=[];}
-        if(noteText){if(!Array.isArray(j.notes))j.notes=[];j.notes.push({text:noteText,addedBy:currentUser.displayName,addedAt:now});}
+        if(selectedStatus){ j.jobStatus=updates.jobStatus; j.status=updates.status; j.statusUpdatedAt=now; j.statusUpdatedBy=currentUser.displayName; if(!Array.isArray(j.statusHistory))j.statusHistory=[]; }
+        if(noteText){ if(!Array.isArray(j.notes))j.notes=[]; j.notes.push({text:noteText, addedBy:currentUser.displayName, addedAt:now}); }
       }
     }
 
-    const msgs=[];
+    const msgs = [];
     if(selectedStatus) msgs.push(`Status: ${statusLabel(selectedStatus)}`);
     if(noteText) msgs.push('Note saved');
-    toast((msgs.join(' · ')||'Saved')+' ✓','ok');
-    closeModal();render();
+    toast((msgs.join(' · ') || 'Saved') + ' ✓', 'ok');
+    closeModal(); render();
   }catch(e){
-    toast('Failed to save: '+(e.code||e.message),'err');
-    btn.disabled=false;btn.textContent='Save';
+    toast('Failed to save: '+(e.code||e.message), 'err');
+    btn.disabled = false; btn.textContent = 'Save';
   }
 };
 
-document.getElementById('noteInput').addEventListener('input',()=>{
-  const hasNote=document.getElementById('noteInput').value.trim().length>0;
-  if(hasNote) document.getElementById('submitStatusBtn').disabled=false;
+document.getElementById('noteInput').addEventListener('input', ()=>{
+  const hasNote = document.getElementById('noteInput').value.trim().length > 0;
+  if(hasNote) document.getElementById('submitStatusBtn').disabled = false;
 });
 
-document.getElementById('modalOverlay').addEventListener('click',e=>{
-  if(e.target===document.getElementById('modalOverlay')) closeModal();
+document.getElementById('modalOverlay').addEventListener('click', e=>{
+  if(e.target === document.getElementById('modalOverlay')) closeModal();
 });
 
 /* ── Nav ── */
-document.getElementById('prevBtn').addEventListener('click',()=>navigate(-1));
-document.getElementById('nextBtn').addEventListener('click',()=>navigate(1));
-document.getElementById('todayBtn').addEventListener('click',()=>{currentDate=today0();render();});
-document.getElementById('btnDay').addEventListener('click',()=>setView('day'));
-document.getElementById('btnWeek').addEventListener('click',()=>setView('week'));
+document.getElementById('prevBtn').addEventListener('click', ()=>navigate(-1));
+document.getElementById('nextBtn').addEventListener('click', ()=>navigate(1));
+document.getElementById('todayBtn').addEventListener('click', ()=>{ currentDate=today0(); render(); });
+document.getElementById('btnDay').addEventListener('click', ()=>setView('day'));
+document.getElementById('btnWeek').addEventListener('click', ()=>setView('week'));
 
 function navigate(dir){
-  currentDate=new Date(currentDate);
-  currentDate.setDate(currentDate.getDate()+dir*(currentView==='week'?7:1));
+  currentDate = new Date(currentDate);
+  currentDate.setDate(currentDate.getDate() + dir * (currentView === 'week' ? 7 : 1));
   render();
 }
 function setView(v){
-  currentView=v;
-  document.getElementById('btnDay').classList.toggle('active',v==='day');
-  document.getElementById('btnWeek').classList.toggle('active',v==='week');
+  currentView = v;
+  document.getElementById('btnDay').classList.toggle('active', v === 'day');
+  document.getElementById('btnWeek').classList.toggle('active', v === 'week');
   render();
 }
 function syncDatePicker(){}
 
 /* ── Boot ── */
 document.getElementById('loadingOverlay').classList.add('hidden');
-const savedUser=loadSession();
-if(savedUser){currentUser=savedUser;document.getElementById('loginScreen').style.display='none';startApp();}
-else{document.getElementById('loginScreen').style.display='flex';}
+const savedUser = loadSession();
+if(savedUser){ currentUser = savedUser; document.getElementById('loginScreen').style.display='none'; startApp(); }
+else{ document.getElementById('loginScreen').style.display='flex'; }
 </script>
 </body>
 </html>
