@@ -1309,6 +1309,10 @@
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
       Isochrone
     </button>
+    <button class="btn" id="btnAutoRoute" title="Auto-route all unscheduled jobs into the optimal time slots" style="border-color:rgba(0,255,157,0.3);color:var(--accent-green);background:rgba(0,255,157,0.05)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Auto-Route
+    </button>
     <div class="tsep"></div>
     <span id="jobCountLbl"></span>
   </div>
@@ -1640,6 +1644,8 @@ function startRealTimeListener(){
           toast(`${allJobs.length} job${allJobs.length!==1?'s':''} loaded`);
           render();
           document.getElementById('loading-overlay').classList.add('hidden');
+          // Auto-route unscheduled jobs after postcodes + eng data have loaded
+          setTimeout(() => autoRouteUnscheduledJobs(true), 1800);
           return;
         }
         let changedCount=0;const updatedIds=[];const newPostcodes=[];
@@ -1733,6 +1739,156 @@ async function persistUpdate(jobId,updates,job){
     if(j){j.statusUpdatedAt=now;j.statusUpdatedBy='Admin';if(!Array.isArray(j.statusHistory))j.statusHistory=[];if(!j.statusHistory.some(e=>e.updatedAt===now))j.statusHistory.push(historyEntry);}
     toast("Saved ✓");
   }catch(err){console.error(err);toast("Save failed: "+(err.code||err.message),"error");}
+}
+
+/* ─── Auto-Route ─────────────────────────────────────────────── */
+
+/**
+ * For every job that is assigned to an engineer and has a date but no startHour,
+ * find and persist the optimal time slot that minimises total route drive time.
+ * @param {boolean} silent - if true, suppresses the "nothing to route" toast (for auto-triggers)
+ */
+async function autoRouteUnscheduledJobs(silent = false) {
+  const toRoute = allJobs.filter(j =>
+    j.engineerName && j.dateOfJob && getStartHour(j) === null
+  );
+  if (!toRoute.length) {
+    if (!silent) toast('No unscheduled jobs to route', 'info');
+    return;
+  }
+
+  // Pre-geocode all relevant postcodes so driveMinutes() works synchronously
+  const allPcs = [...new Set([
+    ...toRoute.map(j => j.postcode),
+    ...allJobs.map(j => j.postcode),
+    ...[...engPostcodes.values()]
+  ].filter(Boolean))];
+  await geocodePostcodes(allPcs);
+
+  // Group unscheduled jobs by engineer + dateOfJob
+  const groups = new Map();
+  toRoute.forEach(job => {
+    const key = `${job.engineerName}|||${job.dateOfJob}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(job);
+  });
+
+  const pendingUpdates = [];
+
+  for (const [, unscheduled] of groups) {
+    const eng     = unscheduled[0].engineerName;
+    const dateStr = unscheduled[0].dateOfJob;
+
+    // Mutable local schedule: already-placed jobs for this engineer on this date
+    const scheduled = allJobs
+      .filter(j => j.engineerName === eng && j.dateOfJob === dateStr && getStartHour(j) !== null)
+      .map(j => ({ ...j }))
+      .sort((a, b) => getStartHour(a) - getStartHour(b));
+
+    for (const job of unscheduled) {
+      const bestHour = findBestSlot(job, scheduled, eng);
+      if (bestHour === null) continue;
+
+      // Insert into local schedule so subsequent jobs in this group are placed correctly
+      scheduled.push({ ...job, startHour: bestHour });
+      scheduled.sort((a, b) => getStartHour(a) - getStartHour(b));
+
+      // Optimistically update in-memory so render() shows changes immediately
+      const idx = allJobs.findIndex(j => j._id === job._id);
+      if (idx !== -1) allJobs[idx].startHour = bestHour;
+
+      pendingUpdates.push({ jobId: job._id, startHour: bestHour, job });
+    }
+  }
+
+  if (!pendingUpdates.length) {
+    if (!silent) toast('Could not find suitable slots for any jobs', 'info');
+    return;
+  }
+
+  render();
+  if (!silent) toast(`Auto-routing ${pendingUpdates.length} job${pendingUpdates.length !== 1 ? 's' : ''}…`, 'info');
+
+  for (const { jobId, startHour, job } of pendingUpdates) {
+    await persistUpdate(jobId, { startHour }, job);
+  }
+
+  toast(`⚡ ${pendingUpdates.length} job${pendingUpdates.length !== 1 ? 's' : ''} auto-routed into optimal slots`);
+}
+
+/**
+ * Finds the best 30-minute-aligned start hour for `newJob` within `schedJobs`.
+ * Scores each candidate slot by the net extra drive time added to the route:
+ *   score = drive(prev→job) + drive(job→next) − drive(prev→next)
+ * Falls back to earliest fitting slot when postcode data is unavailable.
+ * Returns a decimal hour (e.g. 9.5 = 09:30) or null if no valid slot found.
+ */
+function findBestSlot(newJob, schedJobs, engName) {
+  const dur    = getDuration(newJob.jobType, newJob.engineerName || engName);
+  const engKey = (newJob.engineerName || engName || '').trim().toLowerCase();
+  const homePc = engPostcodes.get(engKey) || '';
+  const STEP   = 0.5;   // 30-minute resolution
+  const BUFFER = 3;     // minutes of tolerance on travel checks
+
+  let bestHour  = null;
+  let bestScore = Infinity;
+
+  for (let h = DAY_START; h <= DAY_END_MIN - dur + 0.001; h += STEP) {
+    const endH = h + dur;
+
+    // ── 1. Overlap check ──────────────────────────────────────
+    let overlaps = false;
+    for (const sj of schedJobs) {
+      const sjS = getStartHour(sj);
+      const sjE = sjS + getDuration(sj.jobType, sj.engineerName || engName);
+      if (h < sjE - 0.001 && endH > sjS + 0.001) { overlaps = true; break; }
+    }
+    if (overlaps) continue;
+
+    // ── 2. Find adjacent jobs (schedJobs is sorted by startHour) ──
+    let prevJob = null, nextJob = null;
+    for (const sj of schedJobs) {
+      const sjE = getStartHour(sj) + getDuration(sj.jobType, sj.engineerName || engName);
+      if (sjE <= h + 0.001) prevJob = sj;
+      else break;
+    }
+    for (const sj of schedJobs) {
+      const sjS = getStartHour(sj);
+      if (sjS >= endH - 0.001) { nextJob = sj; break; }
+    }
+
+    // ── 3. Travel feasibility: prev → this job ────────────────
+    const prevPc = prevJob ? prevJob.postcode : homePc;
+    if (prevPc && newJob.postcode) {
+      const travelIn = driveMinutes(prevPc, newJob.postcode);
+      if (travelIn !== null) {
+        const prevEnd = prevJob
+          ? (getStartHour(prevJob) + getDuration(prevJob.jobType, prevJob.engineerName || engName))
+          : DAY_START;
+        if (travelIn > (h - prevEnd) * 60 + BUFFER) continue;
+      }
+    }
+
+    // ── 4. Travel feasibility: this job → next ────────────────
+    if (nextJob && newJob.postcode && nextJob.postcode) {
+      const travelOut = driveMinutes(newJob.postcode, nextJob.postcode);
+      if (travelOut !== null) {
+        if (travelOut > (getStartHour(nextJob) - endH) * 60 + BUFFER) continue;
+      }
+    }
+
+    // ── 5. Score = net extra driving added to route ───────────
+    const prevPcS = prevJob ? prevJob.postcode : homePc;
+    const nextPcS = nextJob ? nextJob.postcode : null;
+    const d1 = (prevPcS && newJob.postcode) ? (driveMinutes(prevPcS, newJob.postcode) ?? 0) : 0;
+    const d2 = (newJob.postcode && nextPcS)  ? (driveMinutes(newJob.postcode, nextPcS)  ?? 0) : 0;
+    const d0 = (prevPcS && nextPcS)           ? (driveMinutes(prevPcS, nextPcS)           ?? 0) : 0;
+    const score = d1 + d2 - d0;
+
+    if (score < bestScore) { bestScore = score; bestHour = h; }
+  }
+
+  return bestHour;
 }
 
 /* ─── Render ────────────────────────────────────────────────── */
@@ -2208,6 +2364,7 @@ document.getElementById("btnDay").onclick=()=>setView("day");
 document.getElementById("btnWeek").onclick=()=>setView("week");
 document.getElementById("datePicker").onchange=e=>{const[y,mo,d]=e.target.value.split("-").map(Number);currentDate=new Date(y,mo-1,d);currentDate.setHours(0,0,0,0);render();};
 document.getElementById("modalClose").onclick=closeModal;
+document.getElementById('btnAutoRoute').addEventListener('click', () => autoRouteUnscheduledJobs(false));
 
 document.getElementById('nearbyTrack').addEventListener('click',()=>{
   nearbyActive=!nearbyActive;
