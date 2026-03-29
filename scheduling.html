@@ -1508,6 +1508,7 @@ let openModalJobId=null, unsubscribe=null, allAbsences=[], unsubAbsences=null, d
 let nearbyActive=false, nearbySelectedJob=null;
 let engPostcodes=new Map();
 let engIsoMinutes=new Map();
+let engRealNames=new Map();
 let lightboxImages=[], lightboxIndex=0;
 
 /* ─── Postcode geocode cache ─────────────────────────────────── */
@@ -1757,7 +1758,71 @@ async function persistUpdate(jobId,updates,job){
   }catch(err){console.error(err);toast("Save failed: "+(err.code||err.message),"error");}
 }
 
-/* ─── Auto-Route ─────────────────────────────────────────────── */
+/* ─── Auto-Assign & Auto-Route ───────────────────────────────── */
+
+/**
+ * Assigns jobs with no engineerName to the optimal engineer and time slot
+ * across all available engineers, abiding by their schedule and isochrone rules.
+ */
+async function autoAssignJobs(silent = false) {
+  const unassigned = allJobs.filter(j => !j.engineerName && j.dateOfJob);
+  if (!unassigned.length) {
+    if (!silent) toast('No unassigned jobs to allocate', 'info');
+    return;
+  }
+
+  // Pre-geocode
+  const allPcs = [...new Set([
+    ...unassigned.map(j => j.postcode),
+    ...allJobs.map(j => j.postcode),
+    ...[...engPostcodes.values()]
+  ].filter(Boolean))];
+  await geocodePostcodes(allPcs);
+
+  const pendingUpdates = [];
+
+  for (const job of unassigned) {
+    let bestEng = null, bestHour = null, bestScore = Infinity;
+
+    for (const [engKey, realName] of engRealNames) {
+      const scheduled = allJobs
+        .filter(j => j.engineerName === realName && j.dateOfJob === job.dateOfJob && getStartHour(j) !== null)
+        .sort((a, b) => getStartHour(a) - getStartHour(b));
+
+      // We ask findBestSlot to return { hour, score }
+      const res = findBestSlot(job, scheduled, realName, true);
+      if (res && res.hour !== null && res.score < bestScore) {
+        bestScore = res.score;
+        bestHour = res.hour;
+        bestEng = realName;
+      }
+    }
+
+    if (bestEng !== null) {
+      job.engineerName = bestEng;
+      if (bestHour !== null) job.startHour = bestHour;
+
+      pendingUpdates.push({ jobId: job._id, engineerName: bestEng, startHour: bestHour, job });
+      
+      const idx = allJobs.findIndex(j => j._id === job._id);
+      if (idx !== -1) {
+        allJobs[idx].engineerName = bestEng;
+        allJobs[idx].startHour = bestHour;
+      }
+    }
+  }
+
+  if (pendingUpdates.length) {
+    render();
+    if (!silent) toast(`Auto-assigning ${pendingUpdates.length} job(s)…`, 'info');
+    for (const { jobId, engineerName, startHour, job } of pendingUpdates) {
+      await persistUpdate(jobId, { engineerName, startHour }, job);
+    }
+    toast(`👷 ${pendingUpdates.length} job(s) auto-assigned successfully`);
+  } else {
+    if (!silent) toast('Could not find suitable engineers/slots for the unassigned jobs', 'info');
+  }
+}
 
 /**
  * For every job that is assigned to an engineer and has a date but no startHour,
@@ -1838,8 +1903,9 @@ async function autoRouteUnscheduledJobs(silent = false) {
  *   score = drive(prev→job) + drive(job→next) − drive(prev→next)
  * Falls back to earliest fitting slot when postcode data is unavailable.
  * Returns a decimal hour (e.g. 9.5 = 09:30) or null if no valid slot found.
+ * If returnScore is true, returns { hour, score }.
  */
-function findBestSlot(newJob, schedJobs, engName) {
+function findBestSlot(newJob, schedJobs, engName, returnScore = false) {
   const dur    = getDuration(newJob.jobType, newJob.engineerName || engName);
   const engKey = (newJob.engineerName || engName || '').trim().toLowerCase();
   const homePc = engPostcodes.get(engKey) || '';
@@ -1882,6 +1948,12 @@ function findBestSlot(newJob, schedJobs, engName) {
           ? (getStartHour(prevJob) + getDuration(prevJob.jobType, prevJob.engineerName || engName))
           : DAY_START;
         if (travelIn > (h - prevEnd) * 60 + BUFFER) continue;
+
+        // Iso limit check: if this is first job, check against engineer's max limit
+        if (!prevJob) {
+          const isoMins = engIsoMinutes.get(engKey) || 0;
+          if (isoMins > 0 && travelIn > isoMins) continue;
+        }
       }
     }
 
@@ -1904,7 +1976,7 @@ function findBestSlot(newJob, schedJobs, engName) {
     if (score < bestScore) { bestScore = score; bestHour = h; }
   }
 
-  return bestHour;
+  return returnScore ? { hour: bestHour, score: bestScore } : bestHour;
 }
 
 /* ─── Render ────────────────────────────────────────────────── */
