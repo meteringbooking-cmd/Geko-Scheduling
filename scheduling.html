@@ -779,10 +779,17 @@
     padding: 5px 8px; cursor: grab;
     z-index: 10;
     display: flex; flex-direction: column; justify-content: space-between;
-    transition: box-shadow 0.18s, border-color 0.18s;
+    transition: box-shadow 0.18s, border-color 0.18s, min-width 0.22s cubic-bezier(0.32,0.72,0,1), max-height 0.22s ease;
     overflow: visible;
   }
-  .job-card-day:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.8); border-color: rgba(0,255,157,0.3); z-index: 20; }
+  /* Narrow cards expand on hover so their content is readable */
+  .job-card-day:hover {
+    box-shadow: 0 6px 28px rgba(0,0,0,0.8);
+    border-color: rgba(0,255,157,0.3);
+    z-index: 20;
+    min-width: 150px;
+    overflow: hidden;
+  }
   html.light-mode .job-card-day:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.12); border-color: rgba(0,184,110,0.4); }
   .job-card-day.is-dragging { opacity: 0.2; cursor: grabbing; }
   .job-card-day.staging-card {
@@ -1436,7 +1443,8 @@ const db = getFirestore(initializeApp({
 }));
 
 /* ─── Constants ─────────────────────────────────────────────── */
-const HOUR_W = 200, ROW_H = 96, DAY_START = 7, DAY_END_MIN = 18, STAGING_W = 160;
+let HOUR_W = 110; // recalculated on every render() — see calcHourWidth()
+const ROW_H = 96, DAY_START = 8, DAY_END_MIN = 18, STAGING_W = 160;
 const DRAG_THRESHOLD = 5;
 const IMAGE_EXTS = new Set(['jpg','jpeg','png','gif','webp','heic','bmp','svg']);
 const AVG_SPEED_KMH = 53.1;
@@ -1827,7 +1835,7 @@ function findBestSlot(newJob, schedJobs, engName) {
   const dur    = getDuration(newJob.jobType, newJob.engineerName || engName);
   const engKey = (newJob.engineerName || engName || '').trim().toLowerCase();
   const homePc = engPostcodes.get(engKey) || '';
-  const STEP   = 0.5;   // 30-minute resolution
+  const STEP   = 0.25;  // 15-minute resolution
   const BUFFER = 3;     // minutes of tolerance on travel checks
 
   let bestHour  = null;
@@ -1892,11 +1900,23 @@ function findBestSlot(newJob, schedJobs, engName) {
 }
 
 /* ─── Render ────────────────────────────────────────────────── */
+
+/** Recalculates HOUR_W so the full timeline fits the viewport width without horizontal scroll. */
+function calcHourWidth(dayEnd){
+  const sidebarEl = document.getElementById('sidebar');
+  const sidebarW  = sidebarEl && sidebarEl.classList.contains('expanded') ? 210 : 64;
+  const engColW   = 160;
+  const available = window.innerWidth - sidebarW - engColW - STAGING_W - 4;
+  const hours     = Math.max(1, dayEnd - DAY_START);
+  return Math.max(60, Math.floor(available / hours));
+}
+
 function render(){
   closeStackPopup();syncPicker();
   const cols=getCols();
   const colJobs=allJobs.filter(j=>{const jd=parseDate(j.dateOfJob);return jd&&cols.some(c=>sameDay(c,jd));});
   const dayEnd=currentView==="day"?calcDayEnd(colJobs):DAY_END_MIN;
+  if(currentView==="day") HOUR_W = calcHourWidth(dayEnd); // fit timeline to viewport
   renderHeader(cols,dayEnd);renderRows(cols,dayEnd);updateLabel(cols);
   if(currentView==="day")updateNowLine(dayEnd);
   applySearch();
@@ -1907,6 +1927,9 @@ function render(){
   applyNearbyFilter();
   if(document.getElementById('isoPanel')?.classList.contains('open'))renderIsoPanel();
 }
+
+// Re-render on window resize so HOUR_W stays accurate
+window.addEventListener('resize', () => { if(allJobs.length) render(); });
 
 function updateLabel(cols){
   document.getElementById("dateLbl").textContent=currentView==="day"
@@ -1992,11 +2015,15 @@ function renderRows(cols,dayEnd){
 
       const slotWrap=document.createElement("div");slotWrap.className="day-slots";slotWrap.style.width=`${HOUR_W*hours}px`;
       for(let h=DAY_START;h<dayEnd;h++){
-        for(const half of[0,0.5]){
-          const s=document.createElement("div");s.className="day-slot";s.style.width=(HOUR_W/2)+"px";
-          s.dataset.drop="slot";s.dataset.eng=eng;s.dataset.date=toUKStr(col);s.dataset.hour=String(h+half);
-          const lbl=document.createElement("span");lbl.className="slot-label";lbl.textContent=fmtTime(h+half);
-          s.appendChild(lbl);slotWrap.appendChild(s);
+        for(const quarter of[0,0.25,0.5,0.75]){
+          const s=document.createElement("div");s.className="day-slot";s.style.width=(HOUR_W/4)+"px";
+          s.dataset.drop="slot";s.dataset.eng=eng;s.dataset.date=toUKStr(col);s.dataset.hour=String(h+quarter);
+          // Only label on the hour and half-hour to avoid clutter
+          if(quarter===0||quarter===0.5){
+            const lbl=document.createElement("span");lbl.className="slot-label";lbl.textContent=fmtTime(h+quarter);
+            s.appendChild(lbl);
+          }
+          slotWrap.appendChild(s);
         }
       }
       row.appendChild(slotWrap);
