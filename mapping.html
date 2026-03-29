@@ -27,7 +27,7 @@
         color: var(--text-main);
         min-height: 100vh;
         display: flex;
-        overflow: hidden; /* sidebar fixed, main scrolls */
+        overflow: hidden;
     }
 
     body::before {
@@ -828,7 +828,6 @@ const CATEGORIES = [
 ];
 
 // ── State ──────────────────────────────────────────────────────────────────────
-// mapping: { fieldKey: true/false }
 let mapping = {};
 
 // Build a flat list of all field keys
@@ -837,13 +836,18 @@ const ALL_FIELDS = CATEGORIES.flatMap(c => c.fields);
 // ── Firebase ───────────────────────────────────────────────────────────────────
 const MAPPING_DOC = doc(db, "mapping", "config");
 
+// FIX: Use `f in saved` to correctly distinguish explicit false from missing keys
 async function loadMapping() {
     try {
         const snap = await getDoc(MAPPING_DOC);
         if (snap.exists()) {
-            mapping = snap.data() || {};
+            const saved = snap.data() || {};
+            // Merge: any field present in saved doc uses its value; missing fields default to true
+            ALL_FIELDS.forEach(f => {
+                mapping[f] = f in saved ? saved[f] : true;
+            });
         } else {
-            // Default: all enabled
+            // No doc yet — default all to true
             ALL_FIELDS.forEach(f => { mapping[f] = true; });
         }
     } catch (err) {
@@ -855,17 +859,27 @@ async function loadMapping() {
     updateCounts();
 }
 
+// FIX: Build fullMapping with every field as a strict boolean before writing
 async function saveMapping() {
     const btn = document.getElementById("saveBtn");
-    btn.textContent = "Saving…";
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Saving…`;
     btn.disabled = true;
+
+    // Ensure every field is explicitly present as a strict boolean
+    const fullMapping = {};
+    ALL_FIELDS.forEach(f => {
+        fullMapping[f] = mapping[f] === true;
+    });
+
     try {
-        await setDoc(MAPPING_DOC, mapping);
+        await setDoc(MAPPING_DOC, fullMapping);
+        mapping = fullMapping; // keep local state in sync
         showToast("Configuration saved successfully", "success");
     } catch (err) {
         console.error("Save error:", err);
         showToast("Failed to save — check connection", "error");
     }
+
     btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Configuration`;
     btn.disabled = false;
 }
