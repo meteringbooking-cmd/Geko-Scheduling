@@ -123,22 +123,17 @@ html.light-mode .modal-drag-handle { background: rgba(0,0,0,0.15); }
 html.light-mode ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
 
 /* ── Drive-time badges — VERTICAL layout ── */
-/*
-  Badges sit in the GUTTER column, centred vertically in the gap between two jobs.
-  They are absolutely positioned by `top` (px from grid top), not by `left`.
-*/
 .dt-badge {
   position: absolute;
-  /* horizontal: sit in the gutter strip to the left of the cards */
   left: 0;
   right: 0;
   z-index: 25;
   display: flex;
-  flex-direction: column;   /* vertical stack: connector → pill → connector */
+  flex-direction: column;
   align-items: center;
   pointer-events: none;
   gap: 0;
-  transform: translateY(-50%); /* centre on the midpoint pixel */
+  transform: translateY(-50%);
 }
 .dt-pill {
   display: flex; align-items: center; gap: 3px;
@@ -162,7 +157,6 @@ html.light-mode .dt-pill.dt-danger { background: rgba(217,53,69,0.12); border-co
 html.light-mode .dt-connector { background: rgba(0,0,0,0.12); }
 html.light-mode .dt-connector.danger { background: rgba(217,53,69,0.5); }
 
-/* conflict highlight on TL cards */
 .tl-job-card.iso-violation {
   animation: isoFlash 1.8s ease-in-out infinite !important;
 }
@@ -177,6 +171,31 @@ html.light-mode .dt-connector.danger { background: rgba(217,53,69,0.5); }
   text-transform: uppercase; letter-spacing: 0.3px; pointer-events: none; z-index: 21;
   white-space: nowrap; box-shadow: 0 2px 6px rgba(255,75,92,0.5);
 }
+
+/* ── Live indicator ── */
+#liveIndicator {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 20px;
+  border: 1px solid rgba(0,255,157,0.2);
+  background: rgba(0,255,157,0.05);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  color: var(--accent); transition: all 0.3s;
+  flex-shrink: 0;
+}
+#liveIndicator.connecting { border-color: rgba(0,200,255,0.2); background: rgba(0,200,255,0.05); color: var(--accent2); }
+#liveIndicator.error { border-color: rgba(255,75,92,0.2); background: rgba(255,75,92,0.05); color: var(--danger); }
+html.light-mode #liveIndicator { border-color: rgba(0,184,110,0.25); background: rgba(0,184,110,0.06); }
+html.light-mode #liveIndicator.connecting { border-color: rgba(0,153,204,0.25); background: rgba(0,153,204,0.06); }
+html.light-mode #liveIndicator.error { border-color: rgba(217,53,69,0.25); background: rgba(217,53,69,0.06); }
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px rgba(0,255,157,0.8);
+  animation: livePulse 2s ease-in-out infinite;
+}
+#liveIndicator.connecting .live-dot { background: var(--accent2); box-shadow: 0 0 6px rgba(0,200,255,0.8); }
+#liveIndicator.error .live-dot { background: var(--danger); animation: none; box-shadow: none; }
+@keyframes livePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(0.8)} }
 
 /* ── Theme toggle ── */
 #themeToggle {
@@ -272,7 +291,13 @@ body::before {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   transition: background 0.3s, border-color 0.3s;
 }
-.topbar-logo { height: 32px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(0,255,157,0.35)); }
+.topbar-logo {
+  height: 40px; width: 40px; object-fit: cover; object-position: center;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 8px rgba(0,255,157,0.35));
+  border-radius: 8px;
+}
+html.light-mode .topbar-logo { filter: drop-shadow(0 0 6px rgba(0,184,110,0.3)); }
 .topbar-center { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; min-width: 0; }
 .view-toggle { display: flex; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; padding: 3px; gap: 2px; flex-shrink: 0; transition: background 0.3s, border-color 0.3s; }
 .view-btn { height: 32px; padding: 0 14px; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; background: transparent; color: var(--text-muted); font-family: 'DM Sans', sans-serif; transition: all 0.18s; white-space: nowrap; }
@@ -317,10 +342,6 @@ body::before {
 /* ── DAY VIEW TIMELINE ── */
 .timeline-scroll { overflow-x: auto; overflow-y: visible; -webkit-overflow-scrolling: touch; }
 
-/*
-  Layout: gutter (time labels) on the left, then a badge column, then the cards column.
-  The badge column is where drive-time pills live, vertically between job cards.
-*/
 .timeline-wrap {
   display: flex;
   position: relative;
@@ -344,15 +365,12 @@ body::before {
   transition: color 0.3s;
 }
 
-/* Badge column — narrow strip where drive-time pills are placed vertically */
 .timeline-badge-col {
   width: 80px;
   flex-shrink: 0;
   position: relative;
-  /* no overflow:hidden so pills can extend slightly outside */
 }
 
-/* Main card grid */
 .timeline-grid {
   flex: 1;
   position: relative;
@@ -389,6 +407,21 @@ html.light-mode .tl-job-card::before { background: linear-gradient(135deg, rgba(
 .tl-job-card.status-in-progress { border-left-color: var(--warning);  background: rgba(245,158,11,0.04); }
 .tl-job-card.status-abort       { border-left-color: var(--danger);   background: rgba(255,75,92,0.04); }
 .tl-job-card.status-unassigned  { border-left-color: var(--text-dim); }
+
+/* Flash on live update */
+@keyframes cardFlash {
+  0%   { box-shadow: 0 0 0 0 rgba(0,255,157,0.7); }
+  40%  { box-shadow: 0 0 0 8px rgba(0,255,157,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,255,157,0); }
+}
+.tl-job-card.just-updated { animation: cardFlash 0.8s ease-out forwards; }
+html.light-mode .tl-job-card.just-updated { animation-name: cardFlashLight; }
+@keyframes cardFlashLight {
+  0%   { box-shadow: 0 0 0 0 rgba(0,184,110,0.7); }
+  40%  { box-shadow: 0 0 0 8px rgba(0,184,110,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,184,110,0); }
+}
+
 .tl-card-inner {
   display: flex; align-items: center; gap: 8px;
   min-width: 0; flex: 1; overflow: hidden;
@@ -611,6 +644,10 @@ html.light-mode .nav-btn-copy { background: rgba(0,0,0,0.04); border-color: rgba
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 #toast.ok  { background: rgba(0,20,12,0.97); border: 1px solid rgba(0,255,157,0.4); color: var(--accent); box-shadow: 0 0 24px rgba(0,255,157,0.15),0 8px 32px rgba(0,0,0,0.6); }
 #toast.err { background: rgba(20,5,8,0.97); border: 1px solid rgba(255,75,92,0.4); color: var(--danger); box-shadow: 0 0 24px rgba(255,75,92,0.15),0 8px 32px rgba(0,0,0,0.6); }
+#toast.info { background: rgba(5,14,20,0.97); border: 1px solid rgba(0,200,255,0.4); color: var(--accent2); box-shadow: 0 0 24px rgba(0,200,255,0.1),0 8px 32px rgba(0,0,0,0.6); }
+html.light-mode #toast.ok  { background: rgba(240,255,248,0.99); border-color: rgba(0,184,110,0.4); color: #007a4a; }
+html.light-mode #toast.err { background: rgba(255,240,242,0.99); border-color: rgba(217,53,69,0.4); color: #b02030; }
+html.light-mode #toast.info { background: rgba(240,248,255,0.99); border-color: rgba(0,153,204,0.4); color: #0077aa; }
 
 /* Loading */
 #loadingOverlay { position: fixed; inset: 0; z-index: 8000; background: var(--bg); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; transition: background 0.3s; }
@@ -657,8 +694,9 @@ html.light-mode .nav-btn-copy { background: rgba(0,0,0,0.04); border-color: rgba
 <!-- APP -->
 <div id="app">
   <header class="topbar">
+    <!-- Square Gecko icon — matches scheduling.html sidebar top-left -->
     <img class="topbar-logo"
-      src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=xh5pubjr&dl=1"
+      src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1"
       alt="Geko"/>
 
     <div class="topbar-center">
@@ -675,6 +713,12 @@ html.light-mode .nav-btn-copy { background: rgba(0,0,0,0.04); border-color: rgba
     </div>
 
     <div class="topbar-right">
+      <!-- Live indicator -->
+      <div id="liveIndicator" class="connecting">
+        <div class="live-dot"></div>
+        <span id="liveText">Connecting…</span>
+      </div>
+
       <button id="themeToggle" title="Toggle light / dark mode">
         <span id="themeIcon" style="font-size:12px">☀️</span>
         <div class="theme-toggle-track">
@@ -827,7 +871,7 @@ html.light-mode .nav-btn-copy { background: rgba(0,0,0,0.04); border-color: rgba
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, updateDoc, arrayUnion }
+import { getFirestore, collection, getDocs, onSnapshot, doc, updateDoc, arrayUnion }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
@@ -856,6 +900,7 @@ let selectedStatus = null;
 let activeJobAddress = '';
 let activeJobPostcode = '';
 let docQueue = [];
+let unsubscribeJobs = null;
 
 /* ── Job type params ── */
 let jobTypeParams = new Map();
@@ -978,6 +1023,13 @@ function toast(msg, type='ok') {
   t.textContent=msg; t.className=`show ${type}`;
   clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>t.className='',3500);
+}
+
+function setLiveUI(state, text){
+  const el = document.getElementById('liveIndicator');
+  const txt = document.getElementById('liveText');
+  el.className = state === 'live' ? '' : state === 'connecting' ? 'connecting' : 'error';
+  if(txt) txt.textContent = text;
 }
 
 function fmtTimestamp(iso){
@@ -1205,10 +1257,12 @@ document.getElementById('loginName').addEventListener('keydown',e=>{if(e.key==='
 document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginBtn').click();});
 document.getElementById('logoutBtn').addEventListener('click',()=>{
   clearSession();currentUser=null;allJobs=[];
+  if(unsubscribeJobs){unsubscribeJobs();unsubscribeJobs=null;}
   document.getElementById('app').classList.remove('visible');
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('loginName').value='';document.getElementById('loginPass').value='';
   document.getElementById('loginError').classList.remove('show');
+  setLiveUI('connecting','Connecting…');
 });
 
 /* ── App start ── */
@@ -1220,20 +1274,16 @@ function startApp(){
   const initials=(fn[0]+(ln?ln[0]:fn[1]||'')).toUpperCase();
   document.getElementById('userAvatar').textContent=initials;
   document.getElementById('userNameDisplay').textContent=currentUser.displayName;
-  syncDatePicker();loadAndRender();
+  syncDatePicker();loadStaticData();
 }
 
-/* ── Data load ── */
-async function loadAndRender(){
+/* ── Load static data (params/users) then start live listener ── */
+async function loadStaticData(){
   try{
-    const [jobSnap, paramSnap, userSnap] = await Promise.all([
-      getDocs(collection(db,'uploaded_jobs')),
+    const [paramSnap, userSnap] = await Promise.all([
       getDocs(collection(db,'job_type_parameters')),
       getDocs(collection(db,'userdatabase'))
     ]);
-
-    allJobs=[];
-    jobSnap.forEach(d=>allJobs.push({_id:d.id,...d.data()}));
 
     jobTypeParams.clear();
     paramSnap.forEach(d=>{
@@ -1252,15 +1302,89 @@ async function loadAndRender(){
       if(data.postcode) engPostcodes.set(key, data.postcode.trim());
       engIsoMinutes.set(key, data.isochroneMinutes||0);
     });
+  }catch(e){
+    console.warn('Could not load static data:',e);
+  }
+  startLiveListener();
+}
 
-    const allPcs = [
-      ...allJobs.map(j=>getPostcode(j)),
-      ...[...engPostcodes.values()]
-    ].filter(Boolean);
-    await geocodePostcodes(allPcs);
+/* ── Live Firestore listener — replaces old getDocs ── */
+function startLiveListener(){
+  if(unsubscribeJobs){unsubscribeJobs();unsubscribeJobs=null;}
+  setLiveUI('connecting','Connecting…');
 
-    render();
-  }catch(e){toast('Failed to load jobs: '+(e.code||e.message),'err');render();}
+  unsubscribeJobs = onSnapshot(
+    collection(db,'uploaded_jobs'),
+    async (snapshot)=>{
+      const isFirstLoad = allJobs.length === 0;
+
+      if(isFirstLoad){
+        // Initial load
+        allJobs = [];
+        snapshot.forEach(d => allJobs.push({_id:d.id,...d.data()}));
+        const allPcs = [
+          ...allJobs.map(j=>getPostcode(j)),
+          ...[...engPostcodes.values()]
+        ].filter(Boolean);
+        await geocodePostcodes(allPcs);
+        setLiveUI('live', `Live · ${allJobs.length} jobs`);
+        render();
+        document.getElementById('loadingOverlay').classList.add('hidden');
+      } else {
+        // Incremental updates
+        const updatedIds = [];
+        const newPostcodes = [];
+
+        snapshot.docChanges().forEach(change => {
+          const newData = {_id:change.doc.id,...change.doc.data()};
+          if(change.type === 'added'){
+            if(!allJobs.find(j=>j._id===newData._id)){
+              allJobs.push(newData);
+              if(newData.postcode) newPostcodes.push(newData.postcode);
+            }
+          } else if(change.type === 'modified'){
+            const idx = allJobs.findIndex(j=>j._id===newData._id);
+            if(idx !== -1){
+              const old = allJobs[idx];
+              const oldStatus = getJobStatus(old);
+              const newStatus = getJobStatus(newData);
+              allJobs[idx] = newData;
+              if(oldStatus !== newStatus){
+                updatedIds.push(newData._id);
+                toast(`${getJobType(newData)||'Job'} updated: ${statusLabel(newStatus)}`,'info');
+              }
+              if(newData.postcode) newPostcodes.push(newData.postcode);
+            }
+          } else if(change.type === 'removed'){
+            allJobs = allJobs.filter(j=>j._id!==change.doc.id);
+          }
+        });
+
+        if(newPostcodes.length) await geocodePostcodes(newPostcodes);
+        setLiveUI('live', `Live · ${allJobs.length} jobs`);
+        render();
+
+        // Flash updated cards
+        if(updatedIds.length){
+          setTimeout(()=>{
+            updatedIds.forEach(id=>{
+              document.querySelectorAll(`[data-job-doc-id="${id}"]`).forEach(el=>{
+                el.classList.remove('just-updated');
+                void el.offsetWidth; // force reflow
+                el.classList.add('just-updated');
+              });
+            });
+          },60);
+        }
+      }
+    },
+    (error)=>{
+      console.error('Firestore listener error:',error);
+      setLiveUI('error','Disconnected');
+      toast('Live connection lost. Retrying…','err');
+      setTimeout(startLiveListener, 5000);
+    }
+  );
 }
 
 /* ── Filter my jobs ── */
@@ -1275,7 +1399,6 @@ function getMyJobs(){
 
 /* ── Render ── */
 function render(){
-  document.getElementById('loadingOverlay').classList.add('hidden');
   if(currentView==='day') renderDay(); else renderWeek();
   updateDateLabel();
 }
@@ -1295,18 +1418,8 @@ function updateDateLabel(){
   }
 }
 
-/* ══════════════════════════════════════════════════════
-   Drive-time badge renderer — VERTICAL timeline version
-   ══════════════════════════════════════════════════════
-   Badges are placed in the `.timeline-badge-col` element
-   which sits between the gutter and the card grid.
-   Position is controlled by `top` (px from grid top),
-   centred in the gap between two consecutive job cards.
-   `transform: translateY(-50%)` in CSS centres the pill
-   on that midpoint pixel.
-*/
+/* ── Drive-time badge renderer ── */
 function renderDriveTimeBadges(badgeColEl, gridEl, sortedJobs, HOUR_PX, engName){
-  // Clear any previous badges and violation classes
   badgeColEl.querySelectorAll('.dt-badge').forEach(b=>b.remove());
   gridEl.querySelectorAll('.tl-job-card').forEach(c=>{
     c.classList.remove('iso-violation');
@@ -1333,10 +1446,6 @@ function renderDriveTimeBadges(badgeColEl, gridEl, sortedJobs, HOUR_PX, engName)
     }
   }
 
-  /**
-   * Place a badge at `topPx` pixels from the top of the badge column.
-   * The CSS `transform: translateY(-50%)` centres the pill on that pixel.
-   */
   function makeBadge(topPx, driveMins, gapMins, svgIcon, isHomePill){
     const violation = (driveMins !== null) && (
       isHomePill
@@ -1353,7 +1462,7 @@ function renderDriveTimeBadges(badgeColEl, gridEl, sortedJobs, HOUR_PX, engName)
 
     const badge = document.createElement('div');
     badge.className = 'dt-badge';
-    badge.style.top = topPx + 'px';   // ← vertical position
+    badge.style.top = topPx + 'px';
     badge.innerHTML = `
       <div class="${connCls}"></div>
       <div class="dt-pill ${pillCls}">${svgIcon} ${pillText}</div>
@@ -1362,15 +1471,13 @@ function renderDriveTimeBadges(badgeColEl, gridEl, sortedJobs, HOUR_PX, engName)
     return violation;
   }
 
-  // ── Home → first job ──
   if(sortedJobs.length > 0 && homePc){
     const firstJob = sortedJobs[0];
     const sh = getStartHour(firstJob);
     if(sh !== null){
-      // midpoint: halfway between DAY_START (top of grid) and the first job's top edge
       const topFirst  = (sh - DAY_START) * HOUR_PX;
       const midTopPx  = topFirst / 2;
-      if(midTopPx > 10){                          // only show if there's visible space
+      if(midTopPx > 10){
         const driveMins = driveMinutes(homePc, getPostcode(firstJob));
         const violation = makeBadge(midTopPx, driveMins, null, SVG_HOME, true);
         if(violation && driveMins !== null){
@@ -1380,7 +1487,6 @@ function renderDriveTimeBadges(badgeColEl, gridEl, sortedJobs, HOUR_PX, engName)
     }
   }
 
-  // ── Between consecutive jobs ──
   for(let i = 0; i < sortedJobs.length - 1; i++){
     const jobA = sortedJobs[i];
     const jobB = sortedJobs[i + 1];
@@ -1391,10 +1497,9 @@ function renderDriveTimeBadges(badgeColEl, gridEl, sortedJobs, HOUR_PX, engName)
     const durA    = getDuration(getJobType(jobA), getEngineerName(jobA));
     const endA    = shA + durA;
     const gapMins = Math.round((shB - endA) * 60);
-    if(gapMins < 1) continue;                     // jobs overlap or touch — skip
+    if(gapMins < 1) continue;
 
-    // Vertical midpoint: halfway between end of jobA and start of jobB (in px)
-    const topEndA  = (endA - DAY_START) * HOUR_PX;
+    const topEndA   = (endA - DAY_START) * HOUR_PX;
     const topStartB = (shB  - DAY_START) * HOUR_PX;
     const midTopPx  = (topEndA + topStartB) / 2;
 
@@ -1437,7 +1542,6 @@ function renderDay(){
   const scheduled   = myJobs.filter(j=>getStartHour(j)!==null);
   const unscheduled = myJobs.filter(j=>getStartHour(j)===null);
 
-  // Compute day end
   let dayEnd = DAY_END_DEFAULT;
   scheduled.forEach(j=>{
     const fin = getStartHour(j) + getDuration(getJobType(j), getEngineerName(j));
@@ -1509,12 +1613,6 @@ function renderDay(){
     </div>`;
   });
 
-  /*
-    Timeline layout:
-      [gutter: time labels] [badge-col: drive-time pills] [grid: job cards]
-    The badge column is a separate absolutely-positioned strip so pills don't
-    overlap the card content. Both badge-col and grid share the same height.
-  */
   html += `<div class="timeline-scroll">
     <div class="timeline-wrap">
       <div class="timeline-gutter" style="height:${gridHeight}px">${gutterHtml}</div>
@@ -1535,7 +1633,6 @@ function renderDay(){
 
   document.getElementById('mainContent').innerHTML = html;
 
-  // Render drive-time badges AFTER DOM is ready
   const badgeColEl = document.getElementById('tlBadgeCol');
   const gridEl     = document.getElementById('tlGrid');
   if(badgeColEl && gridEl && scheduled.length > 0){
@@ -1555,7 +1652,7 @@ function buildJobCardHTML(job, unscheduled=false){
   const hasAttachments = Array.isArray(job.attachments) && job.attachments.length > 0;
   const notes = getNotes(job);
 
-  return `<div class="job-card status-${sc}" onclick="openJobModal('${job._id}')">
+  return `<div class="job-card status-${sc}" data-job-doc-id="${job._id}" onclick="openJobModal('${job._id}')">
     <div class="job-card-top">
       <div class="job-type">${esc(getJobType(job) || 'Job')}</div>
       <div style="display:flex;align-items:center;gap:8px">
@@ -1613,7 +1710,7 @@ function renderWeek(){
         const dur    = getDuration(getJobType(job), getEngineerName(job));
         const hasNotes = getNotes(job).length > 0;
         const hasAttachments = Array.isArray(job.attachments) && job.attachments.length > 0;
-        html += `<div class="week-job-card ${sc}" onclick="openJobModal('${job._id}')">
+        html += `<div class="week-job-card ${sc}" data-job-doc-id="${job._id}" onclick="openJobModal('${job._id}')">
           <div class="week-job-type">${esc(getJobType(job) || 'Job')}</div>
           <div class="week-job-post">${esc(getPostcode(job))}</div>
           ${sh !== null ? `<div class="week-job-time">${fmtTime(sh)} – ${fmtTime(sh+dur)}</div>` : ''}
@@ -1816,10 +1913,9 @@ function setView(v){
 function syncDatePicker(){}
 
 /* ── Boot ── */
-document.getElementById('loadingOverlay').classList.add('hidden');
 const savedUser = loadSession();
 if(savedUser){ currentUser = savedUser; document.getElementById('loginScreen').style.display='none'; startApp(); }
-else{ document.getElementById('loginScreen').style.display='flex'; }
+else{ document.getElementById('loadingOverlay').classList.add('hidden'); document.getElementById('loginScreen').style.display='flex'; }
 </script>
 </body>
 </html>
