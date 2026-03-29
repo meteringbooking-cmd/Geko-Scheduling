@@ -380,8 +380,7 @@
   }
   html.light-mode .modal-body::-webkit-scrollbar-thumb,
   html.light-mode .iso-panel-body::-webkit-scrollbar-thumb,
-  html.light-mode .scroll-area::-webkit-scrollbar-thumb,
-  html.light-mode .eng-list::-webkit-scrollbar-thumb {
+  html.light-mode .grid-area::-webkit-scrollbar-thumb {
     background: rgba(0,0,0,0.12);
   }
   html.light-mode .card-status-badge.s-complete    { background: rgba(0,184,110,0.12); border-color: rgba(0,184,110,0.35); color: #007a4a; }
@@ -709,21 +708,32 @@
 
   /* SCHEDULE */
   .sched-wrap { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-  .grid-area  { display: flex; flex: 1; overflow: hidden; }
+  /* grid-area is the ONE scroll container — both the name column and timeline live inside.
+     eng-col is sticky-left so names are always visible; everything scrolls as one unit. */
+  .grid-area  {
+    display: flex; flex: 1;
+    overflow: auto;
+  }
+  .grid-area::-webkit-scrollbar { width: 5px; height: 5px; }
+  .grid-area::-webkit-scrollbar-track { background: transparent; }
+  .grid-area::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
   .eng-col {
     width: 160px; min-width: 160px; flex-shrink: 0;
     border-right: 1px solid var(--border-main);
     background: var(--bg-eng-col); display: flex; flex-direction: column;
     transition: background 0.3s;
+    /* Sticky: name column sticks to the left edge of the viewport */
+    position: sticky; left: 0; z-index: 10;
   }
   .eng-col-hdr {
     height: var(--time-h); flex-shrink: 0; display: flex; align-items: center; padding: 0 14px;
     border-bottom: 1px solid var(--border-main); font-size: 11px; font-weight: 600;
     text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);
     background: var(--bg-eng-col-hdr); transition: background 0.3s;
+    /* Sticky top: the "Engineers" label stays visible when scrolling down */
+    position: sticky; top: 0; z-index: 11;
   }
-  .eng-list { overflow-y: auto; flex: 1; }
-  .eng-list::-webkit-scrollbar { display: none; }
+  .eng-list { overflow: visible; flex: 1; } /* grid-area handles all scrolling */
   .eng-row {
     height: var(--row-h); display: flex; align-items: center; gap: 10px;
     padding: 0 14px; border-bottom: 1px solid var(--border-main); flex-shrink: 0;
@@ -738,10 +748,7 @@
   html.light-mode .eng-avatar { color: #fff; }
   .eng-name { font-size: 12px; font-weight: 500; line-height: 1.3; color: var(--text-main); }
   .eng-postcode { font-size: 10px; color: var(--text-muted); letter-spacing: 0.04em; margin-top: 1px; }
-  .scroll-area { flex: 1; overflow: auto; position: relative; }
-  .scroll-area::-webkit-scrollbar { width: 5px; height: 5px; }
-  .scroll-area::-webkit-scrollbar-track { background: transparent; }
-  .scroll-area::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+  .scroll-area { flex: 1; overflow: visible; position: relative; min-width: 0; }
 
   .time-header {
     display: flex; height: var(--time-h); position: sticky; top: 0; z-index: 50;
@@ -1331,7 +1338,7 @@
   <div class="lbar" id="lbar"></div>
   <div class="status-bar"><div class="sdot spin" id="sdot"></div><span id="stxt">Connecting…</span></div>
   <div class="sched-wrap">
-    <div class="grid-area">
+    <div class="grid-area" id="gridArea">
       <div class="eng-col">
         <div class="eng-col-hdr">Engineers</div>
         <div class="eng-list" id="engList"></div>
@@ -1983,7 +1990,8 @@ function renderRows(cols,dayEnd){
     for(let i=0;i<hours;i++){const c=document.createElement("div");c.className="hg-col";c.style.width=HOUR_W+"px";hourGrid.appendChild(c);}
   }else{rowsWrap.style.width="";rowsWrap.style.minWidth="";}
 
-  document.getElementById("scrollArea").onscroll=()=>{engList.scrollTop=document.getElementById("scrollArea").scrollTop;closeStackPopup();};
+  /* Close any open stack popup when the grid scrolls */
+  document.getElementById("gridArea").onscroll = () => { closeStackPopup(); };
 
   engineers.forEach(eng=>{
     const sr=document.createElement("div");
