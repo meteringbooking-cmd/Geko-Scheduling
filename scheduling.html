@@ -1173,6 +1173,11 @@
   @keyframes conflictFlash { 0%{box-shadow:0 0 0 0 rgba(245,158,11,0.9);border-color:rgba(245,158,11,0.9)} 25%{box-shadow:0 0 0 8px rgba(245,158,11,0)} 50%{box-shadow:0 0 0 0 rgba(245,158,11,0.9);border-color:rgba(245,158,11,0.9)} 75%{box-shadow:0 0 0 8px rgba(245,158,11,0)} 100%{box-shadow:0 0 0 0 rgba(245,158,11,0.5);border-color:rgba(245,158,11,0.5)} }
   .job-card-day.needs-realloc, .job-card-week.needs-realloc { animation: conflictFlash 1.4s ease-out forwards; border-color: rgba(245,158,11,0.6) !important; background: rgba(245,158,11,0.06) !important; }
   .conflict-warning-badge { position: absolute; top: -6px; right: 6px; background: var(--warning); color: #020308; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.4px; pointer-events: none; z-index: 20; }
+  
+  @keyframes overTimeFlash { 0%{box-shadow:0 0 0 0 rgba(245,158,11,0);border-color:rgba(245,158,11,0.7);background:rgba(245,158,11,0.08)} 50%{box-shadow:0 0 14px 4px rgba(245,158,11,0.5);border-color:rgba(245,158,11,0.9);background:rgba(245,158,11,0.14)} 100%{box-shadow:0 0 0 0 rgba(245,158,11,0);border-color:rgba(245,158,11,0.7);background:rgba(245,158,11,0.08)} }
+  .job-card-day.over-time, .job-card-week.over-time { animation: overTimeFlash 1.8s ease-in-out infinite !important; }
+  .job-card-day.over-time { border-top-color: var(--warning) !important; }
+  .job-card-week.over-time { border-left-color: var(--warning) !important; }
   html.light-mode .conflict-warning-badge { color: #fff; }
 
   /* NearBy */
@@ -2258,6 +2263,17 @@ function renderAllDriveTimeBadges(col, dayEnd){
 }
 
 /* ─── Card builders ─────────────────────────────────────────── */
+function isJobOverTime(job, sh) {
+  if (sh === null) return false;
+  const d = parseDate(job.dateOfJob);
+  if (!d || !sameDay(d, new Date())) return false;
+  if (normaliseStatus(job.jobStatus || job.status) !== 'in-progress') return false;
+  const dur = getDuration(job.jobType, job.engineerName);
+  const now = new Date();
+  const currentHour = now.getHours() + now.getMinutes() / 60;
+  return currentHour > (sh + dur);
+}
+
 function makeStatusBadge(job){
   const raw=job.jobStatus||job.status;const meta=getStatusMeta(raw);
   if(normaliseStatus(raw)==='unassigned')return '';
@@ -2272,6 +2288,7 @@ function makeAttachBadge(job){
 function makeCardDay(job,left,width,isStaged){
   const col=cardColour(job.jobType);const sh=getStartHour(job),dur=getDuration(job.jobType,job.engineerName);
   const card=document.createElement("div");card.className="job-card-day";
+  if (isJobOverTime(job, sh)) card.classList.add("over-time");
   card.dataset.jobId=job.jobId||job._id;card.dataset.jobDocId=job._id;card.dataset.jobType=job.jobType||"";
   if(!isStaged){card.style.cssText=`position:absolute;left:${left}px;width:${width}px;border-top-color:${col}`;}
   else{card.classList.add("staging-card");card.style.cssText=`position:relative;width:${STAGING_W-18}px;border-top-color:${col}`;}
@@ -2313,6 +2330,7 @@ function makeCardWeek(job){
   const col=cardColour(job.jobType);const sh=getStartHour(job);
   const badge=makeStatusBadge(job);const attachBadge=makeAttachBadge(job);const jid=esc(job.jobId||job._id);
   const card=document.createElement("div");card.className="job-card-week";card.style.borderLeftColor=col;
+  if (isJobOverTime(job, sh)) card.classList.add("over-time");
   card.dataset.jobId=job.jobId||job._id;card.dataset.jobDocId=job._id;card.dataset.jobType=job.jobType||"";
   card.innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;margin-bottom:2px">
@@ -2350,7 +2368,19 @@ function updateNowLine(dayEnd){
   const line=document.createElement("div");line.id="nowLine";line.className="now-line";
   line.style.left=`${(h-DAY_START)*HOUR_W}px`;document.getElementById("rowsWrap").appendChild(line);
 }
-setInterval(()=>{if(currentView==="day"){const dj=allJobs.filter(j=>{const d=parseDate(j.dateOfJob);return d&&sameDay(d,currentDate);});updateNowLine(calcDayEnd(dj));}},60000);
+setInterval(()=>{
+  if(currentView==="day"){
+    const dj=allJobs.filter(j=>{const d=parseDate(j.dateOfJob);return d&&sameDay(d,currentDate);});
+    updateNowLine(calcDayEnd(dj));
+  }
+  document.querySelectorAll('.job-card-day, .job-card-week').forEach(card => {
+    const jid = card.dataset.jobDocId;
+    if (!jid) return;
+    const j = allJobs.find(x => x._id === jid);
+    if (j && isJobOverTime(j, getStartHour(j))) card.classList.add('over-time');
+    else card.classList.remove('over-time');
+  });
+}, 60000);
 
 /* ─── NearBy filter ─────────────────────────────────────────── */
 function getEngineersNearPostcode(refPc){
