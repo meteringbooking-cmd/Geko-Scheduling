@@ -90,6 +90,10 @@
     .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .btn-outline { background: rgba(5,8,16,0.9); border: 1px solid rgba(255,255,255,0.12); color: var(--text-muted); }
     .btn-outline:hover { background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.4); color: var(--text-main); }
+    .btn-warning { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); color: var(--warning); }
+    .btn-warning:hover { background: rgba(245,158,11,0.25); }
+    .btn-danger { background: rgba(255,75,92,0.15); border: 1px solid rgba(255,75,92,0.4); color: var(--danger); }
+    .btn-danger:hover { background: rgba(255,75,92,0.25); }
 
     .mapping-grid { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 8px 0; align-items: center; }
     .mapping-group-header { grid-column: 1 / -1; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); padding: 16px 4px 6px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 2px; }
@@ -99,6 +103,63 @@
     .mapping-select { height: 42px; background: rgba(5,8,16,0.9); border: 1px solid rgba(255,255,255,0.08); border-left: none; border-radius: 0 10px 10px 0; color: var(--text-main); font-size: 13px; padding: 0 12px; font-family: 'Inter', sans-serif; cursor: pointer; outline: none; width: 100%; transition: border-color var(--transition-fast); }
     .mapping-select:focus { border-color: var(--accent-blue); }
     .mapping-required { color: var(--danger); margin-left: 3px; }
+
+    /* ── Dupe Checker ─────────────────────────────────────────────────────── */
+    .dupe-card { border-color: rgba(245,158,11,0.25); }
+    .dupe-card::before { background: radial-gradient(circle at top left, rgba(245,158,11,0.06), transparent 55%), radial-gradient(circle at bottom right, rgba(255,75,92,0.06), transparent 55%); }
+    .dupe-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .dupe-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 100px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(245,158,11,0.12); color: var(--warning); border: 1px solid rgba(245,158,11,0.3); }
+    .dupe-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+    .toggle-track { width: 36px; height: 20px; background: rgba(255,255,255,0.08); border-radius: 100px; border: 1px solid rgba(255,255,255,0.12); position: relative; transition: background 0.2s; flex-shrink: 0; }
+    .toggle-track.on { background: rgba(245,158,11,0.4); border-color: rgba(245,158,11,0.6); }
+    .toggle-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; position: absolute; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+    .toggle-track.on .toggle-thumb { left: 18px; }
+    .toggle-label { font-size: 12px; color: var(--text-muted); }
+    .toggle-track.on + .toggle-label { color: var(--warning); }
+
+    .dupe-fields-wrap { margin-top: 16px; display: none; }
+    .dupe-fields-wrap.visible { display: block; }
+    .dupe-fields-intro { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.6; }
+    .dupe-fields-intro strong { color: var(--text-main); }
+
+    .dupe-fields-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+    .dupe-field-chip { display: flex; align-items: center; gap: 9px; padding: 9px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(5,8,16,0.8); cursor: pointer; transition: all 0.15s; user-select: none; }
+    .dupe-field-chip:hover { border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.05); }
+    .dupe-field-chip.selected { border-color: rgba(245,158,11,0.5); background: rgba(245,158,11,0.1); }
+    .dupe-field-chip.selected .dfc-box { background: var(--warning); border-color: var(--warning); }
+    .dupe-field-chip.selected .dfc-box::after { opacity: 1; }
+    .dfc-box { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid rgba(255,255,255,0.2); background: transparent; flex-shrink: 0; position: relative; transition: all 0.15s; }
+    .dfc-box::after { content: "✓"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #000; opacity: 0; transition: opacity 0.15s; }
+    .dfc-text { flex: 1; }
+    .dfc-label { font-size: 12px; font-weight: 500; color: var(--text-main); }
+    .dfc-key { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+    .dupe-field-chip.selected .dfc-label { color: var(--warning); }
+
+    .dupe-mode-wrap { margin-top: 12px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-muted); }
+    .dupe-mode-wrap strong { color: var(--text-main); }
+
+    .dupe-selection-summary { margin-top: 12px; padding: 10px 14px; border-radius: 8px; background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.2); font-size: 12px; color: var(--warning); display: none; }
+    .dupe-selection-summary.visible { display: block; }
+
+    /* ── Dupe Results ─────────────────────────────────────────────────────── */
+    .dupe-results-banner { display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px; border-radius: 12px; margin-bottom: 20px; background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.3); }
+    .dupe-results-banner .drb-icon { font-size: 24px; flex-shrink: 0; }
+    .drb-info h3 { font-size: 14px; font-weight: 600; color: var(--warning); margin-bottom: 4px; }
+    .drb-info p { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+    .drb-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+    .dupe-table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid rgba(245,158,11,0.2); margin-top: 16px; }
+    .dupe-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .dupe-table thead { background: rgba(245,158,11,0.1); }
+    .dupe-table th { padding: 9px 12px; text-align: left; font-weight: 600; color: var(--warning); white-space: nowrap; border-bottom: 1px solid rgba(245,158,11,0.15); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .dupe-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text-main); white-space: nowrap; max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
+    .dupe-table tr:last-child td { border-bottom: none; }
+    .dupe-table tr.existing-row td { background: rgba(255,75,92,0.06); color: rgba(230,247,255,0.7); }
+    .dupe-table tr.incoming-row td { background: rgba(245,158,11,0.06); }
+    .dupe-table .match-cell { color: var(--accent-green); font-weight: 600; }
+    .dupe-tag { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+    .dupe-tag.existing { background: rgba(255,75,92,0.12); color: var(--danger); border: 1px solid rgba(255,75,92,0.2); }
+    .dupe-tag.incoming { background: rgba(245,158,11,0.12); color: var(--warning); border: 1px solid rgba(245,158,11,0.2); }
 
     .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); }
     table { width: 100%; border-collapse: collapse; font-size: 12px; }
@@ -122,12 +183,13 @@
     .status-dot-sm.error { background: var(--danger); animation: none; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 18px; }
     .summary-item { background: rgba(5,8,16,0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 18px; text-align: center; }
     .summary-val { font-size: 28px; font-weight: 600; }
     .summary-val.green { color: var(--accent-green); }
     .summary-val.yellow { color: var(--warning); }
     .summary-val.red { color: var(--danger); }
+    .summary-val.orange { color: #f97316; }
     .summary-lbl { font-size: 11px; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
 
     .actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
@@ -148,11 +210,46 @@
     #toast.show { transform: translateY(0); opacity: 1; }
     #toast.success { background: rgba(10,20,15,0.97); border: 1px solid rgba(0,255,157,0.4); color: var(--accent-green); box-shadow: 0 0 30px rgba(0,255,157,0.2), 0 16px 40px rgba(0,0,0,0.8); }
     #toast.error   { background: rgba(20,10,12,0.97); border: 1px solid rgba(255,75,92,0.4); color: var(--danger); box-shadow: 0 0 30px rgba(255,75,92,0.2), 0 16px 40px rgba(0,0,0,0.8); }
+    #toast.warning { background: rgba(20,15,5,0.97); border: 1px solid rgba(245,158,11,0.4); color: var(--warning); box-shadow: 0 0 30px rgba(245,158,11,0.2), 0 16px 40px rgba(0,0,0,0.8); }
     .hidden { display: none !important; }
+
+    /* Dupe checker modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+    .modal-overlay.visible { opacity: 1; pointer-events: all; }
+    .modal-box { background: #0a0e18; border: 1px solid rgba(245,158,11,0.3); border-radius: 20px; padding: 28px 30px; max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(0,0,0,0.8); position: relative; }
+    .modal-title { font-size: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; color: var(--warning); display: flex; align-items: center; gap: 10px; }
+    .modal-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+    .modal-close { position: absolute; top: 18px; right: 18px; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s; }
+    .modal-close:hover { background: rgba(255,75,92,0.2); color: var(--danger); border-color: rgba(255,75,92,0.4); }
+    .modal-actions { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+
+    .dupe-group { margin-bottom: 20px; padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(245,158,11,0.2); background: rgba(245,158,11,0.04); }
+    .dupe-group-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--warning); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .dupe-group-key { font-size: 10px; color: var(--text-muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+    .dupe-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px; }
+    .dupe-row:last-child { border-bottom: none; }
+    .dupe-row-source { flex-shrink: 0; }
+    .dupe-row-data { flex: 1; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .dupe-row-data strong { color: var(--text-main); }
   </style>
 </head>
 <body>
 <div id="toast"></div>
+
+<!-- DUPE REVIEW MODAL -->
+<div class="modal-overlay" id="dupeModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-title">⚠ Duplicate Records Found</div>
+    <div class="modal-sub" id="modalSubText"></div>
+    <div id="modalDupeList"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="modalSkipAll">Skip All Duplicates</button>
+      <button class="btn btn-warning" id="modalUploadAll">Upload All Anyway</button>
+      <button class="btn btn-outline" id="modalCancel">Cancel Upload</button>
+    </div>
+  </div>
+</div>
 
 <!-- SIDEBAR -->
 <div id="sidebar">
@@ -216,6 +313,35 @@
         <!-- STEP 2 -->
         <div id="section-map" class="hidden">
             <div class="card" id="fileInfoCard"></div>
+
+            <!-- ── DUPE CHECKER CARD ── -->
+            <div class="card dupe-card">
+                <div class="dupe-header">
+                    <div>
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+                            <h2 style="margin-bottom:0">Duplicate Checker</h2>
+                            <span class="dupe-badge">⚡ Smart Filter</span>
+                        </div>
+                        <p class="card-sub" style="margin-bottom:0">Check incoming records against existing Firestore data before uploading.</p>
+                    </div>
+                    <label class="dupe-toggle" id="dupeToggleLabel">
+                        <div class="toggle-track" id="dupeTrack"><div class="toggle-thumb"></div></div>
+                        <span class="toggle-label" id="dupeToggleTxt">Disabled</span>
+                    </label>
+                </div>
+
+                <div class="dupe-fields-wrap" id="dupeFieldsWrap">
+                    <div class="dupe-fields-intro">
+                        Select the fields to match on. A record is only considered a <strong>duplicate</strong> when <strong>all selected fields match</strong> an existing record. Choose at least one field.
+                    </div>
+                    <div class="dupe-fields-grid" id="dupeFieldsGrid">
+                        <!-- populated by JS -->
+                    </div>
+                    <div class="dupe-selection-summary" id="dupeSelectionSummary"></div>
+                </div>
+            </div>
+            <!-- ── END DUPE CHECKER CARD ── -->
+
             <div class="card">
                 <h2>Map Your Columns</h2>
                 <p class="card-sub">Match your spreadsheet columns to Geko fields. Fields marked <span class="mapping-required">*</span> are required.</p>
@@ -245,6 +371,10 @@
             <div class="card">
                 <h2>Upload to Firebase</h2>
                 <p class="card-sub">Ready to upload <strong id="totalCount">0</strong> records to <strong>uploaded_jobs</strong>.</p>
+
+                <!-- Dupe check status banner (shown after check runs) -->
+                <div id="dupeResultsBanner" class="hidden" style="margin-bottom:16px;"></div>
+
                 <div class="firebase-status">
                     <div class="status-dot-sm" id="fbDot2"></div>
                     <span id="fbStatusText2">Checking Firebase…</span>
@@ -254,6 +384,7 @@
                 <div class="error-box" id="errorBox"></div>
                 <div class="summary-grid hidden" id="summaryGrid">
                     <div class="summary-item"><div class="summary-val green" id="sumUploaded">0</div><div class="summary-lbl">Uploaded</div></div>
+                    <div class="summary-item"><div class="summary-val orange" id="sumDupes">0</div><div class="summary-lbl">Duplicates Skipped</div></div>
                     <div class="summary-item"><div class="summary-val yellow" id="sumSkipped">0</div><div class="summary-lbl">Skipped</div></div>
                     <div class="summary-item"><div class="summary-val red" id="sumFailed">0</div><div class="summary-lbl">Failed</div></div>
                 </div>
@@ -283,59 +414,49 @@ const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
 // ─── Field definitions ────────────────────────────────────────────────────────
-// schedulerKey = exact Firestore key that scheduling.html reads
 const ALL_FIELDS = [
-    // Identifiers
     { key:'ID',                  label:'ID',                  schedulerKey:'jobId',             required:false, cat:'identifiers' },
     { key:'Record_ID',           label:'Record ID',           schedulerKey:'recordId',           required:false, cat:'identifiers' },
     { key:'Customer_ID',         label:'Customer ID',         schedulerKey:'customerId',         required:false, cat:'identifiers' },
     { key:'Job_ID',              label:'Job ID',              schedulerKey:'jobId',              required:false, cat:'identifiers' },
     { key:'Employee_ID',         label:'Employee ID',         schedulerKey:'employeeId',         required:false, cat:'identifiers' },
     { key:'Reference_Number',    label:'Reference Number',    schedulerKey:'referenceNumber',    required:false, cat:'identifiers' },
-    // Personal
     { key:'Title',               label:'Title',               schedulerKey:'title',              required:false, cat:'personal' },
     { key:'First_Name',          label:'First Name',          schedulerKey:'firstName',          required:false, cat:'personal' },
     { key:'Last_Name',           label:'Last Name',           schedulerKey:'lastName',           required:false, cat:'personal' },
     { key:'Full_Name',           label:'Full Name',           schedulerKey:'customerName',       required:false, cat:'personal' },
     { key:'Company_Name',        label:'Company Name',        schedulerKey:'companyName',        required:false, cat:'personal' },
-    // Address
     { key:'Address_Line1',       label:'Address Line 1',      schedulerKey:'addressLine1',       required:false, cat:'address' },
     { key:'Address_Line2',       label:'Address Line 2',      schedulerKey:'addressLine2',       required:false, cat:'address' },
     { key:'City_Town',           label:'City / Town',         schedulerKey:'cityTown',           required:false, cat:'address' },
     { key:'County',              label:'County',              schedulerKey:'county',             required:false, cat:'address' },
     { key:'Postcode',            label:'Postcode',            schedulerKey:'postcode',           required:true,  cat:'address' },
     { key:'Country',             label:'Country',             schedulerKey:'country',            required:false, cat:'address' },
-    // Contact
     { key:'Phone',               label:'Phone',               schedulerKey:'contactNumber',      required:false, cat:'contact' },
     { key:'Mobile',              label:'Mobile',              schedulerKey:'mobile',             required:false, cat:'contact' },
     { key:'Email',               label:'Email',               schedulerKey:'email',              required:false, cat:'contact' },
     { key:'Alternative_Contact', label:'Alternative Contact', schedulerKey:'alternativeContact', required:false, cat:'contact' },
-    // Date & Time  ← dateOfJob and timeSlot are the keys scheduling.html uses
     { key:'Date',                label:'Date',                schedulerKey:'dateOfJob',          required:false, cat:'datetime' },
     { key:'Appointment_Date',    label:'Appointment Date',    schedulerKey:'dateOfJob',          required:false, cat:'datetime' },
     { key:'Appointment_Time',    label:'Appointment Time',    schedulerKey:'timeSlot',           required:false, cat:'datetime' },
     { key:'Created_Date',        label:'Created Date',        schedulerKey:'createdDate',        required:false, cat:'datetime' },
     { key:'Updated_Date',        label:'Updated Date',        schedulerKey:'updatedDate',        required:false, cat:'datetime' },
     { key:'Completed_Date',      label:'Completed Date',      schedulerKey:'completedDate',      required:false, cat:'datetime' },
-    // Job  ← jobType is the key scheduling.html uses
     { key:'Job_Type',            label:'Job Type',            schedulerKey:'jobType',            required:true,  cat:'job' },
     { key:'Job_Description',     label:'Job Description',     schedulerKey:'jobDescription',     required:false, cat:'job' },
     { key:'Service_Type',        label:'Service Type',        schedulerKey:'serviceType',        required:false, cat:'job' },
     { key:'Priority',            label:'Priority',            schedulerKey:'priority',           required:false, cat:'job' },
     { key:'Duration',            label:'Duration',            schedulerKey:'duration',           required:false, cat:'job' },
     { key:'Notes',               label:'Notes',               schedulerKey:'notes',              required:false, cat:'job' },
-    // Assignment  ← engineerName is the key scheduling.html uses
     { key:'Engineer',            label:'Engineer',            schedulerKey:'engineerName',       required:false, cat:'assignment' },
     { key:'Assigned_To',         label:'Assigned To',         schedulerKey:'engineerName',       required:false, cat:'assignment' },
     { key:'Team',                label:'Team',                schedulerKey:'team',               required:false, cat:'assignment' },
     { key:'Starting_Postcode',   label:'Starting Postcode',   schedulerKey:'startingPostcode',   required:false, cat:'assignment' },
     { key:'Vehicle_ID',          label:'Vehicle ID',          schedulerKey:'vehicleId',          required:false, cat:'assignment' },
-    // Status  ← jobStatus is the key scheduling.html uses
     { key:'Status',              label:'Status',              schedulerKey:'jobStatus',          required:false, cat:'status' },
     { key:'Progress',            label:'Progress',            schedulerKey:'progress',           required:false, cat:'status' },
     { key:'Stage',               label:'Stage',               schedulerKey:'stage',              required:false, cat:'status' },
     { key:'Cancellation_Reason', label:'Cancellation Reason', schedulerKey:'cancellationReason', required:false, cat:'status' },
-    // Financial
     { key:'Price',               label:'Price',               schedulerKey:'price',              required:false, cat:'financial' },
     { key:'Cost',                label:'Cost',                schedulerKey:'cost',               required:false, cat:'financial' },
     { key:'Invoice_Number',      label:'Invoice Number',      schedulerKey:'invoiceNumber',      required:false, cat:'financial' },
@@ -354,6 +475,10 @@ const CAT_LABELS = {
 
 // ─── State ────────────────────────────────────────────────────────────────────
 let rawData=[], headerMap={}, displayHeaders=[], mappedData=[], activeFields=[];
+let dupeEnabled=false, selectedDupeKeys=new Set();
+// uploadQueue: after dupe check, stores which records to upload and which to skip
+let uploadQueue=[], duplicateRecords=[], existingDocs=[];
+let uploadMode='clean'; // 'clean' | 'all' | 'skip'
 
 // ─── Firebase status ──────────────────────────────────────────────────────────
 function setFbDot(id,state){ const el=document.getElementById(id); if(!el)return; el.className='status-dot-sm'+(state!=='connecting'?' '+state:''); }
@@ -403,7 +528,6 @@ async function handleFile(file){
             rawData=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,dateNF:'dd/mm/yyyy'});
             if(rawData.length<2){ showToast('File empty — needs header row + data.','error'); return; }
 
-            // Build headerMap: header name → original column index (preserves blank columns)
             headerMap={}; displayHeaders=[];
             rawData[0].forEach((h,idx)=>{
                 const name=String(h||'').trim();
@@ -416,6 +540,73 @@ async function handleFile(file){
     reader.readAsBinaryString(file);
 }
 
+// ─── Dupe Checker UI ──────────────────────────────────────────────────────────
+const dupeTrack=document.getElementById('dupeTrack');
+const dupeToggleTxt=document.getElementById('dupeToggleTxt');
+const dupeFieldsWrap=document.getElementById('dupeFieldsWrap');
+const dupeFieldsGrid=document.getElementById('dupeFieldsGrid');
+const dupeSelSummary=document.getElementById('dupeSelectionSummary');
+
+document.getElementById('dupeToggleLabel').addEventListener('click',()=>{
+    dupeEnabled=!dupeEnabled;
+    dupeTrack.classList.toggle('on',dupeEnabled);
+    dupeToggleTxt.textContent=dupeEnabled?'Enabled':'Disabled';
+    dupeFieldsWrap.classList.toggle('visible',dupeEnabled);
+});
+
+function buildDupeFieldChips(){
+    // De-duplicate by schedulerKey so we only show each key once
+    const seen=new Set();
+    const uniqueFields=activeFields.filter(f=>{
+        if(seen.has(f.schedulerKey)) return false;
+        seen.add(f.schedulerKey); return true;
+    });
+
+    dupeFieldsGrid.innerHTML='';
+    selectedDupeKeys.clear();
+    updateDupeSelectionSummary();
+
+    uniqueFields.forEach(f=>{
+        const chip=document.createElement('div');
+        chip.className='dupe-field-chip';
+        chip.dataset.key=f.schedulerKey;
+        chip.innerHTML=`
+            <div class="dfc-box"></div>
+            <div class="dfc-text">
+                <div class="dfc-label">${f.label}</div>
+                <div class="dfc-key">${f.schedulerKey}</div>
+            </div>`;
+        chip.addEventListener('click',()=>{
+            const key=f.schedulerKey;
+            if(selectedDupeKeys.has(key)){
+                selectedDupeKeys.delete(key);
+                chip.classList.remove('selected');
+            } else {
+                selectedDupeKeys.add(key);
+                chip.classList.add('selected');
+            }
+            updateDupeSelectionSummary();
+        });
+        dupeFieldsGrid.appendChild(chip);
+    });
+}
+
+function updateDupeSelectionSummary(){
+    if(selectedDupeKeys.size===0){
+        dupeSelSummary.classList.remove('visible');
+        return;
+    }
+    dupeSelSummary.classList.add('visible');
+    const keys=[...selectedDupeKeys];
+    if(keys.length===1){
+        dupeSelSummary.innerHTML=`Matching on <strong>${keys[0]}</strong>. A record is a duplicate if this field matches an existing record.`;
+    } else {
+        const joined=keys.map(k=>`<strong>${k}</strong>`).join(' + ');
+        dupeSelSummary.innerHTML=`Matching on ${joined}. All ${keys.length} fields must match for a record to be flagged as a duplicate.`;
+    }
+}
+
+// ─── Build Mapping Section ─────────────────────────────────────────────────────
 function buildMappingSection(fileName, rowCount){
     setStep(2);
     document.getElementById('section-upload').classList.add('hidden');
@@ -434,6 +625,9 @@ function buildMappingSection(fileName, rowCount){
     document.getElementById('mappingNoticeText').textContent=
         `${activeFields.length} fields are enabled in your Mapping configuration. Visit Mapping to add or remove fields.`;
     document.getElementById('mappingNotice').style.display='flex';
+
+    // Build dupe field chips based on active fields
+    buildDupeFieldChips();
 
     const grid=document.getElementById('mappingGrid');
     grid.innerHTML='';
@@ -468,7 +662,6 @@ function buildMappingSection(fileName, rowCount){
             displayHeaders.forEach(h=>{
                 const opt=document.createElement('option');
                 opt.value=h; opt.textContent=h;
-                // Auto-match against key, label, and schedulerKey
                 const hN=h.toLowerCase().replace(/[\s_\-\/]/g,'');
                 const kN=f.key.toLowerCase().replace(/[\s_\-\/]/g,'');
                 const lN=f.label.toLowerCase().replace(/[\s_\-\/]/g,'');
@@ -486,7 +679,7 @@ function buildMappingSection(fileName, rowCount){
     });
 }
 
-// ─── Buttons ──────────────────────────────────────────────────────────────────
+// ─── Preview ──────────────────────────────────────────────────────────────────
 document.getElementById('previewBtn').addEventListener('click', buildPreview);
 document.getElementById('resetBtn1').addEventListener('click', resetAll);
 document.getElementById('resetBtn2').addEventListener('click', resetAll);
@@ -495,7 +688,7 @@ document.getElementById('backBtn').addEventListener('click',()=>{
     document.getElementById('section-preview').classList.add('hidden');
     document.getElementById('section-map').classList.remove('hidden');
 });
-document.getElementById('uploadBtn').addEventListener('click', startUpload);
+document.getElementById('uploadBtn').addEventListener('click', handleUploadClick);
 
 function buildPreview(){
     const fieldToColumn={};
@@ -508,9 +701,11 @@ function buildPreview(){
     });
     if(!valid) return;
 
-    // ── Build mappedData keyed by schedulerKey ────────────────────────────────
-    // This is the core fix: every row is stored using the camelCase keys
-    // that scheduling.html reads directly from Firestore.
+    if(dupeEnabled && selectedDupeKeys.size===0){
+        showToast('Select at least one field to check duplicates against, or disable the checker.','error');
+        return;
+    }
+
     mappedData=rawData.slice(1)
         .filter(row=>row.some(c=>c!==''&&c!=null))
         .map(row=>{
@@ -519,17 +714,13 @@ function buildPreview(){
                 const colName=fieldToColumn[f.key];
                 const idx=(colName!==undefined&&colName!=='')?headerMap[colName]:undefined;
                 let val=(idx!==undefined&&idx>=0)?String(row[idx]??'').trim():'';
-
                 if(f.schedulerKey==='dateOfJob'||f.key.toLowerCase().includes('date')) val=toUKDate(val);
                 if(f.schedulerKey==='timeSlot') val=normaliseSlot(val);
-
-                // Only write non-empty values; don't overwrite an already-set schedulerKey
                 if(val!==''&&!obj[f.schedulerKey]) obj[f.schedulerKey]=val;
             });
             return obj;
         });
 
-    // Derive composite fields if not directly mapped
     mappedData=mappedData.map(obj=>{
         if(!obj.customerName){
             const parts=[obj.title,obj.firstName,obj.lastName].filter(Boolean);
@@ -547,7 +738,6 @@ function buildPreview(){
     document.getElementById('section-map').classList.add('hidden');
     document.getElementById('section-preview').classList.remove('hidden');
 
-    // Preview shows schedulerKey column headers so user can verify what's being saved
     const previewFields=activeFields.filter((f,i,arr)=>arr.findIndex(x=>x.schedulerKey===f.schedulerKey)===i);
     const tbl=document.getElementById('previewTable');
     tbl.innerHTML=`
@@ -565,9 +755,164 @@ function buildPreview(){
     document.getElementById('summaryGrid').classList.add('hidden');
     document.getElementById('progressWrap').classList.add('hidden');
     document.getElementById('uploadBtn').disabled=false;
-    document.getElementById('uploadBtn').innerHTML='🚀 Upload All Records';
+    document.getElementById('uploadBtn').innerHTML=dupeEnabled ? '🔍 Check Duplicates & Upload' : '🚀 Upload All Records';
+    document.getElementById('dupeResultsBanner').classList.add('hidden');
+
+    // Reset upload state
+    uploadQueue=[]; duplicateRecords=[]; existingDocs=[]; uploadMode='clean';
 }
 
+// ─── Dupe Check ───────────────────────────────────────────────────────────────
+async function runDupeCheck(){
+    document.getElementById('progressLabel').textContent='Fetching existing records for duplicate check…';
+    document.getElementById('progressWrap').classList.remove('hidden');
+    document.getElementById('progressBar').style.width='20%';
+
+    const snap=await getDocs(collection(db,'uploaded_jobs'));
+    existingDocs=[];
+    snap.forEach(d=>existingDocs.push(d.data()));
+
+    document.getElementById('progressBar').style.width='60%';
+    document.getElementById('progressLabel').textContent=`Checking ${mappedData.length} records against ${existingDocs.length} existing…`;
+
+    duplicateRecords=[];
+    uploadQueue=[];
+
+    const dupeKeys=[...selectedDupeKeys];
+
+    mappedData.forEach((incoming,idx)=>{
+        const match=existingDocs.find(existing=>{
+            return dupeKeys.every(key=>{
+                const a=String(incoming[key]||'').trim().toLowerCase();
+                const b=String(existing[key]||'').trim().toLowerCase();
+                return a!==''&&b!==''&&a===b;
+            });
+        });
+        if(match){
+            duplicateRecords.push({ incoming, existingMatch: match, rowIdx: idx });
+        } else {
+            uploadQueue.push(incoming);
+        }
+    });
+
+    document.getElementById('progressBar').style.width='100%';
+    document.getElementById('progressWrap').classList.add('hidden');
+
+    return { dupes: duplicateRecords.length, clean: uploadQueue.length };
+}
+
+async function handleUploadClick(){
+    if(!dupeEnabled){
+        // No dupe check — just upload everything
+        uploadQueue=mappedData;
+        duplicateRecords=[];
+        uploadMode='all';
+        await startUpload();
+        return;
+    }
+
+    // Run dupe check first
+    document.getElementById('uploadBtn').disabled=true;
+    document.getElementById('uploadBtn').textContent='Checking…';
+    try{
+        const { dupes, clean }=await runDupeCheck();
+
+        if(dupes===0){
+            // No dupes found — proceed
+            showDupeResultsBanner(0, clean, true);
+            showToast(`No duplicates found! Uploading ${clean} records.`,'success');
+            uploadMode='clean';
+            await startUpload();
+        } else {
+            // Show modal for user decision
+            showDupeModal(dupes, clean);
+        }
+    } catch(err){
+        showToast('Dupe check failed: '+friendlyError(err),'error');
+        document.getElementById('uploadBtn').disabled=false;
+        document.getElementById('uploadBtn').innerHTML='🔍 Check Duplicates & Upload';
+    }
+}
+
+function showDupeResultsBanner(dupeCount, cleanCount, noDupes){
+    const banner=document.getElementById('dupeResultsBanner');
+    if(noDupes){
+        banner.innerHTML=`<div class="info-box green" style="margin-bottom:0">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span><strong>No duplicates found.</strong> All ${cleanCount} records are new and ready to upload.</span>
+        </div>`;
+    } else {
+        banner.innerHTML=`<div class="dupe-results-banner">
+            <div class="drb-icon">⚠</div>
+            <div class="drb-info">
+                <h3>${dupeCount} duplicate${dupeCount!==1?'s':''} detected</h3>
+                <p>${cleanCount} records are new &bull; ${dupeCount} match existing records on: <strong>${[...selectedDupeKeys].join(' + ')}</strong></p>
+            </div>
+        </div>`;
+    }
+    banner.classList.remove('hidden');
+}
+
+function showDupeModal(dupeCount, cleanCount){
+    document.getElementById('modalSubText').innerHTML=
+        `<strong style="color:var(--warning)">${dupeCount} record${dupeCount!==1?'s':''}</strong> in your file match existing Firestore records on: <strong>${[...selectedDupeKeys].join(' + ')}</strong>.<br>
+        <strong style="color:var(--accent-green)">${cleanCount} record${cleanCount!==1?'s':''}</strong> are new. Choose how to proceed:`;
+
+    // Build dupe groups list (show up to 20)
+    const list=document.getElementById('modalDupeList');
+    const shown=duplicateRecords.slice(0,20);
+    list.innerHTML=shown.map((d,i)=>{
+        const keys=[...selectedDupeKeys];
+        const keyDisplay=keys.map(k=>`<span style="color:var(--accent-green)">${k}:</span> <strong>${esc(d.incoming[k])}</strong>`).join(' &bull; ');
+        return `<div class="dupe-group">
+            <div class="dupe-group-header">
+                Duplicate #${i+1} <span class="dupe-group-key">row ${d.rowIdx+2} in file</span>
+            </div>
+            <div class="dupe-row">
+                <span class="dupe-tag existing">EXISTING</span>
+                <span class="dupe-row-data">${keyDisplay}</span>
+            </div>
+            <div class="dupe-row">
+                <span class="dupe-tag incoming">INCOMING</span>
+                <span class="dupe-row-data">${keyDisplay}</span>
+            </div>
+        </div>`;
+    }).join('');
+    if(duplicateRecords.length>20){
+        list.innerHTML+=`<p style="font-size:12px;color:var(--text-muted);margin-top:8px">…and ${duplicateRecords.length-20} more duplicates not shown.</p>`;
+    }
+
+    document.getElementById('dupeModal').classList.add('visible');
+    document.getElementById('uploadBtn').disabled=false;
+    document.getElementById('uploadBtn').innerHTML='🔍 Check Duplicates & Upload';
+    showDupeResultsBanner(dupeCount, cleanCount, false);
+}
+
+// ─── Modal buttons ─────────────────────────────────────────────────────────────
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalCancel').addEventListener('click', closeModal);
+
+document.getElementById('modalSkipAll').addEventListener('click',async()=>{
+    closeModal();
+    uploadMode='skip';
+    // uploadQueue already has only clean records from runDupeCheck
+    showToast(`Skipping ${duplicateRecords.length} duplicates. Uploading ${uploadQueue.length} new records.`,'warning');
+    await startUpload();
+});
+
+document.getElementById('modalUploadAll').addEventListener('click',async()=>{
+    closeModal();
+    uploadMode='all';
+    uploadQueue=mappedData; // include everything
+    showToast(`Uploading all ${mappedData.length} records including duplicates.`,'warning');
+    await startUpload();
+});
+
+function closeModal(){
+    document.getElementById('dupeModal').classList.remove('visible');
+}
+
+// ─── Upload ───────────────────────────────────────────────────────────────────
 async function startUpload(){
     const btn=document.getElementById('uploadBtn');
     const progressWrap=document.getElementById('progressWrap');
@@ -590,19 +935,29 @@ async function startUpload(){
 
         let uploaded=0,failed=0;
         const errors=[];
-        const total=mappedData.length;
+        const total=uploadQueue.length;
+        const skippedDupes=duplicateRecords.length;
+
+        if(total===0){
+            document.getElementById('sumUploaded').textContent=0;
+            document.getElementById('sumDupes').textContent=skippedDupes;
+            document.getElementById('sumSkipped').textContent=0;
+            document.getElementById('sumFailed').textContent=0;
+            summaryGrid.classList.remove('hidden');
+            progressLabel.textContent=`✓ Done! All ${skippedDupes} records were duplicates and skipped.`;
+            btn.textContent='✓ Complete';
+            showToast(`All records were duplicates — nothing uploaded.`,'warning');
+            return;
+        }
 
         for(let i=0;i<total;i++){
             maxNum++;
             const jobId=`JOB-${String(maxNum).padStart(5,'0')}`;
-
-            // mappedData[i] is already in camelCase schedulerKey format —
-            // scheduling.html reads these fields directly without any translation
             const record={
-                ...mappedData[i],
+                ...uploadQueue[i],
                 jobId,
                 uploadedAt: new Date().toISOString(),
-                jobStatus: mappedData[i].jobStatus||'unassigned',
+                jobStatus: uploadQueue[i].jobStatus||'unassigned',
             };
 
             try{
@@ -616,6 +971,7 @@ async function startUpload(){
         }
 
         document.getElementById('sumUploaded').textContent=uploaded;
+        document.getElementById('sumDupes').textContent=uploadMode==='all'?0:skippedDupes;
         document.getElementById('sumSkipped').textContent=0;
         document.getElementById('sumFailed').textContent=failed;
         summaryGrid.classList.remove('hidden');
@@ -623,7 +979,8 @@ async function startUpload(){
         if(errors.length){ errorBox.className='error-box show'; errorBox.innerHTML='<strong>Some records failed:</strong><br>'+errors.join('<br>'); }
 
         if(uploaded>0){
-            progressLabel.textContent=`✓ Done! ${uploaded} of ${total} records uploaded.`;
+            const skipMsg=skippedDupes&&uploadMode!=='all'?` (${skippedDupes} duplicates skipped)`:'';
+            progressLabel.textContent=`✓ Done! ${uploaded} of ${total} records uploaded${skipMsg}.`;
             btn.textContent='✓ Upload Complete';
             showToast(`${uploaded} records uploaded!`,'success');
         } else {
@@ -647,6 +1004,13 @@ function resetAll(){
     document.getElementById('section-upload').classList.remove('hidden');
     document.getElementById('fileInput').value='';
     rawData=[]; headerMap={}; displayHeaders=[]; mappedData=[]; activeFields=[];
+    uploadQueue=[]; duplicateRecords=[]; existingDocs=[];
+    // Reset dupe toggle
+    dupeEnabled=false;
+    dupeTrack.classList.remove('on');
+    dupeToggleTxt.textContent='Disabled';
+    dupeFieldsWrap.classList.remove('visible');
+    selectedDupeKeys.clear();
 }
 
 function setStep(n){
