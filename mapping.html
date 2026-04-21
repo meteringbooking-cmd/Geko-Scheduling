@@ -442,7 +442,12 @@
     .cat-icon {
         width: 34px; height: 34px; border-radius: 9px;
         display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; font-size: 15px;
+        flex-shrink: 0;
+    }
+
+    .cat-icon svg {
+        width: 16px; height: 16px;
+        flex-shrink: 0;
     }
 
     .cat-title {
@@ -764,69 +769,91 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// ── SVG Icon definitions per category ─────────────────────────────────────────
+const CATEGORY_ICONS = {
+    identifiers: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/><circle cx="12" cy="15" r="1.5"/></svg>`,
+    personal:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`,
+    address:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`,
+    contact:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 5.99 5.99l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16l.92.92z"/></svg>`,
+    datetime:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>`,
+    job:         `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
+    assignment:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+    status:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+    financial:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
+};
+
 // ── Field Definitions ──────────────────────────────────────────────────────────
 const CATEGORIES = [
     {
         id: "identifiers",
         label: "Unique Identifiers",
-        icon: "🔑",
-        color: "rgba(0,255,157,0.15)",
+        color: "rgba(0,255,157,0.12)",
+        strokeColor: "rgba(0,255,157,0.5)",
+        iconColor: "rgba(0,255,157,0.85)",
         fields: ["ID", "Record_ID", "Customer_ID", "Job_ID", "Employee_ID", "Reference_Number"]
     },
     {
         id: "personal",
         label: "Personal / Customer Info",
-        icon: "👤",
-        color: "rgba(0,200,255,0.15)",
+        color: "rgba(0,200,255,0.12)",
+        strokeColor: "rgba(0,200,255,0.5)",
+        iconColor: "rgba(0,200,255,0.85)",
         fields: ["Title", "First_Name", "Last_Name", "Full_Name", "Company_Name"]
     },
     {
         id: "address",
         label: "Address & Location",
-        icon: "📍",
-        color: "rgba(255,200,0,0.15)",
+        color: "rgba(255,200,0,0.12)",
+        strokeColor: "rgba(255,200,0,0.4)",
+        iconColor: "rgba(255,200,0,0.85)",
         fields: ["Address_Line1", "Address_Line2", "City_Town", "County", "Postcode", "Country"]
     },
     {
         id: "contact",
         label: "Contact Information",
-        icon: "📞",
-        color: "rgba(150,100,255,0.15)",
+        color: "rgba(150,100,255,0.12)",
+        strokeColor: "rgba(150,100,255,0.45)",
+        iconColor: "rgba(170,130,255,0.85)",
         fields: ["Phone", "Mobile", "Email", "Alternative_Contact"]
     },
     {
         id: "datetime",
         label: "Date & Time Fields",
-        icon: "📅",
-        color: "rgba(0,255,157,0.12)",
+        color: "rgba(0,255,157,0.10)",
+        strokeColor: "rgba(0,255,157,0.4)",
+        iconColor: "rgba(0,255,157,0.75)",
         fields: ["Date", "Appointment_Date", "Appointment_Time", "Created_Date", "Updated_Date", "Completed_Date"]
     },
     {
         id: "job",
         label: "Job / Service Details",
-        icon: "🔧",
-        color: "rgba(255,120,0,0.15)",
+        color: "rgba(255,140,0,0.12)",
+        strokeColor: "rgba(255,140,0,0.45)",
+        iconColor: "rgba(255,160,40,0.9)",
         fields: ["Job_Type", "Job_Description", "Service_Type", "Priority", "Duration", "Notes"]
     },
     {
         id: "assignment",
         label: "Assignment / Staff",
-        icon: "👷",
-        color: "rgba(0,200,255,0.12)",
+        color: "rgba(0,200,255,0.10)",
+        strokeColor: "rgba(0,200,255,0.4)",
+        iconColor: "rgba(0,200,255,0.75)",
         fields: ["Engineer", "Assigned_To", "Team", "Starting_Postcode", "Vehicle_ID"]
     },
     {
         id: "status",
         label: "Status & Workflow",
-        icon: "⚡",
-        color: "rgba(255,75,92,0.12)",
+        color: "rgba(255,75,92,0.10)",
+        strokeColor: "rgba(255,75,92,0.4)",
+        iconColor: "rgba(255,100,115,0.9)",
         fields: ["Status", "Progress", "Stage", "Cancellation_Reason"]
     },
     {
         id: "financial",
         label: "Financial Fields",
-        icon: "💷",
-        color: "rgba(0,255,157,0.1)",
+        color: "rgba(0,255,157,0.08)",
+        strokeColor: "rgba(0,255,157,0.35)",
+        iconColor: "rgba(0,255,157,0.7)",
         fields: ["Price", "Cost", "Invoice_Number", "Payment_Status", "Discount", "VAT"]
     }
 ];
@@ -834,24 +861,20 @@ const CATEGORIES = [
 // ── State ──────────────────────────────────────────────────────────────────────
 let mapping = {};
 
-// Build a flat list of all field keys
 const ALL_FIELDS = CATEGORIES.flatMap(c => c.fields);
 
 // ── Firebase ───────────────────────────────────────────────────────────────────
 const MAPPING_DOC = doc(db, "mapping", "config");
 
-// FIX: Use `f in saved` to correctly distinguish explicit false from missing keys
 async function loadMapping() {
     try {
         const snap = await getDoc(MAPPING_DOC);
         if (snap.exists()) {
             const saved = snap.data() || {};
-            // Merge: any field present in saved doc uses its value; missing fields default to true
             ALL_FIELDS.forEach(f => {
                 mapping[f] = f in saved ? saved[f] : true;
             });
         } else {
-            // No doc yet — default all to true
             ALL_FIELDS.forEach(f => { mapping[f] = true; });
         }
     } catch (err) {
@@ -863,13 +886,11 @@ async function loadMapping() {
     updateCounts();
 }
 
-// FIX: Build fullMapping with every field as a strict boolean before writing
 async function saveMapping() {
     const btn = document.getElementById("saveBtn");
     btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Saving…`;
     btn.disabled = true;
 
-    // Ensure every field is explicitly present as a strict boolean
     const fullMapping = {};
     ALL_FIELDS.forEach(f => {
         fullMapping[f] = mapping[f] === true;
@@ -877,7 +898,7 @@ async function saveMapping() {
 
     try {
         await setDoc(MAPPING_DOC, fullMapping);
-        mapping = fullMapping; // keep local state in sync
+        mapping = fullMapping;
         showToast("Configuration saved successfully", "success");
     } catch (err) {
         console.error("Save error:", err);
@@ -900,10 +921,14 @@ function renderGrid() {
         card.className = "cat-card" + (enabledCount > 0 ? " has-active" : "");
         card.dataset.catId = cat.id;
 
+        const iconSvg = CATEGORY_ICONS[cat.id] || '';
+
         card.innerHTML = `
             <div class="cat-header">
                 <div class="cat-header-left">
-                    <div class="cat-icon" style="background:${cat.color};">${cat.icon}</div>
+                    <div class="cat-icon" style="background:${cat.color};border:1px solid ${cat.strokeColor};color:${cat.iconColor};">
+                        ${iconSvg}
+                    </div>
                     <div>
                         <div class="cat-title">${cat.label}</div>
                         <div class="cat-count"><strong id="count-${cat.id}">${enabledCount}</strong> / ${cat.fields.length} enabled</div>
@@ -921,7 +946,6 @@ function renderGrid() {
         grid.appendChild(card);
     });
 
-    // Category-level toggle
     grid.querySelectorAll(".cat-toggle-all").forEach(btn => {
         btn.addEventListener("click", e => {
             e.stopPropagation();
@@ -934,14 +958,12 @@ function renderGrid() {
         });
     });
 
-    // Field toggles — driven by checkbox change only
     CATEGORIES.forEach(cat => {
         const container = document.getElementById(`fields-${cat.id}`);
         if (container) attachFieldListeners(container, cat.id);
     });
 }
 
-// Maps each field key to the camelCase Firestore key that scheduling.html reads
 const SCHEDULER_KEYS = {
     ID:'jobId', Record_ID:'recordId', Customer_ID:'customerId', Job_ID:'jobId',
     Employee_ID:'employeeId', Reference_Number:'referenceNumber',
@@ -967,7 +989,6 @@ function buildFieldRow(field) {
     const on = !!mapping[field];
     const displayName = field.replace(/_/g, " ");
     const schedulerKey = SCHEDULER_KEYS[field] || field.toLowerCase();
-    // No onclick on the row — all toggling is driven by the checkbox change event
     return `
         <div class="field-row${on ? " active" : ""}" data-field="${field}">
             <label class="toggle-switch">
@@ -983,14 +1004,6 @@ function buildFieldRow(field) {
     `;
 }
 
-function updateFieldRow(row, field) {
-    const on = !!mapping[field];
-    row.classList.toggle("active", on);
-    const cb = row.querySelector("input[type=checkbox]");
-    if (cb) cb.checked = on;
-}
-
-// Attach checkbox change listeners to all field rows in a container
 function attachFieldListeners(container, catId) {
     container.querySelectorAll("input[type=checkbox]").forEach(cb => {
         cb.addEventListener("change", e => {
@@ -1010,10 +1023,7 @@ function refreshCategory(catId) {
     if (!container) return;
 
     container.innerHTML = cat.fields.map(f => buildFieldRow(f)).join("");
-
-    // Re-attach checkbox listeners for this category
     attachFieldListeners(container, catId);
-
     refreshCategoryCount(catId);
 }
 
@@ -1046,7 +1056,6 @@ document.getElementById("searchInput").addEventListener("input", function() {
         row.classList.toggle("hidden-row", q !== "" && !name.includes(q));
     });
 
-    // Show/hide cards based on whether they have visible rows
     document.querySelectorAll(".cat-card").forEach(card => {
         const visible = card.querySelectorAll(".field-row:not(.hidden-row)").length > 0;
         card.style.display = visible ? "" : "none";
