@@ -90,18 +90,29 @@ body::before{
 /* ── Canvas ── */
 #canvas{
   flex:1;overflow-y:auto;padding:28px 32px;display:flex;flex-direction:column;gap:20px;
+  scroll-behavior: smooth;
 }
 #canvas::-webkit-scrollbar{width:5px;}
 #canvas::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px;}
 
-/* ── Progress tracker ── */
+/* ── Sticky Progress tracker ── */
+.progress-bar-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg-body); /* Creates a solid background when scrolling */
+  padding-bottom: 15px;
+  margin-top: -10px; /* Offset padding */
+  padding-top: 10px;
+}
 .progress-bar{
   display:flex;align-items:center;gap:0;background:var(--bg-card);
-  border:1px solid var(--border-card);border-radius:14px;padding:0;overflow:hidden;flex-shrink:0;
+  border:1px solid var(--border-card);border-radius:14px;padding:0;overflow:hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 .prog-step{
   flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
-  padding:11px 8px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  padding:12px 8px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
   color:var(--text-muted);cursor:pointer;transition:all var(--transition);border-right:1px solid var(--border-main);
   position:relative;
 }
@@ -118,11 +129,25 @@ body::before{
 .prog-step.done .prog-num::before{content:'✓';}
 .prog-step:not(.done) .prog-num::before{content:attr(data-n);}
 
-/* ── Script card ── */
+/* ── Script card (Focus Mode) ── */
 .script-card{
   background:var(--bg-card);border:1px solid var(--border-card);border-radius:14px;
-  overflow:hidden;transition:box-shadow var(--transition);
+  overflow:hidden;
+  transition: opacity 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+  opacity: 0.5; /* Dimmed by default unless active */
+  filter: grayscale(20%);
 }
+.script-card.is-active, .script-card#meter-card {
+  opacity: 1;
+  filter: none;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+  border-color: rgba(255,255,255,0.15);
+}
+.script-card.is-active .card-header {
+  background: rgba(255,255,255,0.02);
+}
+
 .card-header{
   display:flex;align-items:center;gap:12px;padding:16px 22px;
   border-bottom:1px solid var(--border-main);cursor:pointer;user-select:none;
@@ -139,8 +164,8 @@ body::before{
 .badge-purple{background:rgba(168,85,247,0.12);color:#c084fc;border:1px solid rgba(168,85,247,0.25);}
 .badge-teal{background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);}
 .card-title-wrap{flex:1;}
-.card-title{font-size:13px;font-weight:700;letter-spacing:.03em;}
-.card-subtitle{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.card-title{font-size:14px;font-weight:700;letter-spacing:.03em;}
+.card-subtitle{font-size:12px;color:var(--text-muted);margin-top:2px;}
 .card-arrow{font-size:14px;color:var(--text-muted);transition:transform var(--transition),opacity var(--transition);opacity:.6;}
 .card-arrow.open{transform:rotate(180deg);opacity:1;}
 .card-body{padding:22px 22px;display:none;}
@@ -149,26 +174,26 @@ body::before{
 /* ── Script text ── */
 .script-text{
   background:rgba(0,255,157,0.04);border:1px solid rgba(0,255,157,0.12);border-radius:10px;
-  padding:18px 20px;font-size:14px;line-height:1.75;color:var(--text-main);
+  padding:20px 22px;font-size:15px;line-height:1.6;color:var(--text-main);
   position:relative;margin-bottom:18px;
 }
 .script-text::before{
-  content:'SCRIPT';position:absolute;top:-1px;left:16px;
+  content:'READ SCRIPT';position:absolute;top:-1px;left:16px;
   background:var(--accent-green);color:#020308;font-size:9px;font-weight:700;
-  letter-spacing:.12em;padding:2px 8px;border-radius:0 0 6px 6px;
+  letter-spacing:.12em;padding:3px 10px;border-radius:0 0 6px 6px;
 }
 .script-text em{color:var(--accent-green);font-style:normal;font-weight:600;}
 .script-text strong{color:var(--accent-blue);font-weight:600;}
 
 .note-box{
   background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:10px;
-  padding:14px 16px;font-size:12px;color:var(--warning);display:flex;gap:10px;margin-bottom:16px;
+  padding:14px 16px;font-size:13px;color:var(--warning);display:flex;gap:10px;margin-bottom:16px;
 }
-.note-box .note-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.note-box .note-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
 
 .tip-box{
   background:rgba(0,200,255,0.05);border:1px solid rgba(0,200,255,0.15);border-radius:10px;
-  padding:14px 16px;font-size:12px;color:var(--accent-blue);display:flex;gap:10px;margin-bottom:16px;
+  padding:14px 16px;font-size:13px;color:var(--accent-blue);display:flex;gap:10px;margin-bottom:16px;
 }
 
 /* ── Objection handling ── */
@@ -179,13 +204,13 @@ body::before{
   margin-bottom:8px;overflow:hidden;
 }
 .obj-q{
-  display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;
-  font-size:12px;font-weight:600;color:var(--warning);transition:background var(--transition);
+  display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;
+  font-size:13px;font-weight:600;color:var(--warning);transition:background var(--transition);
 }
 .obj-q:hover{background:rgba(245,158,11,0.05);}
-.obj-q-icon{font-size:13px;flex-shrink:0;}
+.obj-q-icon{font-size:14px;flex-shrink:0;}
 .obj-a{
-  padding:12px 14px 14px;font-size:13px;line-height:1.7;color:var(--text-main);
+  padding:12px 16px 16px;font-size:14px;line-height:1.6;color:var(--text-main);
   border-top:1px solid var(--border-main);display:none;
 }
 .obj-a.open{display:block;}
@@ -195,7 +220,7 @@ body::before{
 /* ── Outcome buttons ── */
 .outcome-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:16px;}
 .outcome-btn{
-  display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 12px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 12px;
   border-radius:12px;border:1px solid var(--border-btn,rgba(255,255,255,0.1));
   background:rgba(255,255,255,0.03);cursor:pointer;transition:all var(--transition);
   font-family:'Inter',sans-serif;
@@ -211,111 +236,109 @@ body::before{
 .outcome-btn.noans:hover{background:rgba(245,158,11,0.08);}
 .outcome-btn.dq{border-color:rgba(168,85,247,0.4);color:#c084fc;}
 .outcome-btn.dq:hover{background:rgba(168,85,247,0.08);}
-.outcome-icon{font-size:22px;}
-.outcome-label{font-size:12px;font-weight:600;letter-spacing:.04em;}
+.outcome-icon{font-size:24px;}
+.outcome-label{font-size:12px;font-weight:700;letter-spacing:.04em;}
 
 /* ── Booking form ── */
 .booking-form{
   background:rgba(0,255,157,0.03);border:1px solid rgba(0,255,157,0.15);border-radius:12px;
-  padding:20px;display:none;margin-top:16px;
+  padding:24px;display:none;margin-top:16px;
 }
 .booking-form.open{display:block;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:600px){.form-grid{grid-template-columns:1fr;}}
-.form-field{display:flex;flex-direction:column;gap:6px;}
+.form-field{display:flex;flex-direction:column;gap:8px;}
 .form-field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);}
+.form-field.required label::after {content:" *"; color:var(--accent-green);}
 .form-field input,.form-field select{
   background:rgba(5,8,16,0.9);border:1px solid rgba(255,255,255,0.1);border-radius:8px;
-  color:var(--text-main);padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;outline:none;
+  color:var(--text-main);padding:10px 14px;font-size:14px;font-family:'Inter',sans-serif;outline:none;
   transition:border-color var(--transition);
 }
 .form-field input:focus,.form-field select:focus{border-color:rgba(0,255,157,0.4);}
 .form-field select option{background:#0a121e;}
-.meter-checks{display:flex;gap:14px;margin-top:4px;}
-.meter-check{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;}
+.meter-checks{display:flex;gap:16px;margin-top:4px;}
+.meter-check{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:500;}
 .meter-check input[type=checkbox]{
-  width:16px;height:16px;accent-color:var(--accent-green);cursor:pointer;
+  width:18px;height:18px;accent-color:var(--accent-green);cursor:pointer;
 }
-.submit-row{margin-top:18px;display:flex;gap:10px;align-items:center;}
+.submit-row{margin-top:24px;display:flex;gap:12px;align-items:center;}
 .btn-confirm{
-  display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:10px;
+  display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:10px;
   background:linear-gradient(90deg,var(--accent-green),var(--accent-blue));color:#020308;
-  font-weight:700;font-size:13px;letter-spacing:.05em;border:none;cursor:pointer;
+  font-weight:700;font-size:14px;letter-spacing:.05em;border:none;cursor:pointer;
   font-family:'Inter',sans-serif;transition:opacity var(--transition);
 }
 .btn-confirm:hover{opacity:.9;}
 .btn-cancel{
-  display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:10px;
+  display:inline-flex;align-items:center;gap:6px;padding:12px 18px;border-radius:10px;
   border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text-muted);
-  font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition);
+  font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition);
 }
 .btn-cancel:hover{border-color:rgba(255,75,92,0.4);color:var(--danger);}
 
 /* ── Meter type pills ── */
-.meter-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.meter-pills{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
 .mpill{
-  display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;
+  display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:20px;
   border:1px solid var(--border-card);background:rgba(255,255,255,0.03);
-  font-size:12px;font-weight:600;cursor:pointer;transition:all var(--transition);color:var(--text-muted);
+  font-size:13px;font-weight:600;cursor:pointer;transition:all var(--transition);color:var(--text-muted);
   user-select:none;
 }
 .mpill:hover{border-color:rgba(255,255,255,0.2);color:var(--text-main);}
 .mpill.active-elec{border-color:rgba(0,200,255,0.5);background:rgba(0,200,255,0.1);color:var(--accent-blue);}
 .mpill.active-gas{border-color:rgba(245,158,11,0.5);background:rgba(245,158,11,0.1);color:var(--warning);}
 .mpill.active-dual{border-color:rgba(0,255,157,0.5);background:rgba(0,255,157,0.1);color:var(--accent-green);}
-.mpill-icon{font-size:14px;}
+.mpill-icon{font-size:16px;}
 
 /* ── Callback box ── */
 .callback-box{
   display:none;background:rgba(0,200,255,0.04);border:1px solid rgba(0,200,255,0.2);
-  border-radius:12px;padding:18px;margin-top:16px;
+  border-radius:12px;padding:24px;margin-top:16px;
 }
 .callback-box.open{display:block;}
 
 /* ── Completion banner ── */
 #completionBanner{
   display:none;background:linear-gradient(135deg,rgba(0,255,157,0.12),rgba(0,200,255,0.08));
-  border:1px solid rgba(0,255,157,0.3);border-radius:14px;padding:24px;text-align:center;
+  border:1px solid rgba(0,255,157,0.3);border-radius:14px;padding:30px;text-align:center;
 }
 #completionBanner.show{display:block;animation:fadeIn .4s ease-out;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.completion-icon{font-size:40px;margin-bottom:10px;}
-.completion-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--accent-green);margin-bottom:6px;}
-.completion-sub{font-size:13px;color:var(--text-muted);}
+.completion-icon{font-size:48px;margin-bottom:12px;}
+.completion-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--accent-green);margin-bottom:8px;}
+.completion-sub{font-size:15px;color:var(--text-muted);}
 .btn-reset{
-  margin-top:16px;display:inline-flex;align-items:center;gap:8px;padding:10px 22px;
+  margin-top:20px;display:inline-flex;align-items:center;gap:8px;padding:12px 24px;
   border-radius:10px;border:1px solid rgba(0,255,157,0.4);background:rgba(0,255,157,0.08);
-  color:var(--accent-green);font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition);
+  color:var(--accent-green);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition);
 }
 .btn-reset:hover{background:rgba(0,255,157,0.15);}
 
 /* ── Quick ref ── */
-.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
 .qr-item{
   background:rgba(255,255,255,0.02);border:1px solid var(--border-card);border-radius:10px;
-  padding:12px 14px;
+  padding:14px 16px;
 }
-.qr-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px;}
-.qr-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;}
+.qr-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px;}
+.qr-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;}
 
 /* ── Toast ── */
 #toast{
-  position:fixed;bottom:24px;right:24px;z-index:99999;padding:12px 20px;border-radius:12px;
-  font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;
+  position:fixed;bottom:24px;right:24px;z-index:99999;padding:14px 24px;border-radius:12px;
+  font-size:14px;font-weight:500;display:flex;align-items:center;gap:12px;
   transform:translateY(20px);opacity:0;transition:transform .3s ease,opacity .3s ease;pointer-events:none;
 }
 #toast.show{transform:translateY(0);opacity:1;}
 #toast.success{background:rgba(10,20,15,0.97);border:1px solid rgba(0,255,157,0.4);color:var(--accent-green);box-shadow:0 0 30px rgba(0,255,157,0.15),0 16px 40px rgba(0,0,0,0.8);}
 #toast.info{background:rgba(5,14,20,0.97);border:1px solid rgba(0,200,255,0.4);color:var(--accent-blue);box-shadow:0 0 30px rgba(0,200,255,0.1),0 16px 40px rgba(0,0,0,0.8);}
 #toast.warn{background:rgba(15,12,5,0.97);border:1px solid rgba(245,158,11,0.4);color:var(--warning);}
-
-.sep{height:1px;background:var(--border-main);margin:18px 0;}
 </style>
 </head>
 <body>
 <div id="toast"></div>
 
-<!-- Sidebar -->
 <div id="sidebar">
   <div class="sidebar-header">
     <img class="sidebar-logo" src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1" alt="Geko">
@@ -340,10 +363,9 @@ body::before{
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg>
     </a>
   </nav>
-  <div class="sidebar-footer"><div class="sidebar-version">v1.0.0</div></div>
+  <div class="sidebar-footer"><div class="sidebar-version">v1.1.0</div></div>
 </div>
 
-<!-- Main -->
 <div id="main-content">
   <header id="topbar">
     <div>
@@ -352,25 +374,25 @@ body::before{
     </div>
     <div style="display:flex;align-items:center;gap:12px;">
       <div class="live-pill"><div class="live-dot"></div><span id="callTimer">00:00</span></div>
-      <button onclick="startTimer()" style="padding:6px 14px;border-radius:8px;border:1px solid rgba(0,255,157,0.3);background:rgba(0,255,157,0.08);color:var(--accent-green);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.05em;">▶ START CALL</button>
-      <button onclick="resetAll()" style="padding:6px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text-muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.05em;">↺ RESET</button>
+      <button onclick="startTimer()" style="padding:8px 16px;border-radius:8px;border:1px solid rgba(0,255,157,0.3);background:rgba(0,255,157,0.08);color:var(--accent-green);font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.05em;transition:all var(--transition);">▶ START CALL</button>
+      <button onclick="resetAll()" style="padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text-muted);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.05em;transition:all var(--transition);">↺ RESET</button>
     </div>
   </header>
 
   <div id="canvas">
 
-    <!-- Progress tracker -->
-    <div class="progress-bar" id="progressBar">
-      <div class="prog-step active" data-step="1" onclick="goStep(1)"><div class="prog-num" data-n="1"></div><span>Opening</span></div>
-      <div class="prog-step" data-step="2" onclick="goStep(2)"><div class="prog-num" data-n="2"></div><span>Verification</span></div>
-      <div class="prog-step" data-step="3" onclick="goStep(3)"><div class="prog-num" data-n="3"></div><span>Eligibility</span></div>
-      <div class="prog-step" data-step="4" onclick="goStep(4)"><div class="prog-num" data-n="4"></div><span>Benefits</span></div>
-      <div class="prog-step" data-step="5" onclick="goStep(5)"><div class="prog-num" data-n="5"></div><span>Booking</span></div>
-      <div class="prog-step" data-step="6" onclick="goStep(6)"><div class="prog-num" data-n="6"></div><span>Wrap-up</span></div>
+    <div class="progress-bar-wrapper">
+      <div class="progress-bar" id="progressBar">
+        <div class="prog-step active" data-step="1" onclick="goStep(1)"><div class="prog-num" data-n="1"></div><span>Opening</span></div>
+        <div class="prog-step" data-step="2" onclick="goStep(2)"><div class="prog-num" data-n="2"></div><span>Verification</span></div>
+        <div class="prog-step" data-step="3" onclick="goStep(3)"><div class="prog-num" data-n="3"></div><span>Eligibility</span></div>
+        <div class="prog-step" data-step="4" onclick="goStep(4)"><div class="prog-num" data-n="4"></div><span>Benefits</span></div>
+        <div class="prog-step" data-step="5" onclick="goStep(5)"><div class="prog-num" data-n="5"></div><span>Booking</span></div>
+        <div class="prog-step" data-step="6" onclick="goStep(6)"><div class="prog-num" data-n="6"></div><span>Wrap-up</span></div>
+      </div>
     </div>
 
-    <!-- Meter type selector -->
-    <div class="script-card">
+    <div class="script-card" id="meter-card">
       <div class="card-header" onclick="toggleCard('meterCard')">
         <div class="card-step-badge badge-teal">⚡</div>
         <div class="card-title-wrap">
@@ -395,8 +417,7 @@ body::before{
       </div>
     </div>
 
-    <!-- Step 1: Opening -->
-    <div class="script-card" id="step-card-1">
+    <div class="script-card is-active" id="step-card-1">
       <div class="card-header" onclick="toggleCard('step1')">
         <div class="card-step-badge badge-green">01</div>
         <div class="card-title-wrap">
@@ -413,11 +434,10 @@ body::before{
           The reason for my call today is that we're contacting customers in your area because your property is <em>eligible for a free smart meter upgrade</em> — and I'd love to help get that booked in for you at a time that suits."
         </div>
         <div class="note-box"><span class="note-icon">⚠️</span><span>If they say it's a bad time, immediately offer a callback: <em>"No problem at all — when would be a better time for me to call back?"</em></span></div>
-        <button class="btn-confirm" onclick="markStep(1)" style="font-size:12px;padding:8px 16px;">✓ Mark Complete &amp; Continue</button>
+        <button class="btn-confirm" onclick="markStep(1)" style="font-size:13px;padding:10px 20px;">✓ Mark Complete &amp; Continue</button>
       </div>
     </div>
 
-    <!-- Step 2: Verification -->
     <div class="script-card" id="step-card-2">
       <div class="card-header" onclick="toggleCard('step2')">
         <div class="card-step-badge badge-blue">02</div>
@@ -425,9 +445,9 @@ body::before{
           <div class="card-title">Customer Verification</div>
           <div class="card-subtitle">Confirm identity before discussing account details</div>
         </div>
-        <span class="card-arrow" id="step2Arrow">▾</span>
+        <span class="card-arrow open" id="step2Arrow">▾</span>
       </div>
-      <div class="card-body" id="step2">
+      <div class="card-body open" id="step2">
         <div class="script-text">
           "Before I go any further, I just need to run through a couple of quick security questions to confirm I'm speaking with the right person — is that okay?<br><br>
           Could you confirm your <em>full name</em> and the <em>first line of your address</em>, including your postcode?"
@@ -440,11 +460,10 @@ body::before{
             <div class="obj-a">"That's a really sensible question — I'm glad you asked. I'm not asking for any payment details or passwords. I just need to confirm your name and address to make sure I'm speaking with the account holder before I can discuss anything on your account. If you'd prefer, you're very welcome to call us back on the number on your energy bill and we can arrange this there."</div>
           </div>
         </div>
-        <button class="btn-confirm" onclick="markStep(2)" style="font-size:12px;padding:8px 16px;margin-top:16px;">✓ Verified — Continue</button>
+        <button class="btn-confirm" onclick="markStep(2)" style="font-size:13px;padding:10px 20px;margin-top:16px;">✓ Verified — Continue</button>
       </div>
     </div>
 
-    <!-- Step 3: Eligibility check -->
     <div class="script-card" id="step-card-3">
       <div class="card-header" onclick="toggleCard('step3')">
         <div class="card-step-badge badge-yellow">03</div>
@@ -452,9 +471,9 @@ body::before{
           <div class="card-title">Eligibility &amp; Meter Check</div>
           <div class="card-subtitle">Confirm which meters need upgrading</div>
         </div>
-        <span class="card-arrow" id="step3Arrow">▾</span>
+        <span class="card-arrow open" id="step3Arrow">▾</span>
       </div>
-      <div class="card-body" id="step3">
+      <div class="card-body open" id="step3">
         <div class="script-text" id="eligScript">
           "I can see on your account that you currently have a traditional meter fitted. <em>We're reaching out to all eligible customers</em> to arrange an upgrade to a smart meter at no cost to you.<br><br>
           Just to confirm — can you tell me where your <em id="meterLocation">electricity and/or gas meter</em> is located, for example in a cupboard, on an outside wall, or in the garage? This helps our engineer plan the visit."
@@ -471,11 +490,10 @@ body::before{
             <div class="obj-a">"Yes, for rented properties we do ask that you get written or verbal permission from your landlord first — this is just to protect you. Many landlords are happy to agree as smart meters can actually help with property management. Once you've spoken to them, please give us a call back and we can get this booked in for you."</div>
           </div>
         </div>
-        <button class="btn-confirm" onclick="markStep(3)" style="font-size:12px;padding:8px 16px;margin-top:16px;">✓ Eligibility Confirmed</button>
+        <button class="btn-confirm" onclick="markStep(3)" style="font-size:13px;padding:10px 20px;margin-top:16px;">✓ Eligibility Confirmed</button>
       </div>
     </div>
 
-    <!-- Step 4: Benefits pitch -->
     <div class="script-card" id="step-card-4">
       <div class="card-header" onclick="toggleCard('step4')">
         <div class="card-step-badge badge-purple">04</div>
@@ -483,9 +501,9 @@ body::before{
           <div class="card-title">Benefits &amp; Objection Handling</div>
           <div class="card-subtitle">Value proposition — keep it conversational, not pushy</div>
         </div>
-        <span class="card-arrow" id="step4Arrow">▾</span>
+        <span class="card-arrow open" id="step4Arrow">▾</span>
       </div>
-      <div class="card-body" id="step4">
+      <div class="card-body open" id="step4">
         <div class="script-text" id="benefitsScript">
           "A smart meter upgrade is <em>completely free</em> and has some great benefits for you.<br><br>
           You'll get <strong>accurate bills</strong> — no more estimates — because the meter sends readings directly to your supplier. You'll also get a <strong>free in-home display</strong> that shows you in real time how much energy you're using and what it's costing, which many customers find helps them cut down on their bills.<br><br>
@@ -514,11 +532,10 @@ body::before{
             <div class="obj-a">"I completely understand — life gets busy. We have appointments available across a wide range of dates and we offer morning and afternoon slots, including some Saturdays. Is there a particular time of year or day of the week that works better for you? I can hold a provisional date and call you back to confirm once you've had a chance to check your diary."</div>
           </div>
         </div>
-        <button class="btn-confirm" onclick="markStep(4)" style="font-size:12px;padding:8px 16px;margin-top:16px;">✓ Ready to Book</button>
+        <button class="btn-confirm" onclick="markStep(4)" style="font-size:13px;padding:10px 20px;margin-top:16px;">✓ Ready to Book</button>
       </div>
     </div>
 
-    <!-- Step 5: Booking -->
     <div class="script-card" id="step-card-5">
       <div class="card-header" onclick="toggleCard('step5')">
         <div class="card-step-badge badge-green">05</div>
@@ -526,26 +543,25 @@ body::before{
           <div class="card-title">Booking the Appointment</div>
           <div class="card-subtitle">Secure a date and record all details</div>
         </div>
-        <span class="card-arrow" id="step5Arrow">▾</span>
+        <span class="card-arrow open" id="step5Arrow">▾</span>
       </div>
-      <div class="card-body" id="step5">
+      <div class="card-body open" id="step5">
         <div class="script-text">
           "Brilliant — let's get that booked in for you now. I'll need a couple of details to confirm the appointment.<br><br>
           <em>What dates work best for you?</em> We have morning slots, roughly 8am–1pm, and afternoon slots from 1pm–6pm. <em>Do you have a preference?</em>"
         </div>
 
-        <div class="outcome-grid" style="margin-bottom:16px;">
+        <div class="outcome-grid" style="margin-bottom:24px;">
           <div class="outcome-btn booked" onclick="showBookingForm()"><span class="outcome-icon">📅</span><span class="outcome-label">BOOK NOW</span></div>
           <div class="outcome-btn callback" onclick="showCallback()"><span class="outcome-icon">📞</span><span class="outcome-label">CALLBACK</span></div>
           <div class="outcome-btn refused" onclick="logOutcome('refused')"><span class="outcome-icon">🚫</span><span class="outcome-label">DECLINED</span></div>
           <div class="outcome-btn dq" onclick="logOutcome('dq')"><span class="outcome-icon">❌</span><span class="outcome-label">NOT ELIGIBLE</span></div>
         </div>
 
-        <!-- Booking form -->
         <div class="booking-form" id="bookingForm">
-          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent-green);margin-bottom:14px;">📋 Booking Details</div>
+          <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent-green);margin-bottom:16px;">📋 Booking Details</div>
           <div class="form-grid">
-            <div class="form-field">
+            <div class="form-field required">
               <label>Customer Name</label>
               <input type="text" id="f-name" placeholder="Full name">
             </div>
@@ -553,19 +569,19 @@ body::before{
               <label>Account / Reference No.</label>
               <input type="text" id="f-ref" placeholder="e.g. 9876543210">
             </div>
-            <div class="form-field">
+            <div class="form-field required">
               <label>Phone Number</label>
               <input type="tel" id="f-phone" placeholder="07xxx xxxxxx">
             </div>
-            <div class="form-field">
+            <div class="form-field required">
               <label>Postcode</label>
               <input type="text" id="f-postcode" placeholder="e.g. SW1A 1AA">
             </div>
-            <div class="form-field">
+            <div class="form-field required">
               <label>Preferred Date</label>
               <input type="date" id="f-date">
             </div>
-            <div class="form-field">
+            <div class="form-field required">
               <label>Preferred Slot</label>
               <select id="f-slot">
                 <option value="">Select...</option>
@@ -578,7 +594,7 @@ body::before{
               <label>Meter Location</label>
               <input type="text" id="f-location" placeholder="e.g. under stairs, outside wall">
             </div>
-            <div class="form-field">
+            <div class="form-field required">
               <label>Property Type</label>
               <select id="f-proptype">
                 <option value="">Select...</option>
@@ -589,15 +605,15 @@ body::before{
               </select>
             </div>
           </div>
-          <div class="form-field" style="margin-top:14px;">
+          <div class="form-field required" style="margin-top:16px;">
             <label>Meters to Exchange</label>
             <div class="meter-checks">
               <label class="meter-check"><input type="checkbox" id="f-elec"> ⚡ Electric</label>
               <label class="meter-check"><input type="checkbox" id="f-gas"> 🔥 Gas</label>
             </div>
           </div>
-          <div class="form-field" style="margin-top:14px;">
-            <label>Notes</label>
+          <div class="form-field" style="margin-top:16px;">
+            <label>Notes (Optional)</label>
             <input type="text" id="f-notes" placeholder="e.g. dog in property, access via side gate">
           </div>
           <div class="submit-row">
@@ -606,18 +622,17 @@ body::before{
           </div>
         </div>
 
-        <!-- Callback box -->
         <div class="callback-box" id="callbackBox">
-          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent-blue);margin-bottom:14px;">📞 Schedule Callback</div>
+          <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent-blue);margin-bottom:16px;">📞 Schedule Callback</div>
           <div class="script-text" style="border-color:rgba(0,200,255,0.2);background:rgba(0,200,255,0.04);">
             "No problem at all — I completely understand. When would be the <em>best time</em> for me to call you back? I can arrange a specific time so you're not caught off guard."
           </div>
           <div class="form-grid">
-            <div class="form-field">
+            <div class="form-field required">
               <label>Callback Date</label>
               <input type="date" id="cb-date">
             </div>
-            <div class="form-field">
+            <div class="form-field required">
               <label>Callback Time</label>
               <input type="time" id="cb-time">
             </div>
@@ -634,7 +649,6 @@ body::before{
       </div>
     </div>
 
-    <!-- Step 6: Wrap-up -->
     <div class="script-card" id="step-card-6">
       <div class="card-header" onclick="toggleCard('step6')">
         <div class="card-step-badge badge-teal">06</div>
@@ -642,9 +656,9 @@ body::before{
           <div class="card-title">Wrap-Up &amp; Confirmation</div>
           <div class="card-subtitle">Summarise, confirm details, professional close</div>
         </div>
-        <span class="card-arrow" id="step6Arrow">▾</span>
+        <span class="card-arrow open" id="step6Arrow">▾</span>
       </div>
-      <div class="card-body" id="step6">
+      <div class="card-body open" id="step6">
         <div class="script-text">
           "Perfect — I've got that all booked in for you. Just to confirm: your appointment is on <em>[DATE]</em> in the <em>[MORNING/AFTERNOON]</em>. Our engineer will arrive between <strong>[time window]</strong>.<br><br>
           You'll receive a <strong>confirmation text or email</strong> within 24 hours with all the details. If you need to rearrange, please call us at least <em>48 hours in advance</em>.<br><br>
@@ -655,11 +669,10 @@ body::before{
         <div class="script-text" style="border-color:rgba(0,200,255,0.15);background:rgba(0,200,255,0.03);">
           "Wonderful — thank you so much for your time today, <em>[Customer Name]</em>. We look forward to seeing you on <em>[DATE]</em>. Have a lovely day!"
         </div>
-        <button class="btn-confirm" onclick="markStep(6)" style="font-size:12px;padding:8px 16px;">✓ Call Complete</button>
+        <button class="btn-confirm" onclick="markStep(6)" style="font-size:13px;padding:10px 20px;">✓ Call Complete</button>
       </div>
     </div>
 
-    <!-- Completion banner -->
     <div id="completionBanner">
       <div class="completion-icon">🎉</div>
       <div class="completion-title">Call Complete</div>
@@ -668,10 +681,7 @@ body::before{
       <button class="btn-reset" onclick="resetAll()">↺ Start New Call</button>
     </div>
 
-  </div><!-- /canvas -->
-</div><!-- /main -->
-
-<script>
+  </div></div><script>
 // ── State ─────────────────────────────────────────
 let currentStep = 1;
 let completedSteps = new Set();
@@ -718,6 +728,7 @@ function updateScripts(){
 function toggleCard(id){
   const body = document.getElementById(id);
   const arrow = document.getElementById(id+'Arrow');
+  if(!body) return;
   const isOpen = body.classList.contains('open');
   body.style.display = isOpen ? 'none' : 'block';
   body.classList.toggle('open',!isOpen);
@@ -743,17 +754,36 @@ function markStep(n){
 
 function goStep(n){
   currentStep=n;
-  // Open target card, scroll to it
-  const cardId='step'+n;
-  const body=document.getElementById(cardId);
-  if(body && !body.classList.contains('open')){
-    body.style.display='block';
-    body.classList.add('open');
-    const arrow=document.getElementById(cardId+'Arrow');
-    if(arrow) arrow.classList.add('open');
+  
+  // Update Focus Mode (Dims inactive cards, keeps them open for backtracking)
+  for(let i=1; i<=6; i++){
+    const card = document.getElementById('step-card-'+i);
+    const body = document.getElementById('step'+i);
+    const arrow = document.getElementById('step'+i+'Arrow');
+    
+    if(card) {
+      if(i === n) {
+        card.classList.add('is-active');
+        // Ensure body is open for the current step
+        if(body && !body.classList.contains('open')){
+          body.style.display='block';
+          body.classList.add('open');
+          if(arrow) arrow.classList.add('open');
+        }
+      } else {
+        card.classList.remove('is-active');
+      }
+    }
   }
-  const card=document.getElementById('step-card-'+n);
-  if(card) setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'start'}),80);
+
+  // Smooth scroll active step to center
+  const targetCard = document.getElementById('step-card-'+n);
+  if(targetCard) {
+    setTimeout(() => {
+      targetCard.scrollIntoView({behavior:'smooth', block:'center'});
+    }, 100);
+  }
+  
   updateProgressBar();
 }
 
@@ -775,6 +805,8 @@ function showBookingForm(){
   // Set default date to tomorrow
   const tmr=new Date(); tmr.setDate(tmr.getDate()+1);
   document.getElementById('f-date').value=tmr.toISOString().split('T')[0];
+  // Scroll to form
+  setTimeout(()=>document.getElementById('bookingForm').scrollIntoView({behavior:'smooth',block:'center'}), 100);
 }
 function hideBookingForm(){
   document.getElementById('bookingForm').classList.remove('open');
@@ -784,7 +816,7 @@ function confirmBooking(){
   const name=document.getElementById('f-name').value.trim();
   const date=document.getElementById('f-date').value;
   const slot=document.getElementById('f-slot').value;
-  if(!name||!date||!slot){ toast('Please fill in name, date and slot','warn'); return; }
+  if(!name||!date||!slot){ toast('Please fill in required fields (Name, Date, Slot)','warn'); return; }
   callOutcome='booked';
   hideBookingForm();
   document.getElementById('completionSub').textContent=`Booking confirmed for ${name} on ${new Date(date).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})} — ${slot}.`;
@@ -800,6 +832,8 @@ function showCallback(){
   document.getElementById('bookingForm').style.display='none';
   const tmr=new Date(); tmr.setDate(tmr.getDate()+1);
   document.getElementById('cb-date').value=tmr.toISOString().split('T')[0];
+  // Scroll to callback
+  setTimeout(()=>document.getElementById('callbackBox').scrollIntoView({behavior:'smooth',block:'center'}), 100);
 }
 function hideCallback(){
   document.getElementById('callbackBox').classList.remove('open');
@@ -840,28 +874,36 @@ function resetAll(){
   clearInterval(timerInterval); timerInterval=null;
   document.getElementById('callTimer').textContent='00:00';
   updateProgressBar();
+  
   // Reset meter pills
   ['elec','gas','dual'].forEach(t=>{ document.getElementById('pill-'+t).className='mpill'; });
+  
   // Reset form fields
   ['f-name','f-ref','f-phone','f-postcode','f-date','f-slot','f-location','f-proptype','f-notes','cb-date','cb-time','cb-notes'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('f-elec').checked=false;
   document.getElementById('f-gas').checked=false;
+  
   // Hide dynamic elements
   hideBookingForm(); hideCallback();
   document.getElementById('completionBanner').classList.remove('show');
   document.getElementById('completionBanner').style.display='none';
-  // Reset card states — only step1 open
+  
+  // Ensure all bodies are open so the agent doesn't have to click them later, just apply focus state
   for(let i=1;i<=6;i++){
+    const card=document.getElementById('step-card-'+i);
     const body=document.getElementById('step'+i);
     const arrow=document.getElementById('step'+i+'Arrow');
+    
+    if(body){body.style.display='block';body.classList.add('open');}
+    if(arrow) arrow.classList.add('open');
+    
     if(i===1){
-      if(body){body.style.display='block';body.classList.add('open');}
-      if(arrow) arrow.classList.add('open');
+      if(card) card.classList.add('is-active');
     } else {
-      if(body){body.style.display='none';body.classList.remove('open');}
-      if(arrow) arrow.classList.remove('open');
+      if(card) card.classList.remove('is-active');
     }
   }
+  
   // Scroll to top
   document.getElementById('canvas').scrollTo({top:0,behavior:'smooth'});
   toast('Ready for new call','success');
@@ -879,7 +921,7 @@ function toast(msg,type='success'){
 }
 
 // Init
-updateProgressBar();
+resetAll(); // Standardize initial state
 </script>
 </body>
 </html>
