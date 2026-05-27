@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Geko — Calling Script</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --accent-green: #00ff9d;
+  --accent-blue:  #00c8ff;
+  --text-main:    #e6f7ff;
+  --text-muted:   #8fa0b8;
+  --danger:       #ff4b5c;
+  --warning:      #f59e0b;
+  --bg-body:      #05070b;
+  --bg-card:      rgba(10,18,30,0.92);
+  --bg-card-hover:rgba(14,24,40,0.98);
+  --border-main:  rgba(255,255,255,0.06);
+  --border-card:  rgba(255,255,255,0.07);
+  --grid-line:    rgba(255,255,255,0.025);
+  --sidebar-w:    64px;
+  --transition:   0.22s ease-out;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Inter',sans-serif;
+  background:radial-gradient(circle at top left,#101525 0,#05070b 45%,#020308 100%);
+  color:var(--text-main);
+  min-height:100vh;
+  display:flex;
+  overflow:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;
+  background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);
+  background-size:40px 40px;opacity:.35;pointer-events:none;
+  animation:gridMove 40s linear infinite;z-index:0;
+}
+@keyframes gridMove{from{transform:translate3d(0,0,0)}to{transform:translate3d(-40px,-40px,0)}}
+
+/* ── Sidebar ── */
+#sidebar{
+  width:var(--sidebar-w);min-height:100vh;
+  background:rgba(5,10,18,0.95);border-right:1px solid var(--border-main);
+  display:flex;flex-direction:column;flex-shrink:0;
+  position:relative;z-index:100;box-shadow:4px 0 30px rgba(0,0,0,0.6);
+}
+.sidebar-header{height:70px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border-main);}
+.sidebar-logo{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(0,255,157,0.5));}
+.sidebar-nav{flex:1;padding:14px 0;display:flex;flex-direction:column;gap:2px;}
+.sidebar-link{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;height:46px;text-decoration:none;color:var(--text-muted);
+  border-left:2px solid transparent;position:relative;transition:all var(--transition);
+}
+.sidebar-link:hover{background:rgba(255,255,255,0.05);color:var(--text-main);}
+.sidebar-link.active{background:rgba(0,255,157,0.08);color:var(--accent-green);border-left-color:var(--accent-green);}
+.sidebar-link::after{
+  content:attr(data-label);position:absolute;left:calc(100% + 10px);top:50%;transform:translateY(-50%);
+  background:rgba(5,10,18,0.97);border:1px solid rgba(255,255,255,0.08);
+  color:var(--text-main);font-size:12px;font-weight:500;padding:6px 12px;border-radius:8px;
+  white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:200;
+  box-shadow:4px 4px 16px rgba(0,0,0,0.5);
+}
+.sidebar-link:hover::after{opacity:1;}
+.sidebar-footer{padding:12px;border-top:1px solid var(--border-main);text-align:center;}
+.sidebar-version{font-size:10px;color:rgba(143,160,184,0.35);letter-spacing:.5px;}
+
+/* ── Main ── */
+#main-content{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;position:relative;z-index:1;height:100vh;}
+
+/* ── Topbar ── */
+#topbar{
+  padding:14px 26px;background:rgba(5,10,18,0.9);border-bottom:1px solid var(--border-main);
+  display:flex;justify-content:space-between;align-items:center;flex-shrink:0;
+  box-shadow:0 10px 30px rgba(0,0,0,0.7);
+}
+.topbar-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;}
+.topbar-sub{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.live-pill{
+  display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:20px;
+  border:1px solid rgba(0,255,157,0.2);background:rgba(0,255,157,0.05);
+  font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--accent-green);
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--accent-green);box-shadow:0 0 6px rgba(0,255,157,0.8);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+
+/* ── Canvas ── */
+#canvas{
+  flex:1;overflow-y:auto;padding:28px 32px;display:flex;flex-direction:column;gap:20px;
+}
+#canvas::-webkit-scrollbar{width:5px;}
+#canvas::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px;}
+
+/* ── Progress tracker ── */
+.progress-bar{
+  display:flex;align-items:center;gap:0;background:var(--bg-card);
+  border:1px solid var(--border-card);border-radius:14px;padding:0;overflow:hidden;flex-shrink:0;
+}
+.prog-step{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:11px 8px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--text-muted);cursor:pointer;transition:all var(--transition);border-right:1px solid var(--border-main);
+  position:relative;
+}
+.prog-step:last-child{border-right:none;}
+.prog-step:hover{background:rgba(255,255,255,0.03);color:var(--text-main);}
+.prog-step.done{color:var(--accent-green);}
+.prog-step.active{color:var(--accent-green);background:rgba(0,255,157,0.06);}
+.prog-step.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent-green);}
+.prog-num{
+  width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;
+}
+.prog-step.done .prog-num{background:var(--accent-green);border-color:var(--accent-green);color:#020308;}
+.prog-step.done .prog-num::before{content:'✓';}
+.prog-step:not(.done) .prog-num::before{content:attr(data-n);}
+
+/* ── Script card ── */
+.script-card{
+  background:var(--bg-card);border:1px solid var(--border-card);border-radius:14px;
+  overflow:hidden;transition:box-shadow var(--transition);
+}
+.card-header{
+  display:flex;align-items:center;gap:12px;padding:16px 22px;
+  border-bottom:1px solid var(--border-main);cursor:pointer;user-select:none;
+}
+.card-header:hover .card-arrow{opacity:1;}
+.card-step-badge{
+  width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;flex-shrink:0;
+}
+.badge-green{background:rgba(0,255,157,0.12);color:var(--accent-green);border:1px solid rgba(0,255,157,0.25);}
+.badge-blue{background:rgba(0,200,255,0.12);color:var(--accent-blue);border:1px solid rgba(0,200,255,0.25);}
+.badge-yellow{background:rgba(245,158,11,0.12);color:var(--warning);border:1px solid rgba(245,158,11,0.25);}
+.badge-red{background:rgba(255,75,92,0.12);color:var(--danger);border:1px solid rgba(255,75,92,0.25);}
+.badge-purple{background:rgba(168,85,247,0.12);color:#c084fc;border:1px solid rgba(168,85,247,0.25);}
+.badge-teal{background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);}
+.card-title-wrap{flex:1;}
+.card-title{font-size:13px;font-weight:700;letter-spacing:.03em;}
+.card-subtitle{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.card-arrow{font-size:14px;color:var(--text-muted);transition:transform var(--transition),opacity var(--transition);opacity:.6;}
+.card-arrow.open{transform:rotate(180deg);opacity:1;}
+.card-body{padding:22px 22px;display:none;}
+.card-body.open{display:block;}
+
+/* ── Script text ── */
+.script-text{
+  background:rgba(0,255,157,0.04);border:1px solid rgba(0,255,157,0.12);border-radius:10px;
+  padding:18px 20px;font-size:14px;line-height:1.75;color:var(--text-main);
+  position:relative;margin-bottom:18px;
+}
+.script-text::before{
+  content:'SCRIPT';position:absolute;top:-1px;left:16px;
+  background:var(--accent-green);color:#020308;font-size:9px;font-weight:700;
+  letter-spacing:.12em;padding:2px 8px;border-radius:0 0 6px 6px;
+}
+.script-text em{color:var(--accent-green);font-style:normal;font-weight:600;}
+.script-text strong{color:var(--accent-blue);font-weight:600;}
+
+.note-box{
+  background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:10px;
+  padding:14px 16px;font-size:12px;color:var(--warning);display:flex;gap:10px;margin-bottom:16px;
+}
+.note-box .note-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+
+.tip-box{
+  background:rgba(0,200,255,0.05);border:1px solid rgba(0,200,255,0.15);border-radius:10px;
+  padding:14px 16px;font-size:12px;color:var(--accent-blue);display:flex;gap:10px;margin-bottom:16px;
+}
+
+/* ── Objection handling ── */
+.objections{margin-top:4px;}
+.obj-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px;}
+.obj-item{
+  background:var(--bg-card-hover);border:1px solid var(--border-card);border-radius:10px;
+  margin-bottom:8px;overflow:hidden;
+}
+.obj-q{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;
+  font-size:12px;font-weight:600;color:var(--warning);transition:background var(--transition);
+}
+.obj-q:hover{background:rgba(245,158,11,0.05);}
+.obj-q-icon{font-size:13px;flex-shrink:0;}
+.obj-a{
+  padding:12px 14px 14px;font-size:13px;line-height:1.7;color:var(--text-main);
+  border-top:1px solid var(--border-main);display:none;
+}
+.obj-a.open{display:block;}
+.obj-chevron{margin-left:auto;color:var(--text-muted);font-size:12px;transition:transform var(--transition);}
+.obj-chevron.open{transform:rotate(180deg);}
+
+/* ── Outcome buttons ── */
+.outcome-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:16px;}
+.outcome-btn{
+  display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 12px;
+  border-radius:12px;border:1px solid var(--border-btn,rgba(255,255,255,0.1));
+  background:rgba(255,255,255,0.03);cursor:pointer;transition:all var(--transition);
+  font-family:'Inter',sans-serif;
+}
+.outcome-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+.outcome-btn.booked{border-color:rgba(0,255,157,0.4);color:var(--accent-green);}
+.outcome-btn.booked:hover{background:rgba(0,255,157,0.08);}
+.outcome-btn.callback{border-color:rgba(0,200,255,0.4);color:var(--accent-blue);}
+.outcome-btn.callback:hover{background:rgba(0,200,255,0.08);}
+.outcome-btn.refused{border-color:rgba(255,75,92,0.4);color:var(--danger);}
+.outcome-btn.refused:hover{background:rgba(255,75,92,0.08);}
+.outcome-btn.noans{border-color:rgba(245,158,11,0.4);color:var(--warning);}
+.outcome-btn.noans:hover{background:rgba(245,158,11,0.08);}
+.outcome-btn.dq{border-color:rgba(168,85,247,0.4);color:#c084fc;}
+.outcome-btn.dq:hover{background:rgba(168,85,247,0.08);}
+.outcome-icon{font-size:22px;}
+.outcome-label{font-size:12px;font-weight:600;letter-spacing:.04em;}
+
+/* ── Booking form ── */
+.booking-form{
+  background:rgba(0,255,157,0.03);border:1px solid rgba(0,255,157,0.15);border-radius:12px;
+  padding:20px;display:none;margin-top:16px;
+}
+.booking-form.open{display:block;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr;}}
+.form-field{display:flex;flex-direction:column;gap:6px;}
+.form-field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);}
+.form-field input,.form-field select{
+  background:rgba(5,8,16,0.9);border:1px solid rgba(255,255,255,0.1);border-radius:8px;
+  color:var(--text-main);padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;outline:none;
+  transition:border-color var(--transition);
+}
+.form-field input:focus,.form-field select:focus{border-color:rgba(0,255,157,0.4);}
+.form-field select option{background:#0a121e;}
+.meter-checks{display:flex;gap:14px;margin-top:4px;}
+.meter-check{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;}
+.meter-check input[type=checkbox]{
+  width:16px;height:16px;accent-color:var(--accent-green);cursor:pointer;
+}
+.submit-row{margin-top:18px;display:flex;gap:10px;align-items:center;}
+.btn-confirm{
+  display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:10px;
+  background:linear-gradient(90deg,var(--accent-green),var(--accent-blue));color:#020308;
+  font-weight:700;font-size:13px;letter-spacing:.05em;border:none;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:opacity var(--transition);
+}
+.btn-confirm:hover{opacity:.9;}
+.btn-cancel{
+  display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:10px;
+  border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text-muted);
+  font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition);
+}
+.btn-cancel:hover{border-color:rgba(255,75,92,0.4);color:var(--danger);}
+
+/* ── Meter type pills ── */
+.meter-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.mpill{
+  display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;
+  border:1px solid var(--border-card);background:rgba(255,255,255,0.03);
+  font-size:12px;font-weight:600;cursor:pointer;transition:all var(--transition);color:var(--text-muted);
+  user-select:none;
+}
+.mpill:hover{border-color:rgba(255,255,255,0.2);color:var(--text-main);}
+.mpill.active-elec{border-color:rgba(0,200,255,0.5);background:rgba(0,200,255,0.1);color:var(--accent-blue);}
+.mpill.active-gas{border-color:rgba(245,158,11,0.5);background:rgba(245,158,11,0.1);color:var(--warning);}
+.mpill.active-dual{border-color:rgba(0,255,157,0.5);background:rgba(0,255,157,0.1);color:var(--accent-green);}
+.mpill-icon{font-size:14px;}
+
+/* ── Callback box ── */
+.callback-box{
+  display:none;background:rgba(0,200,255,0.04);border:1px solid rgba(0,200,255,0.2);
+  border-radius:12px;padding:18px;margin-top:16px;
+}
+.callback-box.open{display:block;}
+
+/* ── Completion banner ── */
+#completionBanner{
+  display:none;background:linear-gradient(135deg,rgba(0,255,157,0.12),rgba(0,200,255,0.08));
+  border:1px solid rgba(0,255,157,0.3);border-radius:14px;padding:24px;text-align:center;
+}
+#completionBanner.show{display:block;animation:fadeIn .4s ease-out;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.completion-icon{font-size:40px;margin-bottom:10px;}
+.completion-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--accent-green);margin-bottom:6px;}
+.completion-sub{font-size:13px;color:var(--text-muted);}
+.btn-reset{
+  margin-top:16px;display:inline-flex;align-items:center;gap:8px;padding:10px 22px;
+  border-radius:10px;border:1px solid rgba(0,255,157,0.4);background:rgba(0,255,157,0.08);
+  color:var(--accent-green);font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all var(--transition);
+}
+.btn-reset:hover{background:rgba(0,255,157,0.15);}
+
+/* ── Quick ref ── */
+.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+.qr-item{
+  background:rgba(255,255,255,0.02);border:1px solid var(--border-card);border-radius:10px;
+  padding:12px 14px;
+}
+.qr-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px;}
+.qr-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;}
+
+/* ── Toast ── */
+#toast{
+  position:fixed;bottom:24px;right:24px;z-index:99999;padding:12px 20px;border-radius:12px;
+  font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;
+  transform:translateY(20px);opacity:0;transition:transform .3s ease,opacity .3s ease;pointer-events:none;
+}
+#toast.show{transform:translateY(0);opacity:1;}
+#toast.success{background:rgba(10,20,15,0.97);border:1px solid rgba(0,255,157,0.4);color:var(--accent-green);box-shadow:0 0 30px rgba(0,255,157,0.15),0 16px 40px rgba(0,0,0,0.8);}
+#toast.info{background:rgba(5,14,20,0.97);border:1px solid rgba(0,200,255,0.4);color:var(--accent-blue);box-shadow:0 0 30px rgba(0,200,255,0.1),0 16px 40px rgba(0,0,0,0.8);}
+#toast.warn{background:rgba(15,12,5,0.97);border:1px solid rgba(245,158,11,0.4);color:var(--warning);}
+
+.sep{height:1px;background:var(--border-main);margin:18px 0;}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- Sidebar -->
+<div id="sidebar">
+  <div class="sidebar-header">
+    <img class="sidebar-logo" src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1" alt="Geko">
+  </div>
+  <nav class="sidebar-nav">
+    <a href="dashboard.html" class="sidebar-link" data-label="Dashboard">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </a>
+    <a href="scheduling.html" class="sidebar-link" data-label="Scheduling">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    </a>
+    <a href="database.html" class="sidebar-link" data-label="Database">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 9v4c0 1.66 4.03 3 9 3s9-1.34 9-3V9"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/></svg>
+    </a>
+    <a href="script.html" class="sidebar-link active" data-label="Call Script">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 12.88 19.79 19.79 0 0 1 1.43 4.25 2 2 0 0 1 3.41 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    </a>
+    <a href="userdatabase.html" class="sidebar-link" data-label="Users">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87"/></svg>
+    </a>
+    <a href="absencesubmission.html" class="sidebar-link" data-label="Absence">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg>
+    </a>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-version">v1.0.0</div></div>
+</div>
+
+<!-- Main -->
+<div id="main-content">
+  <header id="topbar">
+    <div>
+      <div class="topbar-title">📞 Meter Exchange Call Script</div>
+      <div class="topbar-sub" id="topbar-sub">Customer outbound — smart meter booking</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="live-pill"><div class="live-dot"></div><span id="callTimer">00:00</span></div>
+      <button onclick="startTimer()" style="padding:6px 14px;border-radius:8px;border:1px solid rgba(0,255,157,0.3);background:rgba(0,255,157,0.08);color:var(--accent-green);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.05em;">▶ START CALL</button>
+      <button onclick="resetAll()" style="padding:6px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text-muted);font-size:11px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.05em;">↺ RESET</button>
+    </div>
+  </header>
+
+  <div id="canvas">
+
+    <!-- Progress tracker -->
+    <div class="progress-bar" id="progressBar">
+      <div class="prog-step active" data-step="1" onclick="goStep(1)"><div class="prog-num" data-n="1"></div><span>Opening</span></div>
+      <div class="prog-step" data-step="2" onclick="goStep(2)"><div class="prog-num" data-n="2"></div><span>Verification</span></div>
+      <div class="prog-step" data-step="3" onclick="goStep(3)"><div class="prog-num" data-n="3"></div><span>Eligibility</span></div>
+      <div class="prog-step" data-step="4" onclick="goStep(4)"><div class="prog-num" data-n="4"></div><span>Benefits</span></div>
+      <div class="prog-step" data-step="5" onclick="goStep(5)"><div class="prog-num" data-n="5"></div><span>Booking</span></div>
+      <div class="prog-step" data-step="6" onclick="goStep(6)"><div class="prog-num" data-n="6"></div><span>Wrap-up</span></div>
+    </div>
+
+    <!-- Meter type selector -->
+    <div class="script-card">
+      <div class="card-header" onclick="toggleCard('meterCard')">
+        <div class="card-step-badge badge-teal">⚡</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Select Meter Type(s) Required</div>
+          <div class="card-subtitle">Choose before starting — script adapts accordingly</div>
+        </div>
+        <span class="card-arrow open" id="meterCardArrow">▾</span>
+      </div>
+      <div class="card-body open" id="meterCard">
+        <div class="meter-pills">
+          <div class="mpill" id="pill-elec" onclick="toggleMeter('elec')"><span class="mpill-icon">⚡</span>Electric Only</div>
+          <div class="mpill" id="pill-gas" onclick="toggleMeter('gas')"><span class="mpill-icon">🔥</span>Gas Only</div>
+          <div class="mpill" id="pill-dual" onclick="toggleMeter('dual')"><span class="mpill-icon">🏠</span>Dual (Gas &amp; Electric)</div>
+        </div>
+        <div class="tip-box"><span>ℹ️</span><span>Check the customer's account before calling to confirm which meters need upgrading. Select above to personalise the script.</span></div>
+        <div class="qr-grid">
+          <div class="qr-item"><div class="qr-label">Electric appointment</div><div class="qr-val" style="color:var(--accent-blue)">~1.5 hrs</div></div>
+          <div class="qr-item"><div class="qr-label">Gas appointment</div><div class="qr-val" style="color:var(--warning)">~1.5 hrs</div></div>
+          <div class="qr-item"><div class="qr-label">Dual fuel appointment</div><div class="qr-val" style="color:var(--accent-green)">~2.5 hrs</div></div>
+          <div class="qr-item"><div class="qr-label">Power interruption</div><div class="qr-val" style="color:var(--danger)">Brief (~5 min)</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1: Opening -->
+    <div class="script-card" id="step-card-1">
+      <div class="card-header" onclick="toggleCard('step1')">
+        <div class="card-step-badge badge-green">01</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Opening &amp; Introduction</div>
+          <div class="card-subtitle">Build rapport — warm, professional, clear purpose</div>
+        </div>
+        <span class="card-arrow open" id="step1Arrow">▾</span>
+      </div>
+      <div class="card-body open" id="step1">
+        <div class="script-text">
+          "Hello, could I speak with <em>[Customer Name]</em> please?"<br><br>
+          <em>[If connected:]</em><br><br>
+          "Good [morning/afternoon], <em>[Customer Name]</em>, my name is <strong>[Your Name]</strong> and I'm calling from <strong>Geko</strong> on behalf of your energy supplier. I hope I haven't caught you at a bad time?<br><br>
+          The reason for my call today is that we're contacting customers in your area because your property is <em>eligible for a free smart meter upgrade</em> — and I'd love to help get that booked in for you at a time that suits."
+        </div>
+        <div class="note-box"><span class="note-icon">⚠️</span><span>If they say it's a bad time, immediately offer a callback: <em>"No problem at all — when would be a better time for me to call back?"</em></span></div>
+        <button class="btn-confirm" onclick="markStep(1)" style="font-size:12px;padding:8px 16px;">✓ Mark Complete &amp; Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Verification -->
+    <div class="script-card" id="step-card-2">
+      <div class="card-header" onclick="toggleCard('step2')">
+        <div class="card-step-badge badge-blue">02</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Customer Verification</div>
+          <div class="card-subtitle">Confirm identity before discussing account details</div>
+        </div>
+        <span class="card-arrow" id="step2Arrow">▾</span>
+      </div>
+      <div class="card-body" id="step2">
+        <div class="script-text">
+          "Before I go any further, I just need to run through a couple of quick security questions to confirm I'm speaking with the right person — is that okay?<br><br>
+          Could you confirm your <em>full name</em> and the <em>first line of your address</em>, including your postcode?"
+        </div>
+        <div class="tip-box"><span>ℹ️</span><span>Do <strong>not</strong> read out account details until the customer has passed verification. If they fail, politely advise them to call back via the number on their bill.</span></div>
+        <div class="objections">
+          <div class="obj-title">Verification Objections</div>
+          <div class="obj-item">
+            <div class="obj-q" onclick="toggleObj(this)"><span class="obj-q-icon">❓</span>"Why do you need my details — how do I know you're genuine?"<span class="obj-chevron">▾</span></div>
+            <div class="obj-a">"That's a really sensible question — I'm glad you asked. I'm not asking for any payment details or passwords. I just need to confirm your name and address to make sure I'm speaking with the account holder before I can discuss anything on your account. If you'd prefer, you're very welcome to call us back on the number on your energy bill and we can arrange this there."</div>
+          </div>
+        </div>
+        <button class="btn-confirm" onclick="markStep(2)" style="font-size:12px;padding:8px 16px;margin-top:16px;">✓ Verified — Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Eligibility check -->
+    <div class="script-card" id="step-card-3">
+      <div class="card-header" onclick="toggleCard('step3')">
+        <div class="card-step-badge badge-yellow">03</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Eligibility &amp; Meter Check</div>
+          <div class="card-subtitle">Confirm which meters need upgrading</div>
+        </div>
+        <span class="card-arrow" id="step3Arrow">▾</span>
+      </div>
+      <div class="card-body" id="step3">
+        <div class="script-text" id="eligScript">
+          "I can see on your account that you currently have a traditional meter fitted. <em>We're reaching out to all eligible customers</em> to arrange an upgrade to a smart meter at no cost to you.<br><br>
+          Just to confirm — can you tell me where your <em id="meterLocation">electricity and/or gas meter</em> is located, for example in a cupboard, on an outside wall, or in the garage? This helps our engineer plan the visit."
+        </div>
+        <div class="note-box"><span class="note-icon">⚠️</span><span>If the property is rented, the customer must confirm they have <strong>landlord permission</strong> before booking. Note this on the account.</span></div>
+        <div class="objections">
+          <div class="obj-title">Common Questions</div>
+          <div class="obj-item">
+            <div class="obj-q" onclick="toggleObj(this)"><span class="obj-q-icon">❓</span>"I already have a smart meter — why are you calling?"<span class="obj-chevron">▾</span></div>
+            <div class="obj-a">"I apologise for the confusion — it's possible our records haven't been updated yet. Let me make a note of that for you and we'll update the account. There's nothing further you need to do."</div>
+          </div>
+          <div class="obj-item">
+            <div class="obj-q" onclick="toggleObj(this)"><span class="obj-q-icon">❓</span>"I rent — do I need to ask my landlord?"<span class="obj-chevron">▾</span></div>
+            <div class="obj-a">"Yes, for rented properties we do ask that you get written or verbal permission from your landlord first — this is just to protect you. Many landlords are happy to agree as smart meters can actually help with property management. Once you've spoken to them, please give us a call back and we can get this booked in for you."</div>
+          </div>
+        </div>
+        <button class="btn-confirm" onclick="markStep(3)" style="font-size:12px;padding:8px 16px;margin-top:16px;">✓ Eligibility Confirmed</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Benefits pitch -->
+    <div class="script-card" id="step-card-4">
+      <div class="card-header" onclick="toggleCard('step4')">
+        <div class="card-step-badge badge-purple">04</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Benefits &amp; Objection Handling</div>
+          <div class="card-subtitle">Value proposition — keep it conversational, not pushy</div>
+        </div>
+        <span class="card-arrow" id="step4Arrow">▾</span>
+      </div>
+      <div class="card-body" id="step4">
+        <div class="script-text" id="benefitsScript">
+          "A smart meter upgrade is <em>completely free</em> and has some great benefits for you.<br><br>
+          You'll get <strong>accurate bills</strong> — no more estimates — because the meter sends readings directly to your supplier. You'll also get a <strong>free in-home display</strong> that shows you in real time how much energy you're using and what it's costing, which many customers find helps them cut down on their bills.<br><br>
+          The whole installation takes around <em id="appointmentDuration">1.5 to 2.5 hours</em> and our engineer will need brief access to your <em id="meterAccessText">meter</em>. There'll be a <strong>short power interruption of around 5 minutes</strong> during the electric meter switch, so we'd just ask you to save any work on computers beforehand."
+        </div>
+        <div class="objections">
+          <div class="obj-title">Objection Handling</div>
+          <div class="obj-item">
+            <div class="obj-q" onclick="toggleObj(this)"><span class="obj-q-icon">❓</span>"I don't want a smart meter — I've heard bad things."<span class="obj-chevron">▾</span></div>
+            <div class="obj-a">"I completely understand — there's been a lot of mixed information out there. The early generation of smart meters (SMETS1) did have some issues when switching supplier, but the meters we're installing now are second-generation SMETS2, which work across all suppliers. You're also still in control — you can opt out of automatic data sharing and just send monthly reads if you prefer. It's worth giving it a try, and if you change your mind after installation we can look at your options."</div>
+          </div>
+          <div class="obj-item">
+            <div class="obj-q" onclick="toggleObj(this)"><span class="obj-q-icon">❓</span>"Will there be any cost to me?"<span class="obj-chevron">▾</span></div>
+            <div class="obj-a">"No — the installation is completely free of charge. There's no cost for the meter, the engineer visit, or the in-home display. It's provided as part of the government's smart meter rollout programme."</div>
+          </div>
+          <div class="obj-item">
+            <div class="obj-q" onclick="toggleObj(this)"><span class="obj-q-icon">❓</span>"I'm worried about health / radiation / hacking."<span class="obj-chevron">▾</span></div>
+            <div class="obj-a">"That's a concern we do hear, and it's worth addressing. Smart meters use very low-level radio signals — similar to a standard Wi-Fi router or baby monitor — and they meet all UK government and EU safety standards. In terms of data security, the smart meter network uses end-to-end encryption and is regulated by Ofgem. Your energy data is only shared with your supplier."</div>
+          </div>
+          <div class="obj-item">
+            <div class="obj-q" onclick="toggleObj(this)"><span class="obj-q-icon">❓</span>"I'm not in — can someone else be there?"<span class="obj-chevron">▾</span></div>
+            <div class="obj-a">"Yes — as long as the person present is over 18 and is the account holder or has the account holder's permission, that's absolutely fine. We'd just need you to let us know on the booking notes."</div>
+          </div>
+          <div class="obj-item">
+            <div class="obj-q" onclick="toggleObj(this)"><span class="obj-q-icon">❓</span>"I don't have time / too busy."<span class="obj-chevron">▾</span></div>
+            <div class="obj-a">"I completely understand — life gets busy. We have appointments available across a wide range of dates and we offer morning and afternoon slots, including some Saturdays. Is there a particular time of year or day of the week that works better for you? I can hold a provisional date and call you back to confirm once you've had a chance to check your diary."</div>
+          </div>
+        </div>
+        <button class="btn-confirm" onclick="markStep(4)" style="font-size:12px;padding:8px 16px;margin-top:16px;">✓ Ready to Book</button>
+      </div>
+    </div>
+
+    <!-- Step 5: Booking -->
+    <div class="script-card" id="step-card-5">
+      <div class="card-header" onclick="toggleCard('step5')">
+        <div class="card-step-badge badge-green">05</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Booking the Appointment</div>
+          <div class="card-subtitle">Secure a date and record all details</div>
+        </div>
+        <span class="card-arrow" id="step5Arrow">▾</span>
+      </div>
+      <div class="card-body" id="step5">
+        <div class="script-text">
+          "Brilliant — let's get that booked in for you now. I'll need a couple of details to confirm the appointment.<br><br>
+          <em>What dates work best for you?</em> We have morning slots, roughly 8am–1pm, and afternoon slots from 1pm–6pm. <em>Do you have a preference?</em>"
+        </div>
+
+        <div class="outcome-grid" style="margin-bottom:16px;">
+          <div class="outcome-btn booked" onclick="showBookingForm()"><span class="outcome-icon">📅</span><span class="outcome-label">BOOK NOW</span></div>
+          <div class="outcome-btn callback" onclick="showCallback()"><span class="outcome-icon">📞</span><span class="outcome-label">CALLBACK</span></div>
+          <div class="outcome-btn refused" onclick="logOutcome('refused')"><span class="outcome-icon">🚫</span><span class="outcome-label">DECLINED</span></div>
+          <div class="outcome-btn dq" onclick="logOutcome('dq')"><span class="outcome-icon">❌</span><span class="outcome-label">NOT ELIGIBLE</span></div>
+        </div>
+
+        <!-- Booking form -->
+        <div class="booking-form" id="bookingForm">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent-green);margin-bottom:14px;">📋 Booking Details</div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Customer Name</label>
+              <input type="text" id="f-name" placeholder="Full name">
+            </div>
+            <div class="form-field">
+              <label>Account / Reference No.</label>
+              <input type="text" id="f-ref" placeholder="e.g. 9876543210">
+            </div>
+            <div class="form-field">
+              <label>Phone Number</label>
+              <input type="tel" id="f-phone" placeholder="07xxx xxxxxx">
+            </div>
+            <div class="form-field">
+              <label>Postcode</label>
+              <input type="text" id="f-postcode" placeholder="e.g. SW1A 1AA">
+            </div>
+            <div class="form-field">
+              <label>Preferred Date</label>
+              <input type="date" id="f-date">
+            </div>
+            <div class="form-field">
+              <label>Preferred Slot</label>
+              <select id="f-slot">
+                <option value="">Select...</option>
+                <option>Morning (8am – 1pm)</option>
+                <option>Afternoon (1pm – 6pm)</option>
+                <option>Any</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Meter Location</label>
+              <input type="text" id="f-location" placeholder="e.g. under stairs, outside wall">
+            </div>
+            <div class="form-field">
+              <label>Property Type</label>
+              <select id="f-proptype">
+                <option value="">Select...</option>
+                <option>House – owner occupied</option>
+                <option>House – rented (landlord permission obtained)</option>
+                <option>Flat / Apartment</option>
+                <option>Commercial</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field" style="margin-top:14px;">
+            <label>Meters to Exchange</label>
+            <div class="meter-checks">
+              <label class="meter-check"><input type="checkbox" id="f-elec"> ⚡ Electric</label>
+              <label class="meter-check"><input type="checkbox" id="f-gas"> 🔥 Gas</label>
+            </div>
+          </div>
+          <div class="form-field" style="margin-top:14px;">
+            <label>Notes</label>
+            <input type="text" id="f-notes" placeholder="e.g. dog in property, access via side gate">
+          </div>
+          <div class="submit-row">
+            <button class="btn-confirm" onclick="confirmBooking()">📅 Confirm Booking</button>
+            <button class="btn-cancel" onclick="hideBookingForm()">✕ Cancel</button>
+          </div>
+        </div>
+
+        <!-- Callback box -->
+        <div class="callback-box" id="callbackBox">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent-blue);margin-bottom:14px;">📞 Schedule Callback</div>
+          <div class="script-text" style="border-color:rgba(0,200,255,0.2);background:rgba(0,200,255,0.04);">
+            "No problem at all — I completely understand. When would be the <em>best time</em> for me to call you back? I can arrange a specific time so you're not caught off guard."
+          </div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Callback Date</label>
+              <input type="date" id="cb-date">
+            </div>
+            <div class="form-field">
+              <label>Callback Time</label>
+              <input type="time" id="cb-time">
+            </div>
+            <div class="form-field" style="grid-column:1/-1;">
+              <label>Notes</label>
+              <input type="text" id="cb-notes" placeholder="Reason for callback / customer preference">
+            </div>
+          </div>
+          <div class="submit-row">
+            <button class="btn-confirm" onclick="confirmCallback()" style="background:linear-gradient(90deg,var(--accent-blue),#00b8cc);">📞 Save Callback</button>
+            <button class="btn-cancel" onclick="hideCallback()">✕ Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 6: Wrap-up -->
+    <div class="script-card" id="step-card-6">
+      <div class="card-header" onclick="toggleCard('step6')">
+        <div class="card-step-badge badge-teal">06</div>
+        <div class="card-title-wrap">
+          <div class="card-title">Wrap-Up &amp; Confirmation</div>
+          <div class="card-subtitle">Summarise, confirm details, professional close</div>
+        </div>
+        <span class="card-arrow" id="step6Arrow">▾</span>
+      </div>
+      <div class="card-body" id="step6">
+        <div class="script-text">
+          "Perfect — I've got that all booked in for you. Just to confirm: your appointment is on <em>[DATE]</em> in the <em>[MORNING/AFTERNOON]</em>. Our engineer will arrive between <strong>[time window]</strong>.<br><br>
+          You'll receive a <strong>confirmation text or email</strong> within 24 hours with all the details. If you need to rearrange, please call us at least <em>48 hours in advance</em>.<br><br>
+          On the day, please ensure someone over 18 is home for the full duration, that the area around your meter is clear, and that you've saved any open documents on your computer before the engineer arrives.<br><br>
+          Is there anything else I can help you with today?"
+        </div>
+        <div class="note-box"><span class="note-icon">⚠️</span><span>Do NOT end the call until you have confirmed all details back to the customer and they are happy. Always thank them for their time.</span></div>
+        <div class="script-text" style="border-color:rgba(0,200,255,0.15);background:rgba(0,200,255,0.03);">
+          "Wonderful — thank you so much for your time today, <em>[Customer Name]</em>. We look forward to seeing you on <em>[DATE]</em>. Have a lovely day!"
+        </div>
+        <button class="btn-confirm" onclick="markStep(6)" style="font-size:12px;padding:8px 16px;">✓ Call Complete</button>
+      </div>
+    </div>
+
+    <!-- Completion banner -->
+    <div id="completionBanner">
+      <div class="completion-icon">🎉</div>
+      <div class="completion-title">Call Complete</div>
+      <div class="completion-sub" id="completionSub">Great work — all steps completed successfully.</div>
+      <br>
+      <button class="btn-reset" onclick="resetAll()">↺ Start New Call</button>
+    </div>
+
+  </div><!-- /canvas -->
+</div><!-- /main -->
+
+<script>
+// ── State ─────────────────────────────────────────
+let currentStep = 1;
+let completedSteps = new Set();
+let meterType = null; // 'elec' | 'gas' | 'dual'
+let callStart = null;
+let timerInterval = null;
+let callOutcome = null;
+
+// ── Timer ──────────────────────────────────────────
+function startTimer(){
+  if(timerInterval) return;
+  callStart = Date.now();
+  timerInterval = setInterval(()=>{
+    const secs = Math.floor((Date.now()-callStart)/1000);
+    const m = String(Math.floor(secs/60)).padStart(2,'0');
+    const s = String(secs%60).padStart(2,'0');
+    document.getElementById('callTimer').textContent = m+':'+s;
+  },1000);
+  toast('Call timer started','info');
+}
+
+// ── Meter selection ────────────────────────────────
+function toggleMeter(type){
+  meterType = meterType===type ? null : type;
+  ['elec','gas','dual'].forEach(t=>{
+    const el=document.getElementById('pill-'+t);
+    el.className='mpill'+(meterType===t?' active-'+t:'');
+  });
+  updateScripts();
+}
+
+function updateScripts(){
+  const loc = meterType==='elec'?'electric meter':meterType==='gas'?'gas meter':meterType==='dual'?'electric and gas meters':'meter(s)';
+  const dur = meterType==='dual'?'2.5 hours':meterType?'1.5 hours':'1.5 to 2.5 hours';
+  const el = document.getElementById('meterLocation'); if(el) el.textContent=loc;
+  const da = document.getElementById('appointmentDuration'); if(da) da.textContent=dur;
+  const ma = document.getElementById('meterAccessText'); if(ma) ma.textContent=loc;
+  // Pre-tick booking form checkboxes
+  if(meterType==='elec'||meterType==='dual') document.getElementById('f-elec').checked=true;
+  if(meterType==='gas'||meterType==='dual') document.getElementById('f-gas').checked=true;
+}
+
+// ── Card toggles ────────────────────────────────────
+function toggleCard(id){
+  const body = document.getElementById(id);
+  const arrow = document.getElementById(id+'Arrow');
+  const isOpen = body.classList.contains('open');
+  body.style.display = isOpen ? 'none' : 'block';
+  body.classList.toggle('open',!isOpen);
+  if(arrow){ arrow.classList.toggle('open',!isOpen); }
+}
+
+function toggleObj(el){
+  const ans = el.nextElementSibling;
+  const ch = el.querySelector('.obj-chevron');
+  const isOpen = ans.classList.contains('open');
+  ans.classList.toggle('open',!isOpen);
+  ans.style.display = isOpen ? 'none' : 'block';
+  if(ch) ch.classList.toggle('open',!isOpen);
+}
+
+// ── Step navigation ────────────────────────────────
+function markStep(n){
+  completedSteps.add(n);
+  updateProgressBar();
+  if(n<6) goStep(n+1);
+  else showCompletion();
+}
+
+function goStep(n){
+  currentStep=n;
+  // Open target card, scroll to it
+  const cardId='step'+n;
+  const body=document.getElementById(cardId);
+  if(body && !body.classList.contains('open')){
+    body.style.display='block';
+    body.classList.add('open');
+    const arrow=document.getElementById(cardId+'Arrow');
+    if(arrow) arrow.classList.add('open');
+  }
+  const card=document.getElementById('step-card-'+n);
+  if(card) setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'start'}),80);
+  updateProgressBar();
+}
+
+function updateProgressBar(){
+  document.querySelectorAll('.prog-step').forEach(el=>{
+    const n=+el.dataset.step;
+    el.classList.remove('active','done');
+    if(completedSteps.has(n)) el.classList.add('done');
+    else if(n===currentStep) el.classList.add('active');
+  });
+}
+
+// ── Booking form ────────────────────────────────────
+function showBookingForm(){
+  document.getElementById('bookingForm').classList.add('open');
+  document.getElementById('bookingForm').style.display='block';
+  document.getElementById('callbackBox').classList.remove('open');
+  document.getElementById('callbackBox').style.display='none';
+  // Set default date to tomorrow
+  const tmr=new Date(); tmr.setDate(tmr.getDate()+1);
+  document.getElementById('f-date').value=tmr.toISOString().split('T')[0];
+}
+function hideBookingForm(){
+  document.getElementById('bookingForm').classList.remove('open');
+  document.getElementById('bookingForm').style.display='none';
+}
+function confirmBooking(){
+  const name=document.getElementById('f-name').value.trim();
+  const date=document.getElementById('f-date').value;
+  const slot=document.getElementById('f-slot').value;
+  if(!name||!date||!slot){ toast('Please fill in name, date and slot','warn'); return; }
+  callOutcome='booked';
+  hideBookingForm();
+  document.getElementById('completionSub').textContent=`Booking confirmed for ${name} on ${new Date(date).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})} — ${slot}.`;
+  markStep(5);
+  toast(`Booking logged for ${name}`,'success');
+}
+
+// ── Callback ────────────────────────────────────────
+function showCallback(){
+  document.getElementById('callbackBox').classList.add('open');
+  document.getElementById('callbackBox').style.display='block';
+  document.getElementById('bookingForm').classList.remove('open');
+  document.getElementById('bookingForm').style.display='none';
+  const tmr=new Date(); tmr.setDate(tmr.getDate()+1);
+  document.getElementById('cb-date').value=tmr.toISOString().split('T')[0];
+}
+function hideCallback(){
+  document.getElementById('callbackBox').classList.remove('open');
+  document.getElementById('callbackBox').style.display='none';
+}
+function confirmCallback(){
+  const date=document.getElementById('cb-date').value;
+  const time=document.getElementById('cb-time').value;
+  if(!date||!time){ toast('Please enter callback date and time','warn'); return; }
+  callOutcome='callback';
+  const fmt=new Date(date).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('completionSub').textContent=`Callback scheduled for ${fmt} at ${time}.`;
+  hideCallback();
+  markStep(5);
+  toast(`Callback scheduled for ${fmt} at ${time}`,'info');
+}
+
+// ── Outcome logging ─────────────────────────────────
+function logOutcome(type){
+  callOutcome=type;
+  const msgs={refused:'Customer declined — noted on account.',dq:'Customer not eligible — account flagged.'};
+  document.getElementById('completionSub').textContent=msgs[type]||'Outcome recorded.';
+  markStep(5);
+  toast(msgs[type]||'Outcome recorded','warn');
+}
+
+// ── Completion ──────────────────────────────────────
+function showCompletion(){
+  document.getElementById('completionBanner').classList.add('show');
+  document.getElementById('completionBanner').style.display='block';
+  document.getElementById('completionBanner').scrollIntoView({behavior:'smooth',block:'start'});
+  clearInterval(timerInterval);
+}
+
+// ── Reset ───────────────────────────────────────────
+function resetAll(){
+  completedSteps.clear(); currentStep=1; meterType=null; callOutcome=null;
+  clearInterval(timerInterval); timerInterval=null;
+  document.getElementById('callTimer').textContent='00:00';
+  updateProgressBar();
+  // Reset meter pills
+  ['elec','gas','dual'].forEach(t=>{ document.getElementById('pill-'+t).className='mpill'; });
+  // Reset form fields
+  ['f-name','f-ref','f-phone','f-postcode','f-date','f-slot','f-location','f-proptype','f-notes','cb-date','cb-time','cb-notes'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('f-elec').checked=false;
+  document.getElementById('f-gas').checked=false;
+  // Hide dynamic elements
+  hideBookingForm(); hideCallback();
+  document.getElementById('completionBanner').classList.remove('show');
+  document.getElementById('completionBanner').style.display='none';
+  // Reset card states — only step1 open
+  for(let i=1;i<=6;i++){
+    const body=document.getElementById('step'+i);
+    const arrow=document.getElementById('step'+i+'Arrow');
+    if(i===1){
+      if(body){body.style.display='block';body.classList.add('open');}
+      if(arrow) arrow.classList.add('open');
+    } else {
+      if(body){body.style.display='none';body.classList.remove('open');}
+      if(arrow) arrow.classList.remove('open');
+    }
+  }
+  // Scroll to top
+  document.getElementById('canvas').scrollTo({top:0,behavior:'smooth'});
+  toast('Ready for new call','success');
+}
+
+// ── Toast ───────────────────────────────────────────
+let toastTimer;
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');
+  const icons={success:'✓',info:'ℹ',warn:'⚠'};
+  t.textContent=(icons[type]||'•')+' '+msg;
+  t.className=type+' show';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// Init
+updateProgressBar();
+</script>
+</body>
+</html>
