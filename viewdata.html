@@ -1268,7 +1268,7 @@
     function exportCSV(jobs, filename) {
         if (!jobs.length) { alert("No records to export."); return; }
         const cols = ['jobId','customerName','jobType','address','postcode','contactNumber',
-                      'engineerName','dateOfJob','timeSlot','jobStatus','status','uploadedAt'];
+                      'engineerName','dateOfJob','timeSlot','jobLength','jobStatus','status','uploadedAt'];
         const header = cols.map(c => `"${c}"`).join(',');
         const rows = jobs.map(j =>
             cols.map(c => `"${String(j[c]||'').replace(/"/g,'""')}"`).join(',')
@@ -1303,6 +1303,7 @@
             { label: 'Engineer',   value: j.engineerName || j.Engineer || '—', full: false },
             { label: 'Date',       value: j.dateOfJob || j.Date || '—', full: false },
             { label: 'Time Slot',  value: j.timeSlot || '—', full: false },
+            { label: 'Job Length', value: j.jobLength || j.Job_Length || '—', full: false },
             { label: 'Contact',    value: j.contactNumber || j.Phone || '—', full: false },
             { label: 'Address',    value: j.address || j.Address_Line1 || '—', full: true },
             { label: 'Postcode',   value: j.postcode || j.Postcode || '—', full: false },
