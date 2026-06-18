@@ -2,1116 +2,624 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Geko — Field Mapping</title>
+<title>Geko — Calling Script</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
-    :root {
-        --accent-green: #00ff9d;
-        --accent-blue: #00c8ff;
-        --text-main: #e6f7ff;
-        --text-muted: #8fa0b8;
-        --danger: #ff4b5c;
-        --border-glow: 0 0 18px rgba(0, 255, 157, 0.45);
-        --transition-fast: 0.18s ease-out;
-        --transition-med: 0.28s ease-out;
-        --sidebar-w-collapsed: 64px;
-        --sidebar-w-expanded: 210px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-        font-family: 'Inter', sans-serif;
-        background: radial-gradient(circle at top left, #101525 0, #05070b 45%, #020308 100%);
-        color: var(--text-main);
-        min-height: 100vh;
-        display: flex;
-        overflow: hidden;
-    }
-
-    body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        background-image:
-            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-        background-size: 40px 40px;
-        opacity: 0.35;
-        pointer-events: none;
-        animation: gridMove 40s linear infinite;
-        z-index: 0;
-    }
-
-    @keyframes gridMove {
-        from { transform: translate3d(0,0,0); }
-        to { transform: translate3d(-40px,-40px,0); }
-    }
-
-    /* ── SIDEBAR ── */
-    #sidebar {
-        width: var(--sidebar-w-collapsed);
-        min-height: 100vh;
-        background: rgba(5, 10, 18, 0.95);
-        border-right: 1px solid rgba(255,255,255,0.06);
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 0;
-        transition: width var(--transition-med);
-        overflow: hidden;
-        position: relative;
-        z-index: 100;
-        box-shadow: 4px 0 30px rgba(0,0,0,0.6);
-    }
-
-    #sidebar.expanded { width: var(--sidebar-w-expanded); }
-
-    .sidebar-header {
-        height: 70px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        flex-shrink: 0;
-        padding: 0;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .sidebar-logo-collapsed {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-        filter: drop-shadow(0 0 10px rgba(0,255,157,0.5));
-        display: block;
-        cursor: pointer;
-        transition: filter var(--transition-fast), transform var(--transition-fast);
-        flex-shrink: 0;
-    }
-
-    .sidebar-logo-collapsed:hover {
-        filter: drop-shadow(0 0 16px rgba(0,255,157,0.8));
-        transform: scale(1.03);
-    }
-
-    .sidebar-logo-expanded {
-        height: 40px;
-        object-fit: contain;
-        filter: drop-shadow(0 0 10px rgba(0,255,157,0.5));
-        border-radius: 8px;
-        opacity: 0;
-        max-width: 0;
-        overflow: hidden;
-        transition: opacity var(--transition-med), max-width var(--transition-med);
-        display: block;
-        margin-left: 14px;
-        flex-shrink: 0;
-    }
-
-    #sidebar.expanded .sidebar-logo-collapsed { display: none; }
-
-    #sidebar.expanded .sidebar-header {
-        padding: 0 12px;
-        justify-content: space-between;
-    }
-
-    #sidebar.expanded .sidebar-logo-expanded {
-        opacity: 1;
-        max-width: 150px;
-    }
-
-    .sidebar-toggle {
-        width: 30px;
-        height: 30px;
-        border-radius: 7px;
-        border: 1px solid rgba(255,255,255,0.1);
-        background: rgba(255,255,255,0.04);
-        color: var(--text-muted);
-        cursor: pointer;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        transition: all var(--transition-fast);
-    }
-
-    #sidebar.expanded .sidebar-toggle { display: flex; }
-    .sidebar-toggle:hover { background: rgba(255,255,255,0.08); color: var(--text-main); }
-
-    .sidebar-nav {
-        flex: 1;
-        padding: 14px 0;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }
-
-    .sidebar-link {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 0 14px;
-        height: 46px;
-        text-decoration: none;
-        color: var(--text-muted);
-        transition: all var(--transition-fast);
-        white-space: nowrap;
-        border-left: 2px solid transparent;
-        flex-shrink: 0;
-        position: relative;
-    }
-
-    .sidebar-link:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-
-    .sidebar-link.active {
-        background: rgba(0,255,157,0.08);
-        color: var(--accent-green);
-        border-left-color: var(--accent-green);
-    }
-
-    .sidebar-icon {
-        width: 36px; height: 36px;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; border-radius: 8px;
-    }
-
-    .sidebar-link.active .sidebar-icon { background: rgba(0,255,157,0.10); }
-
-    .sidebar-label {
-        font-size: 13px; font-weight: 500;
-        opacity: 0; max-width: 0; overflow: hidden;
-        transition: opacity var(--transition-med), max-width var(--transition-med);
-        pointer-events: none;
-    }
-
-    #sidebar.expanded .sidebar-label { opacity: 1; max-width: 140px; }
-
-    .sidebar-link::after {
-        content: attr(data-label);
-        position: absolute;
-        left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
-        background: rgba(5,10,18,0.97);
-        border: 1px solid rgba(255,255,255,0.08);
-        color: var(--text-main);
-        font-size: 12px; font-weight: 500;
-        padding: 6px 12px; border-radius: 8px;
-        white-space: nowrap; opacity: 0; pointer-events: none;
-        transition: opacity 0.15s; z-index: 200;
-        box-shadow: 4px 4px 16px rgba(0,0,0,0.5);
-    }
-
-    #sidebar:not(.expanded) .sidebar-link:hover::after { opacity: 1; }
-
-    .sidebar-footer {
-        padding: 14px;
-        border-top: 1px solid rgba(255,255,255,0.06);
-        flex-shrink: 0;
-    }
-
-    .sidebar-version {
-        font-size: 10px;
-        color: rgba(143,160,184,0.35);
-        text-align: center; letter-spacing: 0.5px;
-        opacity: 0; transition: opacity var(--transition-med);
-    }
-
-    #sidebar.expanded .sidebar-version { opacity: 1; }
-
-    /* ── MAIN ── */
-    #main-content {
-        flex: 1; display: flex; flex-direction: column;
-        min-width: 0; overflow-y: auto;
-        position: relative; z-index: 1;
-        height: 100vh;
-    }
-
-    /* TOPBAR */
-    #topbar {
-        width: 100%; padding: 14px 26px;
-        background: rgba(5,10,18,0.9);
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        display: flex; justify-content: space-between; align-items: center;
-        position: sticky; top: 0; z-index: 5;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-    }
-
-    #topbar-title { font-size: 16px; text-transform: uppercase; letter-spacing: 0.12em; }
-    #topbar-subtitle { font-size: 12px; color: var(--text-muted); }
-
-    #topbar-right {
-        display: flex; align-items: center; gap: 10px;
-        font-size: 12px; color: var(--text-muted);
-    }
-
-    #status-dot {
-        width: 10px; height: 10px;
-        background: var(--accent-green); border-radius: 50%;
-        box-shadow: 0 0 10px rgba(0,255,157,0.8);
-        display: inline-block;
-    }
-
-    /* ── PAGE ── */
-    #page-inner {
-        padding: 28px;
-        max-width: 1400px;
-        margin: 0 auto;
-        width: 100%;
-    }
-
-    .page-header { margin-bottom: 26px; }
-
-    .page-header h1 {
-        font-size: 22px; font-weight: 600;
-        text-transform: uppercase; letter-spacing: 0.1em;
-        margin-bottom: 4px;
-    }
-
-    .page-header p { font-size: 13px; color: var(--text-muted); }
-
-    /* SUMMARY BAR */
-    .summary-bar {
-        display: flex; align-items: center; gap: 16px;
-        flex-wrap: wrap; margin-bottom: 22px;
-    }
-
-    .summary-pill {
-        display: flex; align-items: center; gap: 8px;
-        padding: 8px 16px; border-radius: 999px;
-        background: rgba(10,14,24,0.9);
-        border: 1px solid rgba(255,255,255,0.06);
-        font-size: 12px; color: var(--text-muted);
-        backdrop-filter: blur(10px);
-    }
-
-    .summary-pill strong { color: var(--accent-green); font-size: 15px; font-weight: 600; }
-    .summary-pill.blue strong { color: var(--accent-blue); }
-
-    /* ACTION BUTTONS */
-    .action-bar {
-        display: flex; align-items: center; gap: 10px;
-        margin-bottom: 26px; flex-wrap: wrap;
-    }
-
-    .btn-save {
-        padding: 10px 22px; border-radius: 999px; border: none;
-        background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
-        color: #020308; font-weight: 600; font-size: 13px;
-        letter-spacing: 0.08em; text-transform: uppercase;
-        cursor: pointer;
-        box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 12px 28px rgba(0,0,0,0.8);
-        transition: var(--transition-fast);
-        display: flex; align-items: center; gap: 8px;
-    }
-
-    .btn-save:hover { transform: translateY(-1px); filter: brightness(1.05); }
-    .btn-save:active { transform: translateY(1px) scale(0.99); }
-
-    .btn-secondary {
-        padding: 10px 18px; border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(5,8,16,0.9); color: var(--text-muted);
-        font-size: 13px; cursor: pointer;
-        transition: var(--transition-fast);
-        letter-spacing: 0.06em; text-transform: uppercase;
-        font-family: 'Inter', sans-serif;
-        display: flex; align-items: center; gap: 8px;
-    }
-
-    .btn-secondary:hover {
-        background: rgba(0,200,255,0.1);
-        border-color: rgba(0,200,255,0.4);
-        color: var(--text-main);
-    }
-
-    .btn-danger-soft {
-        padding: 10px 18px; border-radius: 999px;
-        border: 1px solid rgba(255,75,92,0.35);
-        background: rgba(5,8,16,0.9); color: rgba(255,75,92,0.8);
-        font-size: 13px; cursor: pointer;
-        transition: var(--transition-fast);
-        letter-spacing: 0.06em; text-transform: uppercase;
-        font-family: 'Inter', sans-serif;
-        display: flex; align-items: center; gap: 8px;
-    }
-
-    .btn-danger-soft:hover {
-        background: rgba(255,75,92,0.12);
-        border-color: rgba(255,75,92,0.7);
-        color: var(--danger);
-        box-shadow: 0 0 14px rgba(255,75,92,0.3);
-    }
-
-    /* STATUS TAG after save */
-    .save-status {
-        font-size: 12px; padding: 6px 14px;
-        border-radius: 999px;
-        display: none; align-items: center; gap: 6px;
-    }
-
-    .save-status.ok {
-        display: flex;
-        background: rgba(0,255,157,0.1);
-        border: 1px solid rgba(0,255,157,0.3);
-        color: var(--accent-green);
-    }
-
-    .save-status.err {
-        display: flex;
-        background: rgba(255,75,92,0.1);
-        border: 1px solid rgba(255,75,92,0.3);
-        color: var(--danger);
-    }
-
-    /* SEARCH */
-    .search-bar {
-        position: relative; margin-bottom: 22px;
-    }
-
-    .search-bar svg {
-        position: absolute; left: 14px; top: 50%;
-        transform: translateY(-50%); pointer-events: none; opacity: 0.45;
-    }
-
-    .search-input {
-        width: 100%; height: 44px;
-        background: rgba(5,8,16,0.9);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 12px; color: var(--text-main);
-        font-size: 13px; font-family: 'Inter', sans-serif;
-        padding: 0 16px 0 42px; outline: none;
-        transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-    }
-
-    .search-input:focus {
-        border-color: var(--accent-blue);
-        box-shadow: 0 0 16px rgba(0,200,255,0.3);
-    }
-
-    .search-input::placeholder { color: var(--text-muted); }
-
-    /* GRID */
-    .categories-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 18px;
-    }
-
-    /* CATEGORY CARD */
-    .cat-card {
-        border-radius: 16px;
-        background: rgba(10,14,24,0.9);
-        border: 1px solid rgba(255,255,255,0.06);
-        padding: 0;
-        backdrop-filter: blur(18px);
-        box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 14px 40px rgba(0,0,0,0.7);
-        position: relative;
-        overflow: hidden;
-        transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-    }
-
-    .cat-card::before {
-        content: "";
-        position: absolute; inset: -40%;
-        background: radial-gradient(circle at top left, rgba(0,255,157,0.07), transparent 55%),
-                    radial-gradient(circle at bottom right, rgba(0,200,255,0.07), transparent 55%);
-        opacity: 0.8; z-index: 0; pointer-events: none;
-    }
-
-    .cat-card:hover {
-        border-color: rgba(0,255,157,0.15);
-        box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 18px 50px rgba(0,0,0,0.8), 0 0 30px rgba(0,255,157,0.06);
-    }
-
-    .cat-card.has-active {
-        border-color: rgba(0,255,157,0.18);
-    }
-
-    /* CARD HEADER */
-    .cat-header {
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 16px 18px 14px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-        position: relative; z-index: 1;
-        gap: 10px;
-    }
-
-    .cat-header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
-
-    .cat-icon {
-        width: 34px; height: 34px; border-radius: 9px;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .cat-icon svg {
-        width: 16px; height: 16px;
-        flex-shrink: 0;
-    }
-
-    .cat-title {
-        font-size: 12px; font-weight: 600;
-        text-transform: uppercase; letter-spacing: 0.1em;
-        color: var(--text-main); white-space: nowrap;
-        overflow: hidden; text-overflow: ellipsis;
-    }
-
-    .cat-count {
-        font-size: 11px; color: var(--text-muted);
-        margin-top: 1px;
-    }
-
-    .cat-count strong { color: var(--accent-green); }
-
-    /* Toggle all button */
-    .cat-toggle-all {
-        padding: 4px 10px; border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.1);
-        background: transparent; color: var(--text-muted);
-        font-size: 10px; cursor: pointer;
-        text-transform: uppercase; letter-spacing: 0.08em;
-        transition: var(--transition-fast); flex-shrink: 0;
-        font-family: 'Inter', sans-serif;
-        white-space: nowrap;
-    }
-
-    .cat-toggle-all:hover {
-        background: rgba(0,255,157,0.08);
-        border-color: rgba(0,255,157,0.3);
-        color: var(--accent-green);
-    }
-
-    /* FIELDS LIST */
-    .cat-fields {
-        padding: 10px 14px 14px;
-        display: flex; flex-direction: column; gap: 4px;
-        position: relative; z-index: 1;
-    }
-
-    /* FIELD ROW */
-    .field-row {
-        display: flex; align-items: center; gap: 10px;
-        padding: 8px 10px; border-radius: 9px;
-        cursor: pointer;
-        transition: background var(--transition-fast);
-        user-select: none;
-        border: 1px solid transparent;
-    }
-
-    .field-row:hover { background: rgba(255,255,255,0.04); }
-
-    .field-row.active {
-        background: rgba(0,255,157,0.07);
-        border-color: rgba(0,255,157,0.12);
-    }
-
-    .field-row.hidden-row { display: none; }
-
-    /* TOGGLE SWITCH */
-    .toggle-switch {
-        position: relative; width: 36px; height: 20px; flex-shrink: 0;
-    }
-
-    .toggle-switch input {
-        opacity: 0; width: 0; height: 0; position: absolute;
-    }
-
-    .toggle-track {
-        position: absolute; inset: 0;
-        background: rgba(255,255,255,0.08);
-        border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.1);
-        transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
-        cursor: pointer;
-    }
-
-    .toggle-track::after {
-        content: "";
-        position: absolute; top: 2px; left: 2px;
-        width: 14px; height: 14px;
-        background: var(--text-muted);
-        border-radius: 50%;
-        transition: transform var(--transition-fast), background var(--transition-fast);
-    }
-
-    .toggle-switch input:checked + .toggle-track {
-        background: rgba(0,255,157,0.2);
-        border-color: rgba(0,255,157,0.5);
-        box-shadow: 0 0 10px rgba(0,255,157,0.25);
-    }
-
-    .toggle-switch input:checked + .toggle-track::after {
-        transform: translateX(16px);
-        background: var(--accent-green);
-    }
-
-    .field-name {
-        font-size: 13px; color: var(--text-muted);
-        flex: 1; transition: color var(--transition-fast);
-    }
-
-    .field-row.active .field-name { color: var(--text-main); }
-
-    .field-tag {
-        font-size: 10px; padding: 2px 7px; border-radius: 999px;
-        background: rgba(0,200,255,0.08);
-        border: 1px solid rgba(0,200,255,0.15);
-        color: var(--accent-blue);
-        font-weight: 500; letter-spacing: 0.04em;
-        opacity: 0;
-        transition: opacity var(--transition-fast);
-    }
-
-    .field-row.active .field-tag { opacity: 1; }
-
-    /* TOAST */
-    #toast {
-        position: fixed; bottom: 28px; right: 28px;
-        padding: 12px 20px; border-radius: 12px;
-        font-size: 13px; font-weight: 500;
-        display: flex; align-items: center; gap: 10px;
-        z-index: 9999;
-        transform: translateY(20px); opacity: 0;
-        transition: transform 0.3s ease, opacity 0.3s ease;
-        pointer-events: none;
-    }
-
-    #toast.show {
-        transform: translateY(0); opacity: 1;
-    }
-
-    #toast.success {
-        background: rgba(10,20,15,0.97);
-        border: 1px solid rgba(0,255,157,0.4);
-        color: var(--accent-green);
-        box-shadow: 0 0 30px rgba(0,255,157,0.2), 0 16px 40px rgba(0,0,0,0.8);
-    }
-
-    #toast.error {
-        background: rgba(20,10,12,0.97);
-        border: 1px solid rgba(255,75,92,0.4);
-        color: var(--danger);
-        box-shadow: 0 0 30px rgba(255,75,92,0.2), 0 16px 40px rgba(0,0,0,0.8);
-    }
-
-    /* LOADING OVERLAY */
-    #loading-overlay {
-        position: fixed; inset: 0;
-        background: rgba(2,3,8,0.7);
-        display: flex; align-items: center; justify-content: center;
-        z-index: 9998; backdrop-filter: blur(6px);
-    }
-
-    #loading-overlay.hidden { display: none; }
-
-    .loading-box {
-        padding: 30px 40px; border-radius: 18px;
-        background: rgba(10,14,24,0.98);
-        border: 1px solid rgba(255,255,255,0.06);
-        text-align: center;
-        box-shadow: 0 24px 60px rgba(0,0,0,0.9);
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .loading-spinner {
-        width: 36px; height: 36px;
-        border: 3px solid rgba(255,255,255,0.06);
-        border-top-color: var(--accent-green);
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        margin: 0 auto 14px;
-    }
-
-    .loading-text { font-size: 13px; color: var(--text-muted); }
-
-    @media (max-width: 768px) {
-        .categories-grid { grid-template-columns: 1fr; }
-        #page-inner { padding: 18px; }
-    }
+:root {
+  --accent-green: #00ff9d;
+  --accent-blue:  #00c8ff;
+  --text-main:    #e6f7ff;
+  --text-muted:   #8fa0b8;
+  --danger:       #ff4b5c;
+  --warning:      #f59e0b;
+  --bg-body:      #05070b;
+  --bg-card:      rgba(10,18,30,0.92);
+  --bg-card-hover:rgba(14,24,40,0.98);
+  --border-main:  rgba(255,255,255,0.06);
+  --border-card:  rgba(255,255,255,0.07);
+  --grid-line:    rgba(255,255,255,0.025);
+  --sidebar-w:    64px;
+  --transition:   0.2s ease-out;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Inter',sans-serif;
+  background:radial-gradient(circle at top left,#101525 0,#05070b 45%,#020308 100%);
+  color:var(--text-main);
+  min-height:100vh;
+  display:flex;
+  overflow:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;
+  background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);
+  background-size:40px 40px;opacity:.35;pointer-events:none;
+  animation:gridMove 40s linear infinite;z-index:0;
+}
+@keyframes gridMove{from{transform:translate3d(0,0,0)}to{transform:translate3d(-40px,-40px,0)}}
+
+/* ── Sidebar (Unchanged) ── */
+#sidebar{
+  width:var(--sidebar-w);min-height:100vh;
+  background:rgba(5,10,18,0.95);border-right:1px solid var(--border-main);
+  display:flex;flex-direction:column;flex-shrink:0;
+  position:relative;z-index:100;box-shadow:4px 0 30px rgba(0,0,0,0.6);
+}
+.sidebar-header{height:70px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border-main);}
+.sidebar-logo{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(0,255,157,0.5));}
+.sidebar-nav{flex:1;padding:14px 0;display:flex;flex-direction:column;gap:2px;}
+.sidebar-link{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;height:46px;text-decoration:none;color:var(--text-muted);
+  border-left:2px solid transparent;position:relative;transition:all var(--transition);
+}
+.sidebar-link:hover{background:rgba(255,255,255,0.05);color:var(--text-main);}
+.sidebar-link.active{background:rgba(0,255,157,0.08);color:var(--accent-green);border-left-color:var(--accent-green);}
+
+/* ── Main Layout ── */
+#main-content{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;position:relative;z-index:1;height:100vh;}
+
+#topbar{
+  padding:14px 26px;background:rgba(5,10,18,0.9);border-bottom:1px solid var(--border-main);
+  display:flex;justify-content:space-between;align-items:center;flex-shrink:0;
+  box-shadow:0 10px 30px rgba(0,0,0,0.7);
+}
+.topbar-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;}
+.topbar-sub{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.live-pill{
+  display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:20px;
+  border:1px solid rgba(0,255,157,0.2);background:rgba(0,255,157,0.05);
+  font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--accent-green);
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--accent-green);box-shadow:0 0 6px rgba(0,255,157,0.8);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+
+/* Workspace Split */
+#workspace {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Center Script Area (The Wizard) ── */
+#script-container {
+  flex: 1;
+  padding: 30px 40px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+#script-container::-webkit-scrollbar{width:5px;}
+#script-container::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px;}
+
+.progress-bar {
+  display: flex; gap: 4px; margin-bottom: 24px;
+}
+.prog-dot {
+  flex: 1; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; transition: background 0.3s;
+}
+.prog-dot.active { background: var(--accent-green); box-shadow: 0 0 10px rgba(0,255,157,0.5); }
+.prog-dot.done { background: var(--accent-blue); }
+
+.wizard-step {
+  display: none;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  animation: slideUp 0.3s ease-out forwards;
+}
+.wizard-step.active {
+  display: flex;
+  flex-direction: column;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-main);
+  display: flex; align-items: center; gap: 12px;
+}
+.step-number {
+  width: 32px; height: 32px; border-radius: 8px; background: rgba(0,255,157,0.1); border: 1px solid rgba(0,255,157,0.3);
+  color: var(--accent-green); display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+}
+.step-title { font-size: 18px; font-weight: 700; }
+.step-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px;}
+
+.step-body { padding: 30px 24px; flex: 1; }
+
+.script-text{
+  background:rgba(0,255,157,0.04);border:1px solid rgba(0,255,157,0.15);border-left: 4px solid var(--accent-green); border-radius:8px;
+  padding:24px 28px;font-size:16px;line-height:1.6;color:var(--text-main);
+  position:relative;margin-bottom:24px;
+}
+.script-text::before{
+  content:'READ ALOUD';position:absolute;top:-10px;left:20px;
+  background:var(--bg-body);color:var(--accent-green);font-size:10px;font-weight:700;
+  letter-spacing:.1em;padding:0 8px;
+}
+.script-text em{color:var(--accent-green);font-style:normal;font-weight:600;}
+.script-text strong{color:var(--accent-blue);font-weight:600;}
+
+.action-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;
+  padding: 20px 24px; border-top: 1px solid var(--border-main); background: rgba(0,0,0,0.2);
+}
+
+.action-btn {
+  padding: 14px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; font-family: 'Inter', sans-serif;
+  cursor: pointer; text-transform: uppercase; letter-spacing: .05em; transition: all var(--transition);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-primary { background: var(--accent-green); color: #000; border: none; box-shadow: 0 4px 15px rgba(0,255,157,0.2); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,255,157,0.4); }
+
+.btn-secondary { background: rgba(0,200,255,0.1); color: var(--accent-blue); border: 1px solid rgba(0,200,255,0.3); }
+.btn-secondary:hover { background: rgba(0,200,255,0.2); }
+
+.btn-warning { background: rgba(245,158,11,0.1); color: var(--warning); border: 1px solid rgba(245,158,11,0.3); }
+.btn-warning:hover { background: rgba(245,158,11,0.2); }
+
+.btn-danger { background: rgba(255,75,92,0.1); color: var(--danger); border: 1px solid rgba(255,75,92,0.3); }
+.btn-danger:hover { background: rgba(255,75,92,0.2); }
+
+
+/* ── Right Helper Panel (Persistent) ── */
+#helper-panel {
+  width: 380px; background: rgba(10,18,30,0.6); border-left: 1px solid var(--border-main);
+  display: flex; flex-direction: column; overflow-y: auto; padding: 24px;
+}
+#helper-panel::-webkit-scrollbar{width:4px;}
+#helper-panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+
+.helper-section { margin-bottom: 24px; }
+.helper-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+
+/* Meter Pills in Sidebar */
+.meter-pills{display:flex;gap:8px;flex-wrap:wrap;}
+.mpill{
+  flex: 1; text-align: center; padding:8px 0; border-radius:8px;
+  border:1px solid var(--border-card); background:rgba(255,255,255,0.02);
+  font-size:12px; font-weight:600; cursor:pointer; transition:all var(--transition); color:var(--text-muted);
+}
+.mpill:hover{border-color:rgba(255,255,255,0.2); color:var(--text-main);}
+.mpill.active-elec{border-color:rgba(0,200,255,0.5); background:rgba(0,200,255,0.1); color:var(--accent-blue);}
+.mpill.active-gas{border-color:rgba(245,158,11,0.5); background:rgba(245,158,11,0.1); color:var(--warning);}
+.mpill.active-dual{border-color:rgba(0,255,157,0.5); background:rgba(0,255,157,0.1); color:var(--accent-green);}
+
+/* Objections Accordion in Sidebar */
+.obj-item{ background:rgba(0,0,0,0.3); border:1px solid var(--border-card); border-radius:8px; margin-bottom:8px; overflow:hidden; }
+.obj-q{ display:flex; align-items:center; gap:8px; padding:12px; cursor:pointer; font-size:12px; font-weight:600; color:var(--warning); }
+.obj-q:hover{ background:rgba(245,158,11,0.05); }
+.obj-a{ padding:0 12px 12px 34px; font-size:13px; line-height:1.5; color:var(--text-main); display:none; }
+.obj-a.open{ display:block; }
+.obj-chevron{ margin-left:auto; color:var(--text-muted); font-size:12px; }
+
+/* Dynamic Forms embedded */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px; margin-top: 16px;}
+.form-field{display:flex;flex-direction:column;gap:6px;}
+.form-field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);}
+.form-field input,.form-field select{
+  background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:8px;
+  color:var(--text-main);padding:10px 12px;font-size:13px;font-family:'Inter',sans-serif;outline:none;
+}
+.form-field input:focus,.form-field select:focus{border-color:rgba(0,255,157,0.4);}
+.form-field select option{background:#0a121e;}
+
+/* Hints */
+.note-box{ background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.2); border-radius:8px; padding:12px; font-size:13px; color:var(--warning); margin-bottom: 16px; display:flex; gap:8px; }
+
+/* Toast */
+#toast{
+  position:fixed;bottom:24px;right:400px;z-index:99999;padding:12px 20px;border-radius:12px;
+  font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;
+  transform:translateY(20px);opacity:0;transition:transform .3s ease,opacity .3s ease;pointer-events:none;
+}
+#toast.show{transform:translateY(0);opacity:1;}
+#toast.success{background:rgba(10,20,15,0.97);border:1px solid rgba(0,255,157,0.4);color:var(--accent-green);}
+#toast.info{background:rgba(5,14,20,0.97);border:1px solid rgba(0,200,255,0.4);color:var(--accent-blue);}
+#toast.warn{background:rgba(15,12,5,0.97);border:1px solid rgba(245,158,11,0.4);color:var(--warning);}
 </style>
 </head>
 <body>
-
-<!-- LOADING OVERLAY -->
-<div id="loading-overlay">
-    <div class="loading-box">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Loading configuration…</div>
-    </div>
-</div>
-
-<!-- TOAST -->
 <div id="toast"></div>
 
-<!-- SIDEBAR -->
+<!-- Sidebar -->
 <div id="sidebar">
-    <div class="sidebar-header">
-        <img class="sidebar-logo-collapsed" id="logoCollapsed"
-             src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1"
-             alt="Geko" title="Expand sidebar">
-        <img class="sidebar-logo-expanded"
-             src="https://www.dropbox.com/scl/fi/90alqdk8bozulywe2c8bw/Tech-inspired-Geko-logo-design.png?rlkey=tcagro1dwoelqxfmxqldrp178&st=xh5pubjr&dl=1"
-             alt="Geko">
-        <button class="sidebar-toggle" id="sidebarToggle" title="Collapse sidebar">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-        </button>
-    </div>
-
-    <nav class="sidebar-nav">
-        <a href="dashboard.html" class="sidebar-link" data-label="Dashboard">
-            <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
-            <span class="sidebar-label">Dashboard</span>
-        </a>
-        <a href="scheduling.html" class="sidebar-link" data-label="Scheduling">
-            <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span>
-            <span class="sidebar-label">Scheduling</span>
-        </a>
-        <a href="database.html" class="sidebar-link" data-label="Database">
-            <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 9v4c0 1.66 4.03 3 9 3s9-1.34 9-3V9"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/></svg></span>
-            <span class="sidebar-label">Database</span>
-        </a>
-        <a href="viewdata.html" class="sidebar-link" data-label="View Data">
-            <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
-            <span class="sidebar-label">View Data</span>
-        </a>
-        <a href="userdatabase.html" class="sidebar-link" data-label="Users">
-            <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
-            <span class="sidebar-label">Users</span>
-        </a>
-        <a href="mapping.html" class="sidebar-link active" data-label="Mapping">
-            <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg></span>
-            <span class="sidebar-label">Mapping</span>
-        </a>
-    </nav>
-
-    <div class="sidebar-footer">
-        <div class="sidebar-version">v1.0.0</div>
-    </div>
+  <div class="sidebar-header"><img class="sidebar-logo" src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1" alt="Geko"></div>
+  <nav class="sidebar-nav">
+    <a href="#" class="sidebar-link active" data-label="Call Script">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 12.88 19.79 19.79 0 0 1 1.43 4.25 2 2 0 0 1 3.41 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    </a>
+    <!-- Other nav links removed for brevity, keep yours if needed -->
+  </nav>
 </div>
 
-<!-- MAIN CONTENT -->
+<!-- Main -->
 <div id="main-content">
-    <header id="topbar">
-        <div id="topbar-left">
-            <div>
-                <div id="topbar-title">Field Mapping</div>
-                <div id="topbar-subtitle">Configure which data fields are active for import matching</div>
-            </div>
-        </div>
-        <div id="topbar-right">
-            <span id="status-dot"></span>
-            <span id="status-text">Admin</span>
-        </div>
-    </header>
-
-    <div id="page-inner">
-        <div class="page-header">
-            <h1>Field Mapping Configuration</h1>
-            <p>Toggle fields on or off. Only enabled fields will be matched when data is loaded or imported.</p>
-            <div style="margin-top:12px;display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:10px;background:rgba(0,255,157,0.05);border:1px solid rgba(0,255,157,0.18);font-size:12px;color:rgba(0,255,157,0.8);line-height:1.6">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
-                <span>Each field shows the <strong>Firestore key</strong> it saves as (in italic). These match the keys <strong>scheduling.html</strong> reads — enabling a field here makes it available in the Data Upload column mapper.</span>
-            </div>
-        </div>
-
-        <!-- Summary + Actions -->
-        <div class="summary-bar">
-            <div class="summary-pill">
-                <strong id="count-enabled">0</strong> fields enabled
-            </div>
-            <div class="summary-pill blue">
-                <strong id="count-total">0</strong> total fields
-            </div>
-        </div>
-
-        <div class="action-bar">
-            <button class="btn-save" id="saveBtn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                Save Configuration
-            </button>
-            <button class="btn-secondary" id="enableAllBtn">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                Enable All
-            </button>
-            <button class="btn-danger-soft" id="disableAllBtn">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Disable All
-            </button>
-            <div class="save-status" id="saveStatus"></div>
-        </div>
-
-        <!-- Search -->
-        <div class="search-bar">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-            <input type="text" class="search-input" id="searchInput" placeholder="Search fields across all categories…">
-        </div>
-
-        <!-- Categories Grid -->
-        <div class="categories-grid" id="categoriesGrid"></div>
+  <!-- Topbar -->
+  <header id="topbar">
+    <div>
+      <div class="topbar-title">📞 Meter Exchange Calling Flow</div>
+      <div class="topbar-sub">Customer outbound — smart meter booking</div>
     </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="live-pill"><div class="live-dot"></div><span id="callTimer">00:00</span></div>
+      <button onclick="startCall()" class="btn-primary" style="padding:8px 16px; border-radius:8px;">▶ START CALL</button>
+      <button onclick="resetFlow()" class="btn-danger" style="padding:8px 16px; border-radius:8px;">↻ RESET</button>
+    </div>
+  </header>
+
+  <!-- Workspace -->
+  <div id="workspace">
+    
+    <!-- Left: Dynamic Wizard Script -->
+    <div id="script-container">
+      
+      <!-- Progress Bar Tracker -->
+      <div class="progress-bar" id="progBar">
+        <div class="prog-dot active" id="dot-1"></div>
+        <div class="prog-dot" id="dot-2"></div>
+        <div class="prog-dot" id="dot-3"></div>
+        <div class="prog-dot" id="dot-4"></div>
+        <div class="prog-dot" id="dot-5"></div>
+        <div class="prog-dot" id="dot-6"></div>
+      </div>
+
+      <!-- Step 1: Opening -->
+      <div class="wizard-step active" id="step-1">
+        <div class="step-header">
+          <div class="step-number">01</div>
+          <div>
+            <div class="step-title">Opening & Introduction</div>
+            <div class="step-sub">Build rapport and confirm who you are speaking to.</div>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="script-text">
+            "Hello, could I speak with <em>[Customer Name]</em> please?"<br><br>
+            <em>[If connected:]</em><br>
+            "Good [morning/afternoon], <em>[Customer Name]</em>, my name is <strong>[Your Name]</strong> and I'm calling from <strong>Geko</strong> on behalf of your energy supplier.<br><br>
+            The reason for my call today is that we're contacting customers in your area because your property is <em>eligible for a free smart meter upgrade</em> — and I'd love to help get that booked in for you at a time that suits."
+          </div>
+        </div>
+        <div class="action-row">
+          <button class="action-btn btn-primary" onclick="goToStep(2)">✓ Speaking to Customer</button>
+          <button class="action-btn btn-warning" onclick="goToStep('callback')">⏳ Bad Time / Not Home</button>
+          <button class="action-btn btn-danger" onclick="endCall('Hung Up')">❌ Hung Up</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Verification -->
+      <div class="wizard-step" id="step-2">
+        <div class="step-header">
+          <div class="step-number">02</div>
+          <div>
+            <div class="step-title">Customer Verification</div>
+            <div class="step-sub">Confirm identity before discussing account details.</div>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="script-text">
+            "Before I go any further, I just need to run through a couple of quick security questions to confirm I'm speaking with the right person — is that okay?<br><br>
+            Could you confirm your <em>full name</em> and the <em>first line of your address</em>, including your postcode?"
+          </div>
+          <div class="note-box">⚠ Do NOT read out account details until verified.</div>
+        </div>
+        <div class="action-row">
+          <button class="action-btn btn-primary" onclick="goToStep(3)">✓ Verification Passed</button>
+          <button class="action-btn btn-danger" onclick="endCall('Failed Verification')">❌ Failed Verification</button>
+          <button class="action-btn btn-secondary" onclick="goToStep(1)">🔙 Back</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Eligibility & Discovery -->
+      <div class="wizard-step" id="step-3">
+        <div class="step-header">
+          <div class="step-number">03</div>
+          <div>
+            <div class="step-title">Eligibility & Discovery</div>
+            <div class="step-sub">Confirm meter setup and location.</div>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="script-text">
+            "I can see on your account that you currently have a traditional meter fitted. We're arranging upgrades to a smart meter at no cost to you.<br><br>
+            Just to confirm — can you tell me where your <em id="script-meter-type">electricity and/or gas meter</em> is located? (e.g., in a cupboard, outside wall, garage?)"
+          </div>
+          <div class="note-box">⚠ If they rent, they MUST confirm landlord permission before we book.</div>
+        </div>
+        <div class="action-row">
+          <button class="action-btn btn-primary" onclick="goToStep(4)">✓ Eligible - Proceed</button>
+          <button class="action-btn btn-warning" onclick="goToStep('callback')">🏠 Needs Landlord Permission</button>
+          <button class="action-btn btn-secondary" onclick="goToStep(2)">🔙 Back</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Pitch & Benefits -->
+      <div class="wizard-step" id="step-4">
+        <div class="step-header">
+          <div class="step-number">04</div>
+          <div>
+            <div class="step-title">Pitching the Benefits</div>
+            <div class="step-sub">Explain the value proposition clearly.</div>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="script-text">
+            "The upgrade is <em>completely free</em>. You'll get <strong>accurate bills</strong> (no more estimates) and a <strong>free in-home display</strong> to show you exactly what you're spending in real-time.<br><br>
+            The whole installation takes around <em id="script-duration">1.5 to 2.5 hours</em>. There'll be a <strong>short power interruption of around 5 minutes</strong>, so we just ask you to save any computer work beforehand. Sound good?"
+          </div>
+        </div>
+        <div class="action-row">
+          <button class="action-btn btn-primary" onclick="goToStep(5)">📅 Ready to Book</button>
+          <button class="action-btn btn-danger" onclick="endCall('Customer Refused')">🚫 Customer Refused</button>
+          <button class="action-btn btn-secondary" onclick="goToStep(3)">🔙 Back</button>
+        </div>
+      </div>
+
+      <!-- Step 5: Booking Form -->
+      <div class="wizard-step" id="step-5">
+        <div class="step-header">
+          <div class="step-number">05</div>
+          <div>
+            <div class="step-title">Secure Appointment</div>
+            <div class="step-sub">Fill in the booking details below.</div>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="script-text" style="font-size: 14px; padding: 16px;">
+            "Brilliant. What dates work best for you? We have morning slots (8am-1pm) and afternoon slots (1pm-6pm)."
+          </div>
+          
+          <div class="form-grid" style="margin-top: 0;">
+            <div class="form-field"><label>Customer Name *</label><input type="text" id="b-name"></div>
+            <div class="form-field"><label>Phone Number *</label><input type="tel" id="b-phone"></div>
+            <div class="form-field"><label>Preferred Date *</label><input type="date" id="b-date"></div>
+            <div class="form-field">
+              <label>Time Slot *</label>
+              <select id="b-slot">
+                <option value="">Select...</option>
+                <option>Morning (8am – 1pm)</option>
+                <option>Afternoon (1pm – 6pm)</option>
+              </select>
+            </div>
+            <div class="form-field"><label>Job Length (Days)</label><input type="number" id="b-job-length" min="1" step="1" placeholder="e.g. 1"></div>
+            <div class="form-field"><label>Meter Location</label><input type="text" id="b-loc"></div>
+            <div class="form-field"><label>Notes (Dogs, Access)</label><input type="text" id="b-notes"></div>
+          </div>
+        </div>
+        <div class="action-row">
+          <button class="action-btn btn-primary" onclick="goToStep(6)">💾 Confirm Booking</button>
+          <button class="action-btn btn-secondary" onclick="goToStep(4)">🔙 Back</button>
+        </div>
+      </div>
+
+      <!-- Step 6: Wrap Up -->
+      <div class="wizard-step" id="step-6">
+        <div class="step-header">
+          <div class="step-number">06</div>
+          <div>
+            <div class="step-title">Wrap-Up & Confirmation</div>
+            <div class="step-sub">Lock in the details and end the call professionally.</div>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="script-text">
+            "Perfect, I've booked that in. Just to confirm: your appointment is on <strong>[Date]</strong> for the <strong>[Morning/Afternoon]</strong>.<br><br>
+            You'll receive a confirmation text/email shortly. If you need to rearrange, please let us know 48 hours in advance.<br><br>
+            Please ensure an adult is home, the meter area is clear, and computers are saved. Thank you for your time, have a lovely day!"
+          </div>
+        </div>
+        <div class="action-row">
+          <button class="action-btn btn-primary" onclick="endCall('Successfully Booked')">🎉 Finish Call</button>
+        </div>
+      </div>
+
+      <!-- Alternate Flow: Callback Form -->
+      <div class="wizard-step" id="step-callback">
+        <div class="step-header">
+          <div class="step-number">📞</div>
+          <div>
+            <div class="step-title">Schedule a Callback</div>
+            <div class="step-sub">Customer is busy or needs landlord permission.</div>
+          </div>
+        </div>
+        <div class="step-body">
+          <div class="script-text" style="border-color:var(--accent-blue); color:var(--accent-blue); background:rgba(0,200,255,0.05);">
+            "No problem at all — I completely understand. When would be the <em>best time</em> for me to call you back?"
+          </div>
+          <div class="form-grid">
+            <div class="form-field"><label>Callback Date</label><input type="date" id="cb-date"></div>
+            <div class="form-field"><label>Callback Time</label><input type="time" id="cb-time"></div>
+            <div class="form-field" style="grid-column:1/-1;"><label>Reason / Notes</label><input type="text" id="cb-notes" placeholder="e.g. Needs to speak to landlord"></div>
+          </div>
+        </div>
+        <div class="action-row">
+          <button class="action-btn btn-secondary" style="background:var(--accent-blue); color:#000;" onclick="endCall('Callback Scheduled')">💾 Save Callback</button>
+          <button class="action-btn btn-danger" onclick="goToStep(1)">✕ Cancel Callback</button>
+        </div>
+      </div>
+
+      <!-- Completion Screen -->
+      <div class="wizard-step" id="step-done" style="text-align: center; padding: 60px 20px;">
+        <div style="font-size: 60px; margin-bottom: 20px;">✅</div>
+        <h2 style="color: var(--accent-green); margin-bottom: 10px;">Call Logged</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px;" id="end-status-text">Status: Completed</p>
+        <button class="action-btn btn-primary" style="margin: 0 auto; width: 200px;" onclick="resetFlow()">Start Next Call</button>
+      </div>
+
+    </div>
+
+    <!-- Right: Persistent Helper Panel -->
+    <div id="helper-panel">
+      
+      <div class="helper-section">
+        <div class="helper-title">⚡ Meter Settings</div>
+        <div class="meter-pills">
+          <div class="mpill" id="pill-elec" onclick="setMeter('elec')">Electric Only</div>
+          <div class="mpill" id="pill-gas" onclick="setMeter('gas')">Gas Only</div>
+          <div class="mpill active-dual" id="pill-dual" onclick="setMeter('dual')">Dual (Both)</div>
+        </div>
+      </div>
+
+      <div class="helper-section">
+        <div class="helper-title">❓ Objection Handling</div>
+        
+        <div class="obj-item">
+          <div class="obj-q" onclick="toggleObj(this)"><span>1. "How do I know you're genuine?"</span><span class="obj-chevron">▾</span></div>
+          <div class="obj-a">"I'm not asking for payment details or passwords. I just need to confirm your address to ensure I'm speaking to the account holder. You can always call us back via the number on your bill."</div>
+        </div>
+
+        <div class="obj-item">
+          <div class="obj-q" onclick="toggleObj(this)"><span>2. "I heard they catch fire/hack you."</span><span class="obj-chevron">▾</span></div>
+          <div class="obj-a">"Smart meters use very low-level radio signals, similar to a baby monitor, meeting all strict UK safety standards. Your data is end-to-end encrypted and regulated by Ofgem."</div>
+        </div>
+
+        <div class="obj-item">
+          <div class="obj-q" onclick="toggleObj(this)"><span>3. "I'm not in / Can someone else be there?"</span><span class="obj-chevron">▾</span></div>
+          <div class="obj-a">"Yes! As long as the person is over 18 and you give them permission, that's perfectly fine."</div>
+        </div>
+
+        <div class="obj-item">
+          <div class="obj-q" onclick="toggleObj(this)"><span>4. "I already have one."</span><span class="obj-chevron">▾</span></div>
+          <div class="obj-a">"Apologies, our records must be outdated. I'll note this down so you aren't contacted again."</div>
+        </div>
+      </div>
+
+      <div class="helper-section">
+        <div class="helper-title">ℹ Quick Info</div>
+        <div style="font-size: 12px; color: var(--text-muted); line-height: 1.6; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border-card);">
+          • <strong>Dual Appt:</strong> ~2.5 hrs<br>
+          • <strong>Single Appt:</strong> ~1.5 hrs<br>
+          • <strong>Power Cut:</strong> ~5 mins (Electric only)<br>
+          • <strong>Renters:</strong> MUST have landlord permission.
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script>
+// --- Timer logic ---
+let callStart = null;
+let timerInterval = null;
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
-    authDomain: "geko-scheduling.firebaseapp.com",
-    projectId: "geko-scheduling",
-    storageBucket: "geko-scheduling.firebasestorage.app",
-    messagingSenderId: "824568732787",
-    appId: "1:824568732787:web:c12db983fd6a5b44b01e06"
-};
+function startCall(){
+  if(timerInterval) return;
+  callStart = Date.now();
+  timerInterval = setInterval(()=>{
+    const secs = Math.floor((Date.now()-callStart)/1000);
+    const m = String(Math.floor(secs/60)).padStart(2,'0');
+    const s = String(secs%60).padStart(2,'0');
+    document.getElementById('callTimer').textContent = m+':'+s;
+  },1000);
+  toast('Call Started', 'success');
+}
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// --- Meter Logic ---
+let meterType = 'dual';
 
-// ── SVG Icon definitions per category ─────────────────────────────────────────
-const CATEGORY_ICONS = {
-    identifiers: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/><circle cx="12" cy="15" r="1.5"/></svg>`,
-    personal:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`,
-    address:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`,
-    contact:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 5.99 5.99l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16l.92.92z"/></svg>`,
-    datetime:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>`,
-    job:         `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`,
-    assignment:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-    status:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
-    financial:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
-};
+function setMeter(type) {
+  meterType = type;
+  ['elec','gas','dual'].forEach(t => {
+    document.getElementById('pill-'+t).className = 'mpill' + (meterType===t ? ` active-${t}` : '');
+  });
+  
+  // Update script variables dynamically
+  let txtType = "electricity and gas meters";
+  let txtTime = "1.5 to 2.5 hours";
+  
+  if(type === 'elec') { txtType = "electric meter"; txtTime = "about 1.5 hours"; }
+  if(type === 'gas') { txtType = "gas meter"; txtTime = "about 1.5 hours"; }
+  
+  document.getElementById('script-meter-type').innerText = txtType;
+  document.getElementById('script-duration').innerText = txtTime;
+}
 
-// ── Field Definitions ──────────────────────────────────────────────────────────
-const CATEGORIES = [
-    {
-        id: "identifiers",
-        label: "Unique Identifiers",
-        color: "rgba(0,255,157,0.12)",
-        strokeColor: "rgba(0,255,157,0.5)",
-        iconColor: "rgba(0,255,157,0.85)",
-        fields: ["ID", "Record_ID", "Customer_ID", "Job_ID", "Employee_ID", "Reference_Number"]
-    },
-    {
-        id: "personal",
-        label: "Personal / Customer Info",
-        color: "rgba(0,200,255,0.12)",
-        strokeColor: "rgba(0,200,255,0.5)",
-        iconColor: "rgba(0,200,255,0.85)",
-        fields: ["Title", "First_Name", "Last_Name", "Full_Name", "Company_Name"]
-    },
-    {
-        id: "address",
-        label: "Address & Location",
-        color: "rgba(255,200,0,0.12)",
-        strokeColor: "rgba(255,200,0,0.4)",
-        iconColor: "rgba(255,200,0,0.85)",
-        fields: ["Address_Line1", "Address_Line2", "City_Town", "County", "Postcode", "Country"]
-    },
-    {
-        id: "contact",
-        label: "Contact Information",
-        color: "rgba(150,100,255,0.12)",
-        strokeColor: "rgba(150,100,255,0.45)",
-        iconColor: "rgba(170,130,255,0.85)",
-        fields: ["Phone", "Mobile", "Email", "Alternative_Contact"]
-    },
-    {
-        id: "datetime",
-        label: "Date & Time Fields",
-        color: "rgba(0,255,157,0.10)",
-        strokeColor: "rgba(0,255,157,0.4)",
-        iconColor: "rgba(0,255,157,0.75)",
-        fields: ["Date", "Appointment_Date", "Appointment_Time", "Created_Date", "Updated_Date", "Completed_Date"]
-    },
-    {
-        id: "job",
-        label: "Job / Service Details",
-        color: "rgba(255,140,0,0.12)",
-        strokeColor: "rgba(255,140,0,0.45)",
-        iconColor: "rgba(255,160,40,0.9)",
-        fields: ["Job_Type", "Job_Description", "Service_Type", "Priority", "Duration", "Notes"]
-    },
-    {
-        id: "assignment",
-        label: "Assignment / Staff",
-        color: "rgba(0,200,255,0.10)",
-        strokeColor: "rgba(0,200,255,0.4)",
-        iconColor: "rgba(0,200,255,0.75)",
-        fields: ["Engineer", "Assigned_To", "Team", "Starting_Postcode", "Vehicle_ID"]
-    },
-    {
-        id: "status",
-        label: "Status & Workflow",
-        color: "rgba(255,75,92,0.10)",
-        strokeColor: "rgba(255,75,92,0.4)",
-        iconColor: "rgba(255,100,115,0.9)",
-        fields: ["Status", "Progress", "Stage", "Cancellation_Reason"]
-    },
-    {
-        id: "financial",
-        label: "Financial Fields",
-        color: "rgba(0,255,157,0.08)",
-        strokeColor: "rgba(0,255,157,0.35)",
-        iconColor: "rgba(0,255,157,0.7)",
-        fields: ["Price", "Cost", "Invoice_Number", "Payment_Status", "Discount", "VAT"]
+// --- Wizard Navigation Logic ---
+function goToStep(step) {
+  // Hide all steps
+  document.querySelectorAll('.wizard-step').forEach(el => {
+    el.classList.remove('active');
+  });
+  
+  // Show target step
+  const target = document.getElementById('step-' + step);
+  if(target) target.classList.add('active');
+
+  // Update Progress Bar
+  if(typeof step === 'number') {
+    for(let i=1; i<=6; i++) {
+      let dot = document.getElementById('dot-'+i);
+      if(!dot) continue;
+      dot.className = 'prog-dot';
+      if(i < step) dot.classList.add('done');
+      if(i === step) dot.classList.add('active');
     }
-];
-
-// ── State ──────────────────────────────────────────────────────────────────────
-let mapping = {};
-
-const ALL_FIELDS = CATEGORIES.flatMap(c => c.fields);
-
-// ── Firebase ───────────────────────────────────────────────────────────────────
-const MAPPING_DOC = doc(db, "mapping", "config");
-
-async function loadMapping() {
-    try {
-        const snap = await getDoc(MAPPING_DOC);
-        if (snap.exists()) {
-            const saved = snap.data() || {};
-            ALL_FIELDS.forEach(f => {
-                mapping[f] = f in saved ? saved[f] : true;
-            });
-        } else {
-            ALL_FIELDS.forEach(f => { mapping[f] = true; });
-        }
-    } catch (err) {
-        console.error("Load error:", err);
-        ALL_FIELDS.forEach(f => { mapping[f] = true; });
-    }
-    document.getElementById("loading-overlay").classList.add("hidden");
-    renderGrid();
-    updateCounts();
+  }
 }
 
-async function saveMapping() {
-    const btn = document.getElementById("saveBtn");
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Saving…`;
-    btn.disabled = true;
-
-    const fullMapping = {};
-    ALL_FIELDS.forEach(f => {
-        fullMapping[f] = mapping[f] === true;
-    });
-
-    try {
-        await setDoc(MAPPING_DOC, fullMapping);
-        mapping = fullMapping;
-        showToast("Configuration saved successfully", "success");
-    } catch (err) {
-        console.error("Save error:", err);
-        showToast("Failed to save — check connection", "error");
-    }
-
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Configuration`;
-    btn.disabled = false;
+function endCall(reason) {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  
+  document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
+  document.getElementById('step-done').classList.add('active');
+  document.getElementById('end-status-text').innerText = "Call Outcome: " + reason;
+  
+  toast(reason, reason.includes('Refused') || reason.includes('Hung Up') ? 'warn' : 'success');
 }
 
-// ── Render ─────────────────────────────────────────────────────────────────────
-function renderGrid() {
-    const grid = document.getElementById("categoriesGrid");
-    grid.innerHTML = "";
+function resetFlow() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  document.getElementById('callTimer').textContent = '00:00';
+  
+  // Clear forms
+  document.querySelectorAll('input, select').forEach(el => el.value = '');
+  
+  // Reset to default date
+  let tmr = new Date(); tmr.setDate(tmr.getDate()+1);
+  const nextDay = tmr.toISOString().split('T')[0];
+  document.getElementById('b-date').value = nextDay;
+  document.getElementById('cb-date').value = nextDay;
 
-    CATEGORIES.forEach(cat => {
-        const enabledCount = cat.fields.filter(f => mapping[f]).length;
-
-        const card = document.createElement("div");
-        card.className = "cat-card" + (enabledCount > 0 ? " has-active" : "");
-        card.dataset.catId = cat.id;
-
-        const iconSvg = CATEGORY_ICONS[cat.id] || '';
-
-        card.innerHTML = `
-            <div class="cat-header">
-                <div class="cat-header-left">
-                    <div class="cat-icon" style="background:${cat.color};border:1px solid ${cat.strokeColor};color:${cat.iconColor};">
-                        ${iconSvg}
-                    </div>
-                    <div>
-                        <div class="cat-title">${cat.label}</div>
-                        <div class="cat-count"><strong id="count-${cat.id}">${enabledCount}</strong> / ${cat.fields.length} enabled</div>
-                    </div>
-                </div>
-                <button class="cat-toggle-all" data-cat="${cat.id}">
-                    ${enabledCount === cat.fields.length ? "Disable All" : "Enable All"}
-                </button>
-            </div>
-            <div class="cat-fields" id="fields-${cat.id}">
-                ${cat.fields.map(field => buildFieldRow(field)).join("")}
-            </div>
-        `;
-
-        grid.appendChild(card);
-    });
-
-    grid.querySelectorAll(".cat-toggle-all").forEach(btn => {
-        btn.addEventListener("click", e => {
-            e.stopPropagation();
-            const catId = btn.dataset.cat;
-            const cat = CATEGORIES.find(c => c.id === catId);
-            const allOn = cat.fields.every(f => mapping[f]);
-            cat.fields.forEach(f => { mapping[f] = !allOn; });
-            refreshCategory(catId);
-            updateCounts();
-        });
-    });
-
-    CATEGORIES.forEach(cat => {
-        const container = document.getElementById(`fields-${cat.id}`);
-        if (container) attachFieldListeners(container, cat.id);
-    });
+  // Reset UI
+  goToStep(1);
+  setMeter('dual');
+  toast('Flow Reset. Ready for next call.', 'info');
 }
 
-const SCHEDULER_KEYS = {
-    ID:'jobId', Record_ID:'recordId', Customer_ID:'customerId', Job_ID:'jobId',
-    Employee_ID:'employeeId', Reference_Number:'referenceNumber',
-    Title:'title', First_Name:'firstName', Last_Name:'lastName',
-    Full_Name:'customerName', Company_Name:'companyName',
-    Address_Line1:'addressLine1', Address_Line2:'addressLine2',
-    City_Town:'cityTown', County:'county', Postcode:'postcode', Country:'country',
-    Phone:'contactNumber', Mobile:'mobile', Email:'email',
-    Alternative_Contact:'alternativeContact',
-    Date:'dateOfJob', Appointment_Date:'dateOfJob', Appointment_Time:'timeSlot',
-    Created_Date:'createdDate', Updated_Date:'updatedDate', Completed_Date:'completedDate',
-    Job_Type:'jobType', Job_Description:'jobDescription', Service_Type:'serviceType',
-    Priority:'priority', Duration:'duration', Notes:'notes',
-    Engineer:'engineerName', Assigned_To:'engineerName', Team:'team',
-    Starting_Postcode:'startingPostcode', Vehicle_ID:'vehicleId',
-    Status:'jobStatus', Progress:'progress', Stage:'stage',
-    Cancellation_Reason:'cancellationReason',
-    Price:'price', Cost:'cost', Invoice_Number:'invoiceNumber',
-    Payment_Status:'paymentStatus', Discount:'discount', VAT:'vat',
-};
-
-function buildFieldRow(field) {
-    const on = !!mapping[field];
-    const displayName = field.replace(/_/g, " ");
-    const schedulerKey = SCHEDULER_KEYS[field] || field.toLowerCase();
-    return `
-        <div class="field-row${on ? " active" : ""}" data-field="${field}">
-            <label class="toggle-switch">
-                <input type="checkbox" ${on ? "checked" : ""} data-field="${field}">
-                <span class="toggle-track"></span>
-            </label>
-            <div style="flex:1;min-width:0">
-                <span class="field-name">${displayName}</span>
-                <div style="font-size:10px;color:var(--text-muted);opacity:0.6;margin-top:1px">→ <em>${schedulerKey}</em></div>
-            </div>
-            <span class="field-tag">ON</span>
-        </div>
-    `;
+// --- Accordion Logic for Helper Panel ---
+function toggleObj(el){
+  const ans = el.nextElementSibling;
+  const ch = el.querySelector('.obj-chevron');
+  const isOpen = ans.classList.contains('open');
+  ans.classList.toggle('open',!isOpen);
+  if(ch) ch.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
 }
 
-function attachFieldListeners(container, catId) {
-    container.querySelectorAll("input[type=checkbox]").forEach(cb => {
-        cb.addEventListener("change", e => {
-            const field = e.target.dataset.field;
-            mapping[field] = e.target.checked;
-            const row = e.target.closest(".field-row");
-            if (row) row.classList.toggle("active", e.target.checked);
-            refreshCategoryCount(catId);
-            updateCounts();
-        });
-    });
-}
-
-function refreshCategory(catId) {
-    const cat = CATEGORIES.find(c => c.id === catId);
-    const container = document.getElementById(`fields-${catId}`);
-    if (!container) return;
-
-    container.innerHTML = cat.fields.map(f => buildFieldRow(f)).join("");
-    attachFieldListeners(container, catId);
-    refreshCategoryCount(catId);
-}
-
-function refreshCategoryCount(catId) {
-    const cat = CATEGORIES.find(c => c.id === catId);
-    if (!cat) return;
-    const enabledCount = cat.fields.filter(f => mapping[f]).length;
-    const countEl = document.getElementById(`count-${catId}`);
-    if (countEl) countEl.textContent = enabledCount;
-
-    const card = document.querySelector(`.cat-card[data-cat-id="${catId}"]`);
-    if (card) card.classList.toggle("has-active", enabledCount > 0);
-
-    const btn = document.querySelector(`.cat-toggle-all[data-cat="${catId}"]`);
-    if (btn) btn.textContent = enabledCount === cat.fields.length ? "Disable All" : "Enable All";
-}
-
-function updateCounts() {
-    const total = ALL_FIELDS.length;
-    const enabled = ALL_FIELDS.filter(f => mapping[f]).length;
-    document.getElementById("count-enabled").textContent = enabled;
-    document.getElementById("count-total").textContent = total;
-}
-
-// ── Search ─────────────────────────────────────────────────────────────────────
-document.getElementById("searchInput").addEventListener("input", function() {
-    const q = this.value.trim().toLowerCase();
-    document.querySelectorAll(".field-row").forEach(row => {
-        const name = (row.dataset.field || "").toLowerCase().replace(/_/g, " ");
-        row.classList.toggle("hidden-row", q !== "" && !name.includes(q));
-    });
-
-    document.querySelectorAll(".cat-card").forEach(card => {
-        const visible = card.querySelectorAll(".field-row:not(.hidden-row)").length > 0;
-        card.style.display = visible ? "" : "none";
-    });
-});
-
-// ── Enable / Disable All ───────────────────────────────────────────────────────
-document.getElementById("enableAllBtn").addEventListener("click", () => {
-    ALL_FIELDS.forEach(f => { mapping[f] = true; });
-    renderGrid();
-    updateCounts();
-    showToast("All fields enabled", "success");
-});
-
-document.getElementById("disableAllBtn").addEventListener("click", () => {
-    ALL_FIELDS.forEach(f => { mapping[f] = false; });
-    renderGrid();
-    updateCounts();
-    showToast("All fields disabled", "success");
-});
-
-// ── Save ───────────────────────────────────────────────────────────────────────
-document.getElementById("saveBtn").addEventListener("click", saveMapping);
-
-// ── Toast ──────────────────────────────────────────────────────────────────────
+// --- Toast Notifications ---
 let toastTimer;
-function showToast(msg, type = "success") {
-    const t = document.getElementById("toast");
-    const icon = type === "success"
-        ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
-        : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-    t.className = `${type} show`;
-    t.innerHTML = icon + msg;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { t.classList.remove("show"); }, 3200);
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className=type+' show';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// ── Sidebar ────────────────────────────────────────────────────────────────────
-const sidebar = document.getElementById("sidebar");
-const toggleBtn = document.getElementById("sidebarToggle");
-const logoCollapsed = document.getElementById("logoCollapsed");
-
-function toggleSidebar() {
-    sidebar.classList.toggle("expanded");
-    localStorage.setItem("geko-sidebar", sidebar.classList.contains("expanded") ? "expanded" : "collapsed");
-}
-
-toggleBtn.addEventListener("click", toggleSidebar);
-logoCollapsed.addEventListener("click", toggleSidebar);
-
-if (localStorage.getItem("geko-sidebar") === "expanded") {
-    sidebar.classList.add("expanded");
-}
-
-// ── Init ───────────────────────────────────────────────────────────────────────
-loadMapping();
+// Initialize
+resetFlow();
 </script>
 </body>
 </html>
