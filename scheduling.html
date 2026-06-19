@@ -1619,6 +1619,31 @@ function toInputDateStr(d){if(!d)return '';return `${d.getFullYear()}-${String(d
 function today0(){const d=new Date();d.setHours(0,0,0,0);return d;}
 
 /* ─── Date helpers ──────────────────────────────────────────── */
+function isJobOnDay(job, targetDate) {
+  const startD = parseDate(job.dateOfJob);
+  if (!startD) return false;
+  
+  let length = parseInt(job.jobLength || job.Job_Length || 1, 10);
+  if (isNaN(length) || length < 1) length = 1;
+  
+  if (length === 1) return sameDay(startD, targetDate);
+  
+  let currentD = new Date(startD);
+  let daysAdded = 0;
+  
+  while (daysAdded < length) {
+    if (sameDay(currentD, targetDate)) return true;
+    
+    daysAdded++;
+    if (daysAdded >= length) break;
+    
+    currentD.setDate(currentD.getDate() + 1);
+    while (currentD.getDay() === 0 || currentD.getDay() === 6) {
+      currentD.setDate(currentD.getDate() + 1);
+    }
+  }
+  return false;
+}
 function parseDate(s){
   if(!s)return null;s=String(s).trim();let m;
   m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);if(m){const d=new Date(+m[3],+m[2]-1,+m[1]);d.setHours(0,0,0,0);return isNaN(d)?null:d;}
@@ -1999,7 +2024,7 @@ function calcHourWidth(dayEnd){
 function render(){
   closeStackPopup();syncPicker();
   const cols=getCols();
-  const colJobs=allJobs.filter(j=>{const jd=parseDate(j.dateOfJob);return jd&&cols.some(c=>sameDay(c,jd));});
+  const colJobs=allJobs.filter(j=>cols.some(c=>isJobOnDay(j,c)));
   const dayEnd=currentView==="day"?calcDayEnd(colJobs):DAY_END_MIN;
   if(currentView==="day") HOUR_W = calcHourWidth(dayEnd); // fit timeline to viewport
   renderHeader(cols,dayEnd);renderRows(cols,dayEnd);updateLabel(cols);
@@ -2053,7 +2078,7 @@ function renderRows(cols,dayEnd){
   const hours=dayEnd-DAY_START,todayD=today0();
   const engSet=new Set(allJobs.map(j=>j.engineerName).filter(Boolean));
   const engineers=[...engSet].sort((a,b)=>a.localeCompare(b));
-  const visibleJobs=allJobs.filter(j=>{const jd=parseDate(j.dateOfJob);return jd&&cols.some(c=>sameDay(c,jd));});
+  const visibleJobs=allJobs.filter(j=>cols.some(c=>isJobOnDay(j,c)));
   document.getElementById("jobCountLbl").textContent=`${visibleJobs.length} job${visibleJobs.length!==1?"s":""} in view`;
 
   const engList=document.getElementById("engList");engList.innerHTML="";
@@ -2088,7 +2113,7 @@ function renderRows(cols,dayEnd){
       row.style.height=ROW_H+"px";row.style.width=`${HOUR_W*hours+STAGING_W}px`;
       const col=cols[0];
       const absence=isEngineerAbsent(eng,col);
-      const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),col));
+      const dayJobs=engJobs.filter(j=>isJobOnDay(j,col));
       const scheduled=dayJobs.filter(j=>getStartHour(j)!==null);
       const staged=dayJobs.filter(j=>getStartHour(j)===null);
 
@@ -2133,7 +2158,7 @@ function renderRows(cols,dayEnd){
         const cell=document.createElement("div");cell.className="week-cell-drop";cell.dataset.drop="week";cell.dataset.eng=eng;cell.dataset.date=toUKStr(col);
         const dow=col.getDay();if(dow===0||dow===6)cell.classList.add("weekend");if(sameDay(col,todayD))cell.classList.add("today-col");
         const weekAbsence=isEngineerAbsent(eng,col);
-        const dayJobs=engJobs.filter(j=>sameDay(parseDate(j.dateOfJob),col));
+        const dayJobs=engJobs.filter(j=>isJobOnDay(j,col));
         if(weekAbsence){const ab=document.createElement("div");ab.className="absence-block";ab.innerHTML=`<span class="absence-block-label">🚫 ${weekAbsence.reason||'Absent'}</span>`;cell.appendChild(ab);}
         if(dayJobs.length<=1){
           dayJobs.forEach(job=>{const card=makeCardWeek(job);if(weekAbsence){card.classList.add('needs-realloc');const badge=document.createElement('div');badge.className='conflict-warning-badge';badge.textContent='⚠ Reassign';card.style.position='relative';card.appendChild(badge);}cell.appendChild(card);});
@@ -2254,8 +2279,7 @@ function renderAllDriveTimeBadges(col, dayEnd){
   document.querySelectorAll('.eng-tl-row.day-mode').forEach(row=>{
     const eng = row.dataset.eng;
     const dayJobs = allJobs.filter(j=>{
-      const jd=parseDate(j.dateOfJob);
-      return j.engineerName===eng && jd && sameDay(jd,col) && getStartHour(j)!==null;
+      return j.engineerName===eng && isJobOnDay(j,col) && getStartHour(j)!==null;
     });
     const sorted = [...dayJobs].sort((a,b)=>getStartHour(a)-getStartHour(b));
     renderDriveTimeBadgesForRow(row, sorted, eng, dayEnd);
@@ -2370,7 +2394,7 @@ function updateNowLine(dayEnd){
 }
 setInterval(()=>{
   if(currentView==="day"){
-    const dj=allJobs.filter(j=>{const d=parseDate(j.dateOfJob);return d&&sameDay(d,currentDate);});
+    const dj=allJobs.filter(j=>isJobOnDay(j,currentDate));
     updateNowLine(calcDayEnd(dj));
   }
   document.querySelectorAll('.job-card-day, .job-card-week').forEach(card => {
