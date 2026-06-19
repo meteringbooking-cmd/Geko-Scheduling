@@ -500,7 +500,7 @@ async function loadMappingConfig(){
         const snap=await getDoc(doc(db,'mapping','config'));
         if(snap.exists()){
             const config=snap.data();
-            activeFields=ALL_FIELDS.filter(f=>config[f.key]===true);
+            activeFields=ALL_FIELDS.filter(f=>config[f.key]!==false);
             if(!activeFields.length) activeFields=ALL_FIELDS;
         } else { activeFields=ALL_FIELDS; }
     } catch(e){ console.warn('Mapping config load failed:',e); activeFields=ALL_FIELDS; }
