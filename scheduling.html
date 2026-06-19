@@ -2154,16 +2154,55 @@ function renderRows(cols,dayEnd){
       row.appendChild(sz);
 
     }else{
-      cols.forEach(col=>{
+      const seenSpanningJobs = new Set();
+      cols.forEach((col, i)=>{
         const cell=document.createElement("div");cell.className="week-cell-drop";cell.dataset.drop="week";cell.dataset.eng=eng;cell.dataset.date=toUKStr(col);
+        cell.style.zIndex = 20 - i;
         const dow=col.getDay();if(dow===0||dow===6)cell.classList.add("weekend");if(sameDay(col,todayD))cell.classList.add("today-col");
         const weekAbsence=isEngineerAbsent(eng,col);
-        const dayJobs=engJobs.filter(j=>isJobOnDay(j,col));
+        
+        let dayJobs=engJobs.filter(j=>isJobOnDay(j,col));
+        dayJobs.sort((a,b) => {
+            let lenA = parseInt(a.jobLength||a.Job_Length||1, 10); if(isNaN(lenA)) lenA=1;
+            let lenB = parseInt(b.jobLength||b.Job_Length||1, 10); if(isNaN(lenB)) lenB=1;
+            if(lenB !== lenA) return lenB - lenA;
+            const ha = getStartHour(a) || 0;
+            const hb = getStartHour(b) || 0;
+            if(ha !== hb) return ha - hb;
+            return (a._id||"").localeCompare(b._id||"");
+        });
+
         if(weekAbsence){const ab=document.createElement("div");ab.className="absence-block";ab.innerHTML=`<span class="absence-block-label">🚫 ${weekAbsence.reason||'Absent'}</span>`;cell.appendChild(ab);}
+        
+        const makeCC = job => {
+            if (seenSpanningJobs.has(job._id)) {
+                const realCard = makeCardWeek(job);
+                realCard.style.visibility = "hidden";
+                realCard.style.pointerEvents = "none";
+                realCard.classList.add("placeholder");
+                return realCard;
+            } else {
+                const card = makeCardWeek(job);
+                if(weekAbsence){card.classList.add('needs-realloc');const badge=document.createElement('div');badge.className='conflict-warning-badge';badge.textContent='⚠ Reassign';card.style.position='relative';card.appendChild(badge);}
+                
+                let n = 1;
+                for(let k = i + 1; k < 7; k++) {
+                    if(isJobOnDay(job, cols[k])) n++;
+                    else break;
+                }
+                if (n > 1) {
+                    card.style.width = `calc(${n * 100}% + ${(n - 1) * 9}px)`;
+                    card.style.position = 'relative';
+                    card.style.zIndex = 10;
+                    seenSpanningJobs.add(job._id);
+                }
+                return card;
+            }
+        };
+
         if(dayJobs.length<=1){
-          dayJobs.forEach(job=>{const card=makeCardWeek(job);if(weekAbsence){card.classList.add('needs-realloc');const badge=document.createElement('div');badge.className='conflict-warning-badge';badge.textContent='⚠ Reassign';card.style.position='relative';card.appendChild(badge);}cell.appendChild(card);});
+          dayJobs.forEach(job=>cell.appendChild(makeCC(job)));
         }else{
-          const makeCC=job=>{const card=makeCardWeek(job);if(weekAbsence){card.classList.add('needs-realloc');const badge=document.createElement('div');badge.className='conflict-warning-badge';badge.textContent='⚠ Reassign';card.style.position='relative';card.appendChild(badge);}return card;};
           cell.appendChild(makeCC(dayJobs[0]));
           const btn=document.createElement("div");btn.className="stack-more-btn";btn.textContent=`+${dayJobs.length-1} more`;
           btn.addEventListener("mousedown",e=>{e.stopPropagation();e.preventDefault();});
