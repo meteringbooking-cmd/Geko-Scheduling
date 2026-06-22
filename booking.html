@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book Your Installation | Henrie</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-color: #fffffa;
+      --card-bg: #f9f5f3;
+      --text-main: #30343c;
+      --text-muted: #6a7282;
+      --accent-color: #ffa0a0;
+      --accent-dark: #c11314;
+      --border-color: #eedecd;
+      --success-color: #00ff9d;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      justify-content: center;
+      padding: 40px 0 20px;
+    }
+
+    .logo {
+      height: 48px;
+      object-fit: contain;
+    }
+
+    main {
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 60px;
+    }
+
+    .form-card {
+      background-color: var(--card-bg);
+      border-radius: 25px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-main);
+      margin-left: 4px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background-color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: #aeb4c0;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-dark);
+      box-shadow: 0 0 0 3px rgba(193,19,20,0.1);
+    }
+
+    .submit-btn {
+      background-color: var(--accent-color);
+      color: var(--text-main);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      border: none;
+      border-radius: 100px;
+      padding: 18px 32px;
+      width: 100%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .submit-btn:hover {
+      background-color: #f79292;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 160, 160, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(0,0,0,0.1);
+      border-top-color: var(--text-main);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .success-overlay {
+      position: absolute;
+      inset: 0;
+      background-color: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 10;
+    }
+
+    .success-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      background-color: #e6ffec;
+      color: #00d27a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-card {
+        padding: 30px 20px;
+        border-radius: 20px;
+      }
+    }
+    
+    .error-msg {
+      color: var(--accent-dark);
+      font-size: 13px;
+      margin-top: 10px;
+      text-align: center;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="https://henrie.co.uk/_assets/v11/167408e385606149dc94f89aeb69a7bff8d6ea0a.png" alt="Henrie Logo" class="logo">
+  </header>
+
+  <main>
+    <div class="form-card">
+      <div class="form-header">
+        <h1>Book Your Installation</h1>
+        <p class="subtitle">Enter your details below to schedule your solar installation slot.</p>
+      </div>
+
+      <form id="bookingForm">
+        <div class="form-grid">
+          
+          <div class="form-group full-width">
+            <label>Full Name</label>
+            <input type="text" id="customerName" required placeholder="Jane Doe">
+          </div>
+
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="email" required placeholder="jane@example.com">
+          </div>
+
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="contactNumber" required placeholder="07123 456789">
+          </div>
+
+          <div class="form-group full-width">
+            <label>Address Line 1</label>
+            <input type="text" id="addressLine1" required placeholder="123 Example Street">
+          </div>
+
+          <div class="form-group full-width">
+            <label>Address Line 2 (Optional)</label>
+            <input type="text" id="addressLine2" placeholder="Apartment, suite, etc.">
+          </div>
+
+          <div class="form-group">
+            <label>City / Town</label>
+            <input type="text" id="cityTown" required placeholder="London">
+          </div>
+
+          <div class="form-group">
+            <label>Postcode</label>
+            <input type="text" id="postcode" required placeholder="SW1A 1AA">
+          </div>
+
+          <div class="form-group full-width">
+            <label>Job Type</label>
+            <select id="jobType" required>
+              <option value="Solar Installation" selected>Solar Installation</option>
+              <option value="Battery Storage">Battery Storage</option>
+              <option value="Maintenance">Maintenance</option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Preferred Date</label>
+            <input type="date" id="dateOfJob" required>
+          </div>
+
+          <div class="full-width">
+            <div class="error-msg" id="errorMsg"></div>
+            <button type="submit" class="submit-btn" id="submitBtn">
+              <span class="spinner" id="spinner"></span>
+              <span id="btnText">Confirm Booking</span>
+            </button>
+          </div>
+
+        </div>
+      </form>
+
+      <div class="success-overlay" id="successOverlay">
+        <div class="success-icon">✓</div>
+        <h1>Booking Confirmed</h1>
+        <p class="subtitle">Thank you for your booking! We've received your details and will be in touch shortly to confirm your installation slot.</p>
+        <button class="submit-btn" style="margin-top: 30px;" onclick="window.location.reload()">Book Another</button>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
+        authDomain: "geko-scheduling.firebaseapp.com",
+        projectId: "geko-scheduling",
+        storageBucket: "geko-scheduling.firebasestorage.app",
+        messagingSenderId: "824568732787",
+        appId: "1:824568732787:web:c12db983fd6a5b44b01e06"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Set minimum date to today
+    const dateInput = document.getElementById('dateOfJob');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.min = today;
+
+    const form = document.getElementById('bookingForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const spinner = document.getElementById('spinner');
+    const errorMsg = document.getElementById('errorMsg');
+    const successOverlay = document.getElementById('successOverlay');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // UI Loading state
+      submitBtn.disabled = true;
+      btnText.textContent = 'Processing...';
+      spinner.style.display = 'block';
+      errorMsg.style.display = 'none';
+
+      // Gather data
+      const data = {
+        customerName: document.getElementById('customerName').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        contactNumber: document.getElementById('contactNumber').value.trim(),
+        addressLine1: document.getElementById('addressLine1').value.trim(),
+        addressLine2: document.getElementById('addressLine2').value.trim(),
+        cityTown: document.getElementById('cityTown').value.trim(),
+        postcode: document.getElementById('postcode').value.trim(),
+        jobType: document.getElementById('jobType').value,
+        dateOfJob: document.getElementById('dateOfJob').value,
+        jobStatus: 'unassigned',
+        uploadedAt: new Date().toISOString(),
+        uploadedBy: 'Customer Portal'
+      };
+
+      // Combine address for ease of use in the scheduler
+      const addressParts = [data.addressLine1, data.addressLine2, data.cityTown].filter(Boolean);
+      data.address = addressParts.join(', ');
+
+      // Generate a unique ID (BKG- followed by random alphanumeric)
+      const uniqueId = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const jobId = `BKG-${uniqueId}`;
+      data.jobId = jobId;
+
+      try {
+        await setDoc(doc(db, 'uploaded_jobs', jobId), data);
+        
+        // Show success
+        successOverlay.classList.add('visible');
+      } catch (err) {
+        console.error("Booking error:", err);
+        errorMsg.textContent = "Oops! Something went wrong. Please try again.";
+        errorMsg.style.display = 'block';
+      } finally {
+        // Reset UI
+        submitBtn.disabled = false;
+        btnText.textContent = 'Confirm Booking';
+        spinner.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
