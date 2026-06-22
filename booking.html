@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Book Your Installation | Henrie</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <style>
     :root {
       --bg-color: #fffffa;
@@ -36,11 +38,11 @@
       max-width: 800px;
       display: flex;
       justify-content: center;
-      padding: 40px 0 20px;
+      padding: 50px 0 30px;
     }
 
     .logo {
-      height: 48px;
+      height: 80px; /* Made the logo noticeably larger */
       object-fit: contain;
     }
 
@@ -57,6 +59,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.03);
       position: relative;
       overflow: hidden;
+      transition: all 0.3s ease;
     }
 
     .form-header {
@@ -176,7 +179,7 @@
       to { transform: rotate(360deg); }
     }
 
-    .success-overlay {
+    .success-overlay, .loading-overlay {
       position: absolute;
       inset: 0;
       background-color: var(--card-bg);
@@ -192,7 +195,7 @@
       z-index: 10;
     }
 
-    .success-overlay.visible {
+    .success-overlay.visible, .loading-overlay.visible {
       opacity: 1;
       pointer-events: all;
     }
@@ -208,6 +211,20 @@
       justify-content: center;
       font-size: 32px;
       margin-bottom: 20px;
+    }
+
+    .step {
+      display: none;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     @media (max-width: 600px) {
@@ -227,6 +244,25 @@
       text-align: center;
       display: none;
     }
+    
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .back-btn:hover {
+      color: var(--text-main);
+    }
   </style>
 </head>
 <body>
@@ -237,74 +273,102 @@
 
   <main>
     <div class="form-card">
-      <div class="form-header">
-        <h1>Book Your Installation</h1>
-        <p class="subtitle">Enter your details below to schedule your solar installation slot.</p>
-      </div>
-
       <form id="bookingForm">
-        <div class="form-grid">
-          
-          <div class="form-group full-width">
-            <label>Full Name</label>
-            <input type="text" id="customerName" required placeholder="Jane Doe">
+        
+        <!-- STEP 1: Customer Details -->
+        <div id="step1" class="step active">
+          <div class="form-header">
+            <h1>Your Details</h1>
+            <p class="subtitle">Enter your contact and address details. We'll use your postcode to find availability in your area.</p>
           </div>
 
-          <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" id="email" required placeholder="jane@example.com">
-          </div>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label>Full Name</label>
+              <input type="text" id="customerName" required placeholder="Jane Doe">
+            </div>
 
-          <div class="form-group">
-            <label>Phone Number</label>
-            <input type="tel" id="contactNumber" required placeholder="07123 456789">
-          </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" id="email" required placeholder="jane@example.com">
+            </div>
 
-          <div class="form-group full-width">
-            <label>Address Line 1</label>
-            <input type="text" id="addressLine1" required placeholder="123 Example Street">
-          </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" id="contactNumber" required placeholder="07123 456789">
+            </div>
 
-          <div class="form-group full-width">
-            <label>Address Line 2 (Optional)</label>
-            <input type="text" id="addressLine2" placeholder="Apartment, suite, etc.">
-          </div>
+            <div class="form-group full-width">
+              <label>Address Line 1</label>
+              <input type="text" id="addressLine1" required placeholder="123 Example Street">
+            </div>
 
-          <div class="form-group">
-            <label>City / Town</label>
-            <input type="text" id="cityTown" required placeholder="London">
-          </div>
+            <div class="form-group full-width">
+              <label>Address Line 2 (Optional)</label>
+              <input type="text" id="addressLine2" placeholder="Apartment, suite, etc.">
+            </div>
 
-          <div class="form-group">
-            <label>Postcode</label>
-            <input type="text" id="postcode" required placeholder="SW1A 1AA">
-          </div>
+            <div class="form-group">
+              <label>City / Town</label>
+              <input type="text" id="cityTown" required placeholder="London">
+            </div>
 
-          <div class="form-group full-width">
-            <label>Job Type</label>
-            <select id="jobType" required>
-              <option value="Solar Installation" selected>Solar Installation</option>
-              <option value="Battery Storage">Battery Storage</option>
-              <option value="Maintenance">Maintenance</option>
-            </select>
-          </div>
+            <div class="form-group">
+              <label>Postcode</label>
+              <input type="text" id="postcode" required placeholder="SW1A 1AA">
+            </div>
 
-          <div class="form-group full-width">
-            <label>Preferred Date</label>
-            <input type="date" id="dateOfJob" required>
-          </div>
+            <div class="form-group full-width">
+              <label>Job Type</label>
+              <select id="jobType" required>
+                <option value="Solar Installation" selected>Solar Installation</option>
+                <option value="Battery Storage">Battery Storage</option>
+                <option value="Maintenance">Maintenance</option>
+              </select>
+            </div>
 
-          <div class="full-width">
-            <div class="error-msg" id="errorMsg"></div>
-            <button type="submit" class="submit-btn" id="submitBtn">
-              <span class="spinner" id="spinner"></span>
-              <span id="btnText">Confirm Booking</span>
-            </button>
+            <div class="full-width">
+              <div class="error-msg" id="errorMsg1"></div>
+              <button type="button" class="submit-btn" id="checkAvailabilityBtn">
+                Check Availability
+              </button>
+            </div>
           </div>
-
         </div>
+
+        <!-- STEP 2: Pick Date -->
+        <div id="step2" class="step">
+          <button type="button" class="back-btn" id="backToStep1">← Back</button>
+          <div class="form-header">
+            <h1>Pick a Date</h1>
+            <p class="subtitle" id="dateSubtitle">Select an available installation date from the calendar below.</p>
+          </div>
+          
+          <div class="form-grid">
+            <div class="form-group full-width" style="margin-bottom: 20px;">
+              <input type="text" id="dateOfJob" required placeholder="Select a date..." readonly style="background:#fff; cursor:pointer;">
+            </div>
+
+            <div class="full-width">
+              <div class="error-msg" id="errorMsg2"></div>
+              <button type="submit" class="submit-btn" id="submitBtn">
+                <span class="spinner" id="spinner"></span>
+                <span id="btnText">Confirm Booking</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
       </form>
 
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" id="loadingOverlay">
+        <span class="spinner" style="display:block; width:40px; height:40px; margin-bottom:16px;"></span>
+        <h2 style="font-family:'Poppins',sans-serif;font-size:18px;">Checking availability...</h2>
+        <p class="subtitle" style="margin-top:8px;">Finding the best engineer for your location.</p>
+      </div>
+
+      <!-- Success Overlay -->
       <div class="success-overlay" id="successOverlay">
         <div class="success-icon">✓</div>
         <h1>Booking Confirmed</h1>
@@ -316,7 +380,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, setDoc, doc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
@@ -330,26 +394,196 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Set minimum date to today
-    const dateInput = document.getElementById('dateOfJob');
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.min = today;
+    const AVG_SPEED_KMH = 53.1;
 
+    // UI Elements
     const form = document.getElementById('bookingForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const btnText = document.getElementById('btnText');
-    const spinner = document.getElementById('spinner');
-    const errorMsg = document.getElementById('errorMsg');
-    const successOverlay = document.getElementById('successOverlay');
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const checkAvailabilityBtn = document.getElementById('checkAvailabilityBtn');
+    const backToStep1 = document.getElementById('backToStep1');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const dateSubtitle = document.getElementById('dateSubtitle');
+    const errorMsg1 = document.getElementById('errorMsg1');
+    
+    let datePickerInstance = null;
+    let selectedEngineerName = null;
+    let selectedEmployeeId = null;
 
+    // Helpers
+    function haversineKm(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+    
+    function normalisePostcode(pc) {
+      return (pc || '').replace(/\s+/g, '').toUpperCase();
+    }
+
+    async function getPostcodeCoords(postcode) {
+      const res = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(postcode)}`);
+      if (!res.ok) throw new Error('Invalid postcode');
+      const data = await res.json();
+      return { lat: data.result.latitude, lon: data.result.longitude };
+    }
+
+    async function getBulkPostcodes(postcodes) {
+      const map = new Map();
+      const unique = [...new Set(postcodes.filter(Boolean))];
+      if (unique.length === 0) return map;
+      
+      const res = await fetch('https://api.postcodes.io/postcodes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postcodes: unique })
+      });
+      if (!res.ok) return map;
+      
+      const data = await res.json();
+      (data.result || []).forEach(r => {
+        if (r.result) {
+          map.set(normalisePostcode(r.query), { lat: r.result.latitude, lon: r.result.longitude });
+        }
+      });
+      return map;
+    }
+
+    // Step 1 -> Step 2
+    checkAvailabilityBtn.addEventListener('click', async () => {
+      // Validate HTML form inputs for step 1
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      errorMsg1.style.display = 'none';
+      const postcode = document.getElementById('postcode').value.trim();
+      
+      try {
+        loadingOverlay.classList.add('visible');
+        
+        // 1. Geocode customer
+        const customerCoords = await getPostcodeCoords(postcode);
+        
+        // 2. Fetch engineers
+        const engineers = [];
+        const engSnap = await getDocs(collection(db, 'userdatabase'));
+        engSnap.forEach(d => {
+          const data = d.data();
+          if (data.role && data.role.toLowerCase() === 'engineer' && data.postcode) {
+            engineers.push({
+              id: d.id,
+              name: data.name,
+              employeeId: data.employeeId || '',
+              postcode: data.postcode,
+              isochroneMinutes: parseInt(data.isochroneMinutes) || 0
+            });
+          }
+        });
+
+        // 3. Geocode engineers
+        const pcMap = await getBulkPostcodes(engineers.map(e => e.postcode));
+        
+        // 4. Find valid engineers
+        let validEngineers = [];
+        for (const eng of engineers) {
+          const engCoords = pcMap.get(normalisePostcode(eng.postcode));
+          if (engCoords) {
+            const km = haversineKm(customerCoords.lat, customerCoords.lon, engCoords.lat, engCoords.lon);
+            const driveMins = Math.max(1, Math.round((km * 1.4 / AVG_SPEED_KMH) * 60));
+            
+            // Log for debugging
+            console.log(`Engineer: ${eng.name}, Drive Mins: ${driveMins}, Isochrone: ${eng.isochroneMinutes}`);
+
+            if (eng.isochroneMinutes > 0 && driveMins <= eng.isochroneMinutes) {
+              validEngineers.push({ ...eng, driveMins });
+            }
+          }
+        }
+
+        let disabledDates = [];
+        
+        if (validEngineers.length > 0) {
+          // Find closest
+          validEngineers.sort((a, b) => a.driveMins - b.driveMins);
+          const closest = validEngineers[0];
+          selectedEngineerName = closest.name;
+          selectedEmployeeId = closest.employeeId;
+
+          dateSubtitle.textContent = "We found coverage for your area! Select an available date below.";
+
+          // Find disabled dates for this engineer
+          const jobsSnap = await getDocs(query(collection(db, 'uploaded_jobs'), where('engineerName', '==', closest.name)));
+          jobsSnap.forEach(d => {
+            const data = d.data();
+            if (data.dateOfJob) {
+              // Convert to YYYY-MM-DD
+              const match = data.dateOfJob.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+              if (match) {
+                disabledDates.push(`${match[3]}-${match[2]}-${match[1]}`);
+              } else {
+                disabledDates.push(data.dateOfJob);
+              }
+            }
+          });
+        } else {
+          // No engineers nearby
+          selectedEngineerName = null;
+          selectedEmployeeId = null;
+          dateSubtitle.textContent = "We couldn't find an engineer fully covering your area, but you can request any date and we will do our best to accommodate you.";
+        }
+
+        // Init Flatpickr
+        const threeWeeksFromNow = new Date();
+        threeWeeksFromNow.setDate(threeWeeksFromNow.getDate() + 21);
+
+        if (datePickerInstance) {
+          datePickerInstance.destroy();
+        }
+
+        datePickerInstance = flatpickr("#dateOfJob", {
+          minDate: threeWeeksFromNow,
+          disable: disabledDates,
+          dateFormat: "Y-m-d",
+          altInput: true,
+          altFormat: "F j, Y"
+        });
+
+        // Show step 2
+        step1.classList.remove('active');
+        step2.classList.add('active');
+
+      } catch (err) {
+        console.error(err);
+        errorMsg1.textContent = "Could not find your location. Please check your postcode.";
+        errorMsg1.style.display = 'block';
+      } finally {
+        loadingOverlay.classList.remove('visible');
+      }
+    });
+
+    backToStep1.addEventListener('click', () => {
+      step2.classList.remove('active');
+      step1.classList.add('active');
+    });
+
+    // Final Submit
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      // UI Loading state
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const spinner = document.getElementById('spinner');
+      const errorMsg2 = document.getElementById('errorMsg2');
+      const successOverlay = document.getElementById('successOverlay');
+
       submitBtn.disabled = true;
       btnText.textContent = 'Processing...';
       spinner.style.display = 'block';
-      errorMsg.style.display = 'none';
+      errorMsg2.style.display = 'none';
 
       // Gather data
       const data = {
@@ -361,32 +595,38 @@
         cityTown: document.getElementById('cityTown').value.trim(),
         postcode: document.getElementById('postcode').value.trim(),
         jobType: document.getElementById('jobType').value,
-        dateOfJob: document.getElementById('dateOfJob').value,
-        jobStatus: 'unassigned',
+        dateOfJob: document.getElementById('dateOfJob').value, // YYYY-MM-DD
+        jobStatus: selectedEngineerName ? 'assigned' : 'unassigned', // If assigned to engineer, set to assigned
         uploadedAt: new Date().toISOString(),
         uploadedBy: 'Customer Portal'
       };
 
-      // Combine address for ease of use in the scheduler
+      if (selectedEngineerName) {
+        data.engineerName = selectedEngineerName;
+        data.employeeId = selectedEmployeeId;
+      }
+
       const addressParts = [data.addressLine1, data.addressLine2, data.cityTown].filter(Boolean);
       data.address = addressParts.join(', ');
 
-      // Generate a unique ID (BKG- followed by random alphanumeric)
       const uniqueId = Math.random().toString(36).substring(2, 8).toUpperCase();
       const jobId = `BKG-${uniqueId}`;
       data.jobId = jobId;
 
+      // Convert dateOfJob to UK format DD/MM/YYYY for consistency with existing app
+      const dParts = data.dateOfJob.split('-');
+      if (dParts.length === 3) {
+        data.dateOfJob = `${dParts[2]}/${dParts[1]}/${dParts[0]}`;
+      }
+
       try {
         await setDoc(doc(db, 'uploaded_jobs', jobId), data);
-        
-        // Show success
         successOverlay.classList.add('visible');
       } catch (err) {
         console.error("Booking error:", err);
-        errorMsg.textContent = "Oops! Something went wrong. Please try again.";
-        errorMsg.style.display = 'block';
+        errorMsg2.textContent = "Oops! Something went wrong. Please try again.";
+        errorMsg2.style.display = 'block';
       } finally {
-        // Reset UI
         submitBtn.disabled = false;
         btnText.textContent = 'Confirm Booking';
         spinner.style.display = 'none';
