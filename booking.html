@@ -380,7 +380,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, setDoc, doc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, setDoc, doc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
@@ -407,8 +407,6 @@
     const errorMsg1 = document.getElementById('errorMsg1');
     
     let datePickerInstance = null;
-    let selectedEngineerName = null;
-    let selectedEmployeeId = null;
 
     // Helpers
     function haversineKm(lat1, lon1, lat2, lon2) {
@@ -421,6 +419,33 @@
     
     function normalisePostcode(pc) {
       return (pc || '').replace(/\s+/g, '').toUpperCase();
+    }
+
+    function getSpannedDates(startDateStr, lengthStr) {
+      let isoDate = startDateStr;
+      const match = startDateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (match) {
+        isoDate = `${match[3]}-${match[2]}-${match[1]}`;
+      }
+      const dates = [];
+      let current = new Date(isoDate);
+      if (isNaN(current.getTime())) return dates;
+      
+      let length = parseInt(lengthStr);
+      if (isNaN(length) || length < 1) length = 1;
+      
+      while (length > 0) {
+        const day = current.getDay();
+        if (day !== 0 && day !== 6) { // Skip weekends
+          const y = current.getFullYear();
+          const m = String(current.getMonth() + 1).padStart(2, '0');
+          const d = String(current.getDate()).padStart(2, '0');
+          dates.push(`${y}-${m}-${d}`);
+          length--;
+        }
+        current.setDate(current.getDate() + 1);
+      }
+      return dates;
     }
 
     async function getPostcodeCoords(postcode) {
@@ -453,7 +478,6 @@
 
     // Step 1 -> Step 2
     checkAvailabilityBtn.addEventListener('click', async () => {
-      // Validate HTML form inputs for step 1
       if (!form.checkValidity()) {
         form.reportValidity();
         return;
@@ -478,8 +502,7 @@
               id: d.id,
               name: data.name,
               employeeId: data.employeeId || '',
-              postcode: data.postcode,
-              isochroneMinutes: parseInt(data.isochroneMinutes) || 0
+              postcode: data.postcode
             });
           }
         });
@@ -487,7 +510,7 @@
         // 3. Geocode engineers
         const pcMap = await getBulkPostcodes(engineers.map(e => e.postcode));
         
-        // 4. Find valid engineers
+        // 4. Find engineers within 90 mins
         let validEngineers = [];
         for (const eng of engineers) {
           const engCoords = pcMap.get(normalisePostcode(eng.postcode));
@@ -495,50 +518,44 @@
             const km = haversineKm(customerCoords.lat, customerCoords.lon, engCoords.lat, engCoords.lon);
             const driveMins = Math.max(1, Math.round((km * 1.4 / AVG_SPEED_KMH) * 60));
             
-            // Log for debugging
-            console.log(`Engineer: ${eng.name}, Drive Mins: ${driveMins}, Isochrone: ${eng.isochroneMinutes}`);
-
-            if (eng.isochroneMinutes > 0 && driveMins <= eng.isochroneMinutes) {
+            if (driveMins <= 90) {
               validEngineers.push({ ...eng, driveMins });
             }
           }
         }
 
-        let disabledDates = [];
+        window.engineerSchedules = new Map();
+        window.validEngineersGlobal = validEngineers;
         
         if (validEngineers.length > 0) {
-          // Find closest
           validEngineers.sort((a, b) => a.driveMins - b.driveMins);
-          const closest = validEngineers[0];
-          selectedEngineerName = closest.name;
-          selectedEmployeeId = closest.employeeId;
-
           dateSubtitle.textContent = "We found coverage for your area! Select an available date below.";
 
-          // Find disabled dates for this engineer
-          const jobsSnap = await getDocs(query(collection(db, 'uploaded_jobs'), where('engineerName', '==', closest.name)));
+          const names = validEngineers.map(e => e.name);
+          validEngineers.forEach(eng => {
+            window.engineerSchedules.set(eng.name, new Set());
+          });
+
+          // Fetch all jobs to block spans for these engineers
+          const jobsSnap = await getDocs(collection(db, 'uploaded_jobs'));
           jobsSnap.forEach(d => {
             const data = d.data();
-            if (data.dateOfJob) {
-              // Convert to YYYY-MM-DD
-              const match = data.dateOfJob.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-              if (match) {
-                disabledDates.push(`${match[3]}-${match[2]}-${match[1]}`);
-              } else {
-                disabledDates.push(data.dateOfJob);
-              }
+            if (names.includes(data.engineerName) && data.dateOfJob) {
+              const span = getSpannedDates(data.dateOfJob, data.jobLength || 1);
+              span.forEach(dateStr => {
+                window.engineerSchedules.get(data.engineerName).add(dateStr);
+              });
             }
           });
         } else {
-          // No engineers nearby
-          selectedEngineerName = null;
-          selectedEmployeeId = null;
-          dateSubtitle.textContent = "We couldn't find an engineer fully covering your area, but you can request any date and we will do our best to accommodate you.";
+          // No engineers within 90 mins
+          dateSubtitle.textContent = "We couldn't find an engineer near your area, but you can request any date and we will do our best to accommodate you.";
         }
 
         // Init Flatpickr
         const threeWeeksFromNow = new Date();
         threeWeeksFromNow.setDate(threeWeeksFromNow.getDate() + 21);
+        threeWeeksFromNow.setHours(0,0,0,0);
 
         if (datePickerInstance) {
           datePickerInstance.destroy();
@@ -546,7 +563,28 @@
 
         datePickerInstance = flatpickr("#dateOfJob", {
           minDate: threeWeeksFromNow,
-          disable: disabledDates,
+          disable: [
+            function(date) {
+              // Block weekends
+              if (date.getDay() === 0 || date.getDay() === 6) return true;
+              
+              if (window.validEngineersGlobal.length === 0) return false;
+              
+              const y = date.getFullYear();
+              const m = String(date.getMonth() + 1).padStart(2, '0');
+              const d = String(date.getDate()).padStart(2, '0');
+              const dateStr = `${y}-${m}-${d}`;
+
+              // Block date if ALL valid engineers are busy
+              for (const eng of window.validEngineersGlobal) {
+                const busySet = window.engineerSchedules.get(eng.name);
+                if (!busySet.has(dateStr)) {
+                  return false; // At least one engineer is free on this date
+                }
+              }
+              return true; // All engineers are busy
+            }
+          ],
           dateFormat: "Y-m-d",
           altInput: true,
           altFormat: "F j, Y"
@@ -596,14 +634,28 @@
         postcode: document.getElementById('postcode').value.trim(),
         jobType: document.getElementById('jobType').value,
         dateOfJob: document.getElementById('dateOfJob').value, // YYYY-MM-DD
-        jobStatus: selectedEngineerName ? 'assigned' : 'unassigned', // If assigned to engineer, set to assigned
         uploadedAt: new Date().toISOString(),
         uploadedBy: 'Customer Portal'
       };
 
-      if (selectedEngineerName) {
-        data.engineerName = selectedEngineerName;
-        data.employeeId = selectedEmployeeId;
+      // Find the closest engineer who is actually free on this date
+      let assignedEng = null;
+      if (window.validEngineersGlobal && window.validEngineersGlobal.length > 0) {
+        for (const eng of window.validEngineersGlobal) {
+          const busySet = window.engineerSchedules.get(eng.name);
+          if (!busySet.has(data.dateOfJob)) {
+            assignedEng = eng;
+            break; // validEngineers is already sorted by shortest driveMins
+          }
+        }
+      }
+
+      if (assignedEng) {
+        data.engineerName = assignedEng.name;
+        data.employeeId = assignedEng.employeeId;
+        data.jobStatus = 'assigned';
+      } else {
+        data.jobStatus = 'unassigned';
       }
 
       const addressParts = [data.addressLine1, data.addressLine2, data.cityTown].filter(Boolean);
