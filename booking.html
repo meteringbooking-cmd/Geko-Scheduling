@@ -7,6 +7,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function(){
+      emailjs.init("ziLnha91scpGjFABh");
+    })();
+  </script>
   <style>
     :root {
       --bg-color: #fffffa;
@@ -378,7 +384,6 @@
         <div class="success-icon">✓</div>
         <h1>Booking Confirmed</h1>
         <p class="subtitle">Thank you for your booking! We've received your details and will be in touch shortly to confirm your installation slot.</p>
-        <button class="submit-btn" style="margin-top: 30px;" onclick="window.location.reload()">Book Another</button>
       </div>
     </div>
   </main>
@@ -691,6 +696,25 @@
 
       try {
         await setDoc(doc(db, 'uploaded_jobs', jobId), data);
+        
+        try {
+          await emailjs.send("service_gbhj1lp", "template_v6b85xi", {
+            to_email: data.email,
+            customer_name: data.customerName,
+            quote_ref: data.quoteRef,
+            date_of_job: data.dateOfJob,
+            job_type: data.jobType,
+            address: data.address,
+            email: data.email,
+            customerName: data.customerName,
+            quoteRef: data.quoteRef,
+            dateOfJob: data.dateOfJob,
+            jobType: data.jobType
+          });
+        } catch (emailErr) {
+          console.error("EmailJS Error:", emailErr);
+        }
+
         successOverlay.classList.add('visible');
       } catch (err) {
         console.error("Booking error:", err);
