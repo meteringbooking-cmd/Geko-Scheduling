@@ -319,6 +319,11 @@
             </div>
 
             <div class="form-group full-width">
+              <label>Quote Ref Number</label>
+              <input type="text" id="quoteRef" required placeholder="e.g. Q-12345">
+            </div>
+
+            <div class="form-group full-width">
               <label>Job Type</label>
               <select id="jobType" required>
                 <option value="Solar Installation" selected>Solar Installation</option>
@@ -380,7 +385,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, setDoc, doc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, setDoc, doc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
@@ -485,10 +490,22 @@
 
       errorMsg1.style.display = 'none';
       const postcode = document.getElementById('postcode').value.trim();
+      const quoteRef = document.getElementById('quoteRef').value.trim();
       
       try {
         loadingOverlay.classList.add('visible');
         
+        // 0. Check Quote Ref
+        const quoteSnap = await getDocs(query(collection(db, 'uploaded_jobs'), where('quoteRef', '==', quoteRef)));
+        if (!quoteSnap.empty) {
+          const existingJob = quoteSnap.docs[0].data();
+          const existingDate = existingJob.dateOfJob || 'an unknown date';
+          errorMsg1.textContent = `We see you have already selected a date of ${existingDate}. If you wish to change this please contact us on 07851158757`;
+          errorMsg1.style.display = 'block';
+          loadingOverlay.classList.remove('visible');
+          return;
+        }
+
         // 1. Geocode customer
         const customerCoords = await getPostcodeCoords(postcode);
         
@@ -632,6 +649,7 @@
         addressLine2: document.getElementById('addressLine2').value.trim(),
         cityTown: document.getElementById('cityTown').value.trim(),
         postcode: document.getElementById('postcode').value.trim(),
+        quoteRef: document.getElementById('quoteRef').value.trim(),
         jobType: document.getElementById('jobType').value,
         dateOfJob: document.getElementById('dateOfJob').value, // YYYY-MM-DD
         uploadedAt: new Date().toISOString(),
