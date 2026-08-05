@@ -23,8 +23,9 @@
       --ease: 0.22s cubic-bezier(0.4,0,0.2,1);
     }
 
+    html { height: 100%; }
     html, body {
-      min-height: 100vh;
+      height: 100%; min-height: 100vh;
       background: #070a10;
       color: var(--text);
       font-family: 'Inter', sans-serif;
@@ -129,7 +130,7 @@
     #sidebar.expanded .sidebar-label { opacity: 1; max-width: 140px; }
 
     /* ══ PAGE ══ */
-    .page { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow-y: auto; position: relative; z-index: 1; }
+    .page { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow-y: auto; position: relative; z-index: 1; width: 0; }
     
     .header-bar {
       padding: 24px 40px; border-bottom: 1px solid var(--border);
@@ -160,7 +161,7 @@
 
     /* ══ LAYOUT ══ */
     .project-grid {
-      display: grid; grid-template-columns: 360px 1fr; gap: 32px; padding: 32px 40px; flex: 1; align-items: start;
+      display: grid; grid-template-columns: 360px 1fr; gap: 32px; padding: 32px 40px; flex: 1; align-items: start; width: 100%; min-width: 0;
     }
     
     @media (max-width: 1100px) {
@@ -310,7 +311,7 @@
 <div class="page">
   <div class="header-bar">
     <div class="header-left">
-      <button onclick="window.close()" class="back-btn" title="Close Tab"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <button onclick="if(!window.close()){window.location.href='scheduling.html';}" class="back-btn" title="Close or go back"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       <div class="page-title">Project Details <span class="page-title-id" id="hdrJobId"></span></div>
     </div>
     <div class="header-right">
