@@ -183,8 +183,9 @@
 
     /* ══ RIGHT PANEL: TABS ══ */
     .tabs-wrap { display: flex; flex-direction: column; height: 100%; min-height: 700px; width: 100%; }
-    .tabs-header { display: flex; gap: 8px; margin-bottom: 24px; }
+    .tabs-header { display: flex; gap: 8px; margin-bottom: 24px; width: 100%; }
     .tab-btn {
+      flex: 1; text-align: center;
       padding: 12px 24px; border-radius: 10px; border: 1px solid transparent;
       background: transparent; color: var(--muted); font-size: 14px; font-weight: 600;
       cursor: pointer; transition: all 0.2s;
@@ -457,7 +458,6 @@
       "Photo of customer roof 3"
     ],
     "Core Risk assessment": [
-      "g haswell",
       "Image of engineer in PPE"
     ],
     "Working from Height Risk Assessment": [
