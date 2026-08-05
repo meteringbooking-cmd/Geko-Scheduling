@@ -422,7 +422,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, doc, query, collection, where, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
   const app = initializeApp({
@@ -437,11 +437,13 @@
   const storage = getStorage(app);
 
   const urlParams = new URLSearchParams(window.location.search);
-  const jobId = urlParams.get('id');
-  if(!jobId) {
+  const jobIdParam = urlParams.get('jobId') || urlParams.get('id');
+  if(!jobIdParam) {
     alert("No Job ID provided in URL.");
-    window.location.href = "scheduling.html";
+    window.close();
   }
+
+  let docId = null; // Will be set once we find the Firestore document
 
   // Categories setup
   const RESPONSE_CATS = [
@@ -674,15 +676,28 @@
     `).join('');
   }
 
-  // Listen to Firestore
-  onSnapshot(doc(db, 'uploaded_jobs', jobId), (snapshot) => {
-    if(!snapshot.exists()) {
-      alert("Job not found.");
-      window.location.href = "scheduling.html";
+  // Query Firestore by jobId field (the job number you upload)
+  const q = query(collection(db, 'uploaded_jobs'), where('jobId', '==', jobIdParam));
+  onSnapshot(q, (snapshot) => {
+    if(snapshot.empty) {
+      // Fallback: try treating jobIdParam as the document ID
+      onSnapshot(doc(db, 'uploaded_jobs', jobIdParam), (docSnap) => {
+        if(!docSnap.exists()) {
+          alert('Job not found: ' + jobIdParam);
+          window.close();
+          return;
+        }
+        docId = docSnap.id;
+        currentJobData = docSnap.data();
+        currentJobData._id = docId;
+        renderUI(currentJobData);
+      });
       return;
     }
-    currentJobData = snapshot.data();
-    currentJobData._id = snapshot.id;
+    const docSnap = snapshot.docs[0];
+    docId = docSnap.id;
+    currentJobData = docSnap.data();
+    currentJobData._id = docId;
     renderUI(currentJobData);
   });
 
@@ -697,7 +712,7 @@
     
     inputEl.style.opacity = '0.5';
     try {
-      await updateDoc(doc(db, 'uploaded_jobs', jobId), {
+      await updateDoc(doc(db, 'uploaded_jobs', docId), {
         [`projectResponses.${cat}`]: val
       });
     } catch(e) {
@@ -716,7 +731,7 @@
     btn.disabled = true;
 
     try {
-      const storageRef = ref(storage, `projectDocs/${jobId}/${Date.now()}_${file.name}`);
+      const storageRef = ref(storage, `projectDocs/${jobIdParam}/${Date.now()}_${file.name}`);
       const uploadTask = await uploadBytesResumable(storageRef, file);
       const url = await getDownloadURL(uploadTask.ref);
       
@@ -732,7 +747,7 @@
       const newDocs = existingDocs.filter(d => d.type !== type);
       newDocs.push(docEntry);
 
-      await updateDoc(doc(db, 'uploaded_jobs', jobId), {
+      await updateDoc(doc(db, 'uploaded_jobs', docId), {
         projectDocuments: newDocs
       });
       
