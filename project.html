@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Geko — Project Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent:  #00ff9d;
+      --accent2: #00c8ff;
+      --danger:  #ff4b5c;
+      --warning: #f59e0b;
+      --purple:  #a855f7;
+      --text:    #e8f4ff;
+      --muted:   #6b8aaa;
+      --dim:     #3a5570;
+      --border:  rgba(255,255,255,0.07);
+      --card-bg: rgba(13,21,32,0.6);
+      --sidebar-collapsed: 64px;
+      --sidebar-expanded:  210px;
+      --ease: 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: #070a10;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+    body::after {
+      content: '';
+      position: fixed; top: -300px; left: 50%; transform: translateX(-50%);
+      width: 900px; height: 600px; pointer-events: none; z-index: 0;
+      background: radial-gradient(ellipse, rgba(0,200,255,0.05) 0%, transparent 65%);
+    }
+
+    /* ══ SIDEBAR ══ */
+    #sidebar {
+      width: var(--sidebar-collapsed); min-height: 100vh;
+      background: rgba(4,8,16,0.97); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; flex-shrink: 0;
+      transition: width var(--ease); overflow: hidden;
+      position: relative; z-index: 100;
+      box-shadow: 4px 0 30px rgba(0,0,0,0.5);
+    }
+    #sidebar.expanded { width: var(--sidebar-expanded); }
+    .sidebar-header {
+      height: 70px; display: flex; align-items: center; justify-content: center;
+      border-bottom: 1px solid var(--border); flex-shrink: 0; overflow: hidden;
+    }
+    #sidebar.expanded .sidebar-header { padding: 0 12px; justify-content: space-between; }
+    .sidebar-logo-collapsed {
+      width: 100%; height: 100%; object-fit: cover; object-position: center;
+      filter: drop-shadow(0 0 10px rgba(0,255,157,0.45)); display: block; cursor: pointer;
+    }
+    .sidebar-logo-expanded {
+      height: 40px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0,255,157,0.45));
+      border-radius: 8px; opacity: 0; max-width: 0; overflow: hidden;
+      display: block; margin-left: 14px; flex-shrink: 0;
+    }
+    #sidebar.expanded .sidebar-logo-collapsed { display: none; }
+    #sidebar.expanded .sidebar-logo-expanded  { opacity: 1; max-width: 150px; }
+    .sidebar-toggle {
+      width: 30px; height: 30px; border-radius: 7px;
+      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
+      color: var(--muted); cursor: pointer; display: none;
+      align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    #sidebar.expanded .sidebar-toggle { display: flex; }
+    .sidebar-toggle:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+    .sidebar-nav { flex: 1; padding: 14px 0; display: flex; flex-direction: column; gap: 2px; }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 12px; padding: 0 14px; height: 46px;
+      text-decoration: none; color: var(--muted); white-space: nowrap;
+      border-left: 2px solid transparent; flex-shrink: 0; position: relative;
+    }
+    .sidebar-link:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+    .sidebar-link.active { background: rgba(0,200,255,0.07); color: var(--accent2); border-left-color: var(--accent2); }
+    .sidebar-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 8px; }
+    .sidebar-link.active .sidebar-icon { background: rgba(0,200,255,0.10); }
+    .sidebar-label { font-size: 13px; font-weight: 500; opacity: 0; max-width: 0; overflow: hidden; pointer-events: none; }
+    #sidebar.expanded .sidebar-label { opacity: 1; max-width: 140px; }
+
+    /* ══ PAGE ══ */
+    .page { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow-y: auto; position: relative; z-index: 1; }
+    
+    .header-bar {
+      padding: 24px 40px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .back-btn {
+      width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--card-bg); display: flex; align-items: center; justify-content: center;
+      color: var(--muted); cursor: pointer; transition: all 0.2s; text-decoration: none;
+    }
+    .back-btn:hover { border-color: rgba(255,255,255,0.15); color: var(--text); background: rgba(255,255,255,0.05); transform: translateX(-2px); }
+    .page-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+    .page-title-id { color: var(--accent2); margin-left: 8px; font-size: 16px; font-family: 'Inter', sans-serif; font-weight: 500; }
+    
+    .status-badge {
+      padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+      border: 1px solid; display: inline-flex; align-items: center; gap: 8px;
+    }
+
+    /* ══ LAYOUT ══ */
+    .project-grid {
+      display: grid; grid-template-columns: 360px 1fr; gap: 32px; padding: 32px 40px; flex: 1; align-items: start;
+    }
+    
+    @media (max-width: 1100px) {
+      .project-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ══ LEFT PANEL: CUSTOMER ══ */
+    .panel {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+    }
+    .panel-head { padding: 18px 24px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: 0.5px; text-transform: uppercase; }
+    .panel-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+    
+    .data-group { display: flex; flex-direction: column; gap: 4px; }
+    .data-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+    .data-value { font-size: 14px; color: var(--text); line-height: 1.5; font-weight: 500; }
+    .data-value.dim { color: var(--dim); font-style: italic; }
+    .separator { height: 1px; background: var(--border); margin: 4px 0; }
+
+    /* ══ RIGHT PANEL: TABS ══ */
+    .tabs-wrap { display: flex; flex-direction: column; height: 100%; min-height: 700px; }
+    .tabs-header { display: flex; gap: 8px; margin-bottom: 24px; }
+    .tab-btn {
+      padding: 12px 24px; border-radius: 10px; border: 1px solid transparent;
+      background: transparent; color: var(--muted); font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+    .tab-btn.active {
+      background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.3); color: var(--accent2);
+    }
+    
+    .tab-content { display: none; flex-direction: column; gap: 24px; animation: fadeIn 0.3s ease-out; }
+    .tab-content.active { display: flex; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ══ JOB DATA (RESPONSES & PHOTOS) ══ */
+    .job-data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+    @media (max-width: 1400px) { .job-data-grid { grid-template-columns: 1fr; } }
+    
+    .section-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    
+    /* Responses Form */
+    .form-list { display: flex; flex-direction: column; gap: 16px; }
+    .form-item { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .form-item-header { font-size: 12px; font-weight: 600; color: var(--accent2); margin-bottom: 10px; }
+    .form-input { 
+      width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.1);
+      color: var(--text); padding: 6px 0; font-size: 13px; font-family: 'Inter', sans-serif; resize: vertical;
+    }
+    .form-input:focus { outline: none; border-bottom-color: var(--accent2); }
+    
+    /* Photos Grid */
+    .photo-category { margin-bottom: 24px; }
+    .photo-cat-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px; }
+    .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+    .photo-slot {
+      aspect-ratio: 4/3; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 10px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+    }
+    .photo-slot:hover { border-color: var(--accent); background: rgba(0,255,157,0.05); color: var(--accent); }
+    .photo-slot-label { font-size: 10px; font-weight: 500; color: var(--muted); margin-top: 6px; }
+    .photo-slot.filled { border-style: solid; border-color: rgba(255,255,255,0.1); }
+    .photo-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    
+    /* ══ DOCUMENTS ══ */
+    .docs-list { display: flex; flex-direction: column; gap: 12px; }
+    .doc-upload-row {
+      display: flex; align-items: center; justify-content: space-between; padding: 16px 20px;
+      background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 12px;
+      transition: border-color 0.2s;
+    }
+    .doc-upload-row:hover { border-color: rgba(255,255,255,0.15); }
+    .doc-info { display: flex; align-items: center; gap: 14px; }
+    .doc-icon { font-size: 24px; }
+    .doc-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .doc-status { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .doc-actions { display: flex; gap: 10px; }
+    .upload-btn {
+      padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+      background: rgba(0,200,255,0.1); border: 1px solid rgba(0,200,255,0.3); color: var(--accent2);
+      transition: all 0.2s;
+    }
+    .upload-btn:hover { background: rgba(0,200,255,0.2); }
+    .file-input { display: none; }
+    .download-btn {
+      padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+      background: rgba(0,255,157,0.1); border: 1px solid rgba(0,255,157,0.3); color: var(--accent);
+      transition: all 0.2s; text-decoration: none; display: none;
+    }
+    
+    /* ══ EVENTS ══ */
+    .timeline { position: relative; padding-left: 24px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 6px; top: 10px; bottom: 10px; width: 2px;
+      background: linear-gradient(to bottom, var(--accent2), rgba(255,255,255,0.05));
+    }
+    .timeline-event { position: relative; margin-bottom: 24px; animation: fadeIn 0.3s ease-out; }
+    .timeline-dot {
+      position: absolute; left: -24px; top: 4px; width: 14px; height: 14px; border-radius: 50%;
+      background: var(--card-bg); border: 2px solid var(--accent2); z-index: 2;
+    }
+    .timeline-content {
+      background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px;
+    }
+    .timeline-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .timeline-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .timeline-time { font-size: 11px; color: var(--muted); }
+    .timeline-body { font-size: 13px; color: var(--dim); line-height: 1.5; }
+
+    #loading-overlay { position: fixed; inset: 0; background: rgba(7,10,16,0.9); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+    .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--accent2); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div id="loading-overlay"><div class="spinner"></div></div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sidebar-header">
+    <img class="sidebar-logo-collapsed" src="https://www.dropbox.com/scl/fi/z1uitujubjdw2wtoedh0k/Gecko-tech-logo-design.png?rlkey=btn0fgjn6b1s8odpc5saghhgo&st=zm9wjxvr&dl=1" alt="Geko"/>
+    <button class="sidebar-toggle" id="sidebarToggle"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="dashboard.html" class="sidebar-link"><span class="sidebar-icon">📊</span><span class="sidebar-label">Dashboard</span></a>
+    <a href="scheduling.html" class="sidebar-link active"><span class="sidebar-icon">📅</span><span class="sidebar-label">Scheduling</span></a>
+    <a href="viewdata.html" class="sidebar-link"><span class="sidebar-icon">🔍</span><span class="sidebar-label">View Data</span></a>
+  </nav>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+  <div class="header-bar">
+    <div class="header-left">
+      <a href="scheduling.html" class="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></a>
+      <div class="page-title">Project Details <span class="page-title-id" id="hdrJobId"></span></div>
+    </div>
+    <div id="hdrStatus" class="status-badge" style="border-color:var(--muted);color:var(--muted)">Loading...</div>
+  </div>
+
+  <div class="project-grid">
+    
+    <!-- LEFT PANEL: CUSTOMER DETAILS -->
+    <div class="panel">
+      <div class="panel-head">Customer Details</div>
+      <div class="panel-body">
+        <div class="data-group"><div class="data-label">Customer Name</div><div class="data-value" id="cdName">—</div></div>
+        <div class="data-group"><div class="data-label">Address</div><div class="data-value" id="cdAddress">—</div></div>
+        <div class="separator"></div>
+        <div class="data-group"><div class="data-label">Contact Name</div><div class="data-value" id="cdContactName">—</div></div>
+        <div class="data-group"><div class="data-label">Phone Number</div><div class="data-value" id="cdPhone">—</div></div>
+        <div class="data-group"><div class="data-label">Mobile Number</div><div class="data-value" id="cdMobile">—</div></div>
+        <div class="data-group"><div class="data-label">Email Address</div><div class="data-value" id="cdEmail">—</div></div>
+        <div class="separator"></div>
+        <div class="data-group"><div class="data-label">Job Type</div><div class="data-value" id="cdJobType">—</div></div>
+        <div class="data-group"><div class="data-label">Assigned Engineer</div><div class="data-value" id="cdEngineer">—</div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: TABS -->
+    <div class="tabs-wrap">
+      <div class="tabs-header">
+        <button class="tab-btn active" data-tab="tab-jobdata">Job Data</button>
+        <button class="tab-btn" data-tab="tab-documents">Documents</button>
+        <button class="tab-btn" data-tab="tab-events">Events</button>
+      </div>
+
+      <!-- TAB: JOB DATA -->
+      <div class="tab-content active" id="tab-jobdata">
+        <div class="job-data-grid">
+          
+          <!-- Responses -->
+          <div>
+            <div class="section-title">Responses</div>
+            <div class="form-list" id="responsesList">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+          
+          <!-- Photos -->
+          <div>
+            <div class="section-title">Photos</div>
+            <div id="photosList">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB: DOCUMENTS -->
+      <div class="tab-content" id="tab-documents">
+        <div class="panel" style="background:transparent;border:none;box-shadow:none;">
+          <div class="docs-list" id="docsList">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: EVENTS -->
+      <div class="tab-content" id="tab-events">
+        <div class="panel" style="background:transparent;border:none;box-shadow:none;">
+          <div class="timeline" id="eventsTimeline">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+  const app = initializeApp({
+    apiKey: "AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU",
+    authDomain: "geko-scheduling.firebaseapp.com",
+    projectId: "geko-scheduling",
+    storageBucket: "geko-scheduling.firebasestorage.app",
+    messagingSenderId: "824568732787",
+    appId: "1:824568732787:web:c12db983fd6a5b44b01e06"
+  });
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const jobId = urlParams.get('id');
+  if(!jobId) {
+    alert("No Job ID provided in URL.");
+    window.location.href = "scheduling.html";
+  }
+
+  // Categories setup
+  const RESPONSE_CATS = [
+    "Pre Installation Information", "Rams Confirmation", "Core Risk Assessment", "Working from Height Risk Assessment",
+    "Pre Install", "Installation", "Site Investigation", "EIC", "EIC - Circuit Details", "Building Control",
+    "EIC Signoff", "PV Commissioning", "Battery Commissioning", "PV Array Test", "Battery Inspection",
+    "PV Installation", "Post install customer", "Post Install Engineer", "Additional note"
+  ];
+
+  const PHOTO_CATS = {
+    "Pre Installation Information": ["PV Array Layout", "Photo of customer roof 1", "Photo of customer roof 2", "Photo of customer roof 3"],
+    "Core Risk assessment": ["g haswell", "Image of engineer in PPE"],
+    "Working from Height Risk Assessment": ["Exclusion zones set up and explained to the customer?", "Scaffolding tag", "Full scaffold", "Gin wheel", "Platform access", "Edge protection", "Working platform", "Ladder"],
+    "Pre Install": ["Have you confirmed the location of the I&B with the customer?", "Have you confirmed the cable runs with the customer?", "Polarity plug check", "Electric meter", "Consumer unit"],
+    "Installation": ["Is bonding up to current standards?", "How many PV circuit isolators have been installed?", "PV isolator terminal screws", "AC isolator terminal screws", "String and cable runs", "Blocks", "PV DB", "Data connections", "Internal battery", "Holes filled with silicone", "Installed panels", "Installed roof rails", "Installed roof hook", "PV cable entry point to property"],
+    "Site Investigation": ["Cutout", "Is the polarity correct?", "Have all outgoing tails from the cutout been sufficiently tightened?"],
+    "Completed job": ["Post Install Engineer", "Polarity plug check (after install).", "I&B Final position", "PV Distribution Board", "Additional Notes"]
+  };
+
+  const DOC_TYPES = ["Solar Manual", "Maintenance Guide", "Hook Map", "Scaffold Request Form", "Sales Agreement"];
+
+  let currentJobData = null;
+
+  // DOM Elements
+  const els = {
+    loading: document.getElementById('loading-overlay'),
+    hdrId: document.getElementById('hdrJobId'),
+    hdrStatus: document.getElementById('hdrStatus'),
+    cdName: document.getElementById('cdName'),
+    cdAddress: document.getElementById('cdAddress'),
+    cdContactName: document.getElementById('cdContactName'),
+    cdPhone: document.getElementById('cdPhone'),
+    cdMobile: document.getElementById('cdMobile'),
+    cdEmail: document.getElementById('cdEmail'),
+    cdJobType: document.getElementById('cdJobType'),
+    cdEngineer: document.getElementById('cdEngineer'),
+    respList: document.getElementById('responsesList'),
+    photoList: document.getElementById('photosList'),
+    docList: document.getElementById('docsList'),
+    eventsList: document.getElementById('eventsTimeline')
+  };
+
+  // Tab Switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Render UI
+  function renderUI(job) {
+    els.hdrId.textContent = `# ${job.jobId || job._id}`;
+    
+    // Status
+    const status = String(job.jobStatus || job.status || 'unassigned').toLowerCase().replace(/\s+/g,'-');
+    const sColors = {'complete':'#00ff9d', 'en-route':'#00c8ff', 'in-progress':'#f59e0b', 'abort':'#ff4b5c', 'unassigned':'#6b8aaa'};
+    els.hdrStatus.textContent = status.toUpperCase();
+    els.hdrStatus.style.borderColor = sColors[status] || sColors['unassigned'];
+    els.hdrStatus.style.color = sColors[status] || sColors['unassigned'];
+    if(status==='unassigned') els.hdrStatus.style.background = 'transparent';
+    else els.hdrStatus.style.background = `rgba(${status==='complete'?'0,255,157':status==='en-route'?'0,200,255':status==='in-progress'?'245,158,11':'255,75,92'}, 0.1)`;
+
+    // Customer Info
+    els.cdName.textContent = job.customerName || '—';
+    const addr = [job.addressLine1||job.line1, job.addressLine2||job.line2, job.town, job.county, job.postcode].filter(Boolean).join(', ');
+    els.cdAddress.textContent = addr || '—';
+    els.cdContactName.textContent = job.contactName || '—';
+    els.cdPhone.textContent = job.telephoneNumber || job.contactNumber || '—';
+    els.cdMobile.textContent = job.mobileNumber || '—';
+    els.cdEmail.textContent = job.email || '—';
+    els.cdJobType.textContent = job.jobType || '—';
+    els.cdEngineer.textContent = job.engineerName || 'Unassigned';
+
+    renderResponses(job);
+    renderPhotos(job);
+    renderDocuments(job);
+    renderEvents(job);
+
+    els.loading.style.display = 'none';
+  }
+
+  function renderResponses(job) {
+    const savedResponses = job.projectResponses || {};
+    els.respList.innerHTML = RESPONSE_CATS.map(cat => `
+      <div class="form-item">
+        <div class="form-item-header">${cat}</div>
+        <textarea class="form-input" placeholder="Enter details..." data-cat="${cat}" onblur="saveResponse(this)">${savedResponses[cat] || ''}</textarea>
+      </div>
+    `).join('');
+  }
+
+  function renderPhotos(job) {
+    const attachments = Array.isArray(job.attachments) ? job.attachments : [];
+    
+    let html = '';
+    for(const [cat, items] of Object.entries(PHOTO_CATS)) {
+      html += `<div class="photo-category"><div class="photo-cat-title">${cat}</div><div class="photo-grid">`;
+      items.forEach(item => {
+        // Simple heuristic: check if any attachment name contains the item string
+        const matchedPhoto = attachments.find(a => a.name && a.name.toLowerCase().includes(item.toLowerCase()));
+        
+        if(matchedPhoto) {
+          html += `<div class="photo-slot filled" title="${item}"><img src="${matchedPhoto.url}" alt="${item}"/><div class="photo-slot-label" style="position:absolute;bottom:0;background:rgba(0,0,0,0.7);width:100%;padding:4px;color:#fff">${item}</div></div>`;
+        } else {
+          html += `<div class="photo-slot"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--muted)"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M20.4 14.5L16 10 4 20"/></svg><div class="photo-slot-label">${item}</div></div>`;
+        }
+      });
+      html += `</div></div>`;
+    }
+    els.photoList.innerHTML = html;
+  }
+
+  function renderDocuments(job) {
+    const projectDocs = Array.isArray(job.projectDocuments) ? job.projectDocuments : [];
+    
+    els.docList.innerHTML = DOC_TYPES.map(type => {
+      const existingDoc = projectDocs.find(d => d.type === type);
+      
+      return `
+        <div class="doc-upload-row">
+          <div class="doc-info">
+            <div class="doc-icon">📄</div>
+            <div>
+              <div class="doc-name">${type}</div>
+              <div class="doc-status">${existingDoc ? 'Uploaded on ' + new Date(existingDoc.uploadedAt).toLocaleDateString() : 'Not uploaded yet'}</div>
+            </div>
+          </div>
+          <div class="doc-actions">
+            <input type="file" id="file_${type.replace(/\s+/g,'_')}" class="file-input" onchange="uploadDoc(this, '${type}')"/>
+            <button class="upload-btn" onclick="document.getElementById('file_${type.replace(/\s+/g,'_')}').click()">${existingDoc ? 'Replace' : 'Upload'}</button>
+            ${existingDoc ? `<a href="${existingDoc.url}" target="_blank" class="download-btn" style="display:inline-block">View</a>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderEvents(job) {
+    let events = [];
+    if(job.createdAt || job.Upload_Date || job.timestamp) {
+      events.push({
+        title: "Job Created",
+        time: job.createdAt || job.Upload_Date || job.timestamp,
+        body: "Job record was created in the system."
+      });
+    }
+    
+    if(Array.isArray(job.statusHistory)) {
+      job.statusHistory.forEach(h => {
+        events.push({
+          title: `Status updated to ${h.status.toUpperCase()}`,
+          time: h.timestamp,
+          body: `Updated by ${h.updatedBy || 'System'}`
+        });
+      });
+    }
+    
+    // Sort oldest first
+    events.sort((a,b) => new Date(a.time) - new Date(b.time));
+    
+    if(events.length === 0) {
+      els.eventsList.innerHTML = `<div class="data-value dim">No event history found.</div>`;
+      return;
+    }
+
+    els.eventsList.innerHTML = events.map(ev => `
+      <div class="timeline-event">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <div class="timeline-title">${ev.title}</div>
+            <div class="timeline-time">${new Date(ev.time).toLocaleString('en-GB')}</div>
+          </div>
+          <div class="timeline-body">${ev.body}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Listen to Firestore
+  onSnapshot(doc(db, 'uploaded_jobs', jobId), (snapshot) => {
+    if(!snapshot.exists()) {
+      alert("Job not found.");
+      window.location.href = "scheduling.html";
+      return;
+    }
+    currentJobData = snapshot.data();
+    currentJobData._id = snapshot.id;
+    renderUI(currentJobData);
+  });
+
+  // Global functions for inline handlers
+  window.saveResponse = async (inputEl) => {
+    const cat = inputEl.dataset.cat;
+    const val = inputEl.value.trim();
+    if(!currentJobData) return;
+    
+    const currentResponses = currentJobData.projectResponses || {};
+    if(currentResponses[cat] === val) return; // No change
+    
+    inputEl.style.opacity = '0.5';
+    try {
+      await updateDoc(doc(db, 'uploaded_jobs', jobId), {
+        [`projectResponses.${cat}`]: val
+      });
+    } catch(e) {
+      alert("Failed to save response: " + e.message);
+    }
+    inputEl.style.opacity = '1';
+  };
+
+  window.uploadDoc = async (inputEl, type) => {
+    const file = inputEl.files[0];
+    if(!file) return;
+    
+    const btn = inputEl.nextElementSibling;
+    const origText = btn.textContent;
+    btn.textContent = 'Uploading...';
+    btn.disabled = true;
+
+    try {
+      const storageRef = ref(storage, `projectDocs/${jobId}/${Date.now()}_${file.name}`);
+      const uploadTask = await uploadBytesResumable(storageRef, file);
+      const url = await getDownloadURL(uploadTask.ref);
+      
+      const docEntry = {
+        type: type,
+        name: file.name,
+        url: url,
+        uploadedAt: new Date().toISOString()
+      };
+      
+      // We overwrite existing doc of same type by filtering the array before update
+      const existingDocs = Array.isArray(currentJobData.projectDocuments) ? currentJobData.projectDocuments : [];
+      const newDocs = existingDocs.filter(d => d.type !== type);
+      newDocs.push(docEntry);
+
+      await updateDoc(doc(db, 'uploaded_jobs', jobId), {
+        projectDocuments: newDocs
+      });
+      
+    } catch (e) {
+      alert("Upload failed: " + e.message);
+      btn.textContent = origText;
+      btn.disabled = false;
+    }
+  };
+</script>
+</body>
+</html>
