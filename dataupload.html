@@ -952,8 +952,10 @@ async function startUpload(){
         }
 
         for(let i=0;i<total;i++){
-            maxNum++;
-            const jobId=`JOB-${String(maxNum).padStart(5,'0')}`;
+            // Use the job number from the spreadsheet if present, otherwise auto-generate
+            const suppliedJobId = uploadQueue[i].jobId ? String(uploadQueue[i].jobId).trim() : '';
+            if(!suppliedJobId) maxNum++;
+            const jobId = suppliedJobId || `JOB-${String(maxNum).padStart(5,'0')}`;
             const record={
                 ...uploadQueue[i],
                 jobId,
