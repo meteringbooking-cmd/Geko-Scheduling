@@ -29,7 +29,7 @@
       color: var(--text);
       font-family: 'Inter', sans-serif;
       display: flex;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
     body::before {
@@ -83,7 +83,7 @@
 
     /* ══ SIDEBAR ══ */
     #sidebar {
-      width: var(--sidebar-collapsed); min-height: 100vh;
+      width: var(--sidebar-collapsed); height: 100%;
       background: rgba(4,8,16,0.97); border-right: 1px solid var(--border);
       display: flex; flex-direction: column; flex-shrink: 0;
       transition: width var(--ease); overflow: hidden;
@@ -129,11 +129,12 @@
     #sidebar.expanded .sidebar-label { opacity: 1; max-width: 140px; }
 
     /* ══ PAGE ══ */
-    .page { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; z-index: 1; overflow-x: hidden; }
+    .page { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; position: relative; z-index: 1; }
     
     .header-bar {
-      padding: 24px 40px; border-bottom: 1px solid var(--border);
+      padding: 18px 40px; border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
     }
     .header-left { display: flex; align-items: center; gap: 16px; }
     .header-right { display: flex; align-items: center; gap: 24px; }
@@ -160,7 +161,9 @@
 
     /* ══ LAYOUT ══ */
     .project-grid {
-      display: grid; grid-template-columns: 360px 1fr; gap: 32px; padding: 32px 40px; align-items: start; width: 100%; box-sizing: border-box;
+      display: grid; grid-template-columns: 360px 1fr; gap: 28px; padding: 28px 40px;
+      flex: 1; align-items: start; width: 100%; box-sizing: border-box;
+      overflow-y: auto; min-height: 0;
     }
     
     @media (max-width: 1100px) {
