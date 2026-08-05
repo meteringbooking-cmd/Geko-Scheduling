@@ -47,6 +47,40 @@
       background: radial-gradient(ellipse, rgba(0,200,255,0.05) 0%, transparent 65%);
     }
 
+    /* ── LIGHT MODE overrides ── */
+    html.light-mode body { background: #f0f4f8; color: #111827; }
+    html.light-mode body::before { background-image: linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px); }
+    html.light-mode #sidebar { background: #fff; border-color: rgba(0,0,0,0.08); box-shadow: 4px 0 20px rgba(0,0,0,0.03); }
+    html.light-mode .sidebar-header { border-color: rgba(0,0,0,0.08); }
+    html.light-mode .sidebar-link:hover { background: rgba(0,0,0,0.03); color: #111827; }
+    html.light-mode .sidebar-toggle { border-color: rgba(0,0,0,0.1); background: #f9fafb; color: #4b5563; }
+    html.light-mode .header-bar { border-color: rgba(0,0,0,0.08); }
+    html.light-mode .back-btn { background: #fff; border-color: rgba(0,0,0,0.1); color: #4b5563; }
+    html.light-mode .back-btn:hover { background: #f3f4f6; color: #111827; }
+    html.light-mode .panel { background: #fff; border-color: rgba(0,0,0,0.08); box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    html.light-mode .panel-head { border-color: rgba(0,0,0,0.08); color: #111827; }
+    html.light-mode .data-value { color: #111827; }
+    html.light-mode .separator { background: rgba(0,0,0,0.06); }
+    html.light-mode .tab-btn { color: #4b5563; }
+    html.light-mode .tab-btn:hover { color: #111827; background: rgba(0,0,0,0.03); }
+    html.light-mode .tab-btn.active { background: rgba(0,200,255,0.08); color: #0084ff; border-color: rgba(0,200,255,0.2); }
+    html.light-mode .section-title { color: #111827; }
+    html.light-mode .section-title::after { background: rgba(0,0,0,0.08); }
+    html.light-mode .form-item { background: #f9fafb; border-color: rgba(0,0,0,0.08); }
+    html.light-mode .form-input { color: #111827; border-bottom-color: rgba(0,0,0,0.1); }
+    html.light-mode .form-item-header { color: #0084ff; }
+    html.light-mode .photo-cat-title { color: #111827; }
+    html.light-mode .photo-slot { background: #f9fafb; border-color: rgba(0,0,0,0.1); }
+    html.light-mode .photo-slot:hover { border-color: #00c896; background: rgba(0,200,150,0.05); }
+    html.light-mode .doc-upload-row { background: #f9fafb; border-color: rgba(0,0,0,0.08); }
+    html.light-mode .doc-name { color: #111827; }
+    html.light-mode .timeline::before { background: linear-gradient(to bottom, #0084ff, rgba(0,0,0,0.05)); }
+    html.light-mode .timeline-dot { background: #fff; border-color: #0084ff; }
+    html.light-mode .timeline-content { background: #f9fafb; border-color: rgba(0,0,0,0.08); }
+    html.light-mode .timeline-title { color: #111827; }
+    html.light-mode .theme-toggle-track { background: rgba(0,0,0,0.1); }
+    html.light-mode .theme-toggle-thumb { transform: translateX(18px); background: #fff; }
+
     /* ══ SIDEBAR ══ */
     #sidebar {
       width: var(--sidebar-collapsed); min-height: 100vh;
@@ -102,6 +136,7 @@
       display: flex; align-items: center; justify-content: space-between;
     }
     .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-right { display: flex; align-items: center; gap: 24px; }
     .back-btn {
       width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border);
       background: var(--card-bg); display: flex; align-items: center; justify-content: center;
@@ -115,6 +150,13 @@
       padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
       border: 1px solid; display: inline-flex; align-items: center; gap: 8px;
     }
+
+    .theme-toggle {
+      display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; color: var(--text); font-family: 'Inter', sans-serif;
+    }
+    .theme-toggle-track { width: 36px; height: 18px; border-radius: 9px; background: rgba(255,255,255,0.15); position: relative; transition: background 0.2s; }
+    .theme-toggle-thumb { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--text); transition: transform 0.2s; }
+    .theme-icon { font-size: 12px; }
 
     /* ══ LAYOUT ══ */
     .project-grid {
@@ -140,7 +182,7 @@
     .separator { height: 1px; background: var(--border); margin: 4px 0; }
 
     /* ══ RIGHT PANEL: TABS ══ */
-    .tabs-wrap { display: flex; flex-direction: column; height: 100%; min-height: 700px; }
+    .tabs-wrap { display: flex; flex-direction: column; height: 100%; min-height: 700px; width: 100%; }
     .tabs-header { display: flex; gap: 8px; margin-bottom: 24px; }
     .tab-btn {
       padding: 12px 24px; border-radius: 10px; border: 1px solid transparent;
@@ -152,19 +194,19 @@
       background: rgba(0,200,255,0.1); border-color: rgba(0,200,255,0.3); color: var(--accent2);
     }
     
-    .tab-content { display: none; flex-direction: column; gap: 24px; animation: fadeIn 0.3s ease-out; }
+    .tab-content { display: none; flex-direction: column; gap: 24px; animation: fadeIn 0.3s ease-out; width: 100%; }
     .tab-content.active { display: flex; }
     @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
 
     /* ══ JOB DATA (RESPONSES & PHOTOS) ══ */
-    .job-data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+    .job-data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; width: 100%; }
     @media (max-width: 1400px) { .job-data-grid { grid-template-columns: 1fr; } }
     
     .section-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
     .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
     
     /* Responses Form */
-    .form-list { display: flex; flex-direction: column; gap: 16px; }
+    .form-list { display: flex; flex-direction: column; gap: 16px; width: 100%; }
     .form-item { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
     .form-item-header { font-size: 12px; font-weight: 600; color: var(--accent2); margin-bottom: 10px; }
     .form-input { 
@@ -188,7 +230,7 @@
     .photo-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     
     /* ══ DOCUMENTS ══ */
-    .docs-list { display: flex; flex-direction: column; gap: 12px; }
+    .docs-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
     .doc-upload-row {
       display: flex; align-items: center; justify-content: space-between; padding: 16px 20px;
       background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 12px;
@@ -196,7 +238,7 @@
     }
     .doc-upload-row:hover { border-color: rgba(255,255,255,0.15); }
     .doc-info { display: flex; align-items: center; gap: 14px; }
-    .doc-icon { font-size: 24px; }
+    .doc-icon { flex-shrink: 0; }
     .doc-name { font-size: 14px; font-weight: 600; color: var(--text); }
     .doc-status { font-size: 11px; color: var(--muted); margin-top: 4px; }
     .doc-actions { display: flex; gap: 10px; }
@@ -214,7 +256,7 @@
     }
     
     /* ══ EVENTS ══ */
-    .timeline { position: relative; padding-left: 24px; }
+    .timeline { position: relative; padding-left: 24px; width: 100%; }
     .timeline::before {
       content: ''; position: absolute; left: 6px; top: 10px; bottom: 10px; width: 2px;
       background: linear-gradient(to bottom, var(--accent2), rgba(255,255,255,0.05));
@@ -248,9 +290,18 @@
     <button class="sidebar-toggle" id="sidebarToggle"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
   </div>
   <nav class="sidebar-nav">
-    <a href="dashboard.html" class="sidebar-link"><span class="sidebar-icon">📊</span><span class="sidebar-label">Dashboard</span></a>
-    <a href="scheduling.html" class="sidebar-link active"><span class="sidebar-icon">📅</span><span class="sidebar-label">Scheduling</span></a>
-    <a href="viewdata.html" class="sidebar-link"><span class="sidebar-icon">🔍</span><span class="sidebar-label">View Data</span></a>
+    <a href="dashboard.html" class="sidebar-link">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+      <span class="sidebar-label">Dashboard</span>
+    </a>
+    <a href="scheduling.html" class="sidebar-link active">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span>
+      <span class="sidebar-label">Scheduling</span>
+    </a>
+    <a href="viewdata.html" class="sidebar-link">
+      <span class="sidebar-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
+      <span class="sidebar-label">View Data</span>
+    </a>
   </nav>
 </div>
 
@@ -261,7 +312,14 @@
       <a href="scheduling.html" class="back-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></a>
       <div class="page-title">Project Details <span class="page-title-id" id="hdrJobId"></span></div>
     </div>
-    <div id="hdrStatus" class="status-badge" style="border-color:var(--muted);color:var(--muted)">Loading...</div>
+    <div class="header-right">
+      <button id="themeToggle" class="theme-toggle" title="Toggle light / dark mode">
+        <span class="theme-icon" id="themeIcon">☀️</span>
+        <div class="theme-toggle-track"><div class="theme-toggle-thumb"></div></div>
+        <span id="themeLabel" style="font-size:11px;font-weight:600;letter-spacing:0.04em">Light</span>
+      </button>
+      <div id="hdrStatus" class="status-badge" style="border-color:var(--muted);color:var(--muted)">Loading...</div>
+    </div>
   </div>
 
   <div class="project-grid">
@@ -296,7 +354,7 @@
         <div class="job-data-grid">
           
           <!-- Responses -->
-          <div>
+          <div style="width:100%;">
             <div class="section-title">Responses</div>
             <div class="form-list" id="responsesList">
               <!-- Rendered via JS -->
@@ -304,7 +362,7 @@
           </div>
           
           <!-- Photos -->
-          <div>
+          <div style="width:100%;">
             <div class="section-title">Photos</div>
             <div id="photosList">
               <!-- Rendered via JS -->
@@ -316,7 +374,7 @@
 
       <!-- TAB: DOCUMENTS -->
       <div class="tab-content" id="tab-documents">
-        <div class="panel" style="background:transparent;border:none;box-shadow:none;">
+        <div class="panel" style="background:transparent;border:none;box-shadow:none;padding:0;">
           <div class="docs-list" id="docsList">
             <!-- Rendered via JS -->
           </div>
@@ -325,7 +383,7 @@
 
       <!-- TAB: EVENTS -->
       <div class="tab-content" id="tab-events">
-        <div class="panel" style="background:transparent;border:none;box-shadow:none;">
+        <div class="panel" style="background:transparent;border:none;box-shadow:none;padding:0;">
           <div class="timeline" id="eventsTimeline">
             <!-- Rendered via JS -->
           </div>
@@ -335,6 +393,30 @@
     </div>
   </div>
 </div>
+
+<script>
+/* ── Theme toggle ── */
+(function(){
+  const saved = localStorage.getItem('geko-theme');
+  if(saved === 'light') document.documentElement.classList.add('light-mode');
+  function updateToggleUI(){
+    const isLight = document.documentElement.classList.contains('light-mode');
+    const icon  = document.getElementById('themeIcon');
+    const label = document.getElementById('themeLabel');
+    if(icon)  icon.textContent  = isLight ? '🌙' : '☀️';
+    if(label) label.textContent = isLight ? 'Dark' : 'Light';
+  }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    updateToggleUI();
+    document.getElementById('themeToggle').addEventListener('click', ()=>{
+      document.documentElement.classList.toggle('light-mode');
+      const isLight = document.documentElement.classList.contains('light-mode');
+      localStorage.setItem('geko-theme', isLight ? 'light' : 'dark');
+      updateToggleUI();
+    });
+  });
+})();
+</script>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -368,13 +450,61 @@
   ];
 
   const PHOTO_CATS = {
-    "Pre Installation Information": ["PV Array Layout", "Photo of customer roof 1", "Photo of customer roof 2", "Photo of customer roof 3"],
-    "Core Risk assessment": ["g haswell", "Image of engineer in PPE"],
-    "Working from Height Risk Assessment": ["Exclusion zones set up and explained to the customer?", "Scaffolding tag", "Full scaffold", "Gin wheel", "Platform access", "Edge protection", "Working platform", "Ladder"],
-    "Pre Install": ["Have you confirmed the location of the I&B with the customer?", "Have you confirmed the cable runs with the customer?", "Polarity plug check", "Electric meter", "Consumer unit"],
-    "Installation": ["Is bonding up to current standards?", "How many PV circuit isolators have been installed?", "PV isolator terminal screws", "AC isolator terminal screws", "String and cable runs", "Blocks", "PV DB", "Data connections", "Internal battery", "Holes filled with silicone", "Installed panels", "Installed roof rails", "Installed roof hook", "PV cable entry point to property"],
-    "Site Investigation": ["Cutout", "Is the polarity correct?", "Have all outgoing tails from the cutout been sufficiently tightened?"],
-    "Completed job": ["Post Install Engineer", "Polarity plug check (after install).", "I&B Final position", "PV Distribution Board", "Additional Notes"]
+    "Pre Installation Information": [
+      "PV Array Layout",
+      "Photo of customer roof 1",
+      "Photo of customer roof 2",
+      "Photo of customer roof 3"
+    ],
+    "Core Risk assessment": [
+      "g haswell",
+      "Image of engineer in PPE"
+    ],
+    "Working from Height Risk Assessment": [
+      "Scaffolding Tag",
+      "Full scaffold",
+      "Gin wheel",
+      "Platform access",
+      "Edge protection",
+      "Working platform",
+      "Ladder"
+    ],
+    "Pre Install": [
+      "Have you confirmed the location of the I&B with the customer?",
+      "Have you confirmed the cable runs with the customer?",
+      "Polarity plug check",
+      "Electric meter",
+      "Consumer unit"
+    ],
+    "Installation": [
+      "Is bonding up to current standards?",
+      "How many PV circuit isolators have been installed?",
+      "PV isolator terminal screws",
+      "AC isolator terminal screws",
+      "String and cable runs",
+      "Blocks",
+      "PV DB",
+      "Data connections",
+      "Internal battery",
+      "Holes filled with silicone",
+      "Installed panels",
+      "Installed roof rails",
+      "Installed roof hook",
+      "PV cable entry point to property",
+      "Site Investigation"
+    ],
+    "Site Investigation": [
+      "Cutout",
+      "Is the polarity correct?",
+      "Have all outgoing tails from the cutout been sufficiently tightened?",
+      "Completed job"
+    ],
+    "Post Install Engineer": [
+      "Polarity plug check (after install).",
+      "I&B Final position",
+      "PV Distribution Board",
+      "Additional Notes"
+    ]
   };
 
   const DOC_TYPES = ["Solar Manual", "Maintenance Guide", "Hook Map", "Scaffold Request Form", "Sales Agreement"];
@@ -459,12 +589,15 @@
     for(const [cat, items] of Object.entries(PHOTO_CATS)) {
       html += `<div class="photo-category"><div class="photo-cat-title">${cat}</div><div class="photo-grid">`;
       items.forEach(item => {
-        // Simple heuristic: check if any attachment name contains the item string
-        const matchedPhoto = attachments.find(a => a.name && a.name.toLowerCase().includes(item.toLowerCase()));
+        // Find ALL photos matching this item string to allow more than 1 picture
+        const matchedPhotos = attachments.filter(a => a.name && a.name.toLowerCase().includes(item.toLowerCase()));
         
-        if(matchedPhoto) {
-          html += `<div class="photo-slot filled" title="${item}"><img src="${matchedPhoto.url}" alt="${item}"/><div class="photo-slot-label" style="position:absolute;bottom:0;background:rgba(0,0,0,0.7);width:100%;padding:4px;color:#fff">${item}</div></div>`;
+        if(matchedPhotos.length > 0) {
+          matchedPhotos.forEach(photo => {
+            html += `<div class="photo-slot filled" title="${item}"><img src="${photo.url}" alt="${item}"/><div class="photo-slot-label" style="position:absolute;bottom:0;background:rgba(0,0,0,0.7);width:100%;padding:4px;color:#fff">${item}</div></div>`;
+          });
         } else {
+          // Render a placeholder if no pictures exist for this category
           html += `<div class="photo-slot"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--muted)"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M20.4 14.5L16 10 4 20"/></svg><div class="photo-slot-label">${item}</div></div>`;
         }
       });
@@ -482,7 +615,7 @@
       return `
         <div class="doc-upload-row">
           <div class="doc-info">
-            <div class="doc-icon">📄</div>
+            <div class="doc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
             <div>
               <div class="doc-name">${type}</div>
               <div class="doc-status">${existingDoc ? 'Uploaded on ' + new Date(existingDoc.uploadedAt).toLocaleDateString() : 'Not uploaded yet'}</div>
