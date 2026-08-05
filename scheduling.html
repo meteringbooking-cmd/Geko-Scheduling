@@ -2688,12 +2688,12 @@ syncPicker();startRealTimeListener();startAbsenceListener();loadEngPostcodes();
 })();
 
 /* ─── Open project.html as a popup ─────────────────────────────── */
-function openProjectPopup(jobId){
+window.openProjectPopup = function(jobId){
   var w=Math.round(screen.width*0.85),h=Math.round(screen.height*0.9);
   var l=Math.round((screen.width-w)/2),t=Math.round((screen.height-h)/2);
   window.open('project.html?jobId='+encodeURIComponent(jobId),'gekoProject',
     'width='+w+',height='+h+',left='+l+',top='+t+',resizable=yes,scrollbars=yes');
-}
+};
 </script>
 </body>
 </html>
