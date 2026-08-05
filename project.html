@@ -649,7 +649,7 @@
           <div class="doc-actions">
             <input type="file" id="file_${type.replace(/\s+/g,'_')}" class="file-input" onchange="uploadDoc(this, '${type}')"/>
             <button class="upload-btn" onclick="document.getElementById('file_${type.replace(/\s+/g,'_')}').click()">${existingDoc ? 'Replace' : 'Upload'}</button>
-            ${existingDoc ? `<a href="${existingDoc.url}" target="_blank" class="download-btn" style="display:inline-block">View</a>` : ''}
+            ${existingDoc ? `<button class="download-btn" style="display:inline-block;cursor:pointer" onclick="protectedView('${existingDoc.url}')">View</button>` : ''}
           </div>
         </div>
       `;
@@ -724,6 +724,15 @@
   });
 
   // Global functions for inline handlers
+  window.protectedView = (url) => {
+    const pw = prompt("Please enter the password to view this document:");
+    if (pw === "Pingu2020!&") {
+      window.open(url, "_blank");
+    } else if (pw !== null) {
+      alert("Incorrect password.");
+    }
+  };
+
   window.saveResponse = async (inputEl) => {
     const cat = inputEl.dataset.cat;
     const val = inputEl.value.trim();
