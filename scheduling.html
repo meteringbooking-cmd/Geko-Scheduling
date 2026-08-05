@@ -2522,7 +2522,7 @@ function openModal(job,updateTracker=true){
   const attachCount=Array.isArray(job.attachments)?job.attachments.length:0;
 
   document.getElementById("modalTitle").textContent=job.jobType||"Job Details";
-  document.getElementById("modalId").innerHTML=`<a href="project.html?id=${job._id}" onclick="event.preventDefault();var w=Math.round(screen.width*0.85),h=Math.round(screen.height*0.9),l=Math.round((screen.width-w)/2),t=Math.round((screen.height-h)/2);window.open('project.html?id=${job._id}','gekoProject','width='+w+',height='+h+',left='+l+',top='+t+',resizable=yes,scrollbars=yes')" style="color:inherit;text-decoration:none;cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"># ${job.jobId||job._id}</a>`;
+  document.getElementById("modalId").innerHTML=`<a href="#" onclick="openProjectPopup('${job.jobId||job._id}')" style="color:inherit;text-decoration:none;cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">&#35; ${job.jobId||job._id}</a>`;
   document.getElementById("modalStatusPill").innerHTML=curStatus!=='unassigned'?`<span class="modal-status-pill ${meta.cls}">${meta.icon} ${meta.label}</span>`:'';
 
   document.getElementById("modalBody").innerHTML=`
@@ -2686,6 +2686,14 @@ syncPicker();startRealTimeListener();startAbsenceListener();loadEngPostcodes();
   document.addEventListener('mousemove',e=>{if(!dragging)return;const delta=startY-e.clientY;const newH=Math.min(Math.max(startH+delta,120),window.innerHeight*0.75);drawer.style.maxHeight=newH+'px';});
   document.addEventListener('mouseup',()=>{if(!dragging)return;dragging=false;document.body.style.cursor='';});
 })();
+
+/* ─── Open project.html as a popup ─────────────────────────────── */
+function openProjectPopup(jobId){
+  var w=Math.round(screen.width*0.85),h=Math.round(screen.height*0.9);
+  var l=Math.round((screen.width-w)/2),t=Math.round((screen.height-h)/2);
+  window.open('project.html?jobId='+encodeURIComponent(jobId),'gekoProject',
+    'width='+w+',height='+h+',left='+l+',top='+t+',resizable=yes,scrollbars=yes');
+}
 </script>
 </body>
 </html>
