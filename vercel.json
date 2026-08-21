@@ -1,9 +1,0 @@
-{
-  "version": 2,
-  "functions": {
-    "api/jobs.js": {
-      "runtime": "nodejs20.x",
-      "maxDuration": 10
-    }
-  }
-}
