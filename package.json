@@ -1,7 +1,6 @@
 {
-  "name": "geko-api",
+  "name": "geko-scheduling",
   "version": "1.0.0",
-  "description": "Geko Scheduling – Vercel serverless API",
   "private": true,
   "dependencies": {
     "firebase-admin": "^12.0.0"
