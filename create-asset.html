@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Create Asset · Asset Tracking</title>
+<link rel="stylesheet" href="shared/styles.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+<script>
+  if (location.protocol === "file:") {
+    document.addEventListener("DOMContentLoaded", function () {
+      var b = document.createElement("div");
+      b.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:9999;background:#dc2626;color:#fff;padding:10px 16px;font:600 13px -apple-system,'Segoe UI',Roboto,sans-serif;text-align:center;";
+      b.textContent = "This app must be opened through a local web server, not by double-clicking the file. Double-click start-local-server.bat in this folder, then open the page it launches. See README.md for details.";
+      document.body.insertBefore(b, document.body.firstChild);
+    });
+  }
+</script>
+<div id="page-content">
+  <div class="page-toolbar">
+    <div class="pill-toggle" id="mode-toggle">
+      <button type="button" class="active" data-mode="controlled">Controlled Asset</button>
+      <button type="button" data-mode="stock">Stock Item</button>
+      <button type="button" data-mode="duplicate">Duplicate Existing</button>
+    </div>
+  </div>
+
+  <!-- ============ CONTROLLED ASSET ============ -->
+  <div class="card card-pad" id="panel-controlled">
+    <div class="section-title">Create Controlled Asset</div>
+    <p class="muted" style="margin-top:-8px;">Individually tracked — gets its own unique Asset Number, QR Code, and lifecycle.</p>
+    <form id="form-controlled" class="field-grid">
+      <div class="form-section-heading">Asset Information</div>
+      <div class="field"><label>Asset Name *</label><input name="AssetName" required maxlength="100" /></div>
+      <div class="field">
+        <label>Asset Category *</label>
+        <select name="Category" id="controlled-category" required><option value="">Select…</option></select>
+      </div>
+      <div class="field">
+        <label>Asset Type *</label>
+        <select name="AssetType" id="controlled-type" required><option value="">Select category first…</option></select>
+      </div>
+      <div class="field"><label>Manufacturer *</label><input name="Manufacturer" required /></div>
+      <div class="field"><label>Model *</label><input name="Model" required /></div>
+      <div class="field"><label>Serial Number *</label><input name="SerialNumber" required /><span class="hint">Must be unique</span></div>
+      <div class="field span-2"><label>Description *</label><textarea name="Description" required></textarea></div>
+
+      <div class="form-section-heading">Purchase Information</div>
+      <div class="field">
+        <label>Supplier *</label>
+        <select name="Supplier" id="controlled-supplier" required><option value="">Select…</option></select>
+      </div>
+      <div class="field"><label>Purchase Order *</label><input name="PurchaseOrder" required /></div>
+      <div class="field"><label>Purchase Date *</label><input type="date" name="PurchaseDate" required /></div>
+      <div class="field"><label>Purchase Cost (£) *</label><input type="number" step="0.01" min="0.01" name="PurchaseCost" required /></div>
+      <div class="field"><label>Replacement Cost (£) *</label><input type="number" step="0.01" min="0.01" name="ReplacementCost" required /></div>
+      <div class="field"><label>Warranty Expiry</label><input type="date" name="WarrantyExpiry" /></div>
+      <div class="field"><label>Expected Service Life (years) *</label><input type="number" min="0" name="ServiceLife" required /></div>
+
+      <div class="form-actions" style="grid-column:1/-1;">
+        <button type="submit" class="btn btn-primary">Create Asset</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ============ STOCK ITEM ============ -->
+  <div class="card card-pad" id="panel-stock" style="display:none;">
+    <div class="section-title">Create Stock Item</div>
+    <p class="muted" style="margin-top:-8px;">Quantity-based — no individual Asset Number or QR Code, managed by stock levels.</p>
+    <form id="form-stock" class="field-grid">
+      <div class="field"><label>Stock Item Name *</label><input name="AssetName" required maxlength="100" /></div>
+      <div class="field">
+        <label>Asset Category *</label>
+        <select name="Category" id="stock-category" required><option value="">Select…</option></select>
+      </div>
+      <div class="field">
+        <label>Asset Type *</label>
+        <select name="AssetType" id="stock-type" required><option value="">Select category first…</option></select>
+      </div>
+      <div class="field"><label>Manufacturer</label><input name="Manufacturer" /></div>
+      <div class="field"><label>Opening Quantity *</label><input type="number" min="0" name="OpeningQuantity" required /></div>
+      <div class="field span-2"><label>Description *</label><textarea name="Description" required></textarea></div>
+      <div class="form-actions" style="grid-column:1/-1;">
+        <button type="submit" class="btn btn-primary">Create Stock Item</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ============ DUPLICATE ============ -->
+  <div class="card card-pad" id="panel-duplicate" style="display:none;">
+    <div class="section-title">Duplicate an Existing Asset</div>
+    <p class="muted" style="margin-top:-8px;">Creates one or more new controlled assets using an existing asset as a template. Each copy gets its own Asset Number and QR Code.</p>
+    <div class="field" style="max-width:420px; margin-bottom:16px;">
+      <label>Search / Select Existing Asset *</label>
+      <select id="duplicate-source"><option value="">Select an asset…</option></select>
+    </div>
+
+    <form id="form-duplicate" class="field-grid" style="display:none;">
+      <div class="form-section-heading">Copied Details (edit if needed)</div>
+      <div class="field"><label>Description *</label><textarea name="Description" required></textarea></div>
+      <div class="field"><label>Category</label><input name="Category" disabled /></div>
+      <div class="field"><label>Manufacturer *</label><input name="Manufacturer" required /></div>
+      <div class="field"><label>Model *</label><input name="Model" required /></div>
+      <div class="field">
+        <label>Supplier *</label>
+        <select name="Supplier" id="duplicate-supplier" required><option value="">Select…</option></select>
+      </div>
+      <div class="field"><label>Purchase Date *</label><input type="date" name="PurchaseDate" required /></div>
+      <div class="field"><label>Purchase Cost (£) *</label><input type="number" step="0.01" min="0.01" name="PurchaseCost" required /></div>
+      <div class="field"><label>Warranty Expiry</label><input type="date" name="WarrantyExpiry" /></div>
+      <div class="field span-2"><label>Notes</label><textarea name="Notes"></textarea></div>
+
+      <div class="form-section-heading">Number of Copies</div>
+      <div class="field"><label>How many copies? *</label><input type="number" min="1" max="50" value="1" id="copy-count" /></div>
+      <div class="field span-2" id="serial-inputs-host"></div>
+
+      <div class="form-actions" style="grid-column:1/-1;">
+        <button type="submit" class="btn btn-primary">Create Copies</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ============ RESULT ============ -->
+  <div class="card card-pad" id="panel-result" style="display:none; margin-top:20px;">
+    <div class="section-title">New Asset(s) Created</div>
+    <div id="result-list"></div>
+  </div>
+</div>
+
+<script type="module">
+  import { db } from "./shared/firebase-config.js";
+  import { COLLECTIONS } from "./shared/collections.js";
+  import {
+    initLayout, el, toast, fetchAll, nextAssetIdentifiers, nextId,
+    logAudit, getActingAs, requirePin, nowISO, todayISO, buildQrLabel,
+  } from "./shared/common.js";
+  import {
+    doc, setDoc, collection, query, where, getDocs,
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  initLayout("create-asset", "Create / Duplicate Asset");
+
+  let categories = [], types = [], suppliers = [], assets = [];
+
+  async function loadReferenceData() {
+    [categories, types, suppliers, assets] = await Promise.all([
+      fetchAll(COLLECTIONS.ASSET_CATEGORIES, { activeOnly: true }),
+      fetchAll(COLLECTIONS.ASSET_TYPES, { activeOnly: true }),
+      fetchAll(COLLECTIONS.SUPPLIER_REGISTER, { activeOnly: true }),
+      fetchAll(COLLECTIONS.ASSET_REGISTER),
+    ]);
+
+    fillSelect("controlled-category", categories, "AssetCategoryName", "AssetCategoryName");
+    fillSelect("stock-category", categories, "AssetCategoryName", "AssetCategoryName");
+    fillSelect("controlled-supplier", suppliers, "id", "SupplierName");
+    fillSelect("duplicate-supplier", suppliers, "id", "SupplierName");
+
+    const dupSource = document.getElementById("duplicate-source");
+    assets.filter((a) => !a.StockItem).forEach((a) => {
+      const opt = el("option", { value: a.id }, `${a.AssetName} — ${a.id} (${a.SerialNumber || "no serial"})`);
+      dupSource.appendChild(opt);
+    });
+  }
+
+  function fillSelect(id, list, valueKey, labelKey) {
+    const sel = document.getElementById(id);
+    list.forEach((item) => sel.appendChild(el("option", { value: item[valueKey] }, item[labelKey])));
+  }
+
+  function wireCategoryTypeFilter(categorySelectId, typeSelectId) {
+    const categorySelect = document.getElementById(categorySelectId);
+    const typeSelect = document.getElementById(typeSelectId);
+    categorySelect.addEventListener("change", () => {
+      const cat = categorySelect.value;
+      typeSelect.innerHTML = "";
+      const matching = types.filter((t) => t.AssetCatergory === cat);
+      if (matching.length === 0) {
+        typeSelect.appendChild(el("option", { value: "" }, "No asset types in this category yet"));
+        return;
+      }
+      typeSelect.appendChild(el("option", { value: "" }, "Select…"));
+      matching.forEach((t) => typeSelect.appendChild(el("option", { value: t.AssetTypeName }, t.AssetTypeName)));
+    });
+  }
+  wireCategoryTypeFilter("controlled-category", "controlled-type");
+  wireCategoryTypeFilter("stock-category", "stock-type");
+
+  /* ---------------- Mode toggle ---------------- */
+  document.getElementById("mode-toggle").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-mode]");
+    if (!btn) return;
+    document.querySelectorAll("#mode-toggle button").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("panel-controlled").style.display = btn.dataset.mode === "controlled" ? "" : "none";
+    document.getElementById("panel-stock").style.display = btn.dataset.mode === "stock" ? "" : "none";
+    document.getElementById("panel-duplicate").style.display = btn.dataset.mode === "duplicate" ? "" : "none";
+    document.getElementById("panel-result").style.display = "none";
+  });
+
+  async function isSerialUnique(serial, excludeId = null) {
+    const q = query(collection(db, COLLECTIONS.ASSET_REGISTER), where("SerialNumber", "==", serial));
+    const snap = await getDocs(q);
+    return snap.docs.every((d) => d.id === excludeId);
+  }
+
+  function printLabel(wrapEl) {
+    // Only one element may carry the print-isolation id at a time (and
+    // ids must stay unique per the app's own duplicate-id convention),
+    // so assign it right before printing and clear it straight after.
+    document.querySelectorAll("#qr-print-area").forEach((n) => n.removeAttribute("id"));
+    wrapEl.id = "qr-print-area";
+    window.print();
+    window.setTimeout(() => wrapEl.removeAttribute("id"), 1000);
+  }
+
+  function showResult(newAssets) {
+    const panel = document.getElementById("panel-result");
+    const host = document.getElementById("result-list");
+    host.innerHTML = "";
+    panel.style.display = "";
+    newAssets.forEach((a) => {
+      const row = el("div", { style: "display:flex; align-items:center; gap:16px; padding:14px 0; border-bottom:1px solid var(--slate-100);" });
+      const wrap = el("div", { class: "qr-canvas-wrap", style: "padding:6px;" });
+      const qrDiv = el("div", {});
+      wrap.appendChild(qrDiv);
+      wrap.appendChild(el("div", { style: "font-weight:600;" }, a.QRCode || ""));
+      wrap.appendChild(el("div", { class: "muted" }, a.AssetName || ""));
+      row.appendChild(wrap);
+
+      // Hidden label sized for the actual printer (25.4mm × 12.6mm) —
+      // this is what "Print QR Label" below prints, not the on-screen
+      // preview above, which is just for confirming the right code.
+      const printTarget = a.QRCode ? buildQrLabel({ qrCode: a.QRCode, assetId: a.AssetID }) : null;
+      if (printTarget) row.appendChild(printTarget);
+
+      row.appendChild(
+        el("div", {}, [
+          el("div", { style: "font-weight:600;" }, `${a.AssetName} — ${a.AssetID}`),
+          el("div", { class: "muted" }, a.SerialNumber ? `Serial: ${a.SerialNumber}` : ""),
+          el("a", { class: "text-link", href: `asset-record.html?id=${encodeURIComponent(a.AssetID)}` }, "Open asset record →"),
+          printTarget
+            ? el("button", { type: "button", class: "btn btn-secondary btn-sm", style: "margin-top:8px;", onclick: () => printLabel(printTarget) }, "Print QR Label")
+            : null,
+        ])
+      );
+      host.appendChild(row);
+      if (a.QRCode && window.QRCode) {
+        new QRCode(qrDiv, { text: a.QRCode, width: 84, height: 84 });
+      }
+    });
+    panel.scrollIntoView({ behavior: "smooth" });
+  }
+
+  /* ---------------- Controlled Asset submit ---------------- */
+  document.getElementById("form-controlled").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const fd = new FormData(form);
+    const serial = fd.get("SerialNumber").trim();
+
+    if (fd.get("PurchaseDate") > todayISO()) {
+      toast("Purchase Date cannot be in the future.", "error");
+      return;
+    }
+    if (!(await isSerialUnique(serial))) {
+      toast("Serial Number already exists — it must be unique.", "error");
+      return;
+    }
+    if (!(await requirePin("Create Asset"))) return;
+
+    try {
+      const { assetId, qrCode } = await nextAssetIdentifiers();
+      const data = {
+        AssetName: fd.get("AssetName"),
+        Category: fd.get("Category"),
+        AssetType: fd.get("AssetType"),
+        Manufacturer: fd.get("Manufacturer"),
+        Model: fd.get("Model"),
+        SerialNumber: serial,
+        Description: fd.get("Description"),
+        Supplier: fd.get("Supplier"),
+        PurchaseOrder: fd.get("PurchaseOrder"),
+        PurchaseDate: fd.get("PurchaseDate"),
+        PurchaseCost: Number(fd.get("PurchaseCost")),
+        ReplacementCost: Number(fd.get("ReplacementCost")),
+        WarrantyExpiry: fd.get("WarrantyExpiry") || null,
+        ServiceLife: Number(fd.get("ServiceLife")),
+        QRCode: qrCode,
+        Status: "Available",
+        Condition: "New",
+        CurrentLocation: null,
+        CurrentEmployee: null,
+        Active: true,
+        LastCalibrationDate: null,
+        NextCalibrationDueDate: null,
+        StockItem: false,
+        CreatedDate: nowISO(),
+        CreatedBy: getActingAs().name || "Unknown",
+      };
+      await setDoc(doc(db, COLLECTIONS.ASSET_REGISTER, assetId), data);
+      await logAudit({ recordType: "Asset", recordId: assetId, action: "Create", description: `Created asset ${data.AssetName} (${assetId})` });
+      toast("Asset created", "success");
+      form.reset();
+      showResult([{ AssetID: assetId, AssetName: data.AssetName, SerialNumber: serial, QRCode: qrCode }]);
+      loadReferenceData();
+    } catch (err) {
+      console.error(err);
+      toast("Could not create asset: " + err.message, "error");
+    }
+  });
+
+  /* ---------------- Stock Item submit ---------------- */
+  document.getElementById("form-stock").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const fd = new FormData(form);
+    if (!(await requirePin("Create Stock Item"))) return;
+    try {
+      const stockId = await nextId("STK", 4);
+      const data = {
+        AssetName: fd.get("AssetName"),
+        Category: fd.get("Category"),
+        AssetType: fd.get("AssetType"),
+        Manufacturer: fd.get("Manufacturer") || null,
+        Description: fd.get("Description"),
+        StockItem: true,
+        Quantity: Number(fd.get("OpeningQuantity")),
+        QRCode: null,
+        SerialNumber: null,
+        Status: "Available",
+        Active: true,
+        CreatedDate: nowISO(),
+        CreatedBy: getActingAs().name || "Unknown",
+      };
+      await setDoc(doc(db, COLLECTIONS.ASSET_REGISTER, stockId), data);
+      await logAudit({ recordType: "Asset", recordId: stockId, action: "Create", description: `Created stock item ${data.AssetName} (${stockId}), qty ${data.Quantity}` });
+      toast("Stock item created", "success");
+      form.reset();
+      showResult([{ AssetID: stockId, AssetName: data.AssetName }]);
+      loadReferenceData();
+    } catch (err) {
+      console.error(err);
+      toast("Could not create stock item: " + err.message, "error");
+    }
+  });
+
+  /* ---------------- Duplicate Asset ---------------- */
+  const dupForm = document.getElementById("form-duplicate");
+  let sourceAsset = null;
+
+  document.getElementById("duplicate-source").addEventListener("change", (e) => {
+    const id = e.target.value;
+    sourceAsset = assets.find((a) => a.id === id) || null;
+    if (!sourceAsset) {
+      dupForm.style.display = "none";
+      return;
+    }
+    dupForm.style.display = "";
+    dupForm.querySelector('[name="Description"]').value = sourceAsset.Description || "";
+    dupForm.querySelector('[name="Category"]').value = sourceAsset.Category || "";
+    dupForm.querySelector('[name="Manufacturer"]').value = sourceAsset.Manufacturer || "";
+    dupForm.querySelector('[name="Model"]').value = sourceAsset.Model || "";
+    dupForm.querySelector('[name="Supplier"]').value = sourceAsset.Supplier || "";
+    dupForm.querySelector('[name="PurchaseDate"]').value = sourceAsset.PurchaseDate || "";
+    dupForm.querySelector('[name="PurchaseCost"]').value = sourceAsset.PurchaseCost || "";
+    dupForm.querySelector('[name="WarrantyExpiry"]').value = sourceAsset.WarrantyExpiry || "";
+    renderSerialInputs();
+  });
+
+  function renderSerialInputs() {
+    const host = document.getElementById("serial-inputs-host");
+    const count = Math.max(1, Math.min(50, Number(document.getElementById("copy-count").value) || 1));
+    host.innerHTML = "";
+    host.appendChild(el("label", {}, "Serial Number for each copy *"));
+    const wrap = el("div", { style: "display:flex; flex-direction:column; gap:8px; margin-top:6px;" });
+    for (let i = 0; i < count; i++) {
+      wrap.appendChild(el("input", { name: `serial-${i}`, required: "required", placeholder: `Serial number for copy ${i + 1}` }));
+    }
+    host.appendChild(wrap);
+  }
+  document.getElementById("copy-count").addEventListener("input", renderSerialInputs);
+
+  dupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!sourceAsset) return;
+    const fd = new FormData(dupForm);
+    const count = Math.max(1, Math.min(50, Number(document.getElementById("copy-count").value) || 1));
+    const serials = [];
+    for (let i = 0; i < count; i++) {
+      const s = (fd.get(`serial-${i}`) || "").trim();
+      if (!s) {
+        toast("Every copy needs a serial number.", "error");
+        return;
+      }
+      serials.push(s);
+    }
+    if (new Set(serials).size !== serials.length) {
+      toast("Serial numbers must be unique across the copies.", "error");
+      return;
+    }
+    for (const s of serials) {
+      if (!(await isSerialUnique(s))) {
+        toast(`Serial Number "${s}" already exists in the Asset Register.`, "error");
+        return;
+      }
+    }
+    if (!(await requirePin(`Duplicate Asset ×${count}`))) return;
+
+    try {
+      const created = [];
+      for (let i = 0; i < count; i++) {
+        const { assetId, qrCode } = await nextAssetIdentifiers();
+        const data = {
+          AssetName: sourceAsset.AssetName,
+          Category: sourceAsset.Category,
+          AssetType: sourceAsset.AssetType,
+          Manufacturer: fd.get("Manufacturer"),
+          Model: fd.get("Model"),
+          SerialNumber: serials[i],
+          Description: fd.get("Description"),
+          Supplier: fd.get("Supplier"),
+          PurchaseOrder: sourceAsset.PurchaseOrder || null,
+          PurchaseDate: fd.get("PurchaseDate"),
+          PurchaseCost: Number(fd.get("PurchaseCost")),
+          ReplacementCost: sourceAsset.ReplacementCost || null,
+          WarrantyExpiry: fd.get("WarrantyExpiry") || null,
+          ServiceLife: sourceAsset.ServiceLife || null,
+          Notes: fd.get("Notes") || null,
+          QRCode: qrCode,
+          Status: "Available",
+          Condition: "New",
+          CurrentLocation: null,
+          CurrentEmployee: null,
+          Active: true,
+          LastCalibrationDate: null,
+          NextCalibrationDueDate: null,
+          StockItem: false,
+          DuplicatedFrom: sourceAsset.id,
+          CreatedDate: nowISO(),
+          CreatedBy: getActingAs().name || "Unknown",
+        };
+        await setDoc(doc(db, COLLECTIONS.ASSET_REGISTER, assetId), data);
+        await logAudit({ recordType: "Asset", recordId: assetId, action: "Create", description: `Duplicated from ${sourceAsset.id} → ${assetId}` });
+        created.push({ AssetID: assetId, AssetName: data.AssetName, SerialNumber: serials[i], QRCode: qrCode });
+      }
+      toast(`${count} asset${count > 1 ? "s" : ""} created`, "success");
+      dupForm.reset();
+      dupForm.style.display = "none";
+      document.getElementById("duplicate-source").value = "";
+      showResult(created);
+      loadReferenceData();
+    } catch (err) {
+      console.error(err);
+      toast("Could not create copies: " + err.message, "error");
+    }
+  });
+
+  loadReferenceData();
+</script>
+</body>
+</html>
