@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><script src="geko-theme.js"></script>
 <meta charset="UTF-8">
 <title>Geko — Field Mapping</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 <style>
     :root {
-        --accent-green: #00ff9d;
-        --accent-blue: #00c8ff;
-        --text-main: #e6f7ff;
-        --text-muted: #8fa0b8;
-        --danger: #ff4b5c;
-        --border-glow: 0 0 18px rgba(0, 255, 157, 0.45);
+        --accent-green: var(--ds-accent);
+        --accent-blue: var(--ds-info);
+        --text-main: var(--ds-text);
+        --text-muted: var(--ds-muted);
+        --danger: var(--ds-danger);
+        --border-glow: 0 0 18px rgb(var(--ds-accent-rgb) / 0.45);
         --transition-fast: 0.18s ease-out;
         --transition-med: 0.28s ease-out;
         --sidebar-w-collapsed: 64px;
@@ -22,8 +22,8 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-        font-family: 'Inter', sans-serif;
-        background: radial-gradient(circle at top left, #101525 0, #05070b 45%, #020308 100%);
+        font-family:var(--ds-font);
+        background: radial-gradient(circle at top left, var(--ds-surface-3) 0, var(--ds-bg) 45%, var(--ds-bg) 100%);
         color: var(--text-main);
         min-height: 100vh;
         display: flex;
@@ -35,8 +35,8 @@
         position: fixed;
         inset: 0;
         background-image:
-            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            linear-gradient(rgb(var(--ds-fg-rgb) / 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(var(--ds-fg-rgb) / 0.03) 1px, transparent 1px);
         background-size: 40px 40px;
         opacity: 0.35;
         pointer-events: none;
@@ -53,8 +53,8 @@
     #sidebar {
         width: var(--sidebar-w-collapsed);
         min-height: 100vh;
-        background: rgba(5, 10, 18, 0.95);
-        border-right: 1px solid rgba(255,255,255,0.06);
+        background: rgb(var(--ds-surface-rgb) / 0.95);
+        border-right: 1px solid rgb(var(--ds-fg-rgb) / 0.06);
         display: flex;
         flex-direction: column;
         flex-shrink: 0;
@@ -62,7 +62,7 @@
         overflow: hidden;
         position: relative;
         z-index: 100;
-        box-shadow: 4px 0 30px rgba(0,0,0,0.6);
+        box-shadow:var(--ds-shadow-sm);
     }
 
     #sidebar.expanded { width: var(--sidebar-w-expanded); }
@@ -72,7 +72,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
+        border-bottom: 1px solid rgb(var(--ds-fg-rgb) / 0.06);
         flex-shrink: 0;
         padding: 0;
         position: relative;
@@ -84,7 +84,7 @@
         height: 100%;
         object-fit: cover;
         object-position: center;
-        filter: drop-shadow(0 0 10px rgba(0,255,157,0.5));
+        filter:none;
         display: block;
         cursor: pointer;
         transition: filter var(--transition-fast), transform var(--transition-fast);
@@ -92,14 +92,14 @@
     }
 
     .sidebar-logo-collapsed:hover {
-        filter: drop-shadow(0 0 16px rgba(0,255,157,0.8));
+        filter:none;
         transform: scale(1.03);
     }
 
     .sidebar-logo-expanded {
         height: 40px;
         object-fit: contain;
-        filter: drop-shadow(0 0 10px rgba(0,255,157,0.5));
+        filter:none;
         border-radius: 8px;
         opacity: 0;
         max-width: 0;
@@ -126,8 +126,8 @@
         width: 30px;
         height: 30px;
         border-radius: 7px;
-        border: 1px solid rgba(255,255,255,0.1);
-        background: rgba(255,255,255,0.04);
+        border: 1px solid rgb(var(--ds-fg-rgb) / 0.1);
+        background: rgb(var(--ds-fg-rgb) / 0.04);
         color: var(--text-muted);
         cursor: pointer;
         display: none;
@@ -138,7 +138,7 @@
     }
 
     #sidebar.expanded .sidebar-toggle { display: flex; }
-    .sidebar-toggle:hover { background: rgba(255,255,255,0.08); color: var(--text-main); }
+    .sidebar-toggle:hover { background: rgb(var(--ds-fg-rgb) / 0.08); color: var(--text-main); }
 
     .sidebar-nav {
         flex: 1;
@@ -163,10 +163,10 @@
         position: relative;
     }
 
-    .sidebar-link:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+    .sidebar-link:hover { background: rgb(var(--ds-fg-rgb) / 0.05); color: var(--text-main); }
 
     .sidebar-link.active {
-        background: rgba(0,255,157,0.08);
+        background: rgb(var(--ds-accent-rgb) / 0.08);
         color: var(--accent-green);
         border-left-color: var(--accent-green);
     }
@@ -177,7 +177,7 @@
         flex-shrink: 0; border-radius: 8px;
     }
 
-    .sidebar-link.active .sidebar-icon { background: rgba(0,255,157,0.10); }
+    .sidebar-link.active .sidebar-icon { background: rgb(var(--ds-accent-rgb) / 0.10); }
 
     .sidebar-label {
         font-size: 13px; font-weight: 500;
@@ -192,8 +192,8 @@
         content: attr(data-label);
         position: absolute;
         left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
-        background: rgba(5,10,18,0.97);
-        border: 1px solid rgba(255,255,255,0.08);
+        background: rgb(var(--ds-surface-rgb) / 0.97);
+        border: 1px solid rgb(var(--ds-fg-rgb) / 0.08);
         color: var(--text-main);
         font-size: 12px; font-weight: 500;
         padding: 6px 12px; border-radius: 8px;
@@ -206,7 +206,7 @@
 
     .sidebar-footer {
         padding: 14px;
-        border-top: 1px solid rgba(255,255,255,0.06);
+        border-top: 1px solid rgb(var(--ds-fg-rgb) / 0.06);
         flex-shrink: 0;
     }
 
@@ -230,11 +230,11 @@
     /* TOPBAR */
     #topbar {
         width: 100%; padding: 14px 26px;
-        background: rgba(5,10,18,0.9);
-        border-bottom: 1px solid rgba(255,255,255,0.06);
+        background: rgb(var(--ds-surface-rgb) / 0.9);
+        border-bottom: 1px solid rgb(var(--ds-fg-rgb) / 0.06);
         display: flex; justify-content: space-between; align-items: center;
         position: sticky; top: 0; z-index: 5;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        box-shadow:var(--ds-shadow-sm);
     }
 
     #topbar-title { font-size: 16px; text-transform: uppercase; letter-spacing: 0.12em; }
@@ -248,7 +248,7 @@
     #status-dot {
         width: 10px; height: 10px;
         background: var(--accent-green); border-radius: 50%;
-        box-shadow: 0 0 10px rgba(0,255,157,0.8);
+        box-shadow:none;
         display: inline-block;
     }
 
@@ -279,8 +279,8 @@
     .summary-pill {
         display: flex; align-items: center; gap: 8px;
         padding: 8px 16px; border-radius: 999px;
-        background: rgba(10,14,24,0.9);
-        border: 1px solid rgba(255,255,255,0.06);
+        background: rgb(var(--ds-surface-rgb) / 0.9);
+        border: 1px solid rgb(var(--ds-fg-rgb) / 0.06);
         font-size: 12px; color: var(--text-muted);
         backdrop-filter: blur(10px);
     }
@@ -297,10 +297,10 @@
     .btn-save {
         padding: 10px 22px; border-radius: 999px; border: none;
         background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
-        color: #020308; font-weight: 600; font-size: 13px;
+        color: var(--ds-bg); font-weight: 600; font-size: 13px;
         letter-spacing: 0.08em; text-transform: uppercase;
         cursor: pointer;
-        box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 12px 28px rgba(0,0,0,0.8);
+        box-shadow:var(--ds-shadow-sm);
         transition: var(--transition-fast);
         display: flex; align-items: center; gap: 8px;
     }
@@ -310,37 +310,37 @@
 
     .btn-secondary {
         padding: 10px 18px; border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(5,8,16,0.9); color: var(--text-muted);
+        border: 1px solid rgb(var(--ds-fg-rgb) / 0.12);
+        background: rgb(var(--ds-bg-rgb) / 0.9); color: var(--text-muted);
         font-size: 13px; cursor: pointer;
         transition: var(--transition-fast);
         letter-spacing: 0.06em; text-transform: uppercase;
-        font-family: 'Inter', sans-serif;
+        font-family:var(--ds-font);
         display: flex; align-items: center; gap: 8px;
     }
 
     .btn-secondary:hover {
-        background: rgba(0,200,255,0.1);
-        border-color: rgba(0,200,255,0.4);
+        background: rgb(var(--ds-info-rgb) / 0.1);
+        border-color: rgb(var(--ds-info-rgb) / 0.4);
         color: var(--text-main);
     }
 
     .btn-danger-soft {
         padding: 10px 18px; border-radius: 999px;
-        border: 1px solid rgba(255,75,92,0.35);
-        background: rgba(5,8,16,0.9); color: rgba(255,75,92,0.8);
+        border: 1px solid rgb(var(--ds-danger-rgb) / 0.35);
+        background: rgb(var(--ds-bg-rgb) / 0.9); color: rgb(var(--ds-danger-rgb) / 0.8);
         font-size: 13px; cursor: pointer;
         transition: var(--transition-fast);
         letter-spacing: 0.06em; text-transform: uppercase;
-        font-family: 'Inter', sans-serif;
+        font-family:var(--ds-font);
         display: flex; align-items: center; gap: 8px;
     }
 
     .btn-danger-soft:hover {
-        background: rgba(255,75,92,0.12);
-        border-color: rgba(255,75,92,0.7);
+        background: rgb(var(--ds-danger-rgb) / 0.12);
+        border-color: rgb(var(--ds-danger-rgb) / 0.7);
         color: var(--danger);
-        box-shadow: 0 0 14px rgba(255,75,92,0.3);
+        box-shadow:none;
     }
 
     /* STATUS TAG after save */
@@ -352,15 +352,15 @@
 
     .save-status.ok {
         display: flex;
-        background: rgba(0,255,157,0.1);
-        border: 1px solid rgba(0,255,157,0.3);
+        background: rgb(var(--ds-accent-rgb) / 0.1);
+        border: 1px solid rgb(var(--ds-accent-rgb) / 0.3);
         color: var(--accent-green);
     }
 
     .save-status.err {
         display: flex;
-        background: rgba(255,75,92,0.1);
-        border: 1px solid rgba(255,75,92,0.3);
+        background: rgb(var(--ds-danger-rgb) / 0.1);
+        border: 1px solid rgb(var(--ds-danger-rgb) / 0.3);
         color: var(--danger);
     }
 
@@ -376,17 +376,17 @@
 
     .search-input {
         width: 100%; height: 44px;
-        background: rgba(5,8,16,0.9);
-        border: 1px solid rgba(255,255,255,0.08);
+        background: rgb(var(--ds-bg-rgb) / 0.9);
+        border: 1px solid rgb(var(--ds-fg-rgb) / 0.08);
         border-radius: 12px; color: var(--text-main);
-        font-size: 13px; font-family: 'Inter', sans-serif;
+        font-size: 13px; font-family:var(--ds-font);
         padding: 0 16px 0 42px; outline: none;
         transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
     }
 
     .search-input:focus {
         border-color: var(--accent-blue);
-        box-shadow: 0 0 16px rgba(0,200,255,0.3);
+        box-shadow:none;
     }
 
     .search-input::placeholder { color: var(--text-muted); }
@@ -401,11 +401,11 @@
     /* CATEGORY CARD */
     .cat-card {
         border-radius: 16px;
-        background: rgba(10,14,24,0.9);
-        border: 1px solid rgba(255,255,255,0.06);
+        background: rgb(var(--ds-surface-rgb) / 0.9);
+        border: 1px solid rgb(var(--ds-fg-rgb) / 0.06);
         padding: 0;
         backdrop-filter: blur(18px);
-        box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 14px 40px rgba(0,0,0,0.7);
+        box-shadow:var(--ds-shadow-sm);
         position: relative;
         overflow: hidden;
         transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
@@ -414,25 +414,25 @@
     .cat-card::before {
         content: "";
         position: absolute; inset: -40%;
-        background: radial-gradient(circle at top left, rgba(0,255,157,0.07), transparent 55%),
-                    radial-gradient(circle at bottom right, rgba(0,200,255,0.07), transparent 55%);
+        background: radial-gradient(circle at top left, rgb(var(--ds-accent-rgb) / 0.07), transparent 55%),
+                    radial-gradient(circle at bottom right, rgb(var(--ds-info-rgb) / 0.07), transparent 55%);
         opacity: 0.8; z-index: 0; pointer-events: none;
     }
 
     .cat-card:hover {
-        border-color: rgba(0,255,157,0.15);
-        box-shadow: 0 0 0 1px rgba(0,0,0,0.6), 0 18px 50px rgba(0,0,0,0.8), 0 0 30px rgba(0,255,157,0.06);
+        border-color: rgb(var(--ds-accent-rgb) / 0.15);
+        box-shadow:var(--ds-shadow-sm);
     }
 
     .cat-card.has-active {
-        border-color: rgba(0,255,157,0.18);
+        border-color: rgb(var(--ds-accent-rgb) / 0.18);
     }
 
     /* CARD HEADER */
     .cat-header {
         display: flex; align-items: center; justify-content: space-between;
         padding: 16px 18px 14px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
+        border-bottom: 1px solid rgb(var(--ds-fg-rgb) / 0.05);
         position: relative; z-index: 1;
         gap: 10px;
     }
@@ -467,18 +467,18 @@
     /* Toggle all button */
     .cat-toggle-all {
         padding: 4px 10px; border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.1);
+        border: 1px solid rgb(var(--ds-fg-rgb) / 0.1);
         background: transparent; color: var(--text-muted);
         font-size: 10px; cursor: pointer;
         text-transform: uppercase; letter-spacing: 0.08em;
         transition: var(--transition-fast); flex-shrink: 0;
-        font-family: 'Inter', sans-serif;
+        font-family:var(--ds-font);
         white-space: nowrap;
     }
 
     .cat-toggle-all:hover {
-        background: rgba(0,255,157,0.08);
-        border-color: rgba(0,255,157,0.3);
+        background: rgb(var(--ds-accent-rgb) / 0.08);
+        border-color: rgb(var(--ds-accent-rgb) / 0.3);
         color: var(--accent-green);
     }
 
@@ -499,11 +499,11 @@
         border: 1px solid transparent;
     }
 
-    .field-row:hover { background: rgba(255,255,255,0.04); }
+    .field-row:hover { background: rgb(var(--ds-fg-rgb) / 0.04); }
 
     .field-row.active {
-        background: rgba(0,255,157,0.07);
-        border-color: rgba(0,255,157,0.12);
+        background: rgb(var(--ds-accent-rgb) / 0.07);
+        border-color: rgb(var(--ds-accent-rgb) / 0.12);
     }
 
     .field-row.hidden-row { display: none; }
@@ -519,9 +519,9 @@
 
     .toggle-track {
         position: absolute; inset: 0;
-        background: rgba(255,255,255,0.08);
+        background: rgb(var(--ds-fg-rgb) / 0.08);
         border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.1);
+        border: 1px solid rgb(var(--ds-fg-rgb) / 0.1);
         transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
         cursor: pointer;
     }
@@ -536,9 +536,9 @@
     }
 
     .toggle-switch input:checked + .toggle-track {
-        background: rgba(0,255,157,0.2);
-        border-color: rgba(0,255,157,0.5);
-        box-shadow: 0 0 10px rgba(0,255,157,0.25);
+        background: rgb(var(--ds-accent-rgb) / 0.2);
+        border-color: rgb(var(--ds-accent-rgb) / 0.5);
+        box-shadow:none;
     }
 
     .toggle-switch input:checked + .toggle-track::after {
@@ -555,8 +555,8 @@
 
     .field-tag {
         font-size: 10px; padding: 2px 7px; border-radius: 999px;
-        background: rgba(0,200,255,0.08);
-        border: 1px solid rgba(0,200,255,0.15);
+        background: rgb(var(--ds-info-rgb) / 0.08);
+        border: 1px solid rgb(var(--ds-info-rgb) / 0.15);
         color: var(--accent-blue);
         font-weight: 500; letter-spacing: 0.04em;
         opacity: 0;
@@ -582,23 +582,23 @@
     }
 
     #toast.success {
-        background: rgba(10,20,15,0.97);
-        border: 1px solid rgba(0,255,157,0.4);
+        background: rgb(var(--ds-surface-rgb) / 0.97);
+        border: 1px solid rgb(var(--ds-accent-rgb) / 0.4);
         color: var(--accent-green);
-        box-shadow: 0 0 30px rgba(0,255,157,0.2), 0 16px 40px rgba(0,0,0,0.8);
+        box-shadow:var(--ds-shadow-md);
     }
 
     #toast.error {
         background: rgba(20,10,12,0.97);
-        border: 1px solid rgba(255,75,92,0.4);
+        border: 1px solid rgb(var(--ds-danger-rgb) / 0.4);
         color: var(--danger);
-        box-shadow: 0 0 30px rgba(255,75,92,0.2), 0 16px 40px rgba(0,0,0,0.8);
+        box-shadow:var(--ds-shadow-md);
     }
 
     /* LOADING OVERLAY */
     #loading-overlay {
         position: fixed; inset: 0;
-        background: rgba(2,3,8,0.7);
+        background: rgb(var(--ds-bg-rgb) / 0.7);
         display: flex; align-items: center; justify-content: center;
         z-index: 9998; backdrop-filter: blur(6px);
     }
@@ -607,17 +607,17 @@
 
     .loading-box {
         padding: 30px 40px; border-radius: 18px;
-        background: rgba(10,14,24,0.98);
-        border: 1px solid rgba(255,255,255,0.06);
+        background: rgb(var(--ds-surface-rgb) / 0.98);
+        border: 1px solid rgb(var(--ds-fg-rgb) / 0.06);
         text-align: center;
-        box-shadow: 0 24px 60px rgba(0,0,0,0.9);
+        box-shadow:var(--ds-shadow-sm);
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .loading-spinner {
         width: 36px; height: 36px;
-        border: 3px solid rgba(255,255,255,0.06);
+        border: 3px solid rgb(var(--ds-fg-rgb) / 0.06);
         border-top-color: var(--accent-green);
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
@@ -631,7 +631,7 @@
         #page-inner { padding: 18px; }
     }
 </style>
-</head>
+<link rel="stylesheet" href="geko-ds.css"><link rel="stylesheet" href="geko-icons.css"><script defer src="geko-icons.js"></script></head>
 <body>
 
 <!-- LOADING OVERLAY -->
@@ -710,7 +710,7 @@
         <div class="page-header">
             <h1>Field Mapping Configuration</h1>
             <p>Toggle fields on or off. Only enabled fields will be matched when data is loaded or imported.</p>
-            <div style="margin-top:12px;display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:10px;background:rgba(0,255,157,0.05);border:1px solid rgba(0,255,157,0.18);font-size:12px;color:rgba(0,255,157,0.8);line-height:1.6">
+            <div style="margin-top:12px;display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:10px;background:rgb(var(--ds-accent-rgb) / 0.05);border:1px solid rgb(var(--ds-accent-rgb) / 0.18);font-size:12px;color:rgb(var(--ds-accent-rgb) / 0.8);line-height:1.6">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
                 <span>Each field shows the <strong>Firestore key</strong> it saves as (in italic). These match the keys <strong>scheduling.html</strong> reads — enabling a field here makes it available in the Data Upload column mapper.</span>
             </div>
@@ -787,25 +787,25 @@ const CATEGORIES = [
     {
         id: "identifiers",
         label: "Unique Identifiers",
-        color: "rgba(0,255,157,0.12)",
-        strokeColor: "rgba(0,255,157,0.5)",
-        iconColor: "rgba(0,255,157,0.85)",
+        color: "rgba(22,163,74,0.12)",
+        strokeColor: "rgba(22,163,74,0.5)",
+        iconColor: "rgba(22,163,74,0.85)",
         fields: ["ID", "Record_ID", "Customer_ID", "Job_ID", "Employee_ID", "Reference_Number"]
     },
     {
         id: "personal",
         label: "Personal / Customer Info",
-        color: "rgba(0,200,255,0.12)",
-        strokeColor: "rgba(0,200,255,0.5)",
-        iconColor: "rgba(0,200,255,0.85)",
+        color: "rgba(14,165,233,0.12)",
+        strokeColor: "rgba(14,165,233,0.5)",
+        iconColor: "rgba(14,165,233,0.85)",
         fields: ["Title", "First_Name", "Last_Name", "Full_Name", "Company_Name"]
     },
     {
         id: "address",
         label: "Address & Location",
-        color: "rgba(255,200,0,0.12)",
-        strokeColor: "rgba(255,200,0,0.4)",
-        iconColor: "rgba(255,200,0,0.85)",
+        color: "rgba(224,138,11,0.12)",
+        strokeColor: "rgba(224,138,11,0.4)",
+        iconColor: "rgba(224,138,11,0.85)",
         fields: ["Address_Line1", "Address_Line2", "City_Town", "County", "Postcode", "Country"]
     },
     {
@@ -819,41 +819,41 @@ const CATEGORIES = [
     {
         id: "datetime",
         label: "Date & Time Fields",
-        color: "rgba(0,255,157,0.10)",
-        strokeColor: "rgba(0,255,157,0.4)",
-        iconColor: "rgba(0,255,157,0.75)",
+        color: "rgba(22,163,74,0.10)",
+        strokeColor: "rgba(22,163,74,0.4)",
+        iconColor: "rgba(22,163,74,0.75)",
         fields: ["Date", "Appointment_Date", "Appointment_Time", "Created_Date", "Updated_Date", "Completed_Date", "Job_Length"]
     },
     {
         id: "job",
         label: "Job / Service Details",
-        color: "rgba(255,140,0,0.12)",
-        strokeColor: "rgba(255,140,0,0.45)",
-        iconColor: "rgba(255,160,40,0.9)",
+        color: "rgba(224,138,11,0.12)",
+        strokeColor: "rgba(224,138,11,0.45)",
+        iconColor: "rgba(224,138,11,0.9)",
         fields: ["Job_Type", "Job_Description", "Service_Type", "Priority", "Duration", "Notes"]
     },
     {
         id: "assignment",
         label: "Assignment / Staff",
-        color: "rgba(0,200,255,0.10)",
-        strokeColor: "rgba(0,200,255,0.4)",
-        iconColor: "rgba(0,200,255,0.75)",
+        color: "rgba(14,165,233,0.10)",
+        strokeColor: "rgba(14,165,233,0.4)",
+        iconColor: "rgba(14,165,233,0.75)",
         fields: ["Engineer", "Assigned_To", "Team", "Starting_Postcode", "Vehicle_ID"]
     },
     {
         id: "status",
         label: "Status & Workflow",
-        color: "rgba(255,75,92,0.10)",
-        strokeColor: "rgba(255,75,92,0.4)",
-        iconColor: "rgba(255,100,115,0.9)",
+        color: "rgba(229,72,77,0.10)",
+        strokeColor: "rgba(229,72,77,0.4)",
+        iconColor: "rgba(229,72,77,0.9)",
         fields: ["Status", "Progress", "Stage", "Cancellation_Reason"]
     },
     {
         id: "financial",
         label: "Financial Fields",
-        color: "rgba(0,255,157,0.08)",
-        strokeColor: "rgba(0,255,157,0.35)",
-        iconColor: "rgba(0,255,157,0.7)",
+        color: "rgba(22,163,74,0.08)",
+        strokeColor: "rgba(22,163,74,0.35)",
+        iconColor: "rgba(22,163,74,0.7)",
         fields: ["Price", "Cost", "Invoice_Number", "Payment_Status", "Discount", "VAT"]
     }
 ];

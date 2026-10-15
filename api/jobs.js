@@ -11,6 +11,8 @@
  * response includes "environment": "live" | "sandbox" so callers can double-check.
  */
 
+const { parseJobDate } = require('./_lib/util');
+
 const FIREBASE_PROJECT_ID = 'geko-scheduling';
 const FIREBASE_API_KEY    = 'AIzaSyDVy6E89BBETXvRk6H__HfjSE6k4IfqrqU';
 const FIRESTORE_BASE      = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents`;
@@ -206,6 +208,17 @@ module.exports = async function handler(req, res) {
       const err = await writeRes.json().catch(() => ({}));
       return res.status(500).json({ success: false, error: 'Firestore write failed.', detail: err });
     }
+
+    // Webhook baseline: remember the date/status we created the job with, so a later move is
+    // reported as a change (see api/webhook-dispatch.js). Best effort — never fails the create.
+    try {
+      const stateCollection = mode === 'sandbox' ? 'webhook_state_sandbox' : 'webhook_state';
+      await fetch(`${FIRESTORE_BASE}/${stateCollection}/${encodeURIComponent(docId)}?key=${FIREBASE_API_KEY}`, {
+        method:  'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(toFirestoreDoc({ dateOfJob: parseJobDate(jobDate) || '', jobStatus: 'unassigned' })),
+      });
+    } catch (_) { /* ignore */ }
 
     return res.status(201).json({ success: true, message: 'Job created successfully.', jobId: docId, environment: mode });
   }

@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><script src="geko-theme.js"></script>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Geko — Users</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+  
   <style>
     
   /* ── SIDEBAR ─────────────────────────────────── */
   :root {
     --sidebar-w-collapsed: 60px;
     --sidebar-w-expanded:  200px;
-    --sidebar-bg: #0c1118;
+    --sidebar-bg: var(--ds-surface);
     --sidebar-border: #1a2535;
-    --sidebar-accent: #00c896;
-    --sidebar-text: #8a9bb0;
-    --sidebar-text-hover: #e8edf2;
-    --sidebar-active-bg: rgba(0,200,150,0.1);
-    --sidebar-active-text: #00c896;
+    --sidebar-accent: var(--ds-accent);
+    --sidebar-text: var(--ds-muted);
+    --sidebar-text-hover: var(--ds-text);
+    --sidebar-active-bg: rgb(var(--ds-accent-rgb) / 0.1);
+    --sidebar-active-text: var(--ds-accent);
     --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
   }
 
@@ -26,9 +26,9 @@
   body {
     display: flex;
     min-height: 100vh;
-    background: #0b0f14;
-    font-family: "DM Sans", sans-serif;
-    color: #e8edf2;
+    background: var(--ds-surface);
+    font-family:var(--ds-font);
+    color: var(--ds-text);
     overflow: hidden;
   }
 
@@ -93,7 +93,7 @@
     height: 32px;
     border-radius: 7px;
     border: 1px solid var(--sidebar-border);
-    background: rgba(255,255,255,0.04);
+    background: rgb(var(--ds-fg-rgb) / 0.04);
     color: var(--sidebar-text);
     cursor: pointer;
     display: flex;
@@ -104,7 +104,7 @@
   }
 
   .sidebar-toggle:hover {
-    background: rgba(255,255,255,0.08);
+    background: rgb(var(--ds-fg-rgb) / 0.08);
     color: var(--sidebar-text-hover);
     border-color: #2a3a50;
   }
@@ -134,7 +134,7 @@
   }
 
   .sidebar-link:hover {
-    background: rgba(255,255,255,0.05);
+    background: rgb(var(--ds-fg-rgb) / 0.05);
     color: var(--sidebar-text-hover);
   }
 
@@ -156,11 +156,11 @@
   }
 
   .sidebar-link:hover .sidebar-icon {
-    background: rgba(255,255,255,0.06);
+    background: rgb(var(--ds-fg-rgb) / 0.06);
   }
 
   .sidebar-link.active .sidebar-icon {
-    background: rgba(0,200,150,0.12);
+    background: rgb(var(--ds-accent-rgb) / 0.12);
   }
 
   .sidebar-label {
@@ -185,9 +185,9 @@
     left: calc(100% + 10px);
     top: 50%;
     transform: translateY(-50%);
-    background: #0c1118;
+    background: var(--ds-surface);
     border: 1px solid var(--sidebar-border);
-    color: #e8edf2;
+    color: var(--ds-text);
     font-size: 12px;
     font-weight: 500;
     padding: 5px 10px;
@@ -235,20 +235,20 @@
 
     /* ── PAGE SPECIFIC ───────────────────────────── */
     :root {
-      --bg: #0b0f14;
-      --surface: #111720;
-      --surface2: #161e2a;
+      --bg: var(--ds-surface);
+      --surface: var(--ds-surface-2);
+      --surface2: var(--ds-surface-3);
       --surface3: #1c2738;
       --border: #1e2d3e;
       --border2: #243345;
-      --accent: #00c896;
-      --accent2: #0084ff;
-      --text: #e8edf2;
-      --text-muted: #6b7f93;
+      --accent: var(--ds-accent);
+      --accent2: var(--ds-info);
+      --text: var(--ds-text);
+      --text-muted: var(--ds-muted);
       --text-dim: #3d5068;
-      --danger: #ff4d6a;
-      --warning: #f59e0b;
-      --success: #00c896;
+      --danger: var(--ds-danger);
+      --warning: var(--ds-warn);
+      --success: var(--ds-accent);
     }
 
     body { background: var(--bg); overflow: hidden; }
@@ -265,7 +265,7 @@
       flex-shrink: 0;
     }
     .topbar-title {
-      font-family: "Syne", sans-serif;
+      font-family:var(--ds-font);
       font-size: 18px;
       font-weight: 700;
       color: var(--text);
@@ -302,7 +302,7 @@
       border-bottom: 2px solid transparent;
       margin-bottom: -1px;
       transition: all 0.18s;
-      font-family: "DM Sans", sans-serif;
+      font-family:var(--ds-font);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -324,8 +324,8 @@
       text-align: center;
     }
     .tab-btn.active .tab-badge {
-      background: rgba(0,200,150,0.12);
-      border-color: rgba(0,200,150,0.3);
+      background: rgb(var(--ds-accent-rgb) / 0.12);
+      border-color: rgb(var(--ds-accent-rgb) / 0.3);
       color: var(--accent);
     }
 
@@ -361,7 +361,7 @@
       color: var(--text);
       font-size: 13px;
       padding: 0 12px 0 38px;
-      font-family: "DM Sans", sans-serif;
+      font-family:var(--ds-font);
       outline: none;
       transition: border-color 0.18s;
     }
@@ -382,14 +382,14 @@
       background: var(--surface2);
       color: var(--text-muted);
       transition: all 0.18s;
-      font-family: "DM Sans", sans-serif;
+      font-family:var(--ds-font);
       white-space: nowrap;
     }
     .btn:hover { border-color: var(--border2); color: var(--text); background: var(--surface3); }
-    .btn-primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
-    .btn-primary:hover { background: #00b386; border-color: #00b386; color: #000; }
-    .btn-danger { background: rgba(255,77,106,0.1); border-color: rgba(255,77,106,0.3); color: var(--danger); }
-    .btn-danger:hover { background: rgba(255,77,106,0.18); }
+    .btn-primary { background: var(--accent); color: var(--ds-bg); border-color: var(--accent); font-weight: 600; }
+    .btn-primary:hover { background: var(--ds-accent); border-color: var(--ds-accent); color: var(--ds-bg); }
+    .btn-danger { background: rgb(var(--ds-danger-rgb) / 0.1); border-color: rgb(var(--ds-danger-rgb) / 0.3); color: var(--danger); }
+    .btn-danger:hover { background: rgb(var(--ds-danger-rgb) / 0.18); }
     .btn-sm { height: 30px; padding: 0 12px; font-size: 12px; }
 
     /* USERS TABLE */
@@ -429,7 +429,7 @@
       width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       font-size: 12px; font-weight: 700; color: #fff;
-      background: linear-gradient(135deg, #0084ff, #00c896);
+      background: linear-gradient(135deg, var(--ds-info), var(--ds-accent));
     }
     .user-name { font-weight: 500; }
     .user-email { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
@@ -438,12 +438,12 @@
       display: inline-flex; align-items: center; gap: 5px;
       padding: 3px 9px; border-radius: 100px;
       font-size: 11px; font-weight: 600;
-      background: rgba(0,132,255,0.1);
-      border: 1px solid rgba(0,132,255,0.25);
-      color: #4da6ff;
+      background: rgb(var(--ds-info-rgb) / 0.1);
+      border: 1px solid rgb(var(--ds-info-rgb) / 0.25);
+      color: var(--ds-info);
     }
-    .role-badge.admin    { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.25); color: #f59e0b; }
-    .role-badge.engineer { background: rgba(0,200,150,0.1); border-color: rgba(0,200,150,0.25); color: #00c896; }
+    .role-badge.admin    { background: rgb(var(--ds-warn-rgb) / 0.1); border-color: rgb(var(--ds-warn-rgb) / 0.25); color: var(--ds-warn); }
+    .role-badge.engineer { background: rgb(var(--ds-accent-rgb) / 0.1); border-color: rgb(var(--ds-accent-rgb) / 0.25); color: var(--ds-accent); }
     .role-badge.viewer   { background: rgba(107,127,147,0.1); border-color: rgba(107,127,147,0.2); color: var(--text-muted); }
 
     .status-dot-wrap { display: flex; align-items: center; gap: 6px; font-size: 12px; }
@@ -468,10 +468,10 @@
       border: 1px solid var(--border); background: var(--surface);
       color: var(--text-muted); cursor: pointer; font-size: 12px;
       display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s; font-family: "DM Sans", sans-serif;
+      transition: all 0.15s; font-family:var(--ds-font);
     }
     .page-btn:hover { border-color: var(--border2); color: var(--text); }
-    .page-btn.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+    .page-btn.active { background: var(--accent); border-color: var(--accent); color: var(--ds-bg); font-weight: 600; }
     .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
     /* ── ADD USER TAB ──────────────────────── */
@@ -483,7 +483,7 @@
       max-width: 620px;
     }
     .form-card h2 {
-      font-family: "Syne", sans-serif;
+      font-family:var(--ds-font);
       font-size: 17px;
       font-weight: 700;
       margin-bottom: 4px;
@@ -502,7 +502,7 @@
       color: var(--text);
       font-size: 13px;
       padding: 0 13px;
-      font-family: "DM Sans", sans-serif;
+      font-family:var(--ds-font);
       outline: none;
       transition: border-color 0.18s;
       width: 100%;
@@ -521,8 +521,8 @@
       display: none;
       align-items: center; gap: 10px;
       padding: 13px 16px;
-      background: rgba(0,200,150,0.08);
-      border: 1px solid rgba(0,200,150,0.25);
+      background: rgb(var(--ds-accent-rgb) / 0.08);
+      border: 1px solid rgb(var(--ds-accent-rgb) / 0.25);
       border-radius: 8px;
       font-size: 13px; color: var(--accent);
       margin-top: 16px;
@@ -550,7 +550,7 @@
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
-    .role-name { font-family: "Syne", sans-serif; font-size: 14px; font-weight: 700; }
+    .role-name { font-family:var(--ds-font); font-size: 14px; font-weight: 700; }
     .role-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
     .role-card-body { padding: 16px 20px; }
     .role-access-label {
@@ -588,8 +588,8 @@
       transition: all 0.2s;
     }
     .toggle input:checked + .toggle-track {
-      background: rgba(0,200,150,0.2);
-      border-color: rgba(0,200,150,0.4);
+      background: rgb(var(--ds-accent-rgb) / 0.2);
+      border-color: rgb(var(--ds-accent-rgb) / 0.4);
     }
     .toggle input:checked + .toggle-track::after {
       background: var(--accent);
@@ -616,22 +616,22 @@
       width: 18px; height: 18px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-size: 9px; font-weight: 700; color: #fff;
-      background: linear-gradient(135deg, #0084ff, #00c896);
+      background: linear-gradient(135deg, var(--ds-info), var(--ds-accent));
       flex-shrink: 0;
     }
     .member-chip-remove {
       width: 14px; height: 14px; border-radius: 50%;
-      background: rgba(255,77,106,0.15); border: none; cursor: pointer;
+      background: rgb(var(--ds-danger-rgb) / 0.15); border: none; cursor: pointer;
       color: var(--danger); display: flex; align-items: center; justify-content: center;
       font-size: 9px; transition: background 0.15s; line-height: 1;
     }
-    .member-chip-remove:hover { background: rgba(255,77,106,0.28); }
+    .member-chip-remove:hover { background: rgb(var(--ds-danger-rgb) / 0.28); }
     .add-member-btn {
       display: inline-flex; align-items: center; gap: 4px;
       padding: 4px 9px; border-radius: 100px; font-size: 11px;
       background: transparent; border: 1px dashed var(--border2);
       color: var(--text-dim); cursor: pointer; transition: all 0.15s;
-      font-family: "DM Sans", sans-serif;
+      font-family:var(--ds-font);
     }
     .add-member-btn:hover { border-color: var(--accent); color: var(--accent); }
 
@@ -641,7 +641,7 @@
       position: absolute; top: calc(100% + 6px); left: 0;
       background: var(--surface2); border: 1px solid var(--border2);
       border-radius: 8px; min-width: 180px; z-index: 200;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      box-shadow:var(--ds-shadow-md);
       display: none; padding: 4px;
     }
     .dropdown-menu.open { display: block; }
@@ -660,18 +660,18 @@
       position: fixed; bottom: 20px; right: 20px; z-index: 999;
       padding: 11px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
       background: var(--surface2); border: 1px solid var(--border);
-      box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+      box-shadow:var(--ds-shadow-md);
       transform: translateY(14px); opacity: 0; transition: all 0.26s; pointer-events: none;
     }
     #toast.show { transform: translateY(0); opacity: 1; }
-    #toast.ok  { border-color: rgba(0,200,150,0.4); color: var(--success); }
-    #toast.err { border-color: rgba(255,77,106,0.4); color: var(--danger); }
+    #toast.ok  { border-color: rgb(var(--ds-accent-rgb) / 0.4); color: var(--success); }
+    #toast.err { border-color: rgb(var(--ds-danger-rgb) / 0.4); color: var(--danger); }
 
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   </style>
-</head>
+<link rel="stylesheet" href="geko-ds.css"><link rel="stylesheet" href="geko-icons.css"><script defer src="geko-icons.js"></script></head>
 <body>
 
 
@@ -797,23 +797,23 @@
         <p>Create a user account and assign their role within Geko.</p>
         <div class="form-grid">
           <div class="form-group">
-            <label>First Name <span style="color:#ff4d6a">*</span></label>
+            <label>First Name <span style="color:var(--ds-danger)">*</span></label>
             <input type="text" class="form-input" id="fFirstName" placeholder="e.g. James"/>
           </div>
           <div class="form-group">
-            <label>Last Name <span style="color:#ff4d6a">*</span></label>
+            <label>Last Name <span style="color:var(--ds-danger)">*</span></label>
             <input type="text" class="form-input" id="fLastName" placeholder="e.g. Smith"/>
           </div>
           <div class="form-group full">
-            <label>Email Address <span style="color:#ff4d6a">*</span></label>
+            <label>Email Address <span style="color:var(--ds-danger)">*</span></label>
             <input type="email" class="form-input" id="fEmail" placeholder="e.g. james.smith@company.com"/>
           </div>
           <div class="form-group">
-            <label>Company <span style="color:#ff4d6a">*</span></label>
+            <label>Company <span style="color:var(--ds-danger)">*</span></label>
             <input type="text" class="form-input" id="fCompany" placeholder="e.g. Acme Ltd"/>
           </div>
           <div class="form-group">
-            <label>Role <span style="color:#ff4d6a">*</span></label>
+            <label>Role <span style="color:var(--ds-danger)">*</span></label>
             <select class="form-select" id="fRole">
               <option value="">— Select role —</option>
               <option value="Admin">Admin</option>
@@ -858,10 +858,10 @@
 <div id="toast"></div>
 
 <!-- ADD TO ROLE MODAL -->
-<div style="position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s" id="addMemberModal">
-  <div style="background:#111720;border:1px solid #1e2d3e;border-radius:14px;width:420px;max-width:92vw;padding:28px;">
-    <h3 style="font-family:Syne,sans-serif;font-size:17px;font-weight:700;margin-bottom:6px;">Add Member to Role</h3>
-    <p style="font-size:13px;color:#6b7f93;margin-bottom:20px;">Select a user to add to <strong id="modalRoleName" style="color:#e8edf2"></strong></p>
+<div style="position:fixed;inset:0;background:rgb(var(--ds-fg-rgb) / 0.07);backdrop-filter:blur(4px);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s" id="addMemberModal">
+  <div style="background:var(--ds-surface-2);border:1px solid #1e2d3e;border-radius:14px;width:420px;max-width:92vw;padding:28px;">
+    <h3 style="font-family:var(--ds-font);font-size:17px;font-weight:700;margin-bottom:6px;">Add Member to Role</h3>
+    <p style="font-size:13px;color:var(--ds-muted);margin-bottom:20px;">Select a user to add to <strong id="modalRoleName" style="color:var(--ds-text)"></strong></p>
     <select class="form-select" id="modalUserSelect" style="margin-bottom:16px;"></select>
     <div style="display:flex;gap:10px;">
       <button class="btn btn-primary" onclick="confirmAddMember()">Add to Role</button>
@@ -897,8 +897,8 @@ const ROLES_CONFIG = [
     id: 'admin',
     name: 'Admin',
     desc: 'Full access to all modules',
-    color: '#f59e0b',
-    bg: 'rgba(245,158,11,0.12)',
+    color: '#E08A0B',
+    bg: 'rgba(224,138,11,0.12)',
     access: [
       { label: 'Dashboard', page: 'dashboard.html' },
       { label: 'Scheduling', page: 'scheduling.html' },
@@ -910,8 +910,8 @@ const ROLES_CONFIG = [
     id: 'scheduler',
     name: 'Scheduler',
     desc: 'Access to scheduling & calendar',
-    color: '#00c896',
-    bg: 'rgba(0,200,150,0.12)',
+    color: '#16A34A',
+    bg: 'rgba(22,163,74,0.12)',
     access: [
       { label: 'Dashboard', page: 'dashboard.html' },
       { label: 'Scheduling', page: 'scheduling.html' },
@@ -921,8 +921,8 @@ const ROLES_CONFIG = [
     id: 'database',
     name: 'Database',
     desc: 'Access to data upload & database',
-    color: '#0084ff',
-    bg: 'rgba(0,132,255,0.12)',
+    color: '#0EA5E9',
+    bg: 'rgba(14,165,233,0.12)',
     access: [
       { label: 'Dashboard', page: 'dashboard.html' },
       { label: 'Database', page: 'database.html' },
@@ -932,8 +932,8 @@ const ROLES_CONFIG = [
     id: 'engineer',
     name: 'Engineer',
     desc: 'View-only scheduling access',
-    color: '#a855f7',
-    bg: 'rgba(168,85,247,0.12)',
+    color: '#7C5CE0',
+    bg: 'rgba(124,92,224,0.12)',
     access: [
       { label: 'Dashboard', page: 'dashboard.html' },
       { label: 'Scheduling (view)', page: 'scheduling.html' },
